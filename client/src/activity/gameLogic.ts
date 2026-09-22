@@ -22,8 +22,11 @@ export function betOptionSpecs(bankroll: number): BetOptionSpec[] {
 }
 
 export function shortcutIndex(key: string, optionCount: number): number | null {
+  // A-D harfleri VE 1-4 rakamları aynı şıkka eşlenir (masaüstü hızı için).
   const index = 'ABCD'.indexOf(key.toUpperCase())
-  return index >= 0 && index < optionCount ? index : null
+  const digit = '1234'.indexOf(key)
+  const resolved = index >= 0 ? index : digit
+  return resolved >= 0 && resolved < optionCount ? resolved : null
 }
 
 export function questionIsLocked(input: {

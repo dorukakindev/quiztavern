@@ -35,6 +35,31 @@ test('bahis A/B/C/D kısayolları görünür seçeneklere eşlenir', () => {
   assert.equal(shortcutIndex('D', 2), null)
 })
 
+test('1-4 rakam kısayolları harflerle aynı şıkka eşlenir', () => {
+  assert.equal(shortcutIndex('1', 4), 0)
+  assert.equal(shortcutIndex('4', 4), 3)
+  assert.equal(shortcutIndex('5', 4), null)
+  assert.equal(shortcutIndex('2', 2), 1)
+  assert.equal(shortcutIndex('3', 2), null)
+  // Klasik şık handler'ı da aynı yardımcıyı kullanır (A-D/1-4 birlikte).
+  assert.match(activitySource, /shortcutIndex\(event\.key, 4\)/)
+})
+
+test('reveal kararları renkten bağımsız ✓/✗ rozeti + desenle işaretlenir', () => {
+  // Renk körlüğü: doğru/yanlış artık yalnız yeşil/kırmızıyla anlatılmıyor —
+  // sabit 24px slotta ✓/✗ rozeti ve yanlışta kesikli kenarlık var.
+  assert.match(activitySource, /qt-verdict-pop is-right/)
+  assert.match(activitySource, /qt-verdict-pop is-wrong/)
+  assert.match(activityCss, /\.qt-verdict-pop\.is-right \{[^}]*background: #5ee6c1/)
+  assert.match(activityCss, /\.qt-verdict-pop\.is-wrong \{[^}]*background: #ef8674/)
+  assert.match(activityCss, /\.qt-answer\.is-wrong \{[^}]*border-style: dashed/)
+})
+
+test('kategori modalı seçilileri en başta listeler', () => {
+  assert.match(activitySource, /const ordered = q \? filtered : \[\.\.\.filtered\]\.sort/)
+  assert.match(activitySource, /\{ordered\.map\(\(category\)/)
+})
+
 test('bekleyen oyuncunun klasik/takım sorusu kilitlidir', () => {
   assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: true }), true)
   assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: false }), false)
@@ -133,6 +158,21 @@ test('özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıd�
   assert.match(activityCss, /\.qt-pack-form \{ display: grid; gap: 8px;/)
   assert.match(i18nSource, /'pack\.pasteCsv':/)
   assert.match(i18nSource, /'err\.packHostOnly':/)
+})
+
+test('cevap bekleyen oyuncu kartı soru/bahis fazında pulse alır', () => {
+  assert.match(activitySource, /'is-awaiting' : ''/)
+  assert.match(activitySource, /state\.phase === 'question' \|\| state\.phase === 'bet'\) && !player\.answered/)
+  assert.match(activityCss, /\.qt-player-card\.is-awaiting \{ animation: qtAwaitPulse/)
+  assert.match(activityCss, /@keyframes qtAwaitPulse/)
+  // Kilitleyen kart pulse'ı bırakıp is-locked sabit görünüme geçer.
+  assert.match(activitySource, /player\.answered \? 'is-locked' : ''/)
+})
+
+test('faz geçişleri ortak giriş animasyonunu paylaşır ve reduced-motion kapsar', () => {
+  assert.match(activityCss, /\.qt-lobby-shell, \.qt-start-countdown, \.qt-game-grid \{ animation: qtFadeIn/)
+  // Yeni animasyonlar prefers-reduced-motion altında anlık geçişe döner.
+  assert.match(activityCss, /prefers-reduced-motion: reduce[\s\S]*?\.qt-player-card\.is-awaiting[\s\S]*?\.qt-game-grid \{ animation: none !important; \}/)
 })
 
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

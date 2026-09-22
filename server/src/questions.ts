@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import type { Difficulty } from "../../shared/types";
+import { log } from "./logger";
 
 export const DIFFICULTIES: readonly Difficulty[] = ["kolay", "orta", "zor"];
 
@@ -55,7 +56,7 @@ function load(): Question[] {
 }
 
 export const ALL_QUESTIONS: Question[] = load();
-console.log(`[sorular] ${ALL_QUESTIONS.length} soru yüklendi`);
+log.info({ count: ALL_QUESTIONS.length }, "sorular yüklendi");
 
 /** Havuzdan n soruyu, şık sırasını da karıştırarak örnekler */
 function shuffle<T>(items: T[]): T[] {

@@ -12,12 +12,14 @@
     "test:sec": "tsx scripts/security-test.ts",
     "test:hardening": "tsx scripts/hardening-test.ts",
     "test:origin-gate": "tsx scripts/origin-gate-test.ts",
+    "test:reliability": "tsx scripts/reliability-test.ts",
     "test:bet-team-edge": "tsx scripts/bet-team-edge-test.ts",
     "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts",
     "test:packs": "tsx scripts/packs-test.ts"
   },
   "dependencies": {
     "express": "^5.2.1",
+    "pino": "^9.14.0",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {

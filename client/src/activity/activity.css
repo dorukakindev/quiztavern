@@ -195,6 +195,10 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 /* Skor tablosu: her kartta puan (sabit), lidere avatar ustunde altin tac. */
 .qt-player-score { flex: none; font-size: 13px; font-weight: 900; color: #eaf6ff; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
 .qt-player-card.is-leader .qt-player-score { color: #f3c362; }
+/* Cevap bekleyen oyuncu: soru/bahis fazında henüz kilitlemeyen kart hafif
+   parlar; koltuk rengini (--seat-glow) kullanır, layout'u oynatmaz. */
+.qt-player-card.is-awaiting { animation: qtAwaitPulse 1.8s ease-in-out infinite; }
+@keyframes qtAwaitPulse { 0%, 100% { box-shadow: inset 0 0 0 0 transparent; } 50% { box-shadow: inset 0 0 0 1px var(--seat-border, rgba(92,231,239,.45)), 0 0 12px var(--seat-glow, rgba(92,231,239,.16)); } }
 .qt-strip-crown { position: absolute; top: -11px; left: 50%; transform: translateX(-50%); z-index: 2; pointer-events: none; color: #f3c362; filter: drop-shadow(0 1px 3px rgba(0,0,0,.55)); }
 .qt-strip-crown .qt-icon { width: 15px; height: 15px; }
 /* "Sen" vurgusu ALTIN DEGIL turkuaz kalinlik: altin yalnizca CTA/tac/kazanan
@@ -358,6 +362,9 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-button:active:not(:disabled), .qt-answer:active:not(:disabled), .qt-emote-btn:active:not(:disabled), .qt-category-chip:active:not(:disabled), .qt-mode-card:active:not(:disabled), .qt-count-chip:active:not(:disabled) { transform: scale(.97); }
 /* Podyum sekmeleri arası içerik yumuşak geçiş (her sekme kökü koşullu -> remount). */
 .qt-podium-glass, .qt-summary-card, .qt-review-card { animation: qtFadeIn .34s var(--ease) both; }
+/* Faz geçişleri: lobi -> geri sayım -> oyun aynı yumuşak girişi paylaşır.
+   (Tek yön giriş; soru->reveal aynı kabukta olduğu için kart kımıldamaz.) */
+.qt-lobby-shell, .qt-start-countdown, .qt-game-grid { animation: qtFadeIn .3s var(--ease) both; }
 @keyframes qtFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 /* Podyum konfetisi (kütüphanesiz, CSP-safe). Glass'a göre konumlanır, kendi overflow'uyla kırpılır. */
 .qt-podium-glass { position: relative; }
@@ -463,7 +470,13 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-answer.is-correct::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: qtGlowSweep .7s ease-out both; }
 @keyframes qtGlowSweep { 0% { box-shadow: 0 0 0 0 rgba(88,233,188,.55); } 100% { box-shadow: 0 0 0 22px rgba(88,233,188,0); } }
 .qt-answer.is-correct b:not(.qt-answer__pct) { background: #5dddc0; color: #09221f; }
-.qt-answer.is-wrong { opacity: .68; filter: saturate(.62); border-color: #ef8674; background: rgba(116, 42, 37, .3); animation: qtAnswerShake .4s ease both; }
+/* Karar rozeti: doğru ✓ yeşil, (kendi) yanlış ✗ mercan — renk körlüğü için
+   renkten bağımsız işaret; kenarlık deseni de ayrışır (yanlış = kesikli). */
+.qt-verdict-pop { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; }
+.qt-verdict-pop.is-right { background: #5ee6c1; color: #0b2a25; box-shadow: 0 0 14px rgba(94,230,193,.5); }
+.qt-verdict-pop.is-wrong { background: #ef8674; color: #33110c; box-shadow: 0 0 14px rgba(239,134,116,.45); }
+.qt-verdict-pop svg { width: 13px; height: 13px; stroke-width: 3; }
+.qt-answer.is-wrong { opacity: .68; filter: saturate(.62); border-color: #ef8674; border-style: dashed; background: rgba(116, 42, 37, .3); animation: qtAnswerShake .4s ease both; }
 .qt-answer.is-dimmed:not(.is-wrong) { opacity: .5; filter: saturate(.4); }
 /* Oy avatarları her kartın sag-alt kosesine bagli (eskiden sol-altta, 2 sutunda
    ic kart ortada yuzuyordu ve soldan baslayan dagilim cubugunun basini ortuyordu).
@@ -903,7 +916,7 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 @keyframes qtPipBlink { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
 /* Reduced-motion: hareket yok, bilgi tam. SayÄ± akÄ±ÅŸÄ± JS tarafÄ±nda son deÄŸere sabitlenir. */
 @media (prefers-reduced-motion: reduce) {
-  .qt-answer.is-selected, .qt-answer.is-correct, .qt-answer.is-wrong, .qt-voters .qt-avatar, .qt-voters small, .qt-gain-chip, .qt-score-flight, .qt-shimmer, .qt-answer__dist, .qt-final-intro__title { animation: none !important; }
+  .qt-answer.is-selected, .qt-answer.is-correct, .qt-answer.is-wrong, .qt-voters .qt-avatar, .qt-voters small, .qt-gain-chip, .qt-score-flight, .qt-shimmer, .qt-answer__dist, .qt-final-intro__title, .qt-player-card.is-awaiting, .qt-lobby-shell, .qt-start-countdown, .qt-game-grid { animation: none !important; }
   .qt-reveal-progress b { transition: none !important; }
   /* YanÄ±p sÃ¶nme kapalÄ± ama uyarÄ± gÃ¶rÃ¼nÃ¼r kalmalÄ±: rengi bilgiyi taÅŸÄ±r. */
   .qt-pip__lock.is-open { animation: none !important; }
