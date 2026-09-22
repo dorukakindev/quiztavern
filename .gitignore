@@ -24,3 +24,6 @@ Claude Design/
 .opencode/
 .claude/
 
+
+# Soru bildirimleri kalıcı deposu (çalışma zamanı verisi)
+server/data/
