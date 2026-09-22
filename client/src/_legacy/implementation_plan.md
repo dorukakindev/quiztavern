@@ -1,4 +1,12 @@
 # Tasarım İyileştirme Önerileri
+
+> [!WARNING]
+> **Bu plan ESKİ standalone web uygulaması içindir** (`client/src/_legacy/`).
+> O kod artık build'e girmiyor; canlı ürün tek ekranlık Discord Activity'dir
+> (`client/src/activity/`). Buradaki sayfalar (Ana Sayfa, Lobiler, Görevler,
+> Turnuva, Nasıl Oynanır, Sıralama, Profil, navbar) Activity'de YOK. Bu dosya
+> yalnızca referans/arsiv amaçlı saklanıyor — yeni iş için doğrudan hedef alınmamalı.
+
 ## Ekran Görüntülerine Dayalı Somut Düzeltmeler
 
 > [!NOTE]
