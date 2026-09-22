@@ -16,7 +16,8 @@
     "test:bet-team-edge": "tsx scripts/bet-team-edge-test.ts",
     "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts",
     "test:reports": "tsx scripts/reports-test.ts",
-    "test:daily": "tsx scripts/daily-test.ts"
+    "test:daily": "tsx scripts/daily-test.ts",
+    "test:anticheat": "tsx scripts/anticheat-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
