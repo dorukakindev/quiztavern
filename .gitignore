@@ -24,6 +24,8 @@ Claude Design/
 .opencode/
 .claude/
 
+# Oturuma özel smoke-test durumu (geçici tünel URL'leri içerir; repo'ya girmez)
+SMOKE-DURUM.md
 
 # Çalışma zamanı verisi (soru bildirimleri + günlük meydan okuma db)
 server/data/
