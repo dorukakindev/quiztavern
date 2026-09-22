@@ -85,6 +85,20 @@ export async function inviteWithFallback(sdk: DiscordSDK, message: string): Prom
 }
 
 /**
+ * Maç sonucu paylaşımı (podyum "Kanala paylaş"): sonuç metnini shareLink'in
+ * `message` alanıyla kanal paylaşım modalına taşır — aktivite linki kartı
+ * Discord üretir. shareLink yoksa/reddedilirse native davet diyaloğuna düşer
+ * (metin kaybolur ama davet yine açılır). İkisi de olmazsa false.
+ */
+export async function shareResult(sdk: DiscordSDK, message: string): Promise<boolean> {
+  try { return (await sdk.commands.shareLink({ message })).success } catch { /* link paylaşımı yok — davet diyaloğuna düş */ }
+  if (sdk.guildId) {
+    try { await sdk.commands.openInviteDialog(); return true } catch { /* izin yok */ }
+  }
+  return false
+}
+
+/**
  * Auth hatasını Discord istemcisinin log'larına düşür: gerçek Discord'da
  * iframe konsolunu göremediğimiz için tek teşhis yolumuz bu. SDK hazır
  * değilse sessizce geçer.

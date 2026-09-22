@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Common, DiscordSDK, RPCCloseCodes } from '@discord/embedded-app-sdk'
-import { captureClientLog, inviteWithFallback, subscribeLayoutModeCompat, subscribeSpeaking, subscribeThermalState, updatePresence } from './sdkBridge'
+import { captureClientLog, inviteWithFallback, shareResult, subscribeLayoutModeCompat, subscribeSpeaking, subscribeThermalState, updatePresence } from './sdkBridge'
 
 export type ActivityIdentity = {
   instanceId: string
@@ -263,6 +263,13 @@ export function useDiscordActivity() {
     return inviteWithFallback(sdk, message)
   }, [])
 
+  /** Maç sonucu paylaşımı: shareLink mesajı → davet diyaloğu fallback. */
+  const share = useCallback(async (message: string): Promise<boolean> => {
+    const sdk = sdkRef.current
+    if (!sdk) return false
+    return shareResult(sdk, message)
+  }, [])
+
   /** Discord durum çubuğunda görünen satır; SDK yoksa no-op. */
   const setPresence = useCallback((state: string): void => {
     if (sdkRef.current) updatePresence(sdkRef.current, state)
@@ -310,5 +317,5 @@ export function useDiscordActivity() {
 
   // Query ile zorlanan yerleşim her zaman kazanır (yerel PIP denemesi için).
   const forced = layoutFromQuery()
-  return { identity, status, error, layoutMode: forced ?? layoutMode, lowPower, speakingIds, invite, setPresence, retry }
+  return { identity, status, error, layoutMode: forced ?? layoutMode, lowPower, speakingIds, invite, share, setPresence, retry }
 }
