@@ -15,5 +15,6 @@ jobs:
           node-version: "22.12"
           cache: npm
       - run: npm ci
-      - run: npm test
+      # Build önce: prod boot client/dist ister (origin-gate NODE_ENV=production spawn'ı).
       - run: npm run build
+      - run: npm test
