@@ -23,6 +23,7 @@ import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, Fix
 import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
+import { createDailyStore, dailyDayNumber } from "./daily";
 import { addPack, listPacks, parseCsvQuestions, parseJsonQuestions, validatePackQuestions } from "./packs";
 
 const app = express();
@@ -36,6 +37,8 @@ const httpServer = createServer(app);
 // "Bu soru hatalı" bildirimleri tek kalıcı dosyaya yazar; test ve
 // taşıma için REPORTS_DB_PATH ile yol ezilebilir.
 const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(process.cwd(), "data", "question-reports.db"));
+// Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
+const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
   // Bu yüzden origin standart Socket.IO yolunu dinlemeli; istemci Discord
@@ -219,6 +222,12 @@ function getRoom(roomId: string) {
   if (!room) {
     room = new Room(id, () => emitRoom(room!), {});
     room.setQuestionStartedHandler(scheduleBotAnswers);
+    room.onDailyFinished = (entries) => {
+      for (const entry of entries) {
+        try { dailyStore.record(entry); }
+        catch (error) { console.error("[daily] günlük sonuç kaydedilemedi:", error); }
+      }
+    };
     room.setEmptiedHandler(() => {
       room?.dispose();
       rooms.delete(id);
@@ -421,7 +430,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on(EV.START, () => {
+  socket.on(EV.START, (payload: unknown) => {
     try {
       if (ALLOW_MOCK_AUTH && room.players.size === 1) {
         const botName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
@@ -429,7 +438,12 @@ io.on("connection", (socket) => {
       }
       // Mod, SET_MODE ile paylaşılan ve hazır onaylarını sıfırlayan masa ayarıdır.
       // START paketindeki istemci beyanı bu yetkili ayarı atlayamaz.
-      room.start(user.id, room.gameMode);
+      // { daily: true } → Günlük Meydan Okuma: herkes için aynı 5 soru,
+      // günde bir kez. Bugün tamamlayan koltuktan iner (izleyici).
+      room.start(user.id, room.gameMode, {
+        daily: (payload as { daily?: unknown } | undefined)?.daily === true,
+        completed: (playerId) => dailyStore.has(playerId, dailyDayNumber()),
+      });
       // Botları BURADA zamanlama: start() henüz countdown fazında, soru başlamadı.
       // Her soru başında onQuestionStarted -> scheduleBotAnswers otomatik tetikleniyor
       // (setQuestionStartedHandler, yukarıda). Elle çağrı round 0'da çifte setTimeout

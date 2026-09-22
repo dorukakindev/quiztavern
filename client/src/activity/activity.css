@@ -1123,6 +1123,13 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-summary-bar { flex: 1; height: 8px; border-radius: var(--r-pill); background: #152c44; overflow: hidden; }
 .qt-summary-bar i { display: block; height: 100%; border-radius: var(--r-pill); background: linear-gradient(90deg, #3ea88f, #5ee6c1); }
 .qt-summary-again { width: 100%; justify-content: center; }
+/* Günlük Meydan Okuma: lobide altın başlatın altında ikincil buton; podyum
+   özetinde desen + kopyalanabilir sonuç satırı. */
+.qt-daily-start { margin-top: 8px; border-color: rgba(93,221,192,.45); color: #8fe8d2; }
+.qt-daily-share { display: grid; gap: 8px; justify-items: center; margin: 6px 0 14px; padding: 12px; border: 1px dashed rgba(243,195,98,.5); border-radius: var(--r-md); background: rgba(107,78,24,.14); }
+.qt-daily-share__pattern { font-size: 22px; letter-spacing: .12em; }
+.qt-daily-share__text { width: 100%; padding: 7px 10px; border: 1px solid rgba(128,169,191,.3); border-radius: var(--r-sm); background: rgba(6,20,34,.8); color: #e8f5ff; font: inherit; font-size: 13px; font-weight: 700; text-align: center; }
+.qt-daily-share__copy { padding: 8px 16px; font-size: 12px; }
 /* Maç incelemesi zaman çizgisi (6a): düğümler + seçilen turun detayı. */
 .qt-review-card { width: min(720px, 100%); padding: clamp(16px, 2.4vh, 24px) clamp(18px, 2.4vw, 30px); border-radius: var(--r-lg); border: 1px solid rgba(97,196,220,.4); background: linear-gradient(145deg, rgba(16,38,58,.92), rgba(5,18,32,.95)); box-shadow: 0 24px 64px rgba(0,0,0,.45); text-align: left; }
 .qt-review-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: clamp(12px, 2vh, 18px); }

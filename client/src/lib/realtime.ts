@@ -178,6 +178,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     sendEmote: (emote: EmoteKey) => socket.emit(EV.EMOTE, { emote }),
     reconnectNow: () => { if (!socket.connected) { setStatus('connecting'); setConnectionError(null); socket.connect() } },
     start: (mode: GameMode = 'quiz') => socket.emit(EV.START, { mode }),
+    startDaily: () => socket.emit(EV.START, { daily: true }),
     answer: (choice: number) => { if (socket.connected) socket.emit(EV.ANSWER, choice) },
     answerCircle: (answer: string) => { if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer) },
     placeBet: (amount: number) => { if (socket.connected) socket.emit(EV.BET, amount) },

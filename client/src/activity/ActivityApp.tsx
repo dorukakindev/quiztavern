@@ -12,7 +12,7 @@ import { CATEGORY_ICON_PATHS } from './categoryIcons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
 import { listPacks, uploadPack, type PackUploadResult, type QuestionPackMeta } from './packs'
 
-type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more' | 'flag'
+type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more' | 'flag' | 'calendar'
 
 function Icon({ name }: { name: IconName }) {
   const paths: Record<IconName, string> = {
@@ -37,6 +37,8 @@ function Icon({ name }: { name: IconName }) {
     more: 'M4 5h6v6H4V5Zm10 0h6v6h-6V5ZM4 15h6v6H4v-6Zm10 0h6v6h-6v-6Z',
     // Soru bildirimi bayrağı (reveal köşesinde küçük buton).
     flag: 'M5 21V4m0 1h12l-3 4 3 4H5',
+    // Günlük meydan okuma: takvim.
+    calendar: 'M8 2v4m8-4v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
   }
   // Göz: izleyici kimliği sürdükçe nazik, seyrek göz kırpma (idle · loop seyrek).
   return <svg className={`qt-icon ${name === 'eye' ? 'qt-icon--eye' : ''}`} viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>
@@ -724,7 +726,7 @@ function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
   </div>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetPack, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -900,6 +902,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {/* Başlat: "Hazırım"ın altında. Sahip değilsen gösterilmez. */}
             {isHost && <>
               <button className={`qt-button qt-button--gold qt-start-table ${canStart ? 'is-launch-ready' : ''}`} disabled={!canStart} onClick={() => onStart(mode)}>{t('table.start')}{canStart && <Burst triggerKey={startBurst} />}</button>
+              <button className="qt-button qt-daily-start" disabled={!canStart} title={t('daily.meta')} onClick={onStartDaily}><Icon name="calendar" /> {t('daily.start')}</button>
               {!canStart && <small className="qt-orbit__ready"><i aria-hidden="true" />{mode === 'team' && !teamsReady ? t('team.needBoth') : t('table.readyCount', { ready: readyCount, total: state?.players.length ?? 0 })}</small>}
             </>}
             </div>
@@ -1397,6 +1400,25 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
 /** Maç özeti kartı (4d). İstatistikler izleyene özel (sunucu stateFor'da hesaplar);
  *  "en hızlı parmak" masa geneli. "Kartı kopyala" YOK: Discord iframe'inde pano/
  *  canvas izin-kısıtlı, düşük değer — kullanıcı onayıyla atlandı. */
+/** Günlük sonuç satırı: Wordle deseni + kopyalanabilir metin. Discord
+ *  iframe'inde pano izni kısıtlı olabilir — metni seçilebilir tutarız ve
+ *  clipboard denemesi başarısız olursa kendisi seçilir (elle kopyalanır). */
+function DailyShare({ day, pattern }: { day: number; pattern: string }) {
+  const { t } = useI18n()
+  const [copied, setCopied] = useState(false)
+  const textRef = useRef<HTMLInputElement>(null)
+  const text = `${pattern} QuizTavern #${day}`
+  const copy = async () => {
+    try { await navigator.clipboard.writeText(text); setCopied(true) }
+    catch { textRef.current?.select() }
+  }
+  return <div className="qt-daily-share">
+    <b className="qt-daily-share__pattern" aria-hidden="true">{pattern}</b>
+    <input ref={textRef} className="qt-daily-share__text" value={text} readOnly onFocus={(event) => event.target.select()} aria-label={t('daily.share')} />
+    <button type="button" className="qt-button qt-daily-share__copy" onClick={copy}>{copied ? <><Icon name="check" /> {t('daily.copied')}</> : t('daily.copy')}</button>
+  </div>
+}
+
 function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameState; summary: MatchSummary; onAgain: () => void; onLeave: () => void }) {
   const { t, language } = useI18n()
   const winner = state.podium?.[0]
@@ -1422,6 +1444,7 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
         <small>{item.correct}/{item.total}</small>
       </div>)}
     </div>}
+    {state.daily?.pattern && <DailyShare day={state.daily.day} pattern={state.daily.pattern} />}
     {isHost
       ? <button className="qt-button qt-button--gold qt-summary-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
       : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>}
@@ -1726,7 +1749,7 @@ export function ActivityApp() {
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
         : <GameSkeleton />
     }
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />

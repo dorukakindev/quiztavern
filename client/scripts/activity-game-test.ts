@@ -161,6 +161,20 @@ test('özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıd�
   assert.match(i18nSource, /'err\.packHostOnly':/)
 })
 
+test('günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen', () => {
+  // Host başlat panelinde ikincil buton → START { daily: true } yayımı.
+  assert.match(activitySource, /className="qt-button qt-daily-start"/)
+  assert.match(activitySource, /onStartDaily=\{game\.startDaily\}/)
+  assert.match(realtimeSource, /startDaily:.*EV\.START, \{ daily: true \}/)
+  // Podyum özeti: state.daily.pattern varsa DailyShare render edilir.
+  assert.match(activitySource, /state\.daily\?\.pattern && <DailyShare/)
+  assert.match(activitySource, /navigator\.clipboard\.writeText\(text\)/)
+  // Pano izni yoksa fallback: metin input'u seçilir (elle kopyalanır).
+  assert.match(activitySource, /textRef\.current\?\.select\(\)/)
+  assert.match(activityCss, /\.qt-daily-share \{/)
+  assert.match(activityCss, /\.qt-daily-start \{/)
+})
+
 test('podyum "Kanala paylaş": shareLink sonuç kartı + davet fallback', () => {
   // Buton yalnız Discord içinde ve kazanan varken görünür; metin i18n'den.
   assert.match(activitySource, /isDiscord && onShare && winner && <button className="qt-button qt-podium-share"/)
