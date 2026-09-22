@@ -297,6 +297,10 @@ const tr = {
   'err.kickFailed': 'Oyuncu çıkarılamadı.',
   'err.transferFailed': 'Sahiplik devredilemedi.',
   'info.kicked': 'Masa sahibi seni masadan çıkardı.',
+  'report.flag': 'Bu soru hatalı — bildir',
+  'report.sent': 'Soru bildirildi — teşekkürler!',
+  'report.duplicate': 'Bu soruyu zaten bildirdin.',
+  'report.failed': 'Şu anda soru bildirilemiyor.',
   'err.connection': 'Sunucu bağlantısı kurulamadı.',
 } as const
 
@@ -574,6 +578,10 @@ const en: Record<StringKey, string> = {
   'err.kickFailed': 'Could not remove the player.',
   'err.transferFailed': 'Could not hand over the table.',
   'info.kicked': 'The table host removed you from the table.',
+  'report.flag': 'Broken question — report it',
+  'report.sent': 'Question reported — thanks!',
+  'report.duplicate': 'You already reported this question.',
+  'report.failed': 'Reporting is not available right now.',
   'err.connection': 'Could not reach the game server.',
 }
 
