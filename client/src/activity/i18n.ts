@@ -301,6 +301,12 @@ const tr = {
   'report.sent': 'Soru bildirildi — teşekkürler!',
   'report.duplicate': 'Bu soruyu zaten bildirdin.',
   'report.failed': 'Şu anda soru bildirilemiyor.',
+  'daily.start': 'Günlük Meydan Okuma',
+  'daily.meta': 'Herkes için aynı 5 soru · günde bir kez',
+  'daily.share': 'Günlük sonucun',
+  'daily.copy': 'Sonucu kopyala',
+  'daily.copied': 'Kopyalandı',
+  'err.dailyDone': 'Bugünkü meydan okumayı masadaki herkes tamamladı — yarın yeni sorular gelir.',
   'err.connection': 'Sunucu bağlantısı kurulamadı.',
 } as const
 
@@ -582,6 +588,12 @@ const en: Record<StringKey, string> = {
   'report.sent': 'Question reported — thanks!',
   'report.duplicate': 'You already reported this question.',
   'report.failed': 'Reporting is not available right now.',
+  'daily.start': 'Daily Challenge',
+  'daily.meta': 'Same 5 questions for everyone · once a day',
+  'daily.share': 'Your daily result',
+  'daily.copy': 'Copy result',
+  'daily.copied': 'Copied',
+  'err.dailyDone': 'Everyone at this table already finished today\'s challenge — new questions tomorrow.',
   'err.connection': 'Could not reach the game server.',
 }
 

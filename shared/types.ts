@@ -142,6 +142,7 @@ export type ToastKey =
   | "err.kicked"
   | "err.kickFailed"
   | "err.transferFailed"
+  | "err.dailyDone"
   | "info.kicked"
   | "report.sent"
   | "report.duplicate"
@@ -253,6 +254,9 @@ export interface GameState {
   podium: PodiumEntry[] | null;
   /** Yalnız podyum fazında; izleyen oyuncuya özel maç özeti (4d). */
   matchSummary: MatchSummary | null;
+  /** Günlük Meydan Okuma maçıysa: gün numarası + podyumdan sonra bu oyuncunun
+   *  Wordle-tarzı deseni. Normal maçta null; oynarken pattern null'dır. */
+  daily: { day: number; pattern: string | null } | null;
   answeredCount: number;
   eligibleCount: number;
   /** Bu turun ilk kilitleyeni ("en hızlı parmak"); istemci şeritte tek seferlik
