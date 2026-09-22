@@ -122,4 +122,18 @@ test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', 
   assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/)
 })
 
+test('günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen', () => {
+  // Host başlat panelinde ikincil buton → START { daily: true } yayımı.
+  assert.match(activitySource, /className="qt-button qt-daily-start"/)
+  assert.match(activitySource, /onStartDaily=\{game\.startDaily\}/)
+  assert.match(realtimeSource, /startDaily:.*EV\.START, \{ daily: true \}/)
+  // Podyum özeti: state.daily.pattern varsa DailyShare render edilir.
+  assert.match(activitySource, /state\.daily\?\.pattern && <DailyShare/)
+  assert.match(activitySource, /navigator\.clipboard\.writeText\(text\)/)
+  // Pano izni yoksa fallback: metin input'u seçilir (elle kopyalanır).
+  assert.match(activitySource, /textRef\.current\?\.select\(\)/)
+  assert.match(activityCss, /\.qt-daily-share \{/)
+  assert.match(activityCss, /\.qt-daily-start \{/)
+})
+
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

@@ -13,13 +13,16 @@
     "test:hardening": "tsx scripts/hardening-test.ts",
     "test:origin-gate": "tsx scripts/origin-gate-test.ts",
     "test:bet-team-edge": "tsx scripts/bet-team-edge-test.ts",
-    "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts"
+    "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts",
+    "test:daily": "tsx scripts/daily-test.ts"
   },
   "dependencies": {
+    "better-sqlite3": "^13.0.3",
     "express": "^5.2.1",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
     "tsx": "^4.23.0",
