@@ -24,4 +24,7 @@ Claude Design/
 .opencode/
 .claude/
 
+
+# Çalışma zamanı verisi (soru bildirimleri + günlük meydan okuma db)
 server/data/
+

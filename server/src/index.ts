@@ -22,6 +22,7 @@ import { toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
+import { createReportsStore } from "./reports";
 import { createDailyStore, dailyDayNumber } from "./daily";
 
 const app = express();
@@ -30,6 +31,9 @@ app.use(createSecurityHeaders(IS_PRODUCTION));
 app.use(express.json());
 app.use("/auth", createRateLimitMiddleware({ limit: 30, windowMs: 60_000 }));
 const httpServer = createServer(app);
+// "Bu soru hatalı" bildirimleri tek kalıcı dosyaya yazar; test ve
+// taşıma için REPORTS_DB_PATH ile yol ezilebilir.
+const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(process.cwd(), "data", "question-reports.db"));
 // Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 const io = new Server(httpServer, {
@@ -459,6 +463,30 @@ io.on("connection", (socket) => {
       room.start(user.id, room.gameMode);
     } catch (error) {
       const t = toToast(error, "err.startFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
+  socket.on(EV.QUESTION_REPORT, (payload: unknown) => {
+    // Soru kimliği istemciden GELMEZ — güncel soru sunucudan çözülür; böylece
+    // sahte question_id ile tablo kirletilemez. Yalnız aktif oyun fazında
+    // kabul edilir; Çember'in Question'ı yoktur (currentQuestion null döner).
+    const question = room.phase !== "lobby" && room.phase !== "podium" ? room.currentQuestion() : null;
+    if (!question) { toast(socket.id, "report.failed"); return; }
+    const note = typeof (payload as { note?: unknown } | undefined)?.note === "string"
+      ? (payload as { note: string }).note : "";
+    try {
+      const { duplicate } = reports.report({
+        roomId: room.id,
+        userId: user.id,
+        userName: user.name,
+        questionId: question.id,
+        questionText: question.text,
+        category: question.category,
+        note,
+      });
+      toast(socket.id, duplicate ? "report.duplicate" : "report.sent");
+    } catch (error) {
+      log.error({ err: error }, "soru bildirimi yazılamadı");
+      toast(socket.id, "report.failed");
     }
   });
   // socket.id koşulu: eski bağlantının geç gelen disconnect'i yeni bağlantıyı düşüremez.

@@ -144,6 +144,9 @@ export type ToastKey =
   | "err.transferFailed"
   | "err.dailyDone"
   | "info.kicked"
+  | "report.sent"
+  | "report.duplicate"
+  | "report.failed"
   /** Sunucu göndermez; bağlantı kurulamadığında istemcinin kendi ürettiği mesaj. */
   | "err.connection";
 
@@ -310,4 +313,6 @@ export const EV = {
   SPECTATE: "spectate",
   /** İzleyiciyken boş koltuğa oturup oyuncu olur */
   TAKE_SEAT: "take-seat",
+  /** Reveal'da "bu soru hatalı" bildirimi: { note? } — soru kimliği sunucuda çözülür */
+  QUESTION_REPORT: "question-report",
 } as const;
