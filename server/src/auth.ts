@@ -6,6 +6,7 @@ import {
   SESSION_SECRET,
 } from "./config";
 import { fetchDiscord } from "./discord-http";
+import { log } from "./logger";
 
 export interface SessionUser {
   id: string;
@@ -156,9 +157,7 @@ export async function verifyInstanceMembership(
   // Fail-closed: doğrulama yapılamıyorsa erişim de yok. Bot token'sız
   // "geç kabul et" davranışı, rastgele instanceId ile odaya sızma kapısıdır.
   if (!DISCORD_BOT_TOKEN || !DISCORD_CLIENT_ID) {
-    console.error(
-      "[instance] DISCORD_BOT_TOKEN/CLIENT_ID eksik — doğrulama yapılamadı, bağlantı REDDEDİLDİ."
-    );
+    log.error("DISCORD_BOT_TOKEN/CLIENT_ID eksik — instance doğrulaması yapılamadı, bağlantı REDDEDİLDİ.");
     return false;
   }
   const now = Date.now();
@@ -179,7 +178,7 @@ export async function verifyInstanceMembership(
     else negativeMembershipCache.set(negativeKey, Date.now() + NEGATIVE_MEMBERSHIP_MS);
     return allowed;
   } catch (err) {
-    console.error("[instance] doğrulama hatası:", err);
+    log.error({ err }, "instance doğrulama hatası");
     return false;
   }
 }
