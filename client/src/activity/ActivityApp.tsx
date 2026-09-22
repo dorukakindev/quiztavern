@@ -1167,7 +1167,7 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
   </div>
 }
 
-function Podium({ state, onAgain, onLeave, speakingIds }: { state: GameState; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string> }) {
+function Podium({ state, onAgain, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const winner = state.podium?.[0]
   const rest = state.podium?.slice(1) ?? []
@@ -1190,7 +1190,7 @@ function Podium({ state, onAgain, onLeave, speakingIds }: { state: GameState; on
     </div>}
     {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onLeave={onLeave} />
       : active === 'review' && summary ? <MatchReview review={summary.review} />
-      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onLeave={onLeave} speakingIds={speakingIds} />}
+      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onLeave={onLeave} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
   </main>
 }
 
@@ -1274,7 +1274,7 @@ function Confetti() {
   </div>
 }
 
-function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string> }) {
+function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const reduced = usePrefersReducedMotion()
   const winnerScore = useCountUp(winner?.score ?? 0, reduced)
@@ -1321,6 +1321,9 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds }: {
         {isHost
           ? <button className="qt-button qt-button--gold qt-podium-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
           : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>}
+        {/* Kanala paylaş: SDK shareLink sonuç kartı (metin + aktivite linki);
+            Discord dışında (yerel test) SDK yok — buton gizlenir. */}
+        {isDiscord && onShare && winner && <button className="qt-button qt-podium-share" onClick={() => onShare(t('share.message', { name: winner.name, score: formatNumber(language, winner.score), mode: t(MODE_KEYS[modeKeyOf(state.gameMode)].name) }))}><Icon name="globe" /> {t('podium.share')}</button>}
         <button className="qt-button qt-btn-home qt-podium-home" onClick={onLeave}><Icon name="exit" /> {t('podium.home')}</button>
       </section>
     </div>
@@ -1667,7 +1670,7 @@ export function ActivityApp() {
     // Podyumda maç bitti: ayrılmak yıkıcı değil, onay diyaloğu sürtünme. Doğrudan
     // ayrıl (confirmLeave ile aynı iş): tek insan bensem sunucu odayı kapatır,
     // reconnect taze lobi verir ("ana menü"); başkası varsa bekleme ekranı.
-    return <Podium state={game.state!} speakingIds={activity.speakingIds} onAgain={() => game.start(game.state!.gameMode)} onLeave={() => {
+    return <Podium state={game.state!} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onAgain={() => game.start(game.state!.gameMode)} onLeave={() => {
       const alone = !game.state!.players.some((player) => player.id !== game.state!.youId && !player.isBot)
       game.leaveGame(alone)
       if (!alone) setHasLeftGame(true)
