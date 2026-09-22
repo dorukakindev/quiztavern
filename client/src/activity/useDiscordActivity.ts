@@ -8,6 +8,8 @@ export type ActivityIdentity = {
   guildId: string | null
   sessionToken?: string
   user: { id: string; name: string; avatarUrl: string | null } | null
+  /** Discord istemcisinin dili (userSettingsGetLocale); yoksa undefined. */
+  locale?: string
   isDiscord: boolean
 }
 
@@ -176,6 +178,15 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
     /* platform desteklemiyor — dikey düzen devreye girer */
   }
 
+  // Discord dilini arayüz diline öneri olarak taşır; desteklemeyen
+  // istemcilerde komut reddeder — sessizce undefined kalır.
+  let locale: string | undefined
+  try {
+    locale = (await sdk.commands.userSettingsGetLocale()).locale
+  } catch {
+    /* eski istemci ya da kapsam yok */
+  }
+
   return {
     sdk,
     identity: {
@@ -184,6 +195,7 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
       guildId: sdk.guildId,
       sessionToken: session.session_token,
       user: session.user,
+      locale,
       isDiscord: true,
     },
   }
@@ -239,15 +251,17 @@ export function useDiscordActivity() {
   }, [identity.isDiscord, identity.sessionToken, retry])
 
   /**
-   * Discord davet diyaloğunu açar (boş koltuk → arkadaş çağır). SDK kısıtları:
-   * yalnız guild kanalında (DM'de guildId null) ve CREATE_INSTANT_INVITE izni
-   * olan kullanıcıda çalışır. Aksi halde false döner → çağıran oda-kodu ipucuna
-   * düşer. Büyüme döngüsü ama sessizce başarısız olmalı.
+   * Boş koltuk → arkadaş çağır. Zincir: guild'deyse native davet diyaloğu,
+   * değilse/başarısızsa shareLink (aktivite linkini paylaşma modalı — DM'de
+   * de çalışır). İkisi de olmazsa false → çağıran oda-kodu ipucuna düşer.
    */
-  const invite = useCallback(async (): Promise<boolean> => {
+  const invite = useCallback(async (message: string): Promise<boolean> => {
     const sdk = sdkRef.current
-    if (!sdk || !sdk.guildId) return false
-    try { await sdk.commands.openInviteDialog(); return true } catch { return false }
+    if (!sdk) return false
+    if (sdk.guildId) {
+      try { await sdk.commands.openInviteDialog(); return true } catch { /* izin yok — link paylaşımına düş */ }
+    }
+    try { return (await sdk.commands.shareLink({ message })).success } catch { return false }
   }, [])
 
   useEffect(() => {
@@ -260,10 +274,21 @@ export function useDiscordActivity() {
     }
 
     let sdk: DiscordSDK | null = null
+    // Uyumluluk: yeni istemciler ACTIVITY_LAYOUT_MODE_UPDATE, eskiler yalnız
+    // ACTIVITY_PIP_MODE_UPDATE yayınlar (SDK 2.5'te enum'da yok — ham string).
+    // LAYOUT olayı bir kez görülünce PIP olayları susturulur: yeni istemcide
+    // ikisi de gelir, LAYOUT authoritative olsun (grid'i pip sanmayalım).
+    let sawLayout = false
     const onLayout = ({ layout_mode }: { layout_mode: number }) => {
+      sawLayout = true
       // Bilinmeyen kod (UNHANDLED) geldiğinde tam ekran varsayarız: oyunu
       // tanımadığımız bir yerleşim yüzünden kompakt karta düşürmeyelim.
       setLayoutMode(LAYOUT_BY_CODE[layout_mode] ?? 'focused')
+    }
+    const onPipMode = (data: unknown) => {
+      if (sawLayout) return
+      const pipMode = (data as { pip_mode?: unknown }).pip_mode === true
+      setLayoutMode(pipMode ? 'pip' : 'focused')
     }
     connectOnce(clientId)
       .then((session) => {
@@ -273,7 +298,12 @@ export function useDiscordActivity() {
         try {
           sdk.subscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
         } catch {
-          /* eski istemci bu olayı bilmiyor — tam ekran varsayılır */
+          /* eski istemci bu olayı bilmiyor — PIP olayı devrede */
+        }
+        try {
+          sdk.subscribe('ACTIVITY_PIP_MODE_UPDATE' as Events, onPipMode)
+        } catch {
+          /* istemci eski olayı da bilmiyor — tam ekran varsayılır */
         }
         setIdentity(session.identity)
         setStatus('ready')
@@ -292,6 +322,7 @@ export function useDiscordActivity() {
       cancelled = true
       try {
         sdk?.unsubscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
+        sdk?.unsubscribe('ACTIVITY_PIP_MODE_UPDATE' as Events, onPipMode)
       } catch {
         /* zaten abone değiliz */
       }

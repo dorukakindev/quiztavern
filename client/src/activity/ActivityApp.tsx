@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
@@ -677,7 +677,7 @@ function SfxToggle() {
   </button>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: () => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -811,7 +811,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           <GalaxyLoop />
           <ModeTableScene mode={mode} />
         </div>
-        <OrbitSeats state={state} radius={orbitRadius} onInvite={async () => { if (!(await onInvite())) setPickerOpen(true) }} viewerIsHost={isHost} onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })} openManageId={hostMenu?.player.id ?? null} />
+        <OrbitSeats state={state} radius={orbitRadius} onInvite={async () => { if (!(await onInvite(t('invite.shareText')))) setPickerOpen(true) }} viewerIsHost={isHost} onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })} openManageId={hostMenu?.player.id ?? null} />
       </div>
 
       {/* Sağ: senin koltuğun — kendi kontrolün */}
@@ -1598,11 +1598,19 @@ export function ActivityApp() {
     if (dontShow) storageSet('qt-howto-seen', '1')
     setHowToOpen(false)
   }
-  const [language, setLanguage] = useState<ActivityLanguage>(() => storageGet('qt-ui-language') === 'en' ? 'en' : 'tr')
+  // Dil kalıcılığı YALNIZ kullanıcının açık seçiminden yazılır; aksi halde
+  // ilk açılış 'tr'yi hemen saklar ve Discord locale önerisi sonsuza kör kalır.
+  const [language, setLanguageState] = useState<ActivityLanguage>(() => storageGet('qt-ui-language') === 'en' ? 'en' : 'tr')
+  const setLanguage = useCallback((next: ActivityLanguage) => {
+    storageSet('qt-ui-language', next)
+    setLanguageState(next)
+  }, [])
+  useEffect(() => { document.documentElement.lang = language }, [language])
+  // Kullanıcı hiç dil seçmediyse Discord istemcisinin diline uy (userSettingsGetLocale).
   useEffect(() => {
-    storageSet('qt-ui-language', language)
-    document.documentElement.lang = language
-  }, [language])
+    if (storageGet('qt-ui-language') || !activity.identity.locale) return
+    setLanguageState(activity.identity.locale.toLowerCase().startsWith('tr') ? 'tr' : 'en')
+  }, [activity.identity.locale])
   // Sözlük tek yerden sağlanır; her bileşen useI18n() ile okur, prop zinciri yok.
   const i18n = useMemo(() => ({ language, t: (key: StringKey, params?: Record<string, string | number>) => translate(language, key, params) }), [language])
   const isLoading = activity.status === 'booting' || !game.state
