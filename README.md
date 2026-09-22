@@ -41,7 +41,7 @@ npm run dev        # client (5173) + server (3001) birlikte
 ## Test
 
 ```bash
-npm test           # 7 paket: client oyun+i18n, server hardening/security/edge'ler
+npm test           # 9 paket: client oyun+i18n+sdk, server hardening/security/circle/bet/dod/origin-gate
 npm run build      # server -> dist/, client -> client/dist
 npm start          # production: node --enable-source-maps dist/src/index.js
 ```
