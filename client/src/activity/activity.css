@@ -430,6 +430,16 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
   .qt-question-stage { padding-top: clamp(30px, 5vh, 48px); padding-bottom: 20px; }
   .qt-question-head h1 { margin: 14px auto 18px; }
 }
+/* ≤900px'te ızgara tek sütuna iner ama kabuk viewport'a kilitli kalırsa
+   içerik taşar ve `.qt-question-stage`'in iç kaydırmazı asla devreye girmez
+   (auto satırda max-height:100% sınırsız) — şıklar erişilemez olur. Lobinin
+   yaptığını yap: kutu içerikle büyüsün, sayfa kaydırılsın. Alt pay sabit
+   emote barına ayrılır. ≤560px portrait bloğu bundan sonra gelir; kendi
+   100dvh + sınırlı sahne kaydırmasını korur. Satır 426'dan SONRA durmalı
+   (aynı specificity'de son yazan kazanır). */
+@media (max-width: 900px) {
+  .qt-game { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; padding-bottom: calc(86px + var(--qt-saib)); }
+}
 /* â€”â€”â€” Reveal koreografisi â€”â€”â€”
    DeÄŸiÅŸmesi yasak olan her ÅŸey (kart kutusu, metin geniÅŸliÄŸi, grid) burada sabittir:
    avatar rafÄ± mutlak konumludur, kilit iÅŸareti sabit yuvada, not satÄ±rÄ± yer tutar.
