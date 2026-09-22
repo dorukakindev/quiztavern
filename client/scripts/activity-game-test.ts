@@ -147,6 +147,15 @@ test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', 
   assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/)
 })
 
+test('"bu soru hatalı" bayrağı yalnız reveal\'da ve klasik modda görünür', () => {
+  // Buton tetik koşulu: reveal aktif + çember değil; tur başına tek tıklama.
+  assert.match(activitySource, /className="qt-report-flag"[\s\S]*?disabled=\{reported\}/)
+  assert.match(activitySource, /beats\.active && !isCircle/)
+  assert.match(realtimeSource, /socket\.emit\(EV\.QUESTION_REPORT/)
+  assert.match(activityCss, /\.qt-report-flag \{/)
+  // Çember'de soru kavramı yok — buton o modda hiç render edilmez.
+})
+
 test('cevap bekleyen oyuncu kartı soru/bahis fazında pulse alır', () => {
   assert.match(activitySource, /'is-awaiting' : ''/)
   assert.match(activitySource, /state\.phase === 'question' \|\| state\.phase === 'bet'\) && !player\.answered/)

@@ -76,11 +76,20 @@ async function main() {
     if (server.exitCode === null) server.kill();
   };
 
+  // Sunucu hiç açılmazsa gerçek sebep stdout/stderr'dadır — son satırları
+  // hataya ekle (CI'da aksi halde "açılmadı" tek ipucu kalır).
+  let serverLog = "";
+  server.stdout.on("data", (chunk) => { serverLog = (serverLog + chunk).slice(-4000); });
+  server.stderr.on("data", (chunk) => { serverLog = (serverLog + chunk).slice(-4000); });
+
   try {
     for (let i = 0; i < 80; i++) {
       try { if ((await fetch(`${baseUrl}/health`)).ok) break; } catch { /* bekle */ }
+      if (server.exitCode !== null) {
+        throw new Error(`Sunucu açılmadan çıktı (kod=${server.exitCode}):\n${serverLog.trim() || "(çıktı yok)"}`);
+      }
       await sleep(250);
-      if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
+      if (i === 79) throw new Error(`Sunucu 20 sn içinde açılmadı.\n${serverLog.trim()}`);
     }
     const healthResponse = await fetch(`${baseUrl}/health`);
     const health = (await healthResponse.json()) as { ok: boolean; devMode?: boolean };

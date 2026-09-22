@@ -196,6 +196,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     // İzleyici modu: koltuğu bırak (izle) / boş koltuğa otur (oyna). Karar sunucuda.
     spectate: () => socket.emit(EV.SPECTATE),
     takeSeat: () => socket.emit(EV.TAKE_SEAT),
+    reportQuestion: (note?: string) => { if (socket.connected) socket.emit(EV.QUESTION_REPORT, { note }) },
     /**
      * Kapatmayı SUNUCU yapar (LEAVE_GAME handler'ı removePlayer'dan sonra
      * socket.disconnect(true) çağırıyor). Burada emit'in hemen ardından

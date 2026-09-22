@@ -27,3 +27,6 @@ Claude Design/
 # Oturuma özel smoke-test durumu (geçici tünel URL'leri içerir; repo'ya girmez)
 SMOKE-DURUM.md
 
+# Soru bildirimleri kalıcı deposu (çalışma zamanı verisi)
+server/data/
+
