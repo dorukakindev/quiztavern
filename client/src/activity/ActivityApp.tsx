@@ -1634,9 +1634,18 @@ export function ActivityApp() {
     if (hasLeftGame) return <ActivityHome onRejoin={() => { game.rejoinGame(); setHasLeftGame(false) }} />
     // Hata varsa iskelet değil metin: shimmer sonsuza dek dönüp sorunu gizlemesin.
     // Yükleme (hatasız): boş spinner yerine oyun düzeninin iskeleti (3d).
-    if (isLoading) return activity.error
-      ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
-      : <GameSkeleton />
+    if (isLoading) {
+      // Socket kesin olarak düştüyse iskeleti sonsuza döndürme: bağlantı
+      // hatasını göster. activity.retry YOK — o Discord OAuth'u baştan kurar;
+      // yalnız socket'i yeniden bağlamak yeterli (reconnectNow).
+      if (!activity.error && game.status === 'offline') {
+        const detail = game.connectionError?.code ?? game.connectionError?.message
+        return <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.unreachable')}</h1><p>{detail ? `${i18n.t('err.connection')} (${detail})` : i18n.t('err.connection')}</p><button type="button" className="qt-button qt-button--primary" onClick={game.reconnectNow}>{i18n.t('boot.retry')}</button></main>
+      }
+      return activity.error
+        ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
+        : <GameSkeleton />
+    }
     if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).

@@ -20,6 +20,7 @@ const tr = {
   // Açılış
   'boot.title': 'QuizTavern hazırlanıyor',
   'boot.subtitle': 'Masa kuruluyor…',
+  'boot.unreachable': 'Oyun sunucusuna ulaşılamadı',
   'boot.retry': 'Tekrar dene',
 
   // Lobi
@@ -308,6 +309,7 @@ const en: Record<StringKey, string> = {
 
   'boot.title': 'Getting QuizTavern ready',
   'boot.subtitle': 'Setting up the table…',
+  'boot.unreachable': 'Could not reach the game server',
   'boot.retry': 'Try again',
 
   'lobby.liveTable': 'LIVE TABLE',

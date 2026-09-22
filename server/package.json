@@ -11,6 +11,7 @@
     "test:dod": "tsx scripts/dod-test.ts",
     "test:sec": "tsx scripts/security-test.ts",
     "test:hardening": "tsx scripts/hardening-test.ts",
+    "test:origin-gate": "tsx scripts/origin-gate-test.ts",
     "test:bet-team-edge": "tsx scripts/bet-team-edge-test.ts",
     "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts"
   },
