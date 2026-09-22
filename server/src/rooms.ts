@@ -4,6 +4,7 @@ import { QUESTION_COUNTS } from "../../shared/types";
 import { circlePoolKeys, normalizeCircleAnswer, sampleCirclePrompts, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
+import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyResultEntry } from "./daily";
 import type {
   BetPayload,
   CirclePayload,
@@ -117,6 +118,14 @@ export class Room {
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
   private podiumSnapshot: PodiumEntry[] | null = null;
+  /** Günlük Meydan Okuma maçı mı — klasik kurallar, tarih tohumlu sabit soru
+   *  seti. Maç sonunda her oyuncu için Wordle deseni üretilir. */
+  private dailyMatch = false;
+  private dailyDay = 0;
+  /** Maç sonunda hesaplanan desenler (userId → "🟩🟥⬜🟩🟩"); podyumda paylaşılır. */
+  private dailyResults = new Map<string, string>();
+  /** Günlük maç bittiğinde kalıcı depo index.ts tarafından yazılır (kanca). */
+  onDailyFinished: ((entries: DailyResultEntry[]) => void) | null = null;
   /** `undefined` = no finished match yet; `null` = the finished match had no correct answer. */
   private fastestFingerSnapshot: { name: string; ms: number } | null | undefined = undefined;
   private onQuestionStarted: QuestionStarted | null = null;
@@ -257,6 +266,8 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
+    this.dailyMatch = false;
+    this.dailyResults = new Map();
     if (this.spectators.size === 0) this.onEmptied?.();
     else this.broadcast();
     return true;
@@ -277,6 +288,8 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
+    this.dailyMatch = false;
+    this.dailyResults = new Map();
     this.onEmptied?.();
     return true;
   }
@@ -506,7 +519,7 @@ export class Room {
     this.broadcast();
   }
 
-  start(requestedBy: string, gameMode: GameMode = "classic"): void {
+  start(requestedBy: string, gameMode: GameMode = "classic", options?: { daily?: boolean; completed?: (userId: string) => boolean }): void {
     // Lobiden ilk başlatma ya da podyumdan "tekrar oyna" — ikisi de yeni maç açar.
     if (this.phase !== "lobby" && this.phase !== "podium") throw new GameError("err.alreadyStarted");
     if (this.hostId !== requestedBy) throw new GameError("err.startHostOnly");
@@ -514,7 +527,19 @@ export class Room {
     if (connectedPlayers.length < this.minPlayers) {
       throw new GameError("err.needPlayers", { count: this.minPlayers });
     }
-    const normalizedMode = gameMode === "quiz" ? "classic" : gameMode;
+    // Günlük: bugün tamamlayan oyuncu koltuktan inip izler; hiç katılımcı
+    // kalmadıysa başlatmayı tamamen reddet (masa zaten bugünkünü oynadı).
+    const daily = options?.daily === true;
+    if (daily) {
+      const done = connectedPlayers.filter((player) => !player.isBot && options.completed?.(player.id));
+      // Katılımcı = oynayabilecek İNSAN. Masada yalnız bot + tamamlamış insan
+      // kalırsa başlatma odayı sıfırlar (becomeSpectator -> handleNoPlayersLeft).
+      const participants = connectedPlayers.filter((player) => !done.includes(player) && !player.isBot);
+      if (!participants.length) throw new GameError("err.dailyDone");
+      if (participants.length < this.minPlayers) throw new GameError("err.needPlayers", { count: this.minPlayers });
+      for (const player of done) this.becomeSpectator(player.id);
+    }
+    const normalizedMode = daily ? "classic" : gameMode === "quiz" ? "classic" : gameMode;
     if (normalizedMode === "team") {
       let hasTeamA = connectedPlayers.some((player) => player.team === 0);
       let hasTeamB = connectedPlayers.some((player) => player.team === 1);
@@ -531,10 +556,13 @@ export class Room {
     // sahibinin kararıdır: aksi halde maç sırasında bağlantısı kopan (ready'si
     // sıfırlanan) bir oyuncu yüzünden masa kilitlenirdi — podyumda hazır
     // düğmesi olmadığı için o durumdan çıkış da yoktu.
-    if (this.phase === "lobby" && connectedPlayers.some((player) => !player.ready)) {
+    if (this.phase === "lobby" && [...this.players.values()].filter((player) => player.connected).some((player) => !player.ready)) {
       throw new GameError("err.everyoneReady");
     }
     this.gameMode = normalizedMode;
+    this.dailyMatch = daily;
+    this.dailyDay = daily ? dailyDayNumber() : 0;
+    this.dailyResults = new Map();
     this.qIndex = 0;
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
@@ -553,10 +581,19 @@ export class Room {
     // geçmişini sıfırla (son maçı hariç tutarak) — diğer alt-havuzun tekrar
     // döngüsünü bozmadan. Böylece her iki havuz da kendi TAM turunu
     // dolaşmadan aynı soru gelmez (bkz. resetExhaustedSubpools).
-    this.seenQuestionIds = resetExhaustedSubpools(compatibleCategories, this.difficulty, this.seenQuestionIds, this.lastQuestionIds, this.roundLimit);
-    this.questions = sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty);
-    this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
-    this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
+    if (daily) {
+      // Günlük set tarih tohumundan gelir: masa ayarındaki kategori/zorluk
+      // filtresi uygulanmaz (aynı soru herkes için aynı). Sorular yine görülmüş
+      // işaretlenir ki günlüğü oynayan normal maçta aynı soruları görmesin.
+      this.questions = dailyQuestions();
+      this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
+      this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
+    } else {
+      this.seenQuestionIds = resetExhaustedSubpools(compatibleCategories, this.difficulty, this.seenQuestionIds, this.lastQuestionIds, this.roundLimit);
+      this.questions = sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty);
+      this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
+      this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
+    }
     // Dar havuz benzersiz çekildi -> istenen sayıdan az olabilir. Klasik round.total
     // ve maç-sonu GERÇEK soru sayısını yansıtsın (çemberdeki circlePrompts.length gibi).
     if (this.gameMode !== "circle") this.roundLimit = this.questions.length;
@@ -694,6 +731,7 @@ export class Room {
       circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
       podium,
       matchSummary,
+      daily: this.dailyMatch ? { day: this.dailyDay, pattern: this.dailyResults.get(youId) ?? null } : null,
       // Bahis fazında "kilitleyen" = bahsini yatıran; diğer fazlarda = cevaplayan.
       answeredCount: this.eligiblePlayers().filter((player) => this.phase === "bet" ? player.bet !== null : this.hasAnswered(player)).length,
       eligibleCount: this.eligiblePlayers().length,
@@ -942,6 +980,22 @@ export class Room {
   private finish() {
     this.clearTimer();
     this.clearBotTimers();
+    if (this.dailyMatch) {
+      // Wordle deseni her koltuktaki oyuncu için hesaplanır (cevaplanmamış
+      // tur ⬜); kalıcı kayıt onDailyFinished kancası üzerinden index.ts'de.
+      const questions = this.questions.slice(0, this.roundLimit);
+      const entries: DailyResultEntry[] = [];
+      for (const player of this.players.values()) {
+        if (player.isBot) continue;
+        const pattern = dailyPattern(player.answers, questions);
+        this.dailyResults.set(player.id, pattern);
+        entries.push({ day: this.dailyDay, userId: player.id, pattern, score: player.score });
+      }
+      if (entries.length) {
+        try { this.onDailyFinished?.(entries); }
+        catch (error) { console.error("[daily] günlük sonuç yazılamadı:", error); }
+      }
+    }
     this.podiumSnapshot = this.snapshotPodium();
     this.fastestFingerSnapshot = this.fastestFinger();
     this.phase = "podium";
