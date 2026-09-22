@@ -1209,3 +1209,30 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-circle-entry input { box-shadow: inset 0 2px 6px rgba(0,0,0,.3); }
 .qt-circle-entry input:focus { box-shadow: inset 0 2px 6px rgba(0,0,0,.3), 0 0 0 3px rgba(91,230,238,.12); }
 .qt-podium-list .is-winner { box-shadow: 0 0 0 1px rgba(240,189,88,.55), 0 0 26px rgba(240,189,88,.18); }
+
+/* ———— Taşma/bozulma düzeltmeleri ———— */
+
+/* Özet kartı <~424px'te sağ kenarı klipleniyordu: 3 sütunlu istatistik
+   ızgarası min-content ~406px taban dayatıyordu. minmax(0) ile sütunlar
+   daralır, uzun metinler ellipsis'e düşer. */
+.qt-summary-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.qt-summary-tile { min-width: 0; }
+.qt-summary-tile > div, .qt-summary-tile b { min-width: 0; }
+.qt-summary-tile b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qt-summary-tile > small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Kazanan rozeti uzun isimde başlığı taşırmaz: pill daralır, metin ellipsis. */
+.qt-summary-head > * { min-width: 0; }
+.qt-summary-winner { min-width: 0; }
+.qt-summary-winner__label { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.qt-summary-brand { min-width: 0; }
+
+/* Emote çubuğu küçük/kısa ekranda daha az yer kaplasın (360×310'da son
+   cevapla çakışıyordu). */
+@media (max-width: 560px), (max-height: 480px) {
+  .qt-emote-btn { width: 38px; height: 38px; font-size: 16px; }
+  .qt-emote-bar { gap: 6px; padding: 6px 8px; }
+}
+
+/* place-items:center ızgarasında kartlar min-width:auto=min-content'e düşer;
+   dar görünümde içerik sığabilse bile kart daralmazdı. */
+.qt-podium-glass, .qt-summary-card, .qt-review-card { min-width: 0; }

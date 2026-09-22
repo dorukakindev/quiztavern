@@ -202,7 +202,7 @@ function StartCountdown({ state }: { state: GameState }) {
           font küçülmezse çemberden taşar (madde: kutunun içinde kalmalı). */}
       <div className={`qt-start-countdown__number ${seconds ? `is-${seconds}` : 'is-go'}`} key={seconds}>{seconds || t('countdown.go')}</div>
       <div className="qt-start-countdown__players" aria-label={t('countdown.players')}>
-        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span>{player.name}</span></div>)}
+        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span title={player.name}>{player.name}</span></div>)}
       </div>
     </section>
   </main>
@@ -405,7 +405,7 @@ function RoomStrip({ state, beats }: { state: GameState; beats: RevealBeats }) {
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b>{player.name}</b><small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}</b><small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -660,7 +660,7 @@ function HostMenu({ player, x, y, trigger, mode, onTransfer, onKick, onSetTeam, 
   // lobinin ".qt-lobby > * { position: relative }" kuralına ve .qt-activity'nin
   // overflow:hidden kırpmasına takılmadan gerçekten fixed konumlanır.
   return createPortal(<div id={`qt-host-menu-${player.id}`} ref={ref} className="qt-host-menu" style={{ left: pos.left, top: pos.top, visibility: pos.ready ? 'visible' : 'hidden' } as CSSProperties} role="menu" aria-label={t('host.menuTitle')} onKeyDown={onMenuKeyDown}>
-    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b>{player.name}</b><small>{t('host.menuTitle')}</small></div></div>
+    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b title={player.name}>{player.name}</b><small>{t('host.menuTitle')}</small></div></div>
     {mode === 'team' && <button className="qt-host-menu__item is-team" role="menuitem" onClick={() => { onSetTeam(player.id, player.team === 1 ? 0 : 1); closeAndRestore() }}><Icon name="people" /> {t('team.swap', { team: player.team === 1 ? t('team.a') : t('team.b') })}</button>}
     {!player.isBot && <button className="qt-host-menu__item is-transfer" role="menuitem" onClick={() => { onTransfer(player.id); closeAndRestore() }}><Icon name="crown" /> {t('host.transfer')}</button>}
     <button className="qt-host-menu__item is-kick" role="menuitem" onClick={() => { onKick(player.id); closeAndRestore() }}><Icon name="exit" /> {t('host.kick')}</button>
@@ -1158,7 +1158,7 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
 function Podium({ state, onAgain, onLeave }: { state: GameState; onAgain: () => void; onLeave: () => void }) {
   const { language, t } = useI18n()
   const winner = state.podium?.[0]
-  const rest = state.podium?.slice(1, 5) ?? []
+  const rest = state.podium?.slice(1) ?? []
   useEffect(() => { sfx.play('podium') }, []) // maç sonu fanfarı (bir kez)
   // Maç özeti (4d) ayrı bir sekmede: kısa ekranda sıralama + tüm istatistik
   // kartı yan yana sığmaz. Sunucu özet göndermezse (eski istemci/veri yok) sekme
@@ -1293,7 +1293,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave }: { state: GameS
         <i className="qt-podium-mic" aria-hidden="true"><Icon name="mic" /></i>
         {winner && <>
           <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
-          <b>{winner.name}</b>
+          <b title={winner.name}>{winner.name}</b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
         </>}
       </section>
@@ -1301,7 +1301,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave }: { state: GameS
         <div className="qt-podium-list">{rest.map((player, index) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''} style={{ '--row-delay': `${index * 90}ms` } as CSSProperties}>
           <b>#{index + 2}</b>
           <div className={`qt-avatar ${colorClass(player.id)}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
-          <span>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
+          <span title={player.name}>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
         </div>)}</div>
         {/* Altın: token kuralı "altın = eylem & zafer (CTA, taç, kazanan)".
@@ -1326,7 +1326,7 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
   return <div className="qt-summary-card">
     <div className="qt-summary-head">
       <div className="qt-summary-brand"><span>Q</span><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
-      {winner && <span className="qt-summary-winner"><Icon name="crown" /> {t('summary.winner', { name: winner.name })}</span>}
+      {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
       <div className="qt-summary-tile is-accuracy"><small>{t('summary.accuracy')}</small><div><b>{summary.correct} / {summary.total}</b><span>%{pct}</span></div></div>
