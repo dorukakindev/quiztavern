@@ -44,10 +44,10 @@ async function main() {
   };
 
   try {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 80; i++) {
       try { if ((await fetch(`${BASE}/health`)).ok) break; } catch { /* hazır değil */ }
       await sleep(250);
-      if (i === 39) throw new Error("Sunucu 10 sn içinde açılmadı.");
+      if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
 
     const HUMAN = "dev:player-human";
