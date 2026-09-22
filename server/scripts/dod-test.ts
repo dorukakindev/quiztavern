@@ -81,13 +81,13 @@ async function main() {
 
   try {
     // Sunucu ayağa kalkana kadar bekle
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 80; i++) {
       try {
         const res = await fetch(`${baseUrl}/health`);
         if (res.ok) break;
       } catch { /* henüz hazır değil */ }
       await sleep(250);
-      if (i === 39) throw new Error("Sunucu 10 sn içinde açılmadı.");
+      if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
     console.log("[dod] sunucu hazır.\n");
 
