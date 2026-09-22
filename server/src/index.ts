@@ -21,12 +21,15 @@ import { EMOTE_KEYS, EV, type EmoteKey, type ToastKey, type ToastPayload } from 
 import { toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
+import { addPack, listPacks, parseCsvQuestions, parseJsonQuestions, validatePackQuestions } from "./packs";
 
 const app = express();
 app.disable("x-powered-by");
 app.use(createSecurityHeaders(IS_PRODUCTION));
-app.use(express.json());
+// Paket gövdeleri (JSON/CSV metin) varsayılan 100kb sınırını aşabilir.
+app.use(express.json({ limit: "256kb" }));
 app.use("/auth", createRateLimitMiddleware({ limit: 30, windowMs: 60_000 }));
+app.use(["/question-packs", "/api/question-packs"], createRateLimitMiddleware({ limit: 20, windowMs: 60_000 }));
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
@@ -56,6 +59,41 @@ function cookieValue(header: string | undefined, name: string) {
 }
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
+
+// ── Özel soru paketleri (FAZ 4.4) ─────────────────────────────────────────
+// Discord proxy'si /api önekini soyduğu için her iki yol da kayıtlı.
+// Listeleme herkese açık; yükleme yalnızca QT_ADMIN_TOKEN ile (mock modda
+// yerel geliştirmede açık). Yüklenen içerik Faz 1.4 doğrulayıcı kurallarından
+// geçirilir; hata varsa 422 + sorun listesi döner.
+const PACK_PATHS = ["/question-packs", "/api/question-packs"];
+const QT_ADMIN_TOKEN = process.env.QT_ADMIN_TOKEN ?? "";
+
+app.get(PACK_PATHS, (_req, res) => {
+  res.json({ packs: listPacks() });
+});
+
+app.post(PACK_PATHS, (req, res) => {
+  if (!ALLOW_MOCK_AUTH) {
+    if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "Paket yükleme kapalı (QT_ADMIN_TOKEN tanımsız)." });
+    const auth = req.headers.authorization ?? "";
+    if (auth !== `Bearer ${QT_ADMIN_TOKEN}`) return res.status(401).json({ error: "Yetkisiz — geçerli yönetici belirteci gerekli." });
+  }
+  const body = req.body as { name?: unknown; format?: unknown; content?: unknown } | undefined;
+  const name = typeof body?.name === "string" ? body.name.trim() : "";
+  if (!name) return res.status(400).json({ error: "name eksik." });
+  let questions;
+  try {
+    questions = body?.format === "csv"
+      ? parseCsvQuestions(String(body?.content ?? ""))
+      : parseJsonQuestions(body?.format === "text" ? JSON.parse(String(body?.content ?? "")) : body?.content);
+  } catch (error) {
+    return res.status(400).json({ error: `İçerik ayrıştırılamadı: ${error instanceof Error ? error.message : error}` });
+  }
+  const { errors, warnings } = validatePackQuestions(questions);
+  if (errors.length) return res.status(422).json({ error: "Paket doğrulamadan geçemedi.", errors, warnings });
+  const createdBy = ALLOW_MOCK_AUTH ? "dev" : "admin";
+  res.status(201).json({ pack: addPack(name, questions, createdBy), warnings });
+});
 app.get("/auth/discord", (_req, res) => {
   if (!DISCORD_CLIENT_ID) return res.status(503).json({ error: "Discord OAuth henüz yapılandırılmadı." });
   if (!DISCORD_OAUTH_REDIRECT_URI) return res.status(503).json({ error: "PUBLIC_BASE_URL is required for browser OAuth." });
@@ -400,6 +438,14 @@ io.on("connection", (socket) => {
       room.setCategories(user.id, payload);
     } catch (error) {
       const t = toToast(error, "err.categoryFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
+
+  socket.on(EV.SET_PACK, (payload: unknown) => {
+    try {
+      room.setPack(user.id, (payload as { packId?: unknown } | undefined)?.packId);
+    } catch (error) {
+      const t = toToast(error, "err.packFailed"); toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.LEAVE_GAME, () => {

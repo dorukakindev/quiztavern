@@ -10,6 +10,7 @@ import { I18nContext, categoryLabel, formatNumber, translate, useI18n, type Acti
 import { GalaxyLoop, MusicToggle, TableBackdrop, TableLogo } from './TableScenery'
 import { CATEGORY_ICON_PATHS } from './categoryIcons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
+import { listPacks, uploadPack, type PackUploadResult, type QuestionPackMeta } from './packs'
 
 type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more'
 
@@ -677,7 +678,49 @@ function SfxToggle() {
   </button>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+/** Paket yükleme formu (yalnız host görür): JSON/CSV yapıştır + isteğe bağlı
+ *  yönetici belirteci. Sunucu Faz 1.4 kurallarıyla doğrular; hatalar listelenir. */
+function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
+  const { t } = useI18n()
+  const [name, setName] = useState('')
+  const [format, setFormat] = useState<'json' | 'csv'>('json')
+  const [content, setContent] = useState('')
+  const [token, setToken] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [result, setResult] = useState<PackUploadResult | null>(null)
+  const submit = async () => {
+    setBusy(true)
+    setResult(null)
+    try {
+      const res = await uploadPack({ name: name.trim(), content, format, token: token.trim() || undefined })
+      setResult(res)
+      if (res.ok) {
+        setContent('')
+        onUploaded()
+      }
+    } catch {
+      setResult({ ok: false, message: t('pack.failed') })
+    }
+    setBusy(false)
+  }
+  return <div className="qt-pack-form">
+    <input className="qt-pack-input" value={name} onChange={(event) => setName(event.target.value)} placeholder={t('pack.name')} maxLength={60} />
+    <div className="qt-count-row">
+      {(['json', 'csv'] as const).map((item) => <button key={item} className={`qt-count-chip ${format === item ? 'is-selected' : ''}`} aria-pressed={format === item} onClick={() => setFormat(item)}>{item.toUpperCase()}</button>)}
+    </div>
+    <textarea className="qt-pack-input" value={content} onChange={(event) => setContent(event.target.value)} rows={4} placeholder={t(format === 'csv' ? 'pack.pasteCsv' : 'pack.pasteJson')} spellCheck={false} />
+    <input className="qt-pack-input" type="password" value={token} onChange={(event) => setToken(event.target.value)} placeholder={t('pack.token')} autoComplete="off" />
+    <button className="qt-button qt-pack-submit" disabled={busy || !name.trim() || !content.trim()} onClick={() => void submit()}>{t('pack.submit')}</button>
+    {result && !result.ok && <div className="qt-pack-feedback is-error">
+      {result.message && <span>{result.message}</span>}
+      {result.errors?.slice(0, 4).map((error) => <span key={error}>{error}</span>)}
+      {(result.errors?.length ?? 0) > 4 && <span>+{(result.errors?.length ?? 0) - 4}</span>}
+    </div>}
+    {result?.ok && <div className="qt-pack-feedback is-ok">{t('pack.done', { count: result.pack?.count ?? 0 })}{result.warnings?.length ? ` · ${result.warnings.length} ⚠` : ''}</div>}
+  </div>
+}
+
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetPack, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -735,6 +778,14 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
   // Soru sayısını modun doğal değerine döndürme işi SUNUCUDA (setGameMode):
   // tek olay, atomik değişim — istemciden çifte emit yarışı yok.
   const readyCount = state?.players.filter((player) => player.ready).length ?? 0
+  // Özel soru paketleri (FAZ 4.4): liste HTTP'den; seçim masa ayarı olarak
+  // state.pack üzerinden yayınlanır. Yükleme sonrası liste tazelenir.
+  const [packs, setPacks] = useState<QuestionPackMeta[]>([])
+  useEffect(() => {
+    let alive = true
+    void listPacks().then((list) => { if (alive) setPacks(list) })
+    return () => { alive = false }
+  }, [])
 
   return <main className="qt-activity qt-lobby">
     <TableBackdrop />
@@ -794,6 +845,20 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           />
           <small className="qt-settings__note">{mode === 'circle' ? t('category.limit.two') : mode === 'lightning' ? t('category.limit.one') : t('category.limit.three')} · {t('table.timeFixed')}</small>
         </div>
+
+        {/* Özel soru paketi (FAZ 4.4): Çember kendi prompt havuzunu kullandığı
+            için grup yalnız soru modlarında gösterilir. Seçim masa ayarıdır. */}
+        {mode !== 'circle' && <div className="qt-settings__group"><span>{t('pack.label')}</span>
+          <div className="qt-count-row qt-pack-row">
+            <button className={`qt-count-chip ${!state?.pack ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={!state?.pack} onClick={() => onSetPack(null)}>{t('pack.default')}</button>
+            {packs.map((pack) => <button key={pack.id} className={`qt-count-chip qt-pack-chip ${state?.pack?.id === pack.id ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.pack?.id === pack.id} title={t('pack.count', { count: pack.count })} onClick={() => onSetPack(pack.id)}>{pack.name}<small>{pack.count}</small></button>)}
+            {state?.pack && !packs.some((pack) => pack.id === state.pack?.id) && <span className="qt-count-chip is-selected qt-pack-chip">{state.pack.name}</span>}
+          </div>
+          {isHost && <details className="qt-pack-upload">
+            <summary>{t('pack.upload')}</summary>
+            <PackUploadForm onUploaded={() => void listPacks().then(setPacks)} />
+          </details>}
+        </div>}
         </div>
         </details>
       </aside>
@@ -1646,7 +1711,7 @@ export function ActivityApp() {
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
         : <GameSkeleton />
     }
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />

@@ -24,3 +24,6 @@ Claude Design/
 .opencode/
 .claude/
 
+
+# Çalışma zamanında yüklenen özel soru paketleri
+server/data/packs/
