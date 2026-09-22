@@ -25,5 +25,5 @@ Claude Design/
 .claude/
 
 
-# Çalışma zamanında yüklenen özel soru paketleri
-server/data/packs/
+# Soru bildirimleri kalıcı deposu (çalışma zamanı verisi)
+server/data/

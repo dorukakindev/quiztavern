@@ -12,7 +12,7 @@ import { CATEGORY_ICON_PATHS } from './categoryIcons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
 import { listPacks, uploadPack, type PackUploadResult, type QuestionPackMeta } from './packs'
 
-type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more'
+type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more' | 'flag'
 
 function Icon({ name }: { name: IconName }) {
   const paths: Record<IconName, string> = {
@@ -35,6 +35,8 @@ function Icon({ name }: { name: IconName }) {
     coin: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v10m3-8h-4.5a1.5 1.5 0 0 0 0 3h3a1.5 1.5 0 0 1 0 3H9',
     // Diğer modlar tetikleyicisi: üç kare (Fitil/Bahis/Takım'ı temsilen "daha fazla").
     more: 'M4 5h6v6H4V5Zm10 0h6v6h-6V5ZM4 15h6v6H4v-6Zm10 0h6v6h-6v-6Z',
+    // Soru bildirimi bayrağı (reveal köşesinde küçük buton).
+    flag: 'M5 21V4m0 1h12l-3 4 3 4H5',
   }
   // Göz: izleyici kimliği sürdükçe nazik, seyrek göz kırpma (idle · loop seyrek).
   return <svg className={`qt-icon ${name === 'eye' ? 'qt-icon--eye' : ''}`} viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>
@@ -953,7 +955,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onReport, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   const waiting = !!self?.waiting
@@ -977,6 +979,11 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, speak
   if (circle) lastCircle.current = circle
   const shownCircle = circle ?? lastCircle.current
   useEffect(() => { if (state.phase !== 'reveal' && state.phase !== 'question') { lastRound.current = null; lastCircle.current = null } }, [state.phase])
+
+  // "Bu soru hatalı": buton reveal'da görünür; her turda yalnız bir kez
+  // tıklanabilir (sunucu tarafı da oyuncu+soru başına tek rapor tutar).
+  const [reported, setReported] = useState(false)
+  useEffect(() => setReported(false), [state.round.index])
 
   const correctIndex = state.reveal?.correctIndex
   const selected = state.yourChoice
@@ -1101,6 +1108,9 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, speak
         </div>
         <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>
       </> : null}
+      {beats.active && !isCircle
+        ? <button type="button" className="qt-report-flag" title={t('report.flag')} aria-label={t('report.flag')} disabled={reported} onClick={() => { onReport(); setReported(true) }}><Icon name="flag" /></button>
+        : null}
     </section><aside className="qt-game-side">
       {/* Reveal'de donmuş bir sayaç bilgi taşımaz; yerini turun asıl sonucu alır. */}
       {beats.active
@@ -1718,7 +1728,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} speakingIds={activity.speakingIds} />
     // Podyumda maç bitti: ayrılmak yıkıcı değil, onay diyaloğu sürtünme. Doğrudan
     // ayrıl (confirmLeave ile aynı iş): tek insan bensem sunucu odayı kapatır,
     // reconnect taze lobi verir ("ana menü"); başkası varsa bekleme ekranı.
