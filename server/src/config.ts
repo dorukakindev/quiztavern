@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { resolve } from "node:path";
 import { RECONNECT_GRACE_MS } from "../../shared/types";
+import { log } from "./logger";
 
 // .env varsa yükle (Node 21+ yerleşik desteği; dosya yoksa sessizce geç)
 try {
@@ -70,9 +71,7 @@ export function isAllowedProductionOrigin(origin: string | undefined): boolean {
 export const SESSION_SECRET =
   process.env.SESSION_SECRET ?? crypto.randomBytes(32).toString("hex");
 if (!process.env.SESSION_SECRET && !ALLOW_MOCK_AUTH) {
-  console.warn(
-    "[uyarı] SESSION_SECRET tanımlı değil; her yeniden başlatmada oturumlar geçersiz olur."
-  );
+  log.warn("SESSION_SECRET tanımlı değil; her yeniden başlatmada oturumlar geçersiz olur.");
 }
 
 if (IS_PRODUCTION) {
@@ -118,19 +117,15 @@ export const GAME = {
 } as const;
 
 if (ALLOW_MOCK_AUTH) {
-  console.log(
-    "[dev] ALLOW_MOCK_AUTH açık — Discord kimlik doğrulaması atlanıyor, sahte oyuncular ve botlar aktif. ÜRETİMDE ASLA KULLANMAYIN."
-  );
+  log.warn("ALLOW_MOCK_AUTH açık — Discord kimlik doğrulaması atlanıyor, sahte oyuncular ve botlar aktif. ÜRETİMDE ASLA KULLANMAYIN.");
 } else {
   if (!DISCORD_CLIENT_SECRET) {
-    console.warn(
-      "[uyarı] Mock auth kapalı ve DISCORD_CLIENT_SECRET tanımsız — hiçbir istemci doğrulanamaz. " +
+    log.warn(
+      "Mock auth kapalı ve DISCORD_CLIENT_SECRET tanımsız — hiçbir istemci doğrulanamaz. " +
         "Yerel geliştirme için ALLOW_MOCK_AUTH=1, üretim için Discord kimlik bilgilerini tanımlayın."
     );
   }
   if (!DISCORD_BOT_TOKEN) {
-    console.warn(
-      "[uyarı] DISCORD_BOT_TOKEN tanımsız — Activity Instance doğrulaması yapılamayacağı için bağlantılar REDDEDİLİR (fail-closed)."
-    );
+    log.warn("DISCORD_BOT_TOKEN tanımsız — Activity Instance doğrulaması yapılamayacağı için bağlantılar REDDEDİLİR (fail-closed).");
   }
 }
