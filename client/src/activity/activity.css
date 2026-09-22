@@ -208,6 +208,12 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 /* Hic cevap vermeden sure biterse sahne hafifce sallanir — tek tek sik yerine
    butun karti kapsayan daha dramatik bir "kacirdin" isareti. */
 .qt-stage-shake { animation: qtShakeScene .42s ease; }
+/* "Bu soru hatalı" bayrağı: reveal'da sahnenin sol alt köşesinde küçük,
+   odağa girmeyen bir buton; altın hover. */
+.qt-report-flag { position: absolute; left: 14px; bottom: 12px; z-index: 2; display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid rgba(128,169,191,.4); border-radius: var(--r-sm); color: #8fa8bb; background: rgba(7,23,39,.7); cursor: pointer; transition: var(--t-micro) var(--ease); }
+.qt-report-flag .qt-icon { width: 14px; height: 14px; }
+.qt-report-flag:hover:not(:disabled) { color: #f3c362; border-color: #f3c362; }
+.qt-report-flag:disabled { opacity: .45; cursor: default; }
 @keyframes qtShakeScene { 10% { transform: translate(-3px,1px); } 30% { transform: translate(4px,-1px); } 50% { transform: translate(-3px,0); } 70% { transform: translate(2px,1px); } 90% { transform: translate(-1px,0); } }
 /* SaÄŸ sÃ¼tun: sayaÃ§ Ã¼stte, emote ÅŸeridi (fixed) altta durur â€” ikisi de artÄ±k
    ÅŸÄ±klarÄ±n Ã¼zerine binmiyor. */
