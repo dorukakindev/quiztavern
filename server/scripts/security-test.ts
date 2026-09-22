@@ -126,6 +126,23 @@ async function main() {
     killServer();
   }
 
+  // ALLOW_MOCK_AUTH'u üretimde açmak sunucuyu başlamadan düşürmeli (fail-closed,
+  // config.ts): ayrı bir süreçte NODE_ENV=production + ALLOW_MOCK_AUTH=1 verip
+  // exit kodu ve hata mesajı doğrulanır.
+  console.log("");
+  const prodMock = spawn(process.execPath, [tsxCli, "src/index.ts"], {
+    cwd: serverRoot,
+    env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", NODE_ENV: "production", ALLOW_MOCK_AUTH: "1", SESSION_SECRET: TEST_SECRET },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+  const prodMockErr: string[] = [];
+  prodMock.stderr.on("data", (chunk: Buffer) => prodMockErr.push(chunk.toString()));
+  const prodMockCode = await new Promise<number | null>((resolve) => prodMock.once("exit", resolve));
+  assert(
+    prodMockCode !== 0 && prodMockErr.join("").includes("ALLOW_MOCK_AUTH cannot be enabled in production"),
+    "ALLOW_MOCK_AUTH=1 üretimde başlamayı reddediyor (fail-closed)",
+  );
+
   console.log(`\n[sec] sonuç: ${passed} geçti, ${failed} kaldı`);
   process.exit(failed ? 1 : 0);
 }

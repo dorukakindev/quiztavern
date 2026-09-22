@@ -24,3 +24,6 @@ Claude Design/
 .opencode/
 .claude/
 
+# Oturuma özel smoke-test durumu (geçici tünel URL'leri içerir; repo'ya girmez)
+SMOKE-DURUM.md
+
