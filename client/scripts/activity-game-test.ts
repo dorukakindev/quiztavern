@@ -14,6 +14,7 @@ console.log('Activity oyun/erişilebilirlik regresyonları')
 const activitySource = readFileSync(new URL('../src/activity/ActivityApp.tsx', import.meta.url), 'utf8')
 const activityCss = readFileSync(new URL('../src/activity/activity.css', import.meta.url), 'utf8')
 const realtimeSource = readFileSync(new URL('../src/lib/realtime.ts', import.meta.url), 'utf8')
+const bridgeSource = readFileSync(new URL('../src/activity/sdkBridge.ts', import.meta.url), 'utf8')
 
 test('sıfır bakiyede yalnız Pas görünür', () => {
   assert.deepEqual(betOptionSpecs(0), [{ key: 'pass', amount: 0 }])
@@ -159,6 +160,16 @@ test('günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen', () =
   assert.match(activitySource, /textRef\.current\?\.select\(\)/)
   assert.match(activityCss, /\.qt-daily-share \{/)
   assert.match(activityCss, /\.qt-daily-start \{/)
+})
+
+test('podyum "Kanala paylaş": shareLink sonuç kartı + davet fallback', () => {
+  // Buton yalnız Discord içinde ve kazanan varken görünür; metin i18n'den.
+  assert.match(activitySource, /isDiscord && onShare && winner && <button className="qt-button qt-podium-share"/)
+  assert.match(activitySource, /onShare\(t\('share\.message'/)
+  assert.match(bridgeSource, /shareLink\(\{ message \}\)/)
+  // shareLink reddedilirse davet diyaloğuna düşülür; ikisi de yoksa false.
+  assert.match(bridgeSource, /openInviteDialog/)
+  assert.match(activityCss, /\.qt-podium-share \{/)
 })
 
 test('"bu soru hatalı" bayrağı yalnız reveal\'da ve klasik modda görünür', () => {
