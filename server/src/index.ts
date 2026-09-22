@@ -21,6 +21,7 @@ import { EMOTE_KEYS, EV, type EmoteKey, type ToastKey, type ToastPayload } from 
 import { toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
+import { log } from "./logger";
 
 const app = express();
 app.disable("x-powered-by");
@@ -56,6 +57,30 @@ function cookieValue(header: string | undefined, name: string) {
 }
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
+
+// İstemciden gelen yakalanmamış hataları yapılandırılmış log'a düşürür
+// (rate-limitli; cevap gövdesi yok). /api'li takma ad Discord proxy'si için.
+app.post(
+  ["/client-errors", "/api/client-errors"],
+  createRateLimitMiddleware({ limit: 30, windowMs: 60_000 }),
+  (req, res) => {
+    const body = req.body as { type?: unknown; message?: unknown; stack?: unknown; url?: unknown } | undefined;
+    const clip = (v: unknown, max: number) =>
+      typeof v === "string" ? v.slice(0, max) : undefined;
+    log.warn(
+      {
+        ip: clientAddressKey(req.headers, req.socket.remoteAddress),
+        type: clip(body?.type, 40),
+        message: clip(body?.message, 500),
+        stack: clip(body?.stack, 2000),
+        url: clip(body?.url, 300),
+      },
+      "istemci hatası raporlandı",
+    );
+    res.status(204).end();
+  },
+);
+
 app.get("/auth/discord", (_req, res) => {
   if (!DISCORD_CLIENT_ID) return res.status(503).json({ error: "Discord OAuth henüz yapılandırılmadı." });
   if (!DISCORD_OAUTH_REDIRECT_URI) return res.status(503).json({ error: "PUBLIC_BASE_URL is required for browser OAuth." });
@@ -89,7 +114,7 @@ app.get("/auth/discord/callback", async (req, res) => {
     const session = await exchangeCode(code, DISCORD_OAUTH_REDIRECT_URI);
     res.json({ session_token: session.session_token, user: session.user });
   } catch (error) {
-    console.error("[oauth]", error);
+    log.error({ err: error }, "oauth token değişimi başarısız");
     res.status(502).json({ error: "Discord kimliği doğrulanamadı." });
   }
 });
@@ -105,7 +130,7 @@ app.post(["/auth/activity/token", "/api/auth/activity/token"], async (req, res) 
   try {
     res.json(await exchangeCode(code));
   } catch (error) {
-    console.error("[activity oauth]", error);
+    log.error({ err: error }, "activity oauth token değişimi başarısız");
     res.status(502).json({ error: "Discord Activity oturumu dogrulanamadi." });
   }
 });
@@ -178,7 +203,14 @@ io.use(async (socket, next) => {
   // Reddetmeler sessizce kayboluyordu; istemci yalnızca "sunucuya
   // ulaşılamadı" gördüğü için hata kodunun sunucu logunda izi olmalı.
   const deny = (code: string, message: string) => {
-    console.warn(`[socket] bağlantı reddedildi: ${code} (ip=${clientAddressKey(socket.handshake.headers, socket.handshake.address)} origin=${socket.handshake.headers.origin})`);
+    log.warn(
+      {
+        code,
+        ip: clientAddressKey(socket.handshake.headers, socket.handshake.address),
+        origin: socket.handshake.headers.origin,
+      },
+      "socket bağlantısı reddedildi",
+    );
     return next(socketError(message, code));
   };
   const ipKey = clientAddressKey(socket.handshake.headers, socket.handshake.address);
@@ -220,7 +252,7 @@ io.use(async (socket, next) => {
       return deny("INSTANCE_REQUIRED", "Activity instance bilgisi eksik.");
     }
     if (!(await verifyInstanceMembership(auth.instanceId, user.id))) {
-      console.warn(`[socket] INSTANCE_DENIED ayrıntı: user=${user.id} instance=${auth.instanceId}`);
+      log.warn({ userId: user.id, instanceId: auth.instanceId }, "INSTANCE_DENIED ayrıntı");
       return deny("INSTANCE_DENIED", "Bu Discord Activity odasına erişimin doğrulanamadı.");
     }
     // Oyuncu ancak üyeliği doğrulanan instance'ın odasında oynayabilir;
@@ -424,13 +456,13 @@ io.on("connection", (socket) => {
   });
 });
 
-httpServer.listen(PORT, HOST, () => console.log(`[server] http://${HOST}:${PORT}`));
+httpServer.listen(PORT, HOST, () => log.info({ host: HOST, port: PORT }, "server dinliyor"));
 
 let shuttingDown = false;
 function shutdown(signal: NodeJS.Signals) {
   if (shuttingDown) return;
   shuttingDown = true;
-  console.log(`[server] ${signal} alındı; bağlantılar kontrollü kapatılıyor.`);
+  log.info({ signal }, "kapatma sinyali alındı; bağlantılar kontrollü kapatılıyor");
 
   for (const room of rooms.values()) room.dispose();
   rooms.clear();
@@ -441,15 +473,15 @@ function shutdown(signal: NodeJS.Signals) {
     finished = true;
     clearTimeout(forceTimer);
     if (error) {
-      console.error("[server] kapanış hatası:", error);
+      log.error({ err: error }, "kapanış hatası");
       process.exitCode = 1;
     } else {
-      console.log("[server] kontrollü kapanış tamamlandı.");
+      log.info("kontrollü kapanış tamamlandı");
       process.exitCode = 0;
     }
   };
   const forceTimer = setTimeout(() => {
-    console.error("[server] kapanış zaman aşımına uğradı; açık bağlantılar zorla kapatılıyor.");
+    log.error("kapanış zaman aşımına uğradı; açık bağlantılar zorla kapatılıyor");
     httpServer.closeAllConnections();
     process.exit(1);
   }, 10_000);
