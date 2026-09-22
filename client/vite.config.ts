@@ -21,6 +21,11 @@ export default defineConfig({
       '/auth': {
         target: 'http://127.0.0.1:3001',
       },
+      // Soru paketi API'si — prod'da Discord proxy'si /api'yi soyup iletir;
+      // dev'de vite doğrudan sunucuya taşır.
+      '/api': {
+        target: 'http://127.0.0.1:3001',
+      },
     },
   },
   build: {

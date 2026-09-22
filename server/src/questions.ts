@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import type { Difficulty } from "../../shared/types";
 
-const DIFFICULTIES: readonly Difficulty[] = ["kolay", "orta", "zor"];
+export const DIFFICULTIES: readonly Difficulty[] = ["kolay", "orta", "zor"];
 
 export interface Question {
   id: string;
