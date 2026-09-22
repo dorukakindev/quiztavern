@@ -6,6 +6,9 @@ export type CirclePrompt = {
   answer: string;
   category: string;
   difficulty: Difficulty;
+  /** Kabul edilebilir alternatif yazımlar/yaygın adlar. Ham hâlde verilir;
+   *  normalizeCircleAnswer ile aynı şekilde normalleştirilerek karşılaştırılır. */
+  aliases?: string[];
   /** İngilizce çember modu için hazırlık: BAĞIMSIZ bir ipucu/cevap çifti (aynı
    *  kelimenin çevirisi değil — harf kuralını kendi başına sağlar). Henüz hiçbir
    *  çalışma zamanı kodu bunu okumuyor (çember modu bilinçli olarak Türkçe kalıyor,
@@ -1147,7 +1150,7 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
   { letter: "P", clue: "Denizli'de yer alan, beyaz travertenleri ve sıcak su kaynaklarıyla tanınan doğal sit alanı.", answer: "pamukkale", category: "Türkiye", difficulty: "kolay", letterEn: "C", clueEn: "A region in central Turkey famous for its fairy-chimney rock formations and hot air balloon rides.", answerEn: "cappadocia" },
   { letter: "N", clue: "Adıyaman'da, zirvesinde dev tanrı ve kral heykelleri bulunan, UNESCO Dünya Mirası Listesi'ndeki tarihi dağ.", answer: "nemrut", category: "Türkiye", difficulty: "zor", letterEn: "A", clueEn: "The vast peninsula that makes up most of Turkey's landmass, also known historically as Asia Minor.", answerEn: "anatolia" },
   { letter: "T", clue: "Homeros'un İlyada destanına konu olan, tahta at efsanesiyle bilinen, Çanakkale'de bulunan antik kent.", answer: "truva", category: "Türkiye", difficulty: "orta", letterEn: "T", clueEn: "A flower whose cultivation defined the Ottoman Empire's early 18th-century 'Tulip Era' and that fills Istanbul's Emirgan Park every spring.", answerEn: "tulip" },
-  { letter: "A", clue: "İstanbul'da bulunan; sırasıyla kilise, cami ve müze olarak kullanılmış, dev kubbesiyle bilinen tarihi yapı.", answer: "ayasofya", category: "Türkiye", difficulty: "kolay", letterEn: "M", clueEn: "A tall, slender tower typically attached to a mosque, from which the call to prayer is announced.", answerEn: "minaret" },
+  { letter: "A", clue: "İstanbul'da bulunan; sırasıyla kilise, cami ve müze olarak kullanılmış, dev kubbesiyle bilinen tarihi yapı.", answer: "ayasofya", aliases: ["ayasofyacamii"], category: "Türkiye", difficulty: "kolay", letterEn: "M", clueEn: "A tall, slender tower typically attached to a mosque, from which the call to prayer is announced.", answerEn: "minaret" },
   { letter: "B", clue: "İzmir'in kuzeyindeki bir ilçede bulunan; antik çağda dünyanın en büyük kütüphanelerinden birine ev sahipliği yapan Pergamon Krallığı'nın başkenti olmuş antik akropol.", answer: "bergama", category: "Türkiye", difficulty: "zor", letterEn: "S", clueEn: "The title held by the ruler of the Ottoman Empire.", answerEn: "sultan" },
   // Sinema (bilingual eklenti 6)
   { letter: "F", clue: "Bir filmde konuşma repliği olmayan, genellikle kalabalık sahnelerinde arka planda yer alan yardımcı oyuncuya sinema dilinde ne ad verilir?", answer: "figüran", category: "Sinema", difficulty: "kolay", letterEn: "E", clueEn: "A background performer with no speaking lines who appears in crowd or background scenes of a film is called an ___.", answerEn: "extra" },
@@ -1593,12 +1596,12 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
   { letter: "D", clue: "Pamukkale travertenlerine ev sahipliği yapan ilimiz.", answer: "denizli", category: "Türkiye", difficulty: "kolay", letterEn: "D", clueEn: "The province that houses the Pamukkale travertine terraces.", answerEn: "denizli" },
   { letter: "K", clue: "Türkiye'nin kendi sınırları içinde doğup denize dökülen en uzun akarsuyu.", answer: "kızılırmak", category: "Türkiye", difficulty: "kolay", letterEn: "K", clueEn: "Turkey's longest river that originates and ends within its own borders.", answerEn: "kızılırmak" },
   { letter: "M", clue: "Mevlana'nın kurduğu, sema ayiniyle tanınan tasavvuf tarikatı.", answer: "mevlevi", category: "Türkiye", difficulty: "orta", letterEn: "M", clueEn: "The Sufi order founded by Mevlana, famous for its whirling ceremony.", answerEn: "mevlevi" },
-  { letter: "S", clue: "Mavi çinileriyle tanınan, İstanbul'un tarihi yarımadasındaki cami.", answer: "sultanahmet", category: "Türkiye", difficulty: "kolay", letterEn: "B", clueEn: "The Istanbul mosque in the historic peninsula known abroad for its blue tiles.", answerEn: "bluemosque" },
+  { letter: "S", clue: "Mavi çinileriyle tanınan, İstanbul'un tarihi yarımadasındaki cami.", answer: "sultanahmet", aliases: ["sultanahmetcamii"], category: "Türkiye", difficulty: "kolay", letterEn: "B", clueEn: "The Istanbul mosque in the historic peninsula known abroad for its blue tiles.", answerEn: "bluemosque" },
   { letter: "R", clue: "Türkiye'de çay üretiminin merkezi sayılan Karadeniz ili.", answer: "rize", category: "Türkiye", difficulty: "orta", letterEn: "R", clueEn: "The Black Sea province considered the center of Turkey's tea production.", answerEn: "rize" },
   { letter: "Ç", clue: "1915'te büyük bir deniz zaferi kazanılan, İstanbul'a yakın boğaz ili.", answer: "çanakkale", category: "Türkiye", difficulty: "orta", letterEn: "C", clueEn: "The strait province near Istanbul where a great naval victory was won in 1915.", answerEn: "canakkale" },
   { letter: "T", clue: "Türkiye'nin ikinci büyük gölü ve başlıca tuz kaynağı.", answer: "tuzgölü", category: "Türkiye", difficulty: "zor", letterEn: "L", clueEn: "Turkey's second largest lake and its main source of salt.", answerEn: "laketuz" },
   { letter: "L", clue: "Fethiye'den Antalya'ya uzanan Akdeniz kıyısındaki tarihi yürüyüş parkuru.", answer: "likyayolu", category: "Türkiye", difficulty: "zor", letterEn: "L", clueEn: "The historic coastal hiking trail from Fethiye to Antalya along the Mediterranean.", answerEn: "lycianway" },
-  { letter: "Z", clue: "1863'te kurulan ve bugün faaliyetteki en eski Türk bankası sayılan finans kurumu.", answer: "ziraatbankası", category: "Türkiye", difficulty: "zor", letterEn: "Z", clueEn: "Turkey's oldest bank still in operation, founded in 1863.", answerEn: "ziraatbank" },
+  { letter: "Z", clue: "1863'te kurulan ve bugün faaliyetteki en eski Türk bankası sayılan finans kurumu.", answer: "ziraatbankası", aliases: ["ziraat"], category: "Türkiye", difficulty: "zor", letterEn: "Z", clueEn: "Turkey's oldest bank still in operation, founded in 1863.", answerEn: "ziraatbank" },
 ];
 
 export const normalizeCircleAnswer = (value: string) =>
@@ -1611,6 +1614,17 @@ export const normalizeCircleAnswer = (value: string) =>
     .replace(/[\s-]+/g, "")
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "");
+
+/**
+ * Oyuncunun cevabı prompt'un `answer` ya da `aliases` alanındaki herhangi bir
+ * biçimle normalize eşleştiğinde true.
+ */
+export const matchesCircleAnswer = (prompt: Pick<CirclePrompt, "answer" | "aliases">, value: string) => {
+  const normalized = normalizeCircleAnswer(value);
+  if (!normalized) return false;
+  if (normalized === normalizeCircleAnswer(prompt.answer)) return true;
+  return (prompt.aliases ?? []).some((alias) => normalizeCircleAnswer(alias) === normalized);
+};
 
 /**
  * exclude: önceki maçın prompt'ları. Taze olanlar önce; yetmezse kullanılanlarla

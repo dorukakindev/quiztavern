@@ -18,6 +18,7 @@
     "test:reports": "tsx scripts/reports-test.ts",
     "test:daily": "tsx scripts/daily-test.ts",
     "test:anticheat": "tsx scripts/anticheat-test.ts",
+    "test:circle-alias": "tsx scripts/circle-alias-test.ts",
     "test:packs": "tsx scripts/packs-test.ts"
   },
   "dependencies": {
