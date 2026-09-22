@@ -1,7 +1,7 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
 import { QUESTION_COUNTS } from "../../shared/types";
-import { circlePoolKeys, normalizeCircleAnswer, sampleCirclePrompts, type CirclePrompt } from "./circle";
+import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import type {
@@ -607,7 +607,7 @@ export class Room {
     const clean = answer.trim().slice(0, 48);
     if (!player || !prompt || player.eligibleFrom > this.qIndex || player.circleAnswer !== null || !clean) return;
     player.circleAnswer = clean;
-    if (normalizeCircleAnswer(clean) === normalizeCircleAnswer(prompt.answer)) player.circleCorrectAt = Date.now();
+    if (matchesCircleAnswer(prompt, clean)) player.circleCorrectAt = Date.now();
     if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     this.broadcast();
     // İlk doğru cevap turu bitirmez; tüm oyuncular kilitlediğinde veya süre dolunca reveal yapılır.
@@ -819,7 +819,7 @@ export class Room {
       this.circlePrompts.forEach((prompt, i) => {
         if (player.eligibleFrom > i) return;
         const typed = player.typed[i] ?? null;
-        const correct = typed !== null && normalizeCircleAnswer(typed) === normalizeCircleAnswer(prompt.answer);
+        const correct = typed !== null && matchesCircleAnswer(prompt, typed);
         items.push({ category: prompt.category, prompt: prompt.clue, correct, yourAnswer: typed ?? "", correctAnswer: prompt.answer });
       });
     } else {
