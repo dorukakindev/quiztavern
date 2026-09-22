@@ -13,7 +13,7 @@
     "dev": "concurrently -n server,client -c yellow,cyan \"npm:dev -w server\" \"npm:dev -w client\"",
     "build": "npm run build -w server && npm run build -w client",
     "start": "npm run start -w server",
-    "test": "npm run test:activity -w client && npm run test:i18n -w client && npm run test:sdk -w client && npm run test:hardening -w server && npm run test:sec -w server && npm run test:circle-lightning-edge -w server && npm run test:bet-team-edge -w server && npm run test:dod -w server && npm run test:origin-gate -w server && npm run test:reliability -w server && npm run test:reports -w server"
+    "test": "npm run test:activity -w client && npm run test:i18n -w client && npm run test:sdk -w client && npm run test:hardening -w server && npm run test:sec -w server && npm run test:circle-lightning-edge -w server && npm run test:bet-team-edge -w server && npm run test:dod -w server && npm run test:origin-gate -w server && npm run test:reliability -w server && npm run test:reports -w server && npm run test:daily -w server"
   },
   "devDependencies": {
     "concurrently": "^10.0.3"
