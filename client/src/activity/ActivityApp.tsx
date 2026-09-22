@@ -841,7 +841,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
         <div className="qt-howto"><span>{t('table.howTo')}</span><p>{t('table.howToBody')}</p></div>
       </aside>
     </section>
-    {pickerOpen && <div className="qt-invite-hint" role="status" onClick={() => setPickerOpen(false)}>{t('table.invite')}: {state?.roomId}</div>}
+    {pickerOpen && <div className="qt-invite-hint" role="status" onClick={() => setPickerOpen(false)}>{identity.isDiscord ? t('invite.failed') : `${t('table.invite')}: ${state?.roomId}`}</div>}
     {/* Menü yalnızca sen host isen VE hedef hâlâ masadaysa. Sahiplik devredince
         isHost düşer, at'ınca hedef listeden çıkar — ikisi de menüyü kapatır. */}
     {hostMenu && isHost && state?.players.some((player) => player.id === hostMenu.player.id) &&

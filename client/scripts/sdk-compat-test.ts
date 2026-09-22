@@ -4,9 +4,8 @@
  * doğrulanır. Tarayıcı/Discord gerektirmez.
  *
  * Kapsananlar:
- *  - LAYOUT↔PIP uyumluluğu: eski istemcilerin event'i (enum dışı ham string)
- *    yerel eventBus üzerinden gerçekten handler'a ulaşır ve LAYOUT gelince
- *    PIP susturulur (grid'i pip sanmamak için).
+ *  - LAYOUT yerleşim eşlemesi: bilinen kodlar focused/pip/grid'e çevrilir,
+ *    bilinmeyen kod focused'a düşer, unsubscribe sonrası dinleyici kalmaz.
  *  - THERMAL_STATE_UPDATE: SERIOUS+ → lowPower true, düzelince false.
  *  - inviteWithFallback: guild→openInviteDialog; red→shareLink; DM→shareLink.
  *  - captureClientLog: hata Discord client log'una düşer; sdk yoksa sessiz.
@@ -36,29 +35,19 @@ function makeSdk(guildId: string | null = "guild-1") {
 
 console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
 
-// ── 1) Yerleşim: eski istemci yalnız PIP event'i yayınlar ────────────────
+// ── 1) Yerleşim: bilinen LAYOUT kodları eşlenir ──────────────────────────
 {
   const sdk = makeSdk();
   const seen: string[] = [];
   const unsub = subscribeLayoutModeCompat(sdk as never, (m) => seen.push(m));
-  sdk.emitEvent("ACTIVITY_PIP_MODE_UPDATE", { pip_mode: true });
-  sdk.emitEvent("ACTIVITY_PIP_MODE_UPDATE", { pip_mode: false });
-  assert(seen.join(",") === "pip,focused", `eski-istemci PIP event'i çalışır (${seen.join(",")})`);
+  sdk.emitEvent("ACTIVITY_LAYOUT_MODE_UPDATE", { layout_mode: 2 });
+  sdk.emitEvent("ACTIVITY_LAYOUT_MODE_UPDATE", { layout_mode: 0 });
+  sdk.emitEvent("ACTIVITY_LAYOUT_MODE_UPDATE", { layout_mode: 1 });
+  assert(seen.join(",") === "grid,focused,pip", `LAYOUT kodları eşlenir (${seen.join(",")})`);
   unsub();
 }
 
-// ── 2) LAYOUT görüldükten sonra PIP susturulur (grid ≠ pip) ───────────────
-{
-  const sdk = makeSdk();
-  const seen: string[] = [];
-  subscribeLayoutModeCompat(sdk as never, (m) => seen.push(m));
-  sdk.emitEvent("ACTIVITY_LAYOUT_MODE_UPDATE", { layout_mode: 2 });
-  sdk.emitEvent("ACTIVITY_PIP_MODE_UPDATE", { pip_mode: true });
-  sdk.emitEvent("ACTIVITY_LAYOUT_MODE_UPDATE", { layout_mode: 1 });
-  assert(seen.join(",") === "grid,pip", `LAYOUT authoritative kalır (${seen.join(",")})`);
-}
-
-// ── 3) Bilinmeyen layout kodu → focused (kompakta düşme) ──────────────────
+// ── 2) Bilinmeyen layout kodu → focused (kompakta düşme) ──────────────────
 {
   const sdk = makeSdk();
   const seen: string[] = [];
@@ -67,7 +56,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(seen.join(",") === "focused", `bilinmeyen kod focused'a düşer (${seen.join(",")})`);
 }
 
-// ── 4) Cleanup sonrası event'ler işlenmez ────────────────────────────────
+// ── 3) Cleanup sonrası event'ler işlenmez ────────────────────────────────
 {
   const sdk = makeSdk();
   const seen: string[] = [];
@@ -77,7 +66,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(seen.length === 0, "unsubscribe sonrası dinleyici kalmaz");
 }
 
-// ── 5) Thermal: SERIOUS+ → lowPower, NOMINAL → geri aç ───────────────────
+// ── 4) Thermal: SERIOUS+ → lowPower, NOMINAL → geri aç ───────────────────
 {
   const sdk = makeSdk();
   const states: boolean[] = [];
@@ -88,7 +77,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(states.join(",") === "true,true,false", `thermal eşiği SERIOUS'ta tutar (${states.join(",")})`);
 }
 
-// ── 6) Invite: guild'de openInviteDialog önce gelir ───────────────────────
+// ── 5) Invite: guild'de openInviteDialog önce gelir ───────────────────────
 {
   const sdk = makeSdk("guild-1");
   const calls: string[] = [];
@@ -100,7 +89,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(ok && calls.join(",") === "dialog", `guild'de native diyalog yeter (${calls.join(",")})`);
 }
 
-// ── 7) Invite: dialog reddederse shareLink'e düşer ────────────────────────
+// ── 6) Invite: dialog reddederse shareLink'e düşer ────────────────────────
 {
   const sdk = makeSdk("guild-1");
   const calls: string[] = [];
@@ -112,7 +101,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(ok && calls.join(",") === "dialog,share", `red sonrası shareLink fallback (${calls.join(",")})`);
 }
 
-// ── 8) Invite: shareLink de olumsuzsa false (oda-kodu ipucu devreye girer) ─
+// ── 7) Invite: shareLink de olumsuzsa false (oda-kodu ipucu devreye girer) ─
 {
   const sdk = makeSdk("guild-1");
   sdk._updateCommandMocks({
@@ -123,7 +112,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(ok === false, "iki yol da kapanınca false");
 }
 
-// ── 9) Invite: DM (guildId null) → doğrudan shareLink ─────────────────────
+// ── 8) Invite: DM (guildId null) → doğrudan shareLink ─────────────────────
 {
   const sdk = makeSdk(null);
   const calls: string[] = [];
@@ -135,7 +124,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(ok && calls.join(",") === "share", `DM'de shareLink (${calls.join(",")})`);
 }
 
-// ── 10) Speaking: SPEAKING_START/STOP kümesi oyuncu id'lerini izler ────────
+// ── 9) Speaking: SPEAKING_START/STOP kümesi oyuncu id'lerini izler ────────
 {
   const sdk = makeSdk();
   let current = new Set<string>();
@@ -150,7 +139,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(!current.has("u3"), "unsubscribe sonrası güncellenmez");
 }
 
-// ── 11) Presence: setActivity'e details+state taşınır, red sessiz ────────
+// ── 10) Presence: setActivity'e details+state taşınır, red sessiz ────────
 {
   const sdk = makeSdk();
   const calls: string[] = [];
@@ -168,7 +157,7 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   assert(true, "INVALID_COMMAND akışı bozmaz");
 }
 
-// ── 12) captureClientLog: hata Discord log'una düşer / sdk'suz sessiz ─────
+// ── 11) captureClientLog: hata Discord log'una düşer / sdk'suz sessiz ─────
 {
   const sdk = makeSdk();
   const logs: string[] = [];

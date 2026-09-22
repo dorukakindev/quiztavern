@@ -1,23 +1,5 @@
-import { Commands, Common, DiscordSDK, Events } from '@discord/embedded-app-sdk'
+import { Common, DiscordSDK, Events } from '@discord/embedded-app-sdk'
 import type { LayoutMode } from './useDiscordActivity'
-
-/**
- * Eski Discord istemcilerinin yayınladığı yerleşim olayı. SDK 2.5'in Events
- * enum'unda yok; subscribe() RPC SUBSCRIBE komutunu yalnız enum'daki olaylar
- * için gönderdiğinden ham abonelik dinleyiciyi yerel tutar ama Discord'dan
- * olay gelmez — bu yüzden SUBSCRIBE komutunu elle de göndeririz.
- * (Eski SDK sürümlerindeki subscribeToLayoutModeUpdatesCompat'ın yaptığı buydu.)
- */
-const PIP_MODE_EVENT = 'ACTIVITY_PIP_MODE_UPDATE'
-
-type RawSendCommand = (payload: { cmd: string; evt: string; args?: unknown }) => Promise<unknown>
-
-/** sendCommand arayüzde yok ama çalışma zamanında public bir alan; mock'ta yoktur. */
-function rawSend(sdk: DiscordSDK, payload: { cmd: string; evt: string; args?: unknown }) {
-  const send = (sdk as unknown as { sendCommand?: RawSendCommand }).sendCommand
-  if (!send) return Promise.resolve()
-  return send.call(sdk, payload)
-}
 
 const LAYOUT_BY_CODE: Record<number, LayoutMode> = {
   [Common.LayoutModeTypeObject.FOCUSED]: 'focused',
@@ -27,32 +9,21 @@ const LAYOUT_BY_CODE: Record<number, LayoutMode> = {
 
 /**
  * Yerleşim (focused/pip/grid) değişimlerine abone olur, cleanup döndürür.
- * LAYOUT olayı bir kez görülünce PIP olayları susturulur: yeni istemcide
- * ikisi de gelir, LAYOUT authoritative olsun (grid'i pip sanmayalım).
+ * Eski istemcilerin ACTIVITY_PIP_MODE_UPDATE olayına bilinçli olarak abone
+ * olmayız: olay SDK enum'unda yok ve Discord proxy'si SUBSCRIBE komutunu
+ * "Unrecognized event type" hatasıyla reddedip konsolu kirletir. Güncel
+ * istemcilerin hepsi LAYOUT olayını yayınlar; ona güvenmek yeterli.
  */
 export function subscribeLayoutModeCompat(sdk: DiscordSDK, apply: (mode: LayoutMode) => void): () => void {
-  let sawLayout = false
   const onLayout = ({ layout_mode }: { layout_mode: number }) => {
-    sawLayout = true
     // Bilinmeyen kod geldiğinde tam ekran varsayarız: oyunu tanımadığımız bir
     // yerleşim yüzünden kompakt karta düşürmeyelim.
     apply(LAYOUT_BY_CODE[layout_mode] ?? 'focused')
   }
-  const onPipMode = (data: unknown) => {
-    if (sawLayout) return
-    const pipMode = (data as { pip_mode?: unknown }).pip_mode === true
-    apply(pipMode ? 'pip' : 'focused')
-  }
-  // subscribe() reddedince unhandled rejection kalmasın; eski istemcide
-  // LAYOUT bilinmez, yalnız PIP yolu devrede kalır.
+  // subscribe() reddedince unhandled rejection kalmasın.
   void sdk.subscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout).catch(() => {})
-  void sdk.subscribe(PIP_MODE_EVENT as Events, onPipMode).catch(() => {})
-  // Enum dışı olduğu için subscribe() bunu Discord'a iletmez; elle gönder.
-  void rawSend(sdk, { cmd: Commands.SUBSCRIBE, evt: PIP_MODE_EVENT }).catch(() => {})
   return () => {
     void sdk.unsubscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout).catch(() => {})
-    void sdk.unsubscribe(PIP_MODE_EVENT as Events, onPipMode).catch(() => {})
-    void rawSend(sdk, { cmd: Commands.UNSUBSCRIBE, evt: PIP_MODE_EVENT }).catch(() => {})
   }
 }
 
