@@ -1,0 +1,393 @@
+Son eklenen paket: Sanat
+Commit: b6df413 Sanat kategorisine yeni soru paketi ekle
+
+KLASIK SORULAR
+
+1. id: sanat-guggenheim-wright
+Kategori: Sanat
+Zorluk: orta
+TR: New York'taki Solomon R. Guggenheim Müzesi'nin spiral rampalı ünlü binasını hangi mimar tasarlamıştır?
+TR şıklar: Frank Lloyd Wright | Le Corbusier | Mies van der Rohe | Walter Gropius
+TR doğru cevap: Frank Lloyd Wright
+EN: Which architect designed the famous spiral-ramped Solomon R. Guggenheim Museum building in New York?
+EN choices: Frank Lloyd Wright | Le Corbusier | Mies van der Rohe | Walter Gropius
+EN correct answer: Frank Lloyd Wright
+
+2. id: sanat-impressionism-exhibition-1874
+Kategori: Sanat
+Zorluk: kolay
+TR: Empresyonistlerin ilk bağımsız grup sergisi 1874'te hangi şehirde açılmıştır?
+TR şıklar: Londra | Paris | Viyana | Madrid
+TR doğru cevap: Paris
+EN: In which city did the Impressionists open their first independent group exhibition in 1874?
+EN choices: London | Paris | Vienna | Madrid
+EN correct answer: Paris
+
+3. id: sanat-bauhaus-founder
+Kategori: Sanat
+Zorluk: orta
+TR: Sanat, zanaat ve tasarımı birleştirmeyi amaçlayan Bauhaus okulunu 1919'da kim kurmuştur?
+TR şıklar: Josef Albers | Paul Klee | Walter Gropius | Marcel Breuer
+TR doğru cevap: Walter Gropius
+EN: Who founded the Bauhaus school in 1919 with the aim of uniting art, craft, and design?
+EN choices: Josef Albers | Paul Klee | Walter Gropius | Marcel Breuer
+EN correct answer: Walter Gropius
+
+4. id: sanat-hokusai-great-wave
+Kategori: Sanat
+Zorluk: kolay
+TR: 'Kanagawa'nın Büyük Dalgası' adlı ünlü ahşap baskıyı hangi Japon sanatçı yapmıştır?
+TR şıklar: Utagawa Hiroshige | Kitagawa Utamaro | Katsushika Hokusai | Toshusai Sharaku
+TR doğru cevap: Katsushika Hokusai
+EN: Which Japanese artist created the famous woodblock print 'The Great Wave off Kanagawa'?
+EN choices: Utagawa Hiroshige | Kitagawa Utamaro | Katsushika Hokusai | Toshusai Sharaku
+EN correct answer: Katsushika Hokusai
+
+5. id: sanat-tate-modern-building
+Kategori: Sanat
+Zorluk: orta
+TR: Londra'daki Tate Modern müzesi, hangi eski endüstriyel yapının dönüştürülmesiyle açılmıştır?
+TR şıklar: Tren istasyonu | Elektrik santrali | Gaz deposu | Dokuma fabrikası
+TR doğru cevap: Elektrik santrali
+EN: London's Tate Modern opened after converting which former industrial building?
+EN choices: Railway station | Power station | Gas holder | Textile mill
+EN correct answer: Power station
+
+6. id: sanat-abstract-expressionism-city
+Kategori: Sanat
+Zorluk: orta
+TR: Soyut dışavurumculuk akımı II. Dünya Savaşı sonrasında en çok hangi şehirle özdeşleşmiştir?
+TR şıklar: Berlin | Roma | New York | Amsterdam
+TR doğru cevap: New York
+EN: Abstract Expressionism became most strongly associated with which city after World War II?
+EN choices: Berlin | Rome | New York | Amsterdam
+EN correct answer: New York
+
+7. id: sanat-ready-made-term
+Kategori: Sanat
+Zorluk: orta
+TR: Sıradan üretilmiş bir nesnenin sanatçının seçimiyle sanat eseri olarak sunulmasına verilen terim nedir?
+TR şıklar: Asamblaj | Hazır nesne | Pastiş | Grataj
+TR doğru cevap: Hazır nesne
+EN: What term describes an ordinary manufactured object presented as art through the artist's selection?
+EN choices: Assemblage | Readymade | Pastiche | Grattage
+EN correct answer: Readymade
+
+8. id: sanat-christos-wrapped-reichstag
+Kategori: Sanat
+Zorluk: zor
+TR: Berlin'deki Reichstag binasını 1995'te kumaşla kaplayan büyük ölçekli yerleştirme sanatçı çifti kimdir?
+TR şıklar: Gilbert & George | Christo ve Jeanne-Claude | Elmgreen & Dragset | Boyle Family
+TR doğru cevap: Christo ve Jeanne-Claude
+EN: Which large-scale installation artist duo wrapped Berlin's Reichstag building in fabric in 1995?
+EN choices: Gilbert & George | Christo and Jeanne-Claude | Elmgreen & Dragset | Boyle Family
+EN correct answer: Christo and Jeanne-Claude
+
+9. id: sanat-encaustic-medium
+Kategori: Sanat
+Zorluk: zor
+TR: Pigmentlerin ısıtılmış balmumuyla karıştırılarak yüzeye uygulandığı antik resim tekniği hangisidir?
+TR şıklar: Tempera | Enkavstik | Serigrafi | Monotip
+TR doğru cevap: Enkavstik
+EN: Which ancient painting technique applies pigments mixed with heated beeswax to a surface?
+EN choices: Tempera | Encaustic | Screen printing | Monotype
+EN correct answer: Encaustic
+
+10. id: sanat-documenta-kassel
+Kategori: Sanat
+Zorluk: zor
+TR: Beş yılda bir düzenlenen önemli çağdaş sanat sergisi documenta hangi Alman şehriyle özdeşleşmiştir?
+TR şıklar: Kassel | Hamburg | Dresden | Münih
+TR doğru cevap: Kassel
+EN: The major contemporary art exhibition documenta, held every five years, is associated with which German city?
+EN choices: Kassel | Hamburg | Dresden | Munich
+EN correct answer: Kassel
+
+CEMBER GIRDILERI
+
+1. Kategori: Sanat
+Zorluk: orta
+TR letter: A
+TR clue: Farklı nesnelerin bir araya getirilmesiyle oluşturulan üç boyutlu sanat yapıtı türü.
+TR answer: asamblaj
+EN letter: A
+EN clue: A three-dimensional artwork made by bringing different found objects together.
+EN answer: assemblage
+
+2. Kategori: Sanat
+Zorluk: orta
+TR letter: B
+TR clue: Sanat, zanaat ve tasarımı birleştirmeyi amaçlayan 1919 çıkışlı Alman okulu.
+TR answer: bauhaus
+EN letter: B
+EN clue: The German school founded in 1919 to unite art, craft, and design.
+EN answer: bauhaus
+
+3. Kategori: Sanat
+Zorluk: zor
+TR letter: E
+TR clue: Pigmentin ısıtılmış balmumuyla karıştırıldığı antik resim tekniği.
+TR answer: enkavstik
+EN letter: E
+EN clue: An ancient painting technique using pigment mixed with heated beeswax.
+EN answer: encaustic
+
+4. Kategori: Sanat
+Zorluk: orta
+TR letter: S
+TR clue: Mürekkebin gözenekli bir şablondan geçirilmesiyle yapılan baskı yöntemi.
+TR answer: serigrafi
+EN letter: S
+EN clue: A printmaking method that pushes ink through a mesh stencil.
+EN answer: screenprint
+
+5. Kategori: Sanat
+Zorluk: kolay
+TR letter: M
+TR clue: Küçük renkli taş veya cam parçalarının yüzeye dizilmesiyle oluşturulan görsel sanat tekniği.
+TR answer: mozaik
+EN letter: M
+EN clue: A visual art technique made by arranging small colored pieces of stone or glass.
+EN answer: mosaic
+
+6. Kategori: Sanat
+Zorluk: kolay
+TR letter: K
+TR clue: Görsel sanat yapıtlarının halka sergilendiği özel veya kamuya ait koleksiyon mekânı.
+TR answer: koleksiyon
+EN letter: G
+EN clue: A public or private space where works of visual art are exhibited.
+EN answer: gallery
+
+7. Kategori: Sanat
+Zorluk: zor
+TR letter: D
+TR clue: Belirli aralıklarla düzenlenen ve çoğunlukla çağdaş sanata odaklanan büyük uluslararası sergi.
+TR answer: documenta
+EN letter: D
+EN clue: A major recurring international exhibition best known for contemporary art.
+EN answer: documenta
+
+8. Kategori: Sanat
+Zorluk: zor
+TR letter: J
+TR clue: Avrupa sanatında Japon baskı ve estetiğinden etkilenme eğilimi.
+TR answer: japonizm
+EN letter: J
+EN clue: The European artistic fascination with Japanese prints and aesthetics.
+EN answer: japonisme
+
+9. Kategori: Sanat
+Zorluk: zor
+TR letter: Y
+TR clue: Bir sanatçının yüzeyde bıraktığı, jest ve hareket izini taşıyan fırça kullanım biçimi.
+TR answer: yazısalfırça
+EN letter: G
+EN clue: A brush-handling style that preserves the visible trace of the artist's gesture.
+EN answer: gesturalbrushwork
+
+10. Kategori: Sanat
+Zorluk: kolay
+TR letter: R
+TR clue: Sanat yapıtlarının korunması, onarılması ve gelecek kuşaklara aktarılması işi.
+TR answer: restorasyon
+EN letter: R
+EN clue: The work of conserving and repairing artworks for future generations.
+EN answer: restoration
+
+---
+Son eklenen paket: Türkiye
+
+KLASIK SORULAR
+
+1. id: turkiye-osmanli-kurucusu
+Kategori: Türkiye
+Zorluk: kolay
+TR: Osmanlı İmparatorluğu'nun kurucusu kimdir?
+TR şıklar: Osman Gazi | Orhan Gazi | I. Murat | Yıldırım Bayezid
+TR doğru cevap: Osman Gazi
+EN: Who was the founder of the Ottoman Empire?
+EN choices: Osman Gazi | Orhan Gazi | Murad I | Bayezid I
+EN correct answer: Osman Gazi
+
+2. id: turkiye-mevlana
+Kategori: Türkiye
+Zorluk: kolay
+TR: Mevlana Celaleddin Rumi'nin türbesi hangi şehirde bulunur?
+TR şıklar: Ankara | Konya | İstanbul | Kayseri
+TR doğru cevap: Konya
+EN: In which city is the tomb of Mevlana Jalal ad-Din Rumi located?
+EN choices: Ankara | Konya | Istanbul | Kayseri
+EN correct answer: Konya
+
+3. id: turkiye-ilk-tbmm
+Kategori: Türkiye
+Zorluk: orta
+TR: Türkiye Büyük Millet Meclisi hangi yılda açılmıştır?
+TR şıklar: 1919 | 1920 | 1921 | 1923
+TR doğru cevap: 1920
+EN: In which year was the Grand National Assembly of Turkey opened?
+EN choices: 1919 | 1920 | 1921 | 1923
+EN correct answer: 1920
+
+4. id: turkiye-kizilirmak
+Kategori: Türkiye
+Zorluk: orta
+TR: Türkiye'nin tamamı kendi sınırları içinde kalan en uzun nehri hangisidir?
+TR şıklar: Sakarya | Kızılırmak | Fırat | Yeşilırmak
+TR doğru cevap: Kızılırmak
+EN: Which is the longest river that flows entirely within Turkey's borders?
+EN choices: Sakarya River | Kızılırmak River | Euphrates | Yeşilırmak River
+EN correct answer: Kızılırmak River
+
+5. id: turkiye-antalya-turist
+Kategori: Türkiye
+Zorluk: orta
+TR: Türkiye'ye gelen uluslararası turist sayısında genellikle ilk sırada yer alan şehir hangisidir?
+TR şıklar: İstanbul | Antalya | İzmir | Muğla
+TR doğru cevap: Antalya
+EN: Which city generally ranks first in the number of international tourist arrivals in Turkey?
+EN choices: Istanbul | Antalya | Izmir | Mugla
+EN correct answer: Antalya
+
+6. id: turkiye-cumhuriyet-ilani
+Kategori: Türkiye
+Zorluk: kolay
+TR: Türkiye Cumhuriyeti hangi yılda ilan edilmiştir?
+TR şıklar: 1921 | 1922 | 1923 | 1924
+TR doğru cevap: 1923
+EN: In which year was the Republic of Turkey proclaimed?
+EN choices: 1921 | 1922 | 1923 | 1924
+EN correct answer: 1923
+
+7. id: turkiye-sultanahmet-mavi
+Kategori: Türkiye
+Zorluk: kolay
+TR: Sultanahmet Camii, iç dekorasyonundaki mavi çiniler nedeniyle batı dünyasında hangi adla anılır?
+TR şıklar: Mavi Camii | Yeşil Camii | Beyaz Camii | Altın Camii
+TR doğru cevap: Mavi Camii
+EN: The Sultan Ahmed Mosque is referred to by what name in the Western world because of its blue interior tiles?
+EN choices: Blue Mosque | Green Mosque | White Mosque | Golden Mosque
+EN correct answer: Blue Mosque
+
+8. id: turkiye-18mart
+Kategori: Türkiye
+Zorluk: orta
+TR: Çanakkale Deniz Savaşları'nın kazanıldığı ve her yıl 18 Mart'ta anılan yıl hangisidir?
+TR şıklar: 1914 | 1915 | 1916 | 1918
+TR doğru cevap: 1915
+EN: In which year were the Çanakkale Naval Battles won, commemorated annually on March 18?
+EN choices: 1914 | 1915 | 1916 | 1918
+EN correct answer: 1915
+
+9. id: turkiye-tuzgolu
+Kategori: Türkiye
+Zorluk: orta
+TR: Türkiye'de tuz ihtiyacının büyük kısmını karşılayan ve yüzölçümü bakımından ülkenin ikinci büyük gölü hangisidir?
+TR şıklar: Van Gölü | Tuz Gölü | Beyşehir Gölü | Eğirdir Gölü
+TR doğru cevap: Tuz Gölü
+EN: Which lake supplies most of Turkey's salt demand and is the country's second largest lake by area?
+EN choices: Lake Van | Lake Tuz | Lake Beyşehir | Lake Eğirdir
+EN correct answer: Lake Tuz
+
+10. id: turkiye-ziraatbankasi
+Kategori: Türkiye
+Zorluk: zor
+TR: 1863 yılında kurulan ve Türkiye'nin en eski bankası kabul edilen finans kuruluşu hangisidir?
+TR şıklar: İş Bankası | Ziraat Bankası | Garanti Bankası | Yapı Kredi
+TR doğru cevap: Ziraat Bankası
+EN: Which financial institution, founded in 1863, is Turkey's oldest bank?
+EN choices: İş Bankası | Ziraat Bankası | Garanti Bankası | Yapı Kredi
+EN correct answer: Ziraat Bankası
+
+CEMBER GIRDILERI
+
+1. Kategori: Türkiye
+Zorluk: kolay
+TR letter: A
+TR clue: Türkiye'nin en çok uluslararası turist çeken şehri.
+TR answer: antalya
+EN letter: A
+EN clue: Turkey's most visited city for international tourists.
+EN answer: antalya
+
+2. Kategori: Türkiye
+Zorluk: kolay
+TR letter: D
+TR clue: Pamukkale travertenlerine ev sahipliği yapan ilimiz.
+TR answer: denizli
+EN letter: D
+EN clue: The province that houses the Pamukkale travertine terraces.
+EN answer: denizli
+
+3. Kategori: Türkiye
+Zorluk: kolay
+TR letter: K
+TR clue: Türkiye'nin kendi sınırları içinde doğup denize dökülen en uzun akarsuyu.
+TR answer: kızılırmak
+EN letter: K
+EN clue: Turkey's longest river that originates and ends within its own borders.
+EN answer: kızılırmak
+
+4. Kategori: Türkiye
+Zorluk: orta
+TR letter: M
+TR clue: Mevlana'nın kurduğu, sema ayiniyle tanınan tasavvuf tarikatı.
+TR answer: mevlevi
+EN letter: M
+EN clue: The Sufi order founded by Mevlana, famous for its whirling ceremony.
+EN answer: mevlevi
+
+5. Kategori: Türkiye
+Zorluk: kolay
+TR letter: S
+TR clue: Mavi çinileriyle tanınan, İstanbul'un tarihi yarımadasındaki cami.
+TR answer: sultanahmet
+EN letter: B
+EN clue: The Istanbul mosque in the historic peninsula known abroad for its blue tiles.
+EN answer: bluemosque
+
+6. Kategori: Türkiye
+Zorluk: orta
+TR letter: R
+TR clue: Türkiye'de çay üretiminin merkezi sayılan Karadeniz ili.
+TR answer: rize
+EN letter: R
+EN clue: The Black Sea province considered the center of Turkey's tea production.
+EN answer: rize
+
+7. Kategori: Türkiye
+Zorluk: orta
+TR letter: Ç
+TR clue: 1915'te büyük bir deniz zaferi kazanılan, İstanbul'a yakın boğaz ili.
+TR answer: çanakkale
+EN letter: C
+EN clue: The strait province near Istanbul where a great naval victory was won in 1915.
+EN answer: canakkale
+
+8. Kategori: Türkiye
+Zorluk: zor
+TR letter: T
+TR clue: Türkiye'nin ikinci büyük gölü ve başlıca tuz kaynağı.
+TR answer: tuzgölü
+EN letter: L
+EN clue: Turkey's second largest lake and its main source of salt.
+EN answer: laketuz
+
+9. Kategori: Türkiye
+Zorluk: zor
+TR letter: L
+TR clue: Fethiye'den Antalya'ya uzanan Akdeniz kıyısındaki tarihi yürüyüş parkuru.
+TR answer: likyayolu
+EN letter: L
+EN clue: The historic coastal hiking trail from Fethiye to Antalya along the Mediterranean.
+EN answer: lycianway
+
+10. Kategori: Türkiye
+Zorluk: zor
+TR letter: Z
+TR clue: 1863'te kurulan ve Türkiye'nin en eski bankası sayılan finans kurumu.
+TR answer: ziraatbankası
+EN letter: Z
+EN clue: Turkey's oldest bank, founded in 1863.
+EN answer: ziraatbank

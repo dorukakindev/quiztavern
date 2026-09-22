@@ -1,0 +1,40 @@
+const fs=require('fs');
+const file='new-classic-dizi-tv.json';
+const old=JSON.parse(fs.readFileSync(file)).slice(0,8);
+const rows=[
+['breaking-bad-network','Breaking Bad hangi televizyon kanalında yayımlandı?','On which television network did Breaking Bad air?','AMC',['HBO','FX','Showtime']],
+['game-thrones-author','Game of Thrones hangi yazarın roman serisine dayanır?','Which author wrote the novel series behind Game of Thrones?','George R. R. Martin',['J. K. Rowling','Stephen King','Neil Gaiman']],
+['office-us-setting','The Office dizisinin ABD uyarlaması çoğunlukla hangi şehirde geçer?','Which city is the US version of The Office mainly set in?','Scranton',['Boston','Seattle','Denver']],
+['friends-coffee','Friends dizisindeki karakterlerin sık buluştuğu kafenin adı nedir?','What is the name of the coffee shop where the Friends characters often meet?','Central Perk',['Luke’s Diner','Monk’s Café','Café Nervosa']],
+['sopranos-boss','The Sopranos dizisinin merkezindeki mafya lideri kimdir?','Who is the central mob boss in The Sopranos?','Tony Soprano',['Don Draper','Walter White','Michael Scott']],
+['lost-island','Lost dizisinde uçak kazasından sonra karakterler nerede mahsur kalır?','Where are the characters stranded after the plane crash in Lost?','Gizemli bir ada','A mysterious island',['Bir çöl şehri','Bir uzay istasyonu','Bir denizaltı']],
+['true-detective-season1','True Detective’in ilk sezonunun başrollerinden biri kimdir?','Who is one of the leads in True Detective season one?','Matthew McConaughey',['Pedro Pascal','Bryan Cranston','Hugh Laurie']],
+['fargo-setting','Fargo dizisi adını hangi tür yapıttan alır?','What kind of work gives the series Fargo its name?','Bir film','A film',['Bir roman','Bir tiyatro oyunu','Bir belgesel']],
+['westworld-park','Westworld dizisindeki eğlence parkında hangi varlıklar bulunur?','What beings inhabit the theme park in Westworld?','Androidler','Androids',['Uzaylılar','Klonlanmış dinozorlar','Vampirler']],
+['dark-language','Dark dizisi ağırlıklı olarak hangi dilde çekilmiştir?','Which language is Dark primarily filmed in?','Almanca','German',['Danca','Hollandaca','İsveççe']],
+['stranger-things-town','Stranger Things hangi kurgusal kasabada geçer?','In which fictional town is Stranger Things set?','Hawkins',['Riverdale','Sunnydale','Stars Hollow']],
+['crown-monarch','The Crown dizisi kimin saltanatını merkezine alır?','Whose reign is at the center of The Crown?','II. Elizabeth','Elizabeth II',['Victoria','II. Charles','Margaret Thatcher']],
+['house-md-doctor','House dizisinin baş karakteri hangi mesleğe sahiptir?','What is the profession of the title character in House?','Doktor','Doctor',['Avukat','Gazeteci','Mimar']],
+['dexter-job','Dexter Morgan gündüzleri hangi işte çalışır?','What is Dexter Morgan’s day job?','Adli kan analisti','Forensic blood analyst',['Savcı','Gazeteci','Kriminolog']],
+['better-call-saul-lawyer','Better Call Saul hangi avukatın dönüşümünü anlatır?','Which lawyer’s transformation does Better Call Saul follow?','Jimmy McGill',['Harvey Specter','Saul Goodman Jr.','Mike Ehrmantraut']],
+['mr-robot-hacker','Mr. Robot dizisinin baş karakteri hangi işle uğraşır?','What does the protagonist of Mr. Robot do?','Siber güvenlik mühendisi','Cybersecurity engineer',['Doktor','Pilot','Fotoğrafçı']],
+['handmaids-tale-author','The Handmaid’s Tale romanının yazarı kimdir?','Who wrote the novel The Handmaid’s Tale?','Margaret Atwood',['Ursula K. Le Guin','Toni Morrison','Kazuo Ishiguro']],
+['mandalorian-universe','The Mandalorian hangi evrende geçer?','In which universe is The Mandalorian set?','Star Wars',['Star Trek','Dune','Doctor Who']],
+['doctor-who-time-machine','Doctor Who’da Doktor’un zaman makinesinin adı nedir?','What is the name of the Doctor’s time machine in Doctor Who?','TARDIS',['Dalek','Gallifrey','Torchwood']],
+['sherlock-bbc-city','BBC Sherlock dizisi çoğunlukla hangi şehirde geçer?','Which city is BBC’s Sherlock mainly set in?','Londra','London',['Paris','Edinburgh','Dublin']],
+['peaky-blinders-family','Peaky Blinders dizisinin merkezindeki ailenin soyadı nedir?','What is the surname of the family at the center of Peaky Blinders?','Shelby',['Thorne','Byrne','Miller']],
+['vikings-founder','Vikings dizisinin ilk bölümlerindeki baş karakter kimdir?','Who is the central character in the early episodes of Vikings?','Ragnar Lothbrok',['Bjorn Ironside','Ivar the Boneless','Floki']],
+['narcos-country','Narcos dizisinin ilk iki sezonu ağırlıklı olarak hangi ülkeye odaklanır?','Which country is the first two seasons of Narcos mainly about?','Kolombiya','Colombia',['Meksika','Brezilya','Arjantin']],
+['money-heist-professor','La Casa de Papel’de planın beyni olarak bilinen karakter kimdir?','Which character is known as the mastermind of the plan in Money Heist?','Profesör','The Professor',['Berlin','Denver','Palermo']],
+['queens-gambit-chess','The Queen’s Gambit’in merkezindeki oyun nedir?','What game is at the center of The Queen’s Gambit?','Satranç','Chess',['Poker','Go','Briç']],
+['succession-creator','Succession dizisinin yaratıcısı kimdir?','Who created the series Succession?','Jesse Armstrong',['Shonda Rhimes','David Simon','Noah Hawley']],
+['yellowstone-ranch','Yellowstone dizisinde Dutton ailesi neyi işletir?','What does the Dutton family run in Yellowstone?','Bir çiftlik','A ranch',['Bir gazete','Bir otel','Bir tersane']],
+['euphoria-school','Euphoria dizisindeki genç karakterler çoğunlukla nerede eğitim görür?','Where do the teenage characters in Euphoria mainly attend school?','Lise','High school',['Üniversite','Askerî akademi','Yatılı manastır']],
+['ted-lasso-sport','Ted Lasso dizisinin merkezindeki spor dalı nedir?','What sport is at the center of Ted Lasso?','Futbol','Football',['Beyzbol','Basketbol','Rugby']],
+['the-bear-kitchen','The Bear dizisinin ana mekânı nedir?','What is the main setting of The Bear?','Bir restoran mutfağı','A restaurant kitchen',['Bir radyo stüdyosu','Bir hastane','Bir otel lobisi']],
+['severance-company','Severance dizisindeki çalışanlar hangi şirkette çalışır?','Which company employs the workers in Severance?','Lumon Industries',['Weyland-Yutani','Cyberdyne Systems','Tyrell Corporation']],
+['black-mirror-episode','Black Mirror bölümleri genellikle nasıl bir yapıdadır?','What structure do Black Mirror episodes generally use?','Bağımsız hikâyeler','Standalone stories',['Tek bir devamlı hikâye','Canlı yarışmalar','Belgesel röportajları']]
+];
+const d=['kolay','orta','zor'];
+const add=rows.map((r,i)=>{const six=Array.isArray(r[5]); const en=six?r[4]:r[3]; const dist=six?r[5]:r[4]; return {id:'dizi-tv-'+r[0],category:'Dizi/TV',text:r[1],choices:[r[3],...dist],correctIndex:0,difficulty:d[i%3],textEn:r[2],choicesEn:[en,...dist]};});
+fs.writeFileSync(file,JSON.stringify([...old,...add],null,2)+'\n');

@@ -1,0 +1,18 @@
+# QuizTavern — Named Cloudflare Tunnel yapılandırması
+# Sabit adresli tünel: URL bir daha değişmez, Discord Portal'ı tekrar tekrar
+# güncellemezsin. Ephemeral (trycloudflare) tünelin yerine geçer.
+#
+# ÖNCE deploy/TUNNEL.md'deki adımları uygula (login → create → route dns).
+# create komutu bir TUNNEL_UUID ve bir credentials .json dosyası üretir;
+# aşağıdaki iki değeri onlarla DEĞİŞTİR. HOSTNAME'i de kendi alan adınla.
+
+tunnel: TUNNEL_UUID_BURAYA
+credentials-file: C:\Users\K\.cloudflared\TUNNEL_UUID_BURAYA.json
+
+ingress:
+  # Tek production süreci: API, Socket.IO ve client/dist aynı origin'de.
+  - hostname: quiztavern.SENIN-ALAN-ADIN.com
+    service: http://localhost:3001
+
+  # Zorunlu son kural: eşleşmeyen hostname'ler 404.
+  - service: http_status:404

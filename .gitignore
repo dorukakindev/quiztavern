@@ -1,0 +1,26 @@
+node_modules/
+dist/
+.env
+*.local
+.DS_Store
+
+# TypeScript artımlı derleme önbelleği: üretilen dosya, her build'de değişir.
+*.tsbuildinfo
+
+# Geliştirme günlükleri
+*.log
+
+# Tasarım referansı: orijinali claude.ai/design "Ana sayfa tasarımı" projesinde
+# (DesignSync ile erişilir). 78MB'lık kopyayı git'e sokmuyoruz; uygulamanın
+# kullandığı asset'ler client/public/table/ altında ayrıca commit'li.
+Claude Design/
+
+# Diğer araçların yerel durumu
+.codex/
+.agents/
+
+# Yerel ajan ve taslak dosyaları
+.scratch/
+.opencode/
+.claude/
+

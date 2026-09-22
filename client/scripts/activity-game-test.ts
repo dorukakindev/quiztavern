@@ -1,0 +1,113 @@
+import { strict as assert } from 'node:assert'
+import { readFileSync } from 'node:fs'
+import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from '../src/activity/gameLogic'
+import { isAuthRequiredError } from '../src/lib/realtime'
+
+let passed = 0
+const test = (name: string, run: () => void) => {
+  run()
+  passed += 1
+  console.log(`  ✓ ${name}`)
+}
+
+console.log('Activity oyun/erişilebilirlik regresyonları')
+const activitySource = readFileSync(new URL('../src/activity/ActivityApp.tsx', import.meta.url), 'utf8')
+const activityCss = readFileSync(new URL('../src/activity/activity.css', import.meta.url), 'utf8')
+const realtimeSource = readFileSync(new URL('../src/lib/realtime.ts', import.meta.url), 'utf8')
+
+test('sıfır bakiyede yalnız Pas görünür', () => {
+  assert.deepEqual(betOptionSpecs(0), [{ key: 'pass', amount: 0 }])
+})
+
+test('yuvarlama aynı tutarı üretince bahis seçenekleri tekilleşir', () => {
+  assert.deepEqual(betOptionSpecs(1), [{ key: 'pass', amount: 0 }, { key: 'all', amount: 1 }])
+  assert.deepEqual(betOptionSpecs(2), [{ key: 'pass', amount: 0 }, { key: 'half', amount: 1 }, { key: 'all', amount: 2 }])
+})
+
+test('normal bakiyede Pas/Çeyrek/Yarı/Hepsi korunur', () => {
+  assert.deepEqual(betOptionSpecs(1000).map((option) => option.amount), [0, 250, 500, 1000])
+})
+
+test('bahis A/B/C/D kısayolları görünür seçeneklere eşlenir', () => {
+  assert.equal(shortcutIndex('a', 4), 0)
+  assert.equal(shortcutIndex('D', 4), 3)
+  assert.equal(shortcutIndex('D', 2), null)
+})
+
+test('bekleyen oyuncunun klasik/takım sorusu kilitlidir', () => {
+  assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: true }), true)
+  assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: false }), false)
+})
+
+test('bekleyen oyuncunun Çember girişi ve Enter gönderimi kilitlidir', () => {
+  assert.equal(circleAnswerIsLocked({ answered: false, revealing: false, spectator: false, waiting: true }), true)
+  assert.equal(circleAnswerIsLocked({ answered: false, revealing: false, spectator: false, waiting: false }), false)
+  assert.match(activitySource, /disabled=\{circleLocked\}/)
+  assert.match(activitySource, /event\.key === 'Enter'.*!circleLocked/)
+  assert.match(activitySource, /waiting \? t\('game\.waitingNextRound'\)/)
+})
+
+test('Çember inputu yeni ve oynanabilir turda odağı alır', () => {
+  assert.equal(circleInputShouldFocus({ hasPrompt: true, locked: false }), true)
+  assert.equal(circleInputShouldFocus({ hasPrompt: true, locked: true }), false)
+  assert.equal(circleInputShouldFocus({ hasPrompt: false, locked: false }), false)
+  assert.match(activitySource, /circleInputRef\.current\?\.focus\(\)/)
+})
+
+test('Takım başlangıcı iki bağlı takım gerektirir', () => {
+  assert.equal(bothTeamsPresent('team', [{ connected: true, team: 0 }, { connected: true, team: 0 }]), false)
+  assert.equal(bothTeamsPresent('team', [{ connected: true, team: 0 }, { connected: true, team: 1 }]), true)
+  assert.equal(bothTeamsPresent('classic', [{ connected: true, team: 0 }]), true)
+})
+
+test('menü ok/Home/End gezinmesi sarar', () => {
+  assert.equal(nextMenuIndex(0, 'ArrowUp', 3), 2)
+  assert.equal(nextMenuIndex(-1, 'ArrowDown', 3), 0)
+  assert.equal(nextMenuIndex(2, 'ArrowDown', 3), 0)
+  assert.equal(nextMenuIndex(1, 'Home', 3), 0)
+  assert.equal(nextMenuIndex(1, 'End', 3), 2)
+})
+
+test('host menüsü ilk öğeye odaklanır ve odağı tetikleyiciye döndürür', () => {
+  assert.match(activitySource, /querySelector<HTMLButtonElement>\('\[role="menuitem"\]'\)\?\.focus\(\)/)
+  assert.match(activitySource, /trigger\.isConnected\) trigger\.focus\(\)/)
+})
+
+test('auth yenileme kodu ve reconnect odak tuzağı bağlıdır', () => {
+  assert.equal(isAuthRequiredError({ data: { code: 'AUTH_REQUIRED' } }), true)
+  assert.equal(isAuthRequiredError(new Error('normal bağlantı hatası')), false)
+  assert.match(activitySource, /useFocusTrap<HTMLDivElement>\(true\)/)
+  assert.match(activitySource, /aria-labelledby="qt-reconnect-title"/)
+})
+
+test('soru ve lobi hareket imzaları bağlıdır', () => {
+  assert.match(activitySource, /const BEAT_CARDS_MS = 200/)
+  assert.match(activitySource, /aria-pressed=\{selected === index\}/)
+  assert.match(activitySource, /className="qt-score-flight"/)
+  assert.match(activitySource, /className="qt-sr-only"/)
+  assert.match(activitySource, /'--timer-angle': `\$\{1 - visibleRatio\}turn`/)
+  assert.doesNotMatch(activityCss, /var\(--letter-i\)/)
+  assert.match(activitySource, /<ModeTableScene mode=\{mode\}/)
+  assert.match(activitySource, /justJoined\[seat\] \? 'is-joining'/)
+  assert.match(activityCss, /@keyframes qtScoreFlight/)
+  assert.match(activityCss, /@keyframes qtSeatSit/)
+})
+
+test('yerel socket aynı origin ve taşıma fallbackini kullanır', () => {
+  assert.match(realtimeSource, /VITE_GAME_SERVER_URL \|\| window\.location\.origin/)
+  assert.match(realtimeSource, /transports: \['polling', 'websocket'\]/)
+  assert.match(realtimeSource, /tryAllTransports: true/)
+})
+
+test('dar ekran katmanlari icerigi kapatmaz', () => {
+  assert.match(activitySource, /const showSpectatorBar =/)
+  assert.match(activitySource, /showSpectatorBar \? 'has-spectator-bar' : ''/)
+  assert.match(activityCss, /\.qt-spectator-bar \{[^}]*translate: -50% 0;/)
+  assert.match(activityCss, /\.qt-activity-root\.has-spectator-bar > \.qt-activity \{ padding-bottom:/)
+  assert.match(activityCss, /\.qt-mode-list \{[^}]*repeat\(3, minmax\(0, 1fr\)\)/)
+  assert.match(activityCss, /\.qt-difficulty-row \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); \}/)
+  assert.match(activityCss, /@media \(max-width: 560px\) and \(orientation: portrait\)[\s\S]*?\.qt-game \{[^}]*calc\(86px \+ var\(--qt-saib\)\)/)
+  assert.match(activityCss, /\.qt-question-image \{ max-width: min\(100%, 210px\); max-height: 140px; \}/)
+})
+
+console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

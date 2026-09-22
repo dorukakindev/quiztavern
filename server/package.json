@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "npm run typecheck && tsx scripts/build.ts",
+    "start": "node --enable-source-maps dist/src/index.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test:dod": "tsx scripts/dod-test.ts",
+    "test:sec": "tsx scripts/security-test.ts",
+    "test:hardening": "tsx scripts/hardening-test.ts",
+    "test:bet-team-edge": "tsx scripts/bet-team-edge-test.ts",
+    "test:circle-lightning-edge": "tsx scripts/circle-lightning-edge-test.ts"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.4"
+  }
+}
