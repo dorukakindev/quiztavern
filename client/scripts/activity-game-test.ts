@@ -34,6 +34,31 @@ test('bahis A/B/C/D kısayolları görünür seçeneklere eşlenir', () => {
   assert.equal(shortcutIndex('D', 2), null)
 })
 
+test('1-4 rakam kısayolları harflerle aynı şıkka eşlenir', () => {
+  assert.equal(shortcutIndex('1', 4), 0)
+  assert.equal(shortcutIndex('4', 4), 3)
+  assert.equal(shortcutIndex('5', 4), null)
+  assert.equal(shortcutIndex('2', 2), 1)
+  assert.equal(shortcutIndex('3', 2), null)
+  // Klasik şık handler'ı da aynı yardımcıyı kullanır (A-D/1-4 birlikte).
+  assert.match(activitySource, /shortcutIndex\(event\.key, 4\)/)
+})
+
+test('reveal kararları renkten bağımsız ✓/✗ rozeti + desenle işaretlenir', () => {
+  // Renk körlüğü: doğru/yanlış artık yalnız yeşil/kırmızıyla anlatılmıyor —
+  // sabit 24px slotta ✓/✗ rozeti ve yanlışta kesikli kenarlık var.
+  assert.match(activitySource, /qt-verdict-pop is-right/)
+  assert.match(activitySource, /qt-verdict-pop is-wrong/)
+  assert.match(activityCss, /\.qt-verdict-pop\.is-right \{[^}]*background: #5ee6c1/)
+  assert.match(activityCss, /\.qt-verdict-pop\.is-wrong \{[^}]*background: #ef8674/)
+  assert.match(activityCss, /\.qt-answer\.is-wrong \{[^}]*border-style: dashed/)
+})
+
+test('kategori modalı seçilileri en başta listeler', () => {
+  assert.match(activitySource, /const ordered = q \? filtered : \[\.\.\.filtered\]\.sort/)
+  assert.match(activitySource, /\{ordered\.map\(\(category\)/)
+})
+
 test('bekleyen oyuncunun klasik/takım sorusu kilitlidir', () => {
   assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: true }), true)
   assert.equal(questionIsLocked({ selected: null, revealing: false, spectator: false, waiting: false }), false)
