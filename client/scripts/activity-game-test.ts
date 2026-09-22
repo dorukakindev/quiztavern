@@ -147,4 +147,19 @@ test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', 
   assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/)
 })
 
+test('cevap bekleyen oyuncu kartı soru/bahis fazında pulse alır', () => {
+  assert.match(activitySource, /'is-awaiting' : ''/)
+  assert.match(activitySource, /state\.phase === 'question' \|\| state\.phase === 'bet'\) && !player\.answered/)
+  assert.match(activityCss, /\.qt-player-card\.is-awaiting \{ animation: qtAwaitPulse/)
+  assert.match(activityCss, /@keyframes qtAwaitPulse/)
+  // Kilitleyen kart pulse'ı bırakıp is-locked sabit görünüme geçer.
+  assert.match(activitySource, /player\.answered \? 'is-locked' : ''/)
+})
+
+test('faz geçişleri ortak giriş animasyonunu paylaşır ve reduced-motion kapsar', () => {
+  assert.match(activityCss, /\.qt-lobby-shell, \.qt-start-countdown, \.qt-game-grid \{ animation: qtFadeIn/)
+  // Yeni animasyonlar prefers-reduced-motion altında anlık geçişe döner.
+  assert.match(activityCss, /prefers-reduced-motion: reduce[\s\S]*?\.qt-player-card\.is-awaiting[\s\S]*?\.qt-game-grid \{ animation: none !important; \}/)
+})
+
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)
