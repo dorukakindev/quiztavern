@@ -15,6 +15,7 @@ const activitySource = readFileSync(new URL('../src/activity/ActivityApp.tsx', i
 const activityCss = readFileSync(new URL('../src/activity/activity.css', import.meta.url), 'utf8')
 const realtimeSource = readFileSync(new URL('../src/lib/realtime.ts', import.meta.url), 'utf8')
 const i18nSource = readFileSync(new URL('../src/activity/i18n.ts', import.meta.url), 'utf8')
+const bridgeSource = readFileSync(new URL('../src/activity/sdkBridge.ts', import.meta.url), 'utf8')
 
 test('sıfır bakiyede yalnız Pas görünür', () => {
   assert.deepEqual(betOptionSpecs(0), [{ key: 'pass', amount: 0 }])
@@ -158,6 +159,16 @@ test('özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıd�
   assert.match(activityCss, /\.qt-pack-form \{ display: grid; gap: 8px;/)
   assert.match(i18nSource, /'pack\.pasteCsv':/)
   assert.match(i18nSource, /'err\.packHostOnly':/)
+})
+
+test('podyum "Kanala paylaş": shareLink sonuç kartı + davet fallback', () => {
+  // Buton yalnız Discord içinde ve kazanan varken görünür; metin i18n'den.
+  assert.match(activitySource, /isDiscord && onShare && winner && <button className="qt-button qt-podium-share"/)
+  assert.match(activitySource, /onShare\(t\('share\.message'/)
+  assert.match(bridgeSource, /shareLink\(\{ message \}\)/)
+  // shareLink reddedilirse davet diyaloğuna düşülür; ikisi de yoksa false.
+  assert.match(bridgeSource, /openInviteDialog/)
+  assert.match(activityCss, /\.qt-podium-share \{/)
 })
 
 test('"bu soru hatalı" bayrağı yalnız reveal\'da ve klasik modda görünür', () => {
