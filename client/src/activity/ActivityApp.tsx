@@ -278,6 +278,8 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
   // Türkçe-duyarlı, aksan/harf toleranslı arama (İ/ı dahil).
   const q = query.trim().toLocaleLowerCase('tr-TR')
   const filtered = q ? categories.filter((category) => category.name.toLocaleLowerCase('tr-TR').includes(q)) : categories
+  // Seçili kategoriler arama boşken en başta görünsün (sekmeden bakınca anlaşılır).
+  const ordered = q ? filtered : [...filtered].sort((a, b) => Number(selection.includes(b.name)) - Number(selection.includes(a.name)))
   return <div className="qt-category-picker">
     <button type="button" className={`qt-category-trigger ${open ? 'is-open' : ''}`} disabled={disabled} aria-haspopup="dialog" aria-expanded={open} onClick={() => setOpen(true)}>
       <span>{summary}</span>
@@ -296,7 +298,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
           {/* "Karışık" sıfırlama seçeneği: yalnız arama boşken üstte durur. */}
           {!q && <button type="button" className={`qt-category-chip qt-category-reset ${!selection.length ? 'is-selected' : ''}`} aria-pressed={!selection.length} onClick={onMixed}>{t('category.mixed')}</button>}
           <div className="qt-category-modal__grid">
-            {filtered.map((category) => {
+            {ordered.map((category) => {
               const soon = category.classicCount === 0 && category.circleCount === 0
               const count = mode === 'circle' ? category.circleCount : category.classicCount
               const selected = selection.includes(category.name)
@@ -401,7 +403,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
         </div>
       : <div className="qt-strip-title"><span>{t('game.table')}</span><b>{state.players.length} / 8</b></div>}
     <div className="qt-player-stack">
-      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
+      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${(state.phase === 'question' || state.phase === 'bet') && !player.answered && !player.waiting && player.connected ? 'is-awaiting' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
         <span className="qt-avatar-slot">
           {player.id === leaderId && <span className="qt-strip-crown" aria-hidden="true" title={t('game.leader')}><Icon name="crown" /></span>}
           <Avatar player={player} compact mode={state.gameMode} />
@@ -962,16 +964,16 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
     }
   }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
 
-  // Klavye kısayolu: A/B/C/D tıklamayla aynı işi yapar (kilitler). Çember
-  // modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
+  // Klavye kısayolu: A/B/C/D veya 1/2/3/4 tıklamayla aynı işi yapar (kilitler).
+  // Çember modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
   // alanına yazarken ya da masadan-ayrıl onay kutusu açıkken de sessizce yutar.
   useEffect(() => {
     if (isCircle || locked) return
     const onKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
       if (document.querySelector('[role="dialog"]')) return
-      const index = 'ABCD'.indexOf(event.key.toUpperCase())
-      if (index === -1) return
+      const index = shortcutIndex(event.key, 4)
+      if (index === null) return
       sfx.play('lock')
       onAnswer(index)
     }
@@ -1031,10 +1033,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
               <span className="qt-answer__text">{choice}</span>
               {showDist && <i className={`qt-answer__dist ${index === correctIndex ? 'is-right' : ''}`} style={{ '--pct': pct / 100 } as CSSProperties} aria-hidden="true" />}
               {showDist && <b className="qt-answer__pct">%{pct}</b>}
-              {/* Reveal'de doğru/yanlış yalnız kart rengiyle (is-correct/is-wrong)
-                  gösterilir, ikon yok. Slot yine sabit 24px: kilit ikonu kalkınca
-                  da kart kımıldamasın diye boş kalıyor. */}
-              <i className="qt-answer__mark" aria-hidden="true">{!beats.cards && selected === index && !beats.active ? <span className="qt-lock-pop" key="lock"><Icon name="check" /></span> : null}</i>
+              {/* Reveal'de doğru ✓ / (kendi) yanlış ✗ rozeti renkten bağımsız
+                  işaretlenir (renk-körlüğü erişilebilirliği). Slot sabit 24px:
+                  ikon gelince kart kımıldamaz. */}
+              <i className="qt-answer__mark" aria-hidden="true">{beats.cards && isCorrect ? <span className="qt-verdict-pop is-right"><Icon name="check" /></span> : beats.cards && isWrong ? <span className="qt-verdict-pop is-wrong"><Icon name="close" /></span> : !beats.cards && selected === index && !beats.active ? <span className="qt-lock-pop" key="lock"><Icon name="check" /></span> : null}</i>
               <VoterDock voters={voters} correct={index === correctIndex} beats={beats} />
             </button>
           })}
