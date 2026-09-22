@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Common, DiscordSDK, Events, RPCCloseCodes } from '@discord/embedded-app-sdk'
+import { Common, DiscordSDK, RPCCloseCodes } from '@discord/embedded-app-sdk'
+import { captureClientLog, inviteWithFallback, subscribeLayoutModeCompat, subscribeSpeaking, subscribeThermalState, updatePresence } from './sdkBridge'
 
 export type ActivityIdentity = {
   instanceId: string
@@ -18,12 +19,6 @@ export type ActivityIdentity = {
  * penceredir: masa oraya sığmaz, arayüz kompakt karta düşer.
  */
 export type LayoutMode = 'focused' | 'pip' | 'grid'
-
-const LAYOUT_BY_CODE: Record<number, LayoutMode> = {
-  [Common.LayoutModeTypeObject.FOCUSED]: 'focused',
-  [Common.LayoutModeTypeObject.PIP]: 'pip',
-  [Common.LayoutModeTypeObject.GRID]: 'grid',
-}
 
 const fallbackIdentity: ActivityIdentity = {
   instanceId: 'dev-ana-lobi',
@@ -120,6 +115,9 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
   try {
     return await initializeActivitySession(sdk, clientId)
   } catch (error) {
+    // ready() geçildiyse SDK hâlâ açık: hatayı Discord istemcisinin log'larına
+    // da bırak (iframe konsolunu gerçek Discord'da göremeyiz).
+    captureClientLog(sdk, `[activity] init failed: ${describeError(error)}`)
     // Constructor pencereye message listener ekler; timeout/hata sonrası bırakılırsa
     // her Retry yeni bir listener biriktirir.
     closeSdk(sdk, 'QuizTavern activity initialization failed')
@@ -130,10 +128,14 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
 async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Promise<ActivitySession> {
   await at('ready', () => withTimeout(sdk.ready(), SDK_READY_TIMEOUT_MS, 'Discord SDK ready'))
 
+  // identify: kullanıcı + locale. rpc.activities.write: Rich Presence
+  // (setActivity). rpc.voice.read: ses kanalında kim konuşuyor (SPEAKING_*).
+  // prompt:'none' → daha önce yetki veren kullanıcıya tekrar sheet çıkmaz.
   const authorization = await at('authorize', () => sdk.commands.authorize({
     client_id: clientId,
     response_type: 'code',
-    scope: ['identify'],
+    scope: ['identify', 'rpc.activities.write', 'rpc.voice.read'],
+    prompt: 'none',
   }))
 
   // Discord iframe'inde CSP dış adresleri engeller: sunucuya yalnızca kendi
@@ -227,6 +229,10 @@ export function useDiscordActivity() {
   const [status, setStatus] = useState<'booting' | 'ready' | 'fallback' | 'error'>('booting')
   const [error, setError] = useState<string | null>(null)
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => layoutFromQuery() ?? 'focused')
+  // Discord THERMAL_STATE_UPDATE: cihaz ısınınca dekoratif shader kapatılır.
+  const [lowPower, setLowPower] = useState(false)
+  // Ses kanalında şu an konuşan Discord kullanıcı id'leri (SPEAKING_* event).
+  const [speakingIds, setSpeakingIds] = useState<Set<string>>(() => new Set())
   const [attempt, setAttempt] = useState(0)
   const sdkRef = useRef<DiscordSDK | null>(null)
   const retry = useCallback(() => {
@@ -250,18 +256,15 @@ export function useDiscordActivity() {
     return () => window.clearTimeout(timer)
   }, [identity.isDiscord, identity.sessionToken, retry])
 
-  /**
-   * Boş koltuk → arkadaş çağır. Zincir: guild'deyse native davet diyaloğu,
-   * değilse/başarısızsa shareLink (aktivite linkini paylaşma modalı — DM'de
-   * de çalışır). İkisi de olmazsa false → çağıran oda-kodu ipucuna düşer.
-   */
   const invite = useCallback(async (message: string): Promise<boolean> => {
     const sdk = sdkRef.current
     if (!sdk) return false
-    if (sdk.guildId) {
-      try { await sdk.commands.openInviteDialog(); return true } catch { /* izin yok — link paylaşımına düş */ }
-    }
-    try { return (await sdk.commands.shareLink({ message })).success } catch { return false }
+    return inviteWithFallback(sdk, message)
+  }, [])
+
+  /** Discord durum çubuğunda görünen satır; SDK yoksa no-op. */
+  const setPresence = useCallback((state: string): void => {
+    if (sdkRef.current) updatePresence(sdkRef.current, state)
   }, [])
 
   useEffect(() => {
@@ -274,37 +277,17 @@ export function useDiscordActivity() {
     }
 
     let sdk: DiscordSDK | null = null
-    // Uyumluluk: yeni istemciler ACTIVITY_LAYOUT_MODE_UPDATE, eskiler yalnız
-    // ACTIVITY_PIP_MODE_UPDATE yayınlar (SDK 2.5'te enum'da yok — ham string).
-    // LAYOUT olayı bir kez görülünce PIP olayları susturulur: yeni istemcide
-    // ikisi de gelir, LAYOUT authoritative olsun (grid'i pip sanmayalım).
-    let sawLayout = false
-    const onLayout = ({ layout_mode }: { layout_mode: number }) => {
-      sawLayout = true
-      // Bilinmeyen kod (UNHANDLED) geldiğinde tam ekran varsayarız: oyunu
-      // tanımadığımız bir yerleşim yüzünden kompakt karta düşürmeyelim.
-      setLayoutMode(LAYOUT_BY_CODE[layout_mode] ?? 'focused')
-    }
-    const onPipMode = (data: unknown) => {
-      if (sawLayout) return
-      const pipMode = (data as { pip_mode?: unknown }).pip_mode === true
-      setLayoutMode(pipMode ? 'pip' : 'focused')
-    }
+    let unsubs: (() => void)[] = []
     connectOnce(clientId)
       .then((session) => {
         if (cancelled) return
         sdk = session.sdk
         sdkRef.current = session.sdk
-        try {
-          sdk.subscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
-        } catch {
-          /* eski istemci bu olayı bilmiyor — PIP olayı devrede */
-        }
-        try {
-          sdk.subscribe('ACTIVITY_PIP_MODE_UPDATE' as Events, onPipMode)
-        } catch {
-          /* istemci eski olayı da bilmiyor — tam ekran varsayılır */
-        }
+        unsubs = [
+          subscribeLayoutModeCompat(session.sdk, setLayoutMode),
+          subscribeThermalState(session.sdk, setLowPower),
+          subscribeSpeaking(session.sdk, setSpeakingIds),
+        ]
         setIdentity(session.identity)
         setStatus('ready')
       })
@@ -320,16 +303,11 @@ export function useDiscordActivity() {
 
     return () => {
       cancelled = true
-      try {
-        sdk?.unsubscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
-        sdk?.unsubscribe('ACTIVITY_PIP_MODE_UPDATE' as Events, onPipMode)
-      } catch {
-        /* zaten abone değiliz */
-      }
+      unsubs.forEach((unsub) => { try { unsub() } catch { /* zaten kapalı */ } })
     }
   }, [attempt, localRoomId])
 
   // Query ile zorlanan yerleşim her zaman kazanır (yerel PIP denemesi için).
   const forced = layoutFromQuery()
-  return { identity, status, error, layoutMode: forced ?? layoutMode, invite, retry }
+  return { identity, status, error, layoutMode: forced ?? layoutMode, lowPower, speakingIds, invite, setPresence, retry }
 }

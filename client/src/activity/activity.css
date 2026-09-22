@@ -1236,3 +1236,18 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 /* place-items:center ızgarasında kartlar min-width:auto=min-content'e düşer;
    dar görünümde içerik sığabilse bile kart daralmazdı. */
 .qt-podium-glass, .qt-summary-card, .qt-review-card { min-width: 0; }
+
+/* ── Konuşma işareti (Discord SPEAKING_* event) ─────────────────────────
+   Ses kanalında konuşan oyuncunun koltuk/kart token'ı Discord'un konuşma
+   yeşiliyle nabızlanır. Dosya sonunda: önceki yüzey stillerinin üstüne
+   yalnız box-shadow ekler, boyut/düzen değiştirmez — portrait avatar-only
+   tasarımı da (≤560px) etkilenmez. */
+.qt-seat.is-speaking .qt-seat__token,
+.qt-player-card.is-speaking,
+.qt-podium-list > .is-speaking {
+  animation: qt-speaking 1.6s ease-in-out infinite;
+}
+@keyframes qt-speaking {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(87, 242, 135, .75), 0 0 12px rgba(87, 242, 135, .25); }
+  50% { box-shadow: 0 0 0 3px rgba(87, 242, 135, .95), 0 0 20px rgba(87, 242, 135, .45); }
+}
