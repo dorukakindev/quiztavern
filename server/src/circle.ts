@@ -652,7 +652,7 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
   {"letter":"D","clue":"Küçük doğal akarsu.","answer":"dere","category":"Doğa","difficulty":"kolay","letterEn":"T","clueEn":"A small stream flowing into a larger river.","answerEn":"tributary"},
   {"letter":"K","clue":"Yer altından kendiliğinden yeryüzüne çıkan su.","answer":"kaynak","category":"Doğa","difficulty":"orta","letterEn":"W","clueEn":"A land area saturated with water for much of the year.","answerEn":"wetland"},
   {"letter":"B","clue":"Sazlık ve sucul canlılarla zengin, suya doygun arazi.","answer":"bataklık","category":"Doğa","difficulty":"orta","letterEn":"M","clueEn":"A coastal wetland forest adapted to salt water.","answerEn":"mangrove"},
-  {"letter":"M","clue":"Tropikal denizlerde yaşayan, iskelet oluşturan koloni canlısı.","answer":"mercan","category":"Doğa","difficulty":"zor","letterEn":"C","clueEn":"A community of organisms living together in one place.","answerEn":"community"},
+  {"letter":"E","clue":"Bir tarafın zarar görüp diğerinin yararlandığı ortak yaşam biçimi.","answer":"endoparazit","category":"Doğa","difficulty":"zor","letterEn":"E","clueEn":"A symbiosis where one organism is harmed while the other benefits inside its body.","answerEn":"endoparasite"},
   {"letter":"A","clue":"Kuşların ve bazı memelilerin mevsimsel yer değiştirmesi.","answer":"akın","category":"Doğa","difficulty":"zor","letterEn":"M","clueEn":"The seasonal movement of animals between regions.","answerEn":"migration"},
   {"letter":"S","clue":"Toprakta yaşayan, halkalı gövdeli omurgasız hayvan.","answer":"solucan","category":"Doğa","difficulty":"orta","letterEn":"P","clueEn":"An animal that hunts and eats other animals.","answerEn":"predator"},
   {"letter":"A","clue":"Kıskaçlı ve zehirli iğneli kuyruk taşıyan eklembacaklı.","answer":"akrep","category":"Doğa","difficulty":"kolay","letterEn":"Q","clueEn":"A period in which an animal is inactive during winter.","answerEn":"quiescence"},
@@ -1645,7 +1645,18 @@ export function sampleCirclePrompts(count = ALL_CIRCLE_PROMPTS.length, categorie
     return result;
   };
   const pool = [...shuf(source.filter((p) => !exclude.has(key(p)))), ...shuf(source.filter((p) => exclude.has(key(p))))];
-  return pool.slice(0, count);
+  // Maç-içi tekrar sigortası: havuzda anahtarı veya (normalize edilmiş) cevabı
+  // aynı olan mükerrer girdiler tek maça düşemez — oyuncu yazdığı metne göre
+  // cevaplar, aynı cevabın ikinci kez çıkması anlamsız bir turdur.
+  const seen = new Set<string>();
+  const answers = new Set<string>();
+  return pool.filter((p) => {
+    const answerKey = normalizeCircleAnswer(p.answer);
+    if (seen.has(key(p)) || answers.has(answerKey)) return false;
+    seen.add(key(p));
+    answers.add(answerKey);
+    return true;
+  }).slice(0, count);
 }
 
 /** Verilen kategori+zorluk için etkin çember havuzunun TÜM anahtarları (category|answer).

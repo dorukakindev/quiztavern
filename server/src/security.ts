@@ -66,13 +66,23 @@ function isLoopback(address: string): boolean {
 /** Cloudflare Tunnel aynı makineden bağlanır; dış bağlantının sahte CF başlığına güvenilmez. */
 export function clientAddressKey(headers: Record<string, unknown>, remoteAddress?: string): string {
   const remote = remoteAddress ?? "unknown";
+  const loopbackRemote = isLoopback(remote);
   const cloudflareIp = headers["cf-connecting-ip"];
   if (
-    isLoopback(remote)
+    loopbackRemote
     && typeof cloudflareIp === "string"
     && /^[0-9a-fA-F:.]{2,64}$/.test(cloudflareIp)
   ) {
     return `cf:${cloudflareIp}`;
+  }
+  // Aynı makinedeki başka bir ters proxy (nginx/caddy, TUNNEL.md alternatifi)
+  // de remote adresini 127.0.0.1'e çevirir; XFF olmadan tüm istemciler aynı
+  // `remote:127.0.0.1` anahtarını paylaşıp ortak limit kovasına düşer. En sağ
+  // XFF değeri en içteki proxy'nin gördüğü adrestir.
+  const xff = headers["x-forwarded-for"];
+  if (loopbackRemote && typeof xff === "string") {
+    const last = xff.split(",").pop()?.trim() ?? "";
+    if (/^[0-9a-fA-F:.]{2,64}$/.test(last)) return `xff:${last}`;
   }
   return `remote:${remote}`;
 }

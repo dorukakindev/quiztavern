@@ -120,6 +120,12 @@ if (IS_PRODUCTION) {
   if (!existsSync(clientIndex)) {
     throw new Error(`Production client build not found: ${clientIndex}. Run npm run build first.`);
   }
+  // Discord Developer Portal, uygulama doğrulamasında kamu gizlilik/koşul URL'leri
+  // ister. Dosyalar client/public'ten dist'e kopyalanır; temiz yollar da verelim.
+  app.get(["/privacy", "/terms"], (req, res) => {
+    res.setHeader("Cache-Control", "public, max-age=3600");
+    res.sendFile(resolve(clientDist, req.path === "/terms" ? "terms.html" : "privacy.html"));
+  });
   app.use(express.static(clientDist, {
     index: "index.html",
     setHeaders: (res, path) => {

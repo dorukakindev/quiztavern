@@ -372,7 +372,7 @@ const en: Record<StringKey, string> = {
   'table.readyCount': '{ready} / {total} players ready',
   'howto.title': 'To the table in three steps.',
   'howto.step1Title': 'Pick your mode',
-  'howto.step1Body': 'Classic, Lightning, or Circle. The host sets the rules.',
+  'howto.step1Body': 'Classic, Fuse, or Circle. The host sets the rules.',
   'howto.step2Title': 'Lock your answer',
   'howto.step2Body': 'Everyone sees the same question at the same time. Choose before time runs out.',
   'howto.step3Title': 'Be quick, rack up points',
