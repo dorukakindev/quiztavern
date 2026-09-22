@@ -130,12 +130,13 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
 
   // identify: kullanıcı + locale. rpc.activities.write: Rich Presence
   // (setActivity). rpc.voice.read: ses kanalında kim konuşuyor (SPEAKING_*).
-  // prompt:'none' → daha önce yetki veren kullanıcıya tekrar sheet çıkmaz.
+  // prompt göndermiyoruz: 'none' yalnız önceden yetki vermiş kullanıcıda
+  // sessiz geçer; ilk girişte sheet gerekir ve çağrı hata fırlatır. prompt'u
+  // boş bırakınca istemci gerektiğinde sheet gösterir, verilmişse sessiz geçer.
   const authorization = await at('authorize', () => sdk.commands.authorize({
     client_id: clientId,
     response_type: 'code',
     scope: ['identify', 'rpc.activities.write', 'rpc.voice.read'],
-    prompt: 'none',
   }))
 
   // Discord iframe'inde CSP dış adresleri engeller: sunucuya yalnızca kendi
