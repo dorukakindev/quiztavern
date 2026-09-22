@@ -399,7 +399,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
         </div>
       : <div className="qt-strip-title"><span>{t('game.table')}</span><b>{state.players.length} / 8</b></div>}
     <div className="qt-player-stack">
-      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
+      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${(state.phase === 'question' || state.phase === 'bet') && !player.answered && !player.waiting && player.connected ? 'is-awaiting' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
         <span className="qt-avatar-slot">
           {player.id === leaderId && <span className="qt-strip-crown" aria-hidden="true" title={t('game.leader')}><Icon name="crown" /></span>}
           <Avatar player={player} compact mode={state.gameMode} />
