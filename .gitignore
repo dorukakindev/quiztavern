@@ -25,5 +25,6 @@ Claude Design/
 .claude/
 
 
-# Soru bildirimleri kalıcı deposu (çalışma zamanı verisi)
+# Çalışma zamanı verisi (soru bildirimleri + günlük meydan okuma db)
 server/data/
+
