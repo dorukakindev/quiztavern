@@ -1,7 +1,7 @@
 /**
  * Aşama 2 DoD testi — mock auth kapalıyken (üretim duruşu) sahte kimliklerin
- * fail-closed reddedildiğini doğrular. Sunucuyu ALLOW_MOCK_AUTH tanımsız,
- * bot token'sız başlatır: hiçbir bağlantı odaya ulaşmamalıdır.
+ * fail-closed reddedildiğini doğrular. Sunucu ALLOW_MOCK_AUTH kapalı ve
+ * geçersiz Discord kimlikleriyle başlar: hiçbir bağlantı odaya ulaşmamalıdır.
  * Çalıştırma: npx tsx scripts/security-test.ts
  */
 import crypto from "node:crypto";
@@ -46,10 +46,24 @@ function attempt(auth: Record<string, unknown>): Promise<{ ok: boolean; error?: 
 async function main() {
   const port = await findFreePort();
   baseUrl = `http://127.0.0.1:${port}`;
-  console.log("[sec] sunucu üretim duruşuyla başlatılıyor (mock kapalı, bot token yok)…");
-  // Açıkça "0"/"" atanır (silmek yetmez): server/.env dosyasındaki yerel geliştirme
+  console.log("[sec] sunucu üretim duruşuyla başlatılıyor (mock kapalı, geçersiz Discord kimlikleri)…");
+  // Üretim boot'u zorunlu config ister (config.ts fail-closed) — hepsine
+  // geçersiz ama tanımlı değerler verilir. Geçersiz bot token instance
+  // doğrulamasını yine fail-closed düşürür; DISCORD_CLIENT_ID/SECRET ve
+  // https PUBLIC_BASE_URL yalnız boot denetimini geçmek içindir.
+  // Açıkça atanır (silmek yetmez): server/.env dosyasındaki yerel geliştirme
   // değerleri, ortamda tanımlı olmayan değişkenlerin yerine geçebilir.
-  const env = { ...process.env, PORT: String(port), HOST: "127.0.0.1", SESSION_SECRET: TEST_SECRET, ALLOW_MOCK_AUTH: "0", DISCORD_BOT_TOKEN: "" };
+  const env = {
+    ...process.env,
+    PORT: String(port),
+    HOST: "127.0.0.1",
+    SESSION_SECRET: TEST_SECRET,
+    ALLOW_MOCK_AUTH: "0",
+    DISCORD_BOT_TOKEN: "gecersiz-test-tokeni",
+    DISCORD_CLIENT_ID: "test-client-id",
+    DISCORD_CLIENT_SECRET: "test-client-secret",
+    PUBLIC_BASE_URL: "https://quiztavern.test",
+  };
   const serverRoot = fileURLToPath(new URL("..", import.meta.url));
   const tsxCli = fileURLToPath(new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url));
   const server = spawn(process.execPath, [tsxCli, "src/index.ts"], {
@@ -110,8 +124,8 @@ async function main() {
       "geçersiz instanceId biçimi Discord çağrısından önce reddedildi",
     );
 
-    const noBotToken = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000), instanceId: "inst-1" });
-    assert(!noBotToken.ok && (noBotToken.error ?? "").includes("doğrulanamadı"), `bot token yokken instance doğrulaması fail-closed reddetti (${noBotToken.error})`);
+    const badBotToken = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000), instanceId: "inst-1" });
+    assert(!badBotToken.ok && (badBotToken.error ?? "").includes("doğrulanamadı"), `geçersiz bot token ile instance doğrulaması fail-closed reddetti (${badBotToken.error})`);
 
     const roomHijack = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000), instanceId: "inst-1", roomId: "baskasinin-odasi" });
     assert(!roomHijack.ok, `roomId beyanı instance doğrulamasını aşamadı (${roomHijack.error})`);
