@@ -3,6 +3,7 @@ import { GameError } from "./errors";
 import { QUESTION_COUNTS } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
+import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyResultEntry } from "./daily";
 import type {
@@ -100,6 +101,10 @@ export class Room {
   // Zorluk masa ayarı: null = karışık (tüm zorluklar). Mod'dan bağımsız; hem
   // klasik hem çember örneklemesine filtre olarak geçer.
   difficulty: Difficulty | null = null;
+  /** Masa ayarı: özel soru paketi id'si; null = standart havuz. Paket seçiliyken
+   *  klasik soru havuzu paketin listesiyle değişir (kategori/zorluk filtreleri
+   *  atlanır); Çember kendi prompt havuzunu kullandığı için etkilenmez. */
+  packId: string | null = null;
   hostId: string | null = null;
   questionStartedAt = 0;
   questionDeadline = 0;
@@ -500,6 +505,20 @@ export class Room {
     this.broadcast();
   }
 
+  /** Özel soru paketi ayarı: id ya da null (standart havuza dön). Yalnız host, lobide. */
+  setPack(playerId: string, packId: unknown): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== playerId) throw new GameError("err.packHostOnly");
+    const next = packId === null ? null : typeof packId === "string" ? packId : undefined;
+    if (next === undefined) throw new GameError("err.packUnknown");
+    if (next !== null && !getPack(next)) throw new GameError("err.packUnknown");
+    if (this.packId === next) return;
+    this.packId = next;
+    // Masa ayarı değişti; herkes tekrar onaylasın (kategori/sayı ile aynı kural).
+    for (const player of this.players.values()) if (!player.isBot) player.ready = false;
+    this.broadcast();
+  }
+
   setCategories(playerId: string, categories: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.categoryHostOnly");
@@ -590,10 +609,19 @@ export class Room {
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
     } else {
       this.seenQuestionIds = resetExhaustedSubpools(compatibleCategories, this.difficulty, this.seenQuestionIds, this.lastQuestionIds, this.roundLimit);
-      this.questions = sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty);
+      // Özel paket seçiliyse (Çember hariç — kendi prompt havuzu var) sorular
+      // paketin listesinden çekilir; kategori/zorluk filtreleri paket için
+      // uygulanmaz, paket temalı havuzun kendisidir.
+      const pack = this.packId && this.gameMode !== "circle" ? getPack(this.packId) : null;
+      if (this.packId && this.gameMode !== "circle" && !pack) throw new GameError("err.packUnknown");
+      if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
+      this.questions = pack
+        ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
+        : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty);
       this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
     }
+
     // Dar havuz benzersiz çekildi -> istenen sayıdan az olabilir. Klasik round.total
     // ve maç-sonu GERÇEK soru sayısını yansıtsın (çemberdeki circlePrompts.length gibi).
     if (this.gameMode !== "circle") this.roundLimit = this.questions.length;
@@ -742,6 +770,7 @@ export class Room {
       questionCount: this.questionCount,
       difficulty: this.difficulty,
       categorySelection: this.categorySelection,
+      pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
       availableCategories: CATEGORY_CATALOG,
       devMode,
       serverNow: Date.now(),

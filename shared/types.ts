@@ -138,6 +138,10 @@ export type ToastKey =
   | "err.modeInvalid"
   | "err.teamHostOnly"
   | "err.teamInvalid"
+  | "err.packFailed"
+  | "err.packHostOnly"
+  | "err.packUnknown"
+  | "err.packEmpty"
   | "err.teamNeedsBothSides"
   | "err.kicked"
   | "err.kickFailed"
@@ -269,6 +273,9 @@ export interface GameState {
   minPlayers: number;
   /** Boş dizi, tüm kategorilerin karışık kullanılacağı anlamına gelir. */
   categorySelection: string[];
+  /** Masa ayarı: özel soru paketi; null = standart havuz. Çember kendi
+   *  prompt havuzunu kullandığı için paket Çember'de etkisizdir. */
+  pack: { id: string; name: string } | null;
   availableCategories: CategoryOption[];
   devMode: boolean;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
@@ -296,6 +303,8 @@ export const EV = {
   SET_QUESTION_COUNT: "set-question-count",
   /** Yalnızca masa sahibi: { difficulty } — "kolay"|"orta"|"zor" ya da null (karışık) */
   SET_DIFFICULTY: "set-difficulty",
+  /** Yalnızca masa sahibi: { packId } — klasik soru havuzunu özel paketle değiştirir; null temizler */
+  SET_PACK: "set-pack",
   /**
    * Yalnızca masa sahibi: { mode } — masanın modu. Masa AYARIDIR ve yayınlanır:
    * mod her istemcinin yerel seçimi olsaydı, host Fitil'i seçtiğinde diğer

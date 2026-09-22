@@ -44686,7 +44686,7 @@
   {
     "id": "turkiye-antalya-turist",
     "category": "Türkiye",
-    "text": "Türkiye'ye gelen uluslararası turist sayısında genellikle ilk sırada yer alan şehir hangisidir?",
+    "text": "Türkiye'de havalimanı üzerinden en çok uluslararası turist ağırlayan şehir hangisidir?",
     "choices": [
       "İstanbul",
       "Antalya",
@@ -44695,7 +44695,7 @@
     ],
     "correctIndex": 1,
     "difficulty": "orta",
-    "textEn": "Which city generally ranks first in the number of international tourist arrivals in Turkey?",
+    "textEn": "Which Turkish city welcomes the most international tourists via its airport?",
     "choicesEn": [
       "Istanbul",
       "Antalya",
@@ -44728,10 +44728,10 @@
     "category": "Türkiye",
     "text": "Sultanahmet Camii, iç dekorasyonundaki mavi çiniler nedeniyle batı dünyasında hangi adla anılır?",
     "choices": [
-      "Mavi Camii",
-      "Yeşil Camii",
-      "Beyaz Camii",
-      "Altın Camii"
+      "Mavi Cami",
+      "Yeşil Cami",
+      "Beyaz Cami",
+      "Altın Cami"
     ],
     "correctIndex": 0,
     "difficulty": "kolay",
@@ -44786,7 +44786,7 @@
   {
     "id": "turkiye-ziraatbankasi",
     "category": "Türkiye",
-    "text": "1863 yılında kurulan ve Türkiye'nin en eski bankası kabul edilen finans kuruluşu hangisidir?",
+    "text": "1863 yılında kurulan ve bugün faaliyette olan en eski Türk bankası kabul edilen finans kuruluşu hangisidir?",
     "choices": [
       "İş Bankası",
       "Ziraat Bankası",
@@ -44795,7 +44795,7 @@
     ],
     "correctIndex": 1,
     "difficulty": "zor",
-    "textEn": "Which financial institution, founded in 1863, is Turkey's oldest bank?",
+    "textEn": "Which financial institution, founded in 1863, is considered Turkey's oldest bank still in operation?",
     "choicesEn": [
       "İş Bankası",
       "Ziraat Bankası",

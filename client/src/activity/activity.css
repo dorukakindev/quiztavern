@@ -709,6 +709,20 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-settings__group { display: grid; min-width: 0; gap: 8px; }
 .qt-settings__group > span { color: #7897aa; font-size: 10px; font-weight: 900; letter-spacing: .14em; }
 .qt-settings__note { color: #8fa9bc; font-size: 11px; line-height: 1.5; }
+.qt-pack-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.qt-pack-chip small { display: block; font-size: 10px; font-weight: 700; color: #8fa9bc; margin-top: 1px; }
+.qt-pack-chip.is-selected small { color: #f3d9a4; }
+.qt-pack-upload { margin-top: 2px; }
+.qt-pack-upload summary { color: #7fc4d8; font-size: 12px; font-weight: 800; cursor: pointer; list-style-position: inside; }
+.qt-pack-upload summary:hover { color: #a5e2f2; }
+.qt-pack-form { display: grid; gap: 8px; padding: 10px 0 2px; }
+.qt-pack-input { width: 100%; border: 1px solid rgba(83,212,228,.35); border-radius: var(--r-sm); padding: 8px 11px; color: #eaf8ff; background: rgba(9,28,45,.76); font: inherit; font-size: 12.5px; outline: none; box-sizing: border-box; }
+.qt-pack-input:focus { border-color: #5be6ee; box-shadow: 0 0 0 3px rgba(91,230,238,.12); }
+textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace; font-size: 11.5px; line-height: 1.5; }
+.qt-pack-submit { justify-content: center; }
+.qt-pack-feedback { display: grid; gap: 3px; font-size: 11.5px; line-height: 1.45; }
+.qt-pack-feedback.is-error { color: #f2a9a0; }
+.qt-pack-feedback.is-ok { color: #7fe6c3; }
 /* Maket: uc kart YAN YANA, ikon ustte ad altta. */
 .qt-mode-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); min-width: 0; gap: 8px; }
 .qt-mode-card { display: grid; min-width: 0; justify-items: center; align-content: center; gap: 7px; min-height: 74px; padding: 10px 6px; border: 1px solid rgba(92,165,195,.28); border-radius: var(--r-md); background: rgba(8,25,42,.78); color: #c4d2df; font: inherit; text-align: center; cursor: pointer; transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease); }

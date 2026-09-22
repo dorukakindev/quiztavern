@@ -14,6 +14,7 @@ console.log('Activity oyun/erişilebilirlik regresyonları')
 const activitySource = readFileSync(new URL('../src/activity/ActivityApp.tsx', import.meta.url), 'utf8')
 const activityCss = readFileSync(new URL('../src/activity/activity.css', import.meta.url), 'utf8')
 const realtimeSource = readFileSync(new URL('../src/lib/realtime.ts', import.meta.url), 'utf8')
+const i18nSource = readFileSync(new URL('../src/activity/i18n.ts', import.meta.url), 'utf8')
 const bridgeSource = readFileSync(new URL('../src/activity/sdkBridge.ts', import.meta.url), 'utf8')
 
 test('sıfır bakiyede yalnız Pas görünür', () => {
@@ -146,6 +147,18 @@ test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', 
   assert.match(realtimeSource, /connectionError/)
   assert.match(realtimeSource, /data\?\.code === 'string'/)
   assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/)
+})
+
+test('özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıdır', () => {
+  // FAZ 4.4 — masa ayarı socket'e bağlı, liste /api/question-packs'ten çekilir.
+  assert.match(realtimeSource, /setPack: \(packId: string \| null\) => socket\.emit\(EV\.SET_PACK, \{ packId \}\)/)
+  assert.match(activitySource, /onSetPack=\{game\.setPack\}/)
+  assert.match(activitySource, /state\?\.pack\?\.id === pack\.id/)
+  assert.match(activitySource, /PackUploadForm/)
+  assert.match(activitySource, /t\('pack\.label'\)/)
+  assert.match(activityCss, /\.qt-pack-form \{ display: grid; gap: 8px;/)
+  assert.match(i18nSource, /'pack\.pasteCsv':/)
+  assert.match(i18nSource, /'err\.packHostOnly':/)
 })
 
 test('günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen', () => {

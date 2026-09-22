@@ -188,6 +188,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     setCategories: (categories: string[]) => socket.emit(EV.SET_CATEGORIES, categories),
     setQuestionCount: (count: number) => socket.emit(EV.SET_QUESTION_COUNT, { count }),
     setDifficulty: (difficulty: Difficulty | null) => socket.emit(EV.SET_DIFFICULTY, { difficulty }),
+    setPack: (packId: string | null) => socket.emit(EV.SET_PACK, { packId }),
     setMode: (mode: GameMode) => socket.emit(EV.SET_MODE, { mode }),
     setTeam: (targetId: string, team: number) => socket.emit(EV.SET_TEAM, { targetId, team }),
     // Host araçları. Yetki ve ban süresi SUNUCUDA (rooms.ts kick/transferHost);
