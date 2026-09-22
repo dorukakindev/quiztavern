@@ -54,6 +54,9 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
   // Mesaj çevrilmemiş olarak taşınır: anahtarı sunucu verir, metnini arayüz
   // kendi dilinde üretir. Burada düz metin tutmak, dil değişince mesajı bayat bırakır.
   const [message, setMessage] = useState<ToastPayload | null>(null)
+  // Bağlantının NEDEN düştüğü: kod + mesaj. iskelet ekranı bununla
+  // "sunucuya ulaşılamadı" hata ekranına geçer; yoksa offline sonsuza dönerdi.
+  const [connectionError, setConnectionError] = useState<{ code?: string; message?: string } | null>(null)
   const [emotes, setEmotes] = useState<LiveEmote[]>([])
   /** Bağlantının koptuğu an (yerel saat). Grace sayacı buradan işler. */
   const [droppedAt, setDroppedAt] = useState<number | null>(null)
@@ -98,7 +101,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     // sunucu tarafından zaten reddedilir; erken deneme yalnızca sahte
     // "bağlantı koptu" gürültüsü üretir. Token gelince socket yeniden kurulur.
     if (inDiscordProxy && !identity?.sessionToken) return
-    const onConnect = () => { setStatus('connected'); setDroppedAt(null) }
+    const onConnect = () => { setStatus('connected'); setDroppedAt(null); setConnectionError(null) }
     // Kopma anını bir kez damgala: socket.io tekrar denedikçe sayaç sıfırlanmamalı.
     const onDisconnect = () => {
       if (intentionalLeave.current) { intentionalLeave.current = false; return }
@@ -112,6 +115,11 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
       }
       setStatus('offline')
       setDroppedAt((at) => at ?? Date.now())
+      const data = (error as { data?: { code?: unknown } } | null)?.data
+      setConnectionError({
+        code: typeof data?.code === 'string' ? data.code : undefined,
+        message: error instanceof Error ? error.message : undefined,
+      })
       setMessage({ key: 'err.connection' })
     }
     const onState = (next: GameState) => setState(next)
@@ -163,11 +171,12 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     state,
     status,
     message,
+    connectionError,
     emotes,
     droppedAt,
     dismissMessage: () => setMessage(null),
     sendEmote: (emote: EmoteKey) => socket.emit(EV.EMOTE, { emote }),
-    reconnectNow: () => { if (!socket.connected) socket.connect() },
+    reconnectNow: () => { if (!socket.connected) { setStatus('connecting'); setConnectionError(null); socket.connect() } },
     start: (mode: GameMode = 'quiz') => socket.emit(EV.START, { mode }),
     answer: (choice: number) => { if (socket.connected) socket.emit(EV.ANSWER, choice) },
     answerCircle: (answer: string) => { if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer) },

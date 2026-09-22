@@ -1153,3 +1153,101 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
   .qt-spectator-bar { bottom: max(10px, var(--qt-saib)); }
   .qt-activity-root.has-spectator-bar > .qt-activity { padding-bottom: calc(72px + var(--qt-saib)); }
 }
+
+/* ———— Görsel rafine turu ————
+   Düzen ve ölçü DEĞİŞMEZ (0px kuralı korunur): yalnız derinlik, ışık ve
+   geri-bildirim dokunuşları. Elle yazılmış gradyan/gölge — görsel varlık yok.
+   Dosya sonunda durması ŞART: aynı specificity'de son yazan kazanır. */
+
+/* Cevap kartları: üst ışık çizgisi + hover'da nazik kalkış (seçili/kilitli
+   kartta ASLA — reveal'de kartlar kımıldamaz). */
+.qt-answer { box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 2px 10px rgba(0,0,0,.18); transition-property: border-color, background-color, opacity, box-shadow, translate; }
+.qt-answer:hover:not(:disabled):not(.is-selected) { translate: 0 -2px; box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 8px 18px rgba(0,0,0,.28), 0 0 14px rgba(100,226,234,.14); }
+.qt-answer b:not(.qt-answer__pct) { box-shadow: inset 0 0 0 1px rgba(140,200,220,.28); }
+
+/* Bahis seçenekleri: cevap kartlarıyla aynı yüzey dili. */
+.qt-bet-option { box-shadow: inset 0 1px 0 rgba(255,255,255,.05); }
+.qt-bet-option:hover:not(:disabled) { translate: 0 -2px; border-color: rgba(127,233,240,.6); box-shadow: inset 0 1px 0 rgba(255,255,255,.06), 0 8px 18px rgba(0,0,0,.26); }
+
+/* Seçili ayar kontrolleri: altın halka + parıltı — seçim uzaktan okunsun. */
+.qt-count-chip.is-selected, .qt-mode-card.is-selected { box-shadow: 0 0 0 1px rgba(240,189,88,.42), 0 0 16px rgba(240,189,88,.14); }
+
+/* Boş koltuk: hover'da ölçek + hale — davetkar görünsün. */
+.qt-seat--empty i { transition: border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease), scale var(--t-micro) var(--ease), box-shadow var(--t-micro) var(--ease); }
+.qt-seat--empty:hover i { scale: 1.08; box-shadow: 0 0 18px rgba(89,219,233,.22); }
+
+/* Dolu koltuk jetonu: iç halka derinlik verir; is-manageable kuralı
+   (0,2,0) hâlâ üstte kalır. */
+.qt-seat__token { box-shadow: 0 0 20px var(--seat-glow), 0 10px 18px rgba(0,0,0,.35), inset 0 0 0 3px rgba(5,14,26,.42); }
+
+/* Üst bilgi hapı, kategori rozeti ve soru başlığı: cam yüzey + okunurluk. */
+.qt-game-top { box-shadow: inset 0 1px 0 rgba(255,255,255,.07), 0 10px 26px rgba(0,0,0,.22); }
+.qt-question-head h1 { text-shadow: 0 2px 22px rgba(0,0,0,.6); }
+.qt-category { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cat-accent, #f7c25e) 40%, transparent); }
+
+/* Butonlar: gradyan yüzeyin üstüne ince ışık; hover'da da korunur. */
+.qt-button--primary { box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 10px 24px rgba(45,205,220,.22); }
+.qt-button--gold { box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 10px 26px rgba(0,0,0,.35), 0 0 18px rgba(243,195,98,.16); }
+.qt-button:hover:not(:disabled) { box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 10px 25px rgba(32,204,222,.18); }
+.qt-button--primary:hover:not(:disabled), .qt-button--gold:hover:not(:disabled) { box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 14px 30px rgba(0,0,0,.3), 0 0 20px rgba(243,195,98,.2); }
+
+/* Oyuncu şeridi kartları: cama gömülü ince yüzey — yalnız masaüstü/yığılmış
+   şeritte; ≤560px portrait bloğu avatar-only tasarımını korur (bu blok ondan
+   SONRA geldiği için min-width ile sınırlanmak ZORUNDA). */
+@media (min-width: 561px) {
+  .qt-player-card { border: 1px solid rgba(111,158,181,.14); background: rgba(10,30,48,.4); transition: background var(--t-fast) var(--ease); }
+  .qt-player-card:hover { background: rgba(18,46,70,.55); }
+}
+
+/* Toast: sol aksan çubuğu + buzlu arka plan. */
+.qt-toast { border-left: 3px solid #f4bd55; backdrop-filter: blur(10px); }
+
+/* Tur ilerlemesi: dolu segmentte yumuşak renk geçişi. */
+.qt-progress i { transition: background var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+
+/* Çember girişi ve podyum kazananı: gömülü giriş + altın hale. */
+.qt-circle-entry input { box-shadow: inset 0 2px 6px rgba(0,0,0,.3); }
+.qt-circle-entry input:focus { box-shadow: inset 0 2px 6px rgba(0,0,0,.3), 0 0 0 3px rgba(91,230,238,.12); }
+.qt-podium-list .is-winner { box-shadow: 0 0 0 1px rgba(240,189,88,.55), 0 0 26px rgba(240,189,88,.18); }
+
+/* ———— Taşma/bozulma düzeltmeleri ———— */
+
+/* Özet kartı <~424px'te sağ kenarı klipleniyordu: 3 sütunlu istatistik
+   ızgarası min-content ~406px taban dayatıyordu. minmax(0) ile sütunlar
+   daralır, uzun metinler ellipsis'e düşer. */
+.qt-summary-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.qt-summary-tile { min-width: 0; }
+.qt-summary-tile > div, .qt-summary-tile b { min-width: 0; }
+.qt-summary-tile b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qt-summary-tile > small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Kazanan rozeti uzun isimde başlığı taşırmaz: pill daralır, metin ellipsis. */
+.qt-summary-head > * { min-width: 0; }
+.qt-summary-winner { min-width: 0; }
+.qt-summary-winner__label { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.qt-summary-brand { min-width: 0; }
+
+/* Emote çubuğu küçük/kısa ekranda daha az yer kaplasın (360×310'da son
+   cevapla çakışıyordu). */
+@media (max-width: 560px), (max-height: 480px) {
+  .qt-emote-btn { width: 38px; height: 38px; font-size: 16px; }
+  .qt-emote-bar { gap: 6px; padding: 6px 8px; }
+}
+
+/* place-items:center ızgarasında kartlar min-width:auto=min-content'e düşer;
+   dar görünümde içerik sığabilse bile kart daralmazdı. */
+.qt-podium-glass, .qt-summary-card, .qt-review-card { min-width: 0; }
+
+/* ── Konuşma işareti (Discord SPEAKING_* event) ─────────────────────────
+   Ses kanalında konuşan oyuncunun koltuk/kart token'ı Discord'un konuşma
+   yeşiliyle nabızlanır. Dosya sonunda: önceki yüzey stillerinin üstüne
+   yalnız box-shadow ekler, boyut/düzen değiştirmez — portrait avatar-only
+   tasarımı da (≤560px) etkilenmez. */
+.qt-seat.is-speaking .qt-seat__token,
+.qt-player-card.is-speaking,
+.qt-podium-list > .is-speaking {
+  animation: qt-speaking 1.6s ease-in-out infinite;
+}
+@keyframes qt-speaking {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(87, 242, 135, .75), 0 0 12px rgba(87, 242, 135, .25); }
+  50% { box-shadow: 0 0 0 3px rgba(87, 242, 135, .95), 0 0 20px rgba(87, 242, 135, .45); }
+}

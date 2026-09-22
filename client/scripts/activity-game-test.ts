@@ -110,4 +110,16 @@ test('dar ekran katmanlari icerigi kapatmaz', () => {
   assert.match(activityCss, /\.qt-question-image \{ max-width: min\(100%, 210px\); max-height: 140px; \}/)
 })
 
+test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', () => {
+  // Gerçek Discord gözlemi: socket io.use reddedince istemci sonsuz iskelette
+  // kalıyordu. Artık offline + state'siz durumda hata ekranı gösterilmeli ve
+  // OAuth'u baştan kurmayan socket yeniden bağlantısı kullanılmalı.
+  assert.match(activitySource, /game\.status === 'offline'/)
+  assert.match(activitySource, /i18n\.t\('boot\.unreachable'\)/)
+  assert.match(activitySource, /onClick=\{game\.reconnectNow\}/)
+  assert.match(realtimeSource, /connectionError/)
+  assert.match(realtimeSource, /data\?\.code === 'string'/)
+  assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/)
+})
+
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

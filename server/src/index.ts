@@ -175,12 +175,27 @@ function toast(socketId: string, key: ToastKey, params?: Record<string, string |
 }
 
 io.use(async (socket, next) => {
+  // Reddetmeler sessizce kayboluyordu; istemci yalnızca "sunucuya
+  // ulaşılamadı" gördüğü için hata kodunun sunucu logunda izi olmalı.
+  const deny = (code: string, message: string) => {
+    console.warn(`[socket] bağlantı reddedildi: ${code} (ip=${clientAddressKey(socket.handshake.headers, socket.handshake.address)} origin=${socket.handshake.headers.origin})`);
+    return next(socketError(message, code));
+  };
   const ipKey = clientAddressKey(socket.handshake.headers, socket.handshake.address);
   if (!socketIpLimiter.consume(ipKey).allowed) {
-    return next(socketError("Çok fazla bağlantı denemesi.", "RATE_LIMITED"));
+    return deny("RATE_LIMITED", "Çok fazla bağlantı denemesi.");
   }
-  if (IS_PRODUCTION && !isAllowedProductionOrigin(socket.handshake.headers.origin)) {
-    return next(socketError("Socket origin is not allowed.", "ORIGIN_DENIED"));
+  // Origin başlığı yalnızca cross-origin tarayıcı isteklerinde bulunur; Discord
+  // iframe'i sunucuya same-origin bağlandığından header gelmez (undefined) ve
+  // bu durum geçerli bağlantıdır. Header varsa izinli origin olmalı.
+  const origin = socket.handshake.headers.origin;
+  if (
+    IS_PRODUCTION
+    && typeof origin === "string"
+    && origin.length > 0
+    && !isAllowedProductionOrigin(origin)
+  ) {
+    return deny("ORIGIN_DENIED", "Socket origin is not allowed.");
   }
   const auth = socket.handshake.auth as { sessionToken?: string; devName?: string; devId?: string; instanceId?: string };
   const session = auth.sessionToken ? verifySession(auth.sessionToken) : null;
@@ -192,9 +207,9 @@ io.use(async (socket, next) => {
       : socket.id;
     user = { id: `dev:${stableId}`, name, avatarUrl: null };
   }
-  if (!user) return next(socketError("Discord oturumu gerekli.", "AUTH_REQUIRED"));
+  if (!user) return deny("AUTH_REQUIRED", "Discord oturumu gerekli.");
   if (!socketUserLimiter.consume(user.id).allowed) {
-    return next(socketError("Çok fazla bağlantı denemesi.", "RATE_LIMITED"));
+    return deny("RATE_LIMITED", "Çok fazla bağlantı denemesi.");
   }
   if (!ALLOW_MOCK_AUTH) {
     // instanceId zorunlu: gönderilmezse doğrulama "atlanmış" olmaz, bağlantı reddedilir.
@@ -202,10 +217,11 @@ io.use(async (socket, next) => {
       typeof auth.instanceId !== "string"
       || !/^[A-Za-z0-9_-]{1,128}$/.test(auth.instanceId)
     ) {
-      return next(socketError("Activity instance bilgisi eksik.", "INSTANCE_REQUIRED"));
+      return deny("INSTANCE_REQUIRED", "Activity instance bilgisi eksik.");
     }
     if (!(await verifyInstanceMembership(auth.instanceId, user.id))) {
-      return next(socketError("Bu Discord Activity odasına erişimin doğrulanamadı.", "INSTANCE_DENIED"));
+      console.warn(`[socket] INSTANCE_DENIED ayrıntı: user=${user.id} instance=${auth.instanceId}`);
+      return deny("INSTANCE_DENIED", "Bu Discord Activity odasına erişimin doğrulanamadı.");
     }
     // Oyuncu ancak üyeliği doğrulanan instance'ın odasında oynayabilir;
     // istemcinin beyan ettiği roomId üretimde dikkate alınmaz.

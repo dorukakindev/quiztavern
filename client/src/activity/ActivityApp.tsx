@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
@@ -202,7 +202,7 @@ function StartCountdown({ state }: { state: GameState }) {
           font küçülmezse çemberden taşar (madde: kutunun içinde kalmalı). */}
       <div className={`qt-start-countdown__number ${seconds ? `is-${seconds}` : 'is-go'}`} key={seconds}>{seconds || t('countdown.go')}</div>
       <div className="qt-start-countdown__players" aria-label={t('countdown.players')}>
-        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span>{player.name}</span></div>)}
+        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span title={player.name}>{player.name}</span></div>)}
       </div>
     </section>
   </main>
@@ -384,7 +384,7 @@ function SpectatorBar({ canSit, onTakeSeat }: { canSit: boolean; onTakeSeat: () 
  * nabız rafındaydı, o raf oyuncuları ikinci kez gösterdiği için kaldırıldı —
  * ama puanın sayarak akması (madde 4) rafın değil, oyuncunun yanına aitti.
  */
-function RoomStrip({ state, beats }: { state: GameState; beats: RevealBeats }) {
+function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: RevealBeats; speakingIds?: ReadonlySet<string> }) {
   const { t, language } = useI18n()
   // Taç: state.players zaten skora göre azalan sıralı; birinci puanı 0'dan büyükse
   // liderdir. Puan değişince liste yeniden sıralanır -> taç otomatik lidere geçer.
@@ -399,13 +399,13 @@ function RoomStrip({ state, beats }: { state: GameState; beats: RevealBeats }) {
         </div>
       : <div className="qt-strip-title"><span>{t('game.table')}</span><b>{state.players.length} / 8</b></div>}
     <div className="qt-player-stack">
-      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''}`} key={player.id}>
+      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
         <span className="qt-avatar-slot">
           {player.id === leaderId && <span className="qt-strip-crown" aria-hidden="true" title={t('game.leader')}><Icon name="crown" /></span>}
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b>{player.name}</b><small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}</b><small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -523,7 +523,7 @@ function useOrbitSize() {
  * balonun altına mutlak konumlanır; akışta yer kaplasalardı çapayı kaydırıp
  * balonu ring'in üstünden düşürürlerdi.
  */
-function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManageId }: { state: GameState | null; radius: number; onInvite: () => void; viewerIsHost: boolean; onManage: (player: PublicPlayer, x: number, y: number, trigger: HTMLElement) => void; openManageId: string | null }) {
+function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManageId, speakingIds }: { state: GameState | null; radius: number; onInvite: () => void; viewerIsHost: boolean; onManage: (player: PublicPlayer, x: number, y: number, trigger: HTMLElement) => void; openManageId: string | null; speakingIds?: ReadonlySet<string> }) {
   const { t } = useI18n()
   // Bir koltuk boş->dolu olduğunda o koltukta kısa bir patlama: dikkat yeni
   // gelen oyuncuya çekilir. İlk mount'ta (sayfa yüklenirken zaten oturanlar
@@ -584,7 +584,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
       const rect = event.currentTarget.getBoundingClientRect()
       onManage(player, rect.left + rect.width / 2, rect.top + rect.height / 2, event.currentTarget as HTMLElement)
     } : undefined
-    return <div key={seat} className={`qt-seat qt-seat--filled ${playerColorClass(player, state?.gameMode)} ${isHost ? 'is-host' : ''} ${player.ready ? 'is-ready' : ''} ${player.id === state?.youId ? 'is-you' : ''} ${manageable ? 'is-manageable' : ''} ${justJoined[seat] ? 'is-joining' : ''}`} style={{ transform, '--seat-delay': `${seat * 60}ms` } as CSSProperties} onClick={manage} onContextMenu={manage} onKeyDown={manageKey} {...(manageable ? { role: 'button', tabIndex: 0, title: t('host.hint'), 'aria-haspopup': 'menu' as const, 'aria-expanded': player.id === openManageId, 'aria-controls': player.id === openManageId ? `qt-host-menu-${player.id}` : undefined } : {})}>
+    return <div key={seat} className={`qt-seat qt-seat--filled ${playerColorClass(player, state?.gameMode)} ${isHost ? 'is-host' : ''} ${player.ready ? 'is-ready' : ''} ${player.id === state?.youId ? 'is-you' : ''} ${manageable ? 'is-manageable' : ''} ${justJoined[seat] ? 'is-joining' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ transform, '--seat-delay': `${seat * 60}ms` } as CSSProperties} onClick={manage} onContextMenu={manage} onKeyDown={manageKey} {...(manageable ? { role: 'button', tabIndex: 0, title: t('host.hint'), 'aria-haspopup': 'menu' as const, 'aria-expanded': player.id === openManageId, 'aria-controls': player.id === openManageId ? `qt-host-menu-${player.id}` : undefined } : {})}>
       <div className="qt-seat__token">
         {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
         {isHost && <svg className="qt-seat__crown" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 8 3.5 2.5L12 5l4.5 5.5L20 8l-1.6 8H5.6L4 8Z" /></svg>}
@@ -660,7 +660,7 @@ function HostMenu({ player, x, y, trigger, mode, onTransfer, onKick, onSetTeam, 
   // lobinin ".qt-lobby > * { position: relative }" kuralına ve .qt-activity'nin
   // overflow:hidden kırpmasına takılmadan gerçekten fixed konumlanır.
   return createPortal(<div id={`qt-host-menu-${player.id}`} ref={ref} className="qt-host-menu" style={{ left: pos.left, top: pos.top, visibility: pos.ready ? 'visible' : 'hidden' } as CSSProperties} role="menu" aria-label={t('host.menuTitle')} onKeyDown={onMenuKeyDown}>
-    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b>{player.name}</b><small>{t('host.menuTitle')}</small></div></div>
+    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b title={player.name}>{player.name}</b><small>{t('host.menuTitle')}</small></div></div>
     {mode === 'team' && <button className="qt-host-menu__item is-team" role="menuitem" onClick={() => { onSetTeam(player.id, player.team === 1 ? 0 : 1); closeAndRestore() }}><Icon name="people" /> {t('team.swap', { team: player.team === 1 ? t('team.a') : t('team.b') })}</button>}
     {!player.isBot && <button className="qt-host-menu__item is-transfer" role="menuitem" onClick={() => { onTransfer(player.id); closeAndRestore() }}><Icon name="crown" /> {t('host.transfer')}</button>}
     <button className="qt-host-menu__item is-kick" role="menuitem" onClick={() => { onKick(player.id); closeAndRestore() }}><Icon name="exit" /> {t('host.kick')}</button>
@@ -677,7 +677,7 @@ function SfxToggle() {
   </button>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: () => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -811,7 +811,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           <GalaxyLoop />
           <ModeTableScene mode={mode} />
         </div>
-        <OrbitSeats state={state} radius={orbitRadius} onInvite={async () => { if (!(await onInvite())) setPickerOpen(true) }} viewerIsHost={isHost} onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })} openManageId={hostMenu?.player.id ?? null} />
+        <OrbitSeats state={state} radius={orbitRadius} onInvite={async () => { if (!(await onInvite(t('invite.shareText')))) setPickerOpen(true) }} viewerIsHost={isHost} onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })} openManageId={hostMenu?.player.id ?? null} speakingIds={speakingIds} />
       </div>
 
       {/* Sağ: senin koltuğun — kendi kontrolün */}
@@ -886,7 +886,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   const waiting = !!self?.waiting
@@ -990,7 +990,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate }: { s
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
-    <div className="qt-game-grid"><RoomStrip state={state} beats={beats} /><section className={`qt-question-stage ${youMissed ? 'qt-stage-shake' : ''}`}>
+    <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className={`qt-question-stage ${youMissed ? 'qt-stage-shake' : ''}`}>
       {isCircle && shownCircle ? <>
         <div className="qt-question-head qt-question-head--circle"><span className="qt-category">{categoryLabel(language, shownCircle.category)}</span><span className="qt-circle-letter" aria-hidden="true" key={shownCircle.deadline}>{shownCircle.letter}</span><p>{shownCircle.clue}</p></div>
         <div className="qt-circle-entry">
@@ -1051,7 +1051,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate }: { s
  * dolar, sonra soru açılır. Kabuk GameBoard ile aynı (art + header + RoomStrip)
  * — faz değişse de masa yerinde kalır (0px).
  */
-function BetBoard({ state, onBet, onLeave, onSpectate }: { state: GameState; onBet: (amount: number) => void; onLeave: () => void; onSpectate: () => void }) {
+function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: GameState; onBet: (amount: number) => void; onLeave: () => void; onSpectate: () => void; speakingIds?: ReadonlySet<string> }) {
   const { t, language } = useI18n()
   const beats = useRevealBeats(state)
   const youAreSpectator = state.youAreSpectator
@@ -1090,7 +1090,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate }: { state: GameState; onB
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
-    <div className="qt-game-grid"><RoomStrip state={state} beats={beats} /><section className="qt-question-stage qt-bet-stage">
+    <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className="qt-question-stage qt-bet-stage">
       <div className="qt-question-head"><span className="qt-category">{state.bet?.category ? categoryLabel(language, state.bet.category) : ''}</span><h1>{t('bet.heading')}</h1><p>{t('bet.subheading')}</p></div>
       <div className="qt-bet-bank"><Icon name="coin" /><b>{formatNumber(language, bankroll)}</b><span>{t('bet.bankroll')}</span></div>
       {youAreSpectator ? <p className="qt-locked-note"><Icon name="eye" /> {t('spectator.watching')}</p>
@@ -1155,10 +1155,10 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
   </div>
 }
 
-function Podium({ state, onAgain, onLeave }: { state: GameState; onAgain: () => void; onLeave: () => void }) {
+function Podium({ state, onAgain, onLeave, speakingIds }: { state: GameState; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string> }) {
   const { language, t } = useI18n()
   const winner = state.podium?.[0]
-  const rest = state.podium?.slice(1, 5) ?? []
+  const rest = state.podium?.slice(1) ?? []
   useEffect(() => { sfx.play('podium') }, []) // maç sonu fanfarı (bir kez)
   // Maç özeti (4d) ayrı bir sekmede: kısa ekranda sıralama + tüm istatistik
   // kartı yan yana sığmaz. Sunucu özet göndermezse (eski istemci/veri yok) sekme
@@ -1178,7 +1178,7 @@ function Podium({ state, onAgain, onLeave }: { state: GameState; onAgain: () => 
     </div>}
     {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onLeave={onLeave} />
       : active === 'review' && summary ? <MatchReview review={summary.review} />
-      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onLeave={onLeave} />}
+      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onLeave={onLeave} speakingIds={speakingIds} />}
   </main>
 }
 
@@ -1262,7 +1262,7 @@ function Confetti() {
   </div>
 }
 
-function PodiumRanking({ state, winner, rest, onAgain, onLeave }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain: () => void; onLeave: () => void }) {
+function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string> }) {
   const { language, t } = useI18n()
   const reduced = usePrefersReducedMotion()
   const winnerScore = useCountUp(winner?.score ?? 0, reduced)
@@ -1293,15 +1293,15 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave }: { state: GameS
         <i className="qt-podium-mic" aria-hidden="true"><Icon name="mic" /></i>
         {winner && <>
           <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
-          <b>{winner.name}</b>
+          <b title={winner.name}>{winner.name}</b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
         </>}
       </section>
       <section className="qt-podium-side">
-        <div className="qt-podium-list">{rest.map((player, index) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''} style={{ '--row-delay': `${index * 90}ms` } as CSSProperties}>
+        <div className="qt-podium-list">{rest.map((player, index) => <div key={player.id} className={`${player.id === state.youId ? 'is-you' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ '--row-delay': `${index * 90}ms` } as CSSProperties}>
           <b>#{index + 2}</b>
           <div className={`qt-avatar ${colorClass(player.id)}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
-          <span>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
+          <span title={player.name}>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
         </div>)}</div>
         {/* Altın: token kuralı "altın = eylem & zafer (CTA, taç, kazanan)".
@@ -1326,7 +1326,7 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
   return <div className="qt-summary-card">
     <div className="qt-summary-head">
       <div className="qt-summary-brand"><span>Q</span><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
-      {winner && <span className="qt-summary-winner"><Icon name="crown" /> {t('summary.winner', { name: winner.name })}</span>}
+      {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
       <div className="qt-summary-tile is-accuracy"><small>{t('summary.accuracy')}</small><div><b>{summary.correct} / {summary.total}</b><span>%{pct}</span></div></div>
@@ -1598,13 +1598,34 @@ export function ActivityApp() {
     if (dontShow) storageSet('qt-howto-seen', '1')
     setHowToOpen(false)
   }
-  const [language, setLanguage] = useState<ActivityLanguage>(() => storageGet('qt-ui-language') === 'en' ? 'en' : 'tr')
+  // Dil kalıcılığı YALNIZ kullanıcının açık seçiminden yazılır; aksi halde
+  // ilk açılış 'tr'yi hemen saklar ve Discord locale önerisi sonsuza kör kalır.
+  const [language, setLanguageState] = useState<ActivityLanguage>(() => storageGet('qt-ui-language') === 'en' ? 'en' : 'tr')
+  const setLanguage = useCallback((next: ActivityLanguage) => {
+    storageSet('qt-ui-language', next)
+    setLanguageState(next)
+  }, [])
+  useEffect(() => { document.documentElement.lang = language }, [language])
+  // Kullanıcı hiç dil seçmediyse Discord istemcisinin diline uy (userSettingsGetLocale).
   useEffect(() => {
-    storageSet('qt-ui-language', language)
-    document.documentElement.lang = language
-  }, [language])
+    if (storageGet('qt-ui-language') || !activity.identity.locale) return
+    setLanguageState(activity.identity.locale.toLowerCase().startsWith('tr') ? 'tr' : 'en')
+  }, [activity.identity.locale])
   // Sözlük tek yerden sağlanır; her bileşen useI18n() ile okur, prop zinciri yok.
   const i18n = useMemo(() => ({ language, t: (key: StringKey, params?: Record<string, string | number>) => translate(language, key, params) }), [language])
+  // Discord Rich Presence: durum çubuğunda masa fazı (yalnız kozmetik; SDK
+  // setActivity her state paketinde değil, yalnız anlamlı geçişte çağrılır).
+  const phase = game.state?.phase
+  const roundIndex = game.state?.round.index
+  const roundTotal = game.state?.round.total
+  const spectating = !!game.state && !game.state.players.some((player) => player.id === game.state!.youId)
+  useEffect(() => {
+    if (!activity.identity.isDiscord || !phase) return
+    if (spectating) { activity.setPresence(i18n.t('presence.spectating')); return }
+    if (phase === 'lobby') activity.setPresence(i18n.t('presence.lobby'))
+    else if (phase === 'podium') activity.setPresence(i18n.t('presence.podium'))
+    else activity.setPresence(i18n.t('presence.playing', { current: roundIndex ?? 0, total: roundTotal ?? 0 }))
+  }, [activity.identity.isDiscord, activity.setPresence, phase, roundIndex, roundTotal, spectating, i18n])
   const isLoading = activity.status === 'booting' || !game.state
   const body = useMemo(() => {
     // PIP tüm fazların önüne geçer: masa o pencereye sığmadığı için hiçbir
@@ -1613,19 +1634,28 @@ export function ActivityApp() {
     if (hasLeftGame) return <ActivityHome onRejoin={() => { game.rejoinGame(); setHasLeftGame(false) }} />
     // Hata varsa iskelet değil metin: shimmer sonsuza dek dönüp sorunu gizlemesin.
     // Yükleme (hatasız): boş spinner yerine oyun düzeninin iskeleti (3d).
-    if (isLoading) return activity.error
-      ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
-      : <GameSkeleton />
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (isLoading) {
+      // Socket kesin olarak düştüyse iskeleti sonsuza döndürme: bağlantı
+      // hatasını göster. activity.retry YOK — o Discord OAuth'u baştan kurar;
+      // yalnız socket'i yeniden bağlamak yeterli (reconnectNow).
+      if (!activity.error && game.status === 'offline') {
+        const detail = game.connectionError?.code ?? game.connectionError?.message
+        return <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.unreachable')}</h1><p>{detail ? `${i18n.t('err.connection')} (${detail})` : i18n.t('err.connection')}</p><button type="button" className="qt-button qt-button--primary" onClick={game.reconnectNow}>{i18n.t('boot.retry')}</button></main>
+      }
+      return activity.error
+        ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
+        : <GameSkeleton />
+    }
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
-    if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} />
+    if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Podyumda maç bitti: ayrılmak yıkıcı değil, onay diyaloğu sürtünme. Doğrudan
     // ayrıl (confirmLeave ile aynı iş): tek insan bensem sunucu odayı kapatır,
     // reconnect taze lobi verir ("ana menü"); başkası varsa bekleme ekranı.
-    return <Podium state={game.state!} onAgain={() => game.start(game.state!.gameMode)} onLeave={() => {
+    return <Podium state={game.state!} speakingIds={activity.speakingIds} onAgain={() => game.start(game.state!.gameMode)} onLeave={() => {
       const alone = !game.state!.players.some((player) => player.id !== game.state!.youId && !player.isBot)
       game.leaveGame(alone)
       if (!alone) setHasLeftGame(true)
@@ -1664,7 +1694,7 @@ export function ActivityApp() {
   return <I18nContext.Provider value={i18n}>
     {/* Yörünge animasyonu lobiye ait: orada masayı anlatıyor, oyun sahnelerinde
         ise şıkların ve sayacın üzerinden geçen dev bir elipse dönüşüyordu. */}
-    <div className={`qt-activity-root is-${activity.layoutMode} ${showSpectatorBar ? 'has-spectator-bar' : ''}`}>{!isPip && !onGameScene && <AmbientShader />}{body}</div>
+    <div className={`qt-activity-root is-${activity.layoutMode} ${showSpectatorBar ? 'has-spectator-bar' : ''}`}>{!isPip && !onGameScene && !activity.lowPower && <AmbientShader />}{body}</div>
     {!isPip && inGame && !showDrop && <EmoteBar emotes={game.emotes} players={game.state!.players} onSend={game.sendEmote} />}
     {/* İzleyici çubuğu: oyun/podyum fazlarında (lobide you-panel hallediyor). */}
     {showSpectatorBar && <SpectatorBar canSit={game.state!.players.length < 8} onTakeSeat={game.takeSeat} />}

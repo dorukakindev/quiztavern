@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Common, DiscordSDK, Events, RPCCloseCodes } from '@discord/embedded-app-sdk'
+import { Common, DiscordSDK, RPCCloseCodes } from '@discord/embedded-app-sdk'
+import { captureClientLog, inviteWithFallback, subscribeLayoutModeCompat, subscribeSpeaking, subscribeThermalState, updatePresence } from './sdkBridge'
 
 export type ActivityIdentity = {
   instanceId: string
@@ -8,6 +9,8 @@ export type ActivityIdentity = {
   guildId: string | null
   sessionToken?: string
   user: { id: string; name: string; avatarUrl: string | null } | null
+  /** Discord istemcisinin dili (userSettingsGetLocale); yoksa undefined. */
+  locale?: string
   isDiscord: boolean
 }
 
@@ -16,12 +19,6 @@ export type ActivityIdentity = {
  * penceredir: masa oraya sığmaz, arayüz kompakt karta düşer.
  */
 export type LayoutMode = 'focused' | 'pip' | 'grid'
-
-const LAYOUT_BY_CODE: Record<number, LayoutMode> = {
-  [Common.LayoutModeTypeObject.FOCUSED]: 'focused',
-  [Common.LayoutModeTypeObject.PIP]: 'pip',
-  [Common.LayoutModeTypeObject.GRID]: 'grid',
-}
 
 const fallbackIdentity: ActivityIdentity = {
   instanceId: 'dev-ana-lobi',
@@ -118,6 +115,9 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
   try {
     return await initializeActivitySession(sdk, clientId)
   } catch (error) {
+    // ready() geçildiyse SDK hâlâ açık: hatayı Discord istemcisinin log'larına
+    // da bırak (iframe konsolunu gerçek Discord'da göremeyiz).
+    captureClientLog(sdk, `[activity] init failed: ${describeError(error)}`)
     // Constructor pencereye message listener ekler; timeout/hata sonrası bırakılırsa
     // her Retry yeni bir listener biriktirir.
     closeSdk(sdk, 'QuizTavern activity initialization failed')
@@ -128,10 +128,15 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
 async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Promise<ActivitySession> {
   await at('ready', () => withTimeout(sdk.ready(), SDK_READY_TIMEOUT_MS, 'Discord SDK ready'))
 
+  // identify: kullanıcı + locale. rpc.activities.write: Rich Presence
+  // (setActivity). rpc.voice.read: ses kanalında kim konuşuyor (SPEAKING_*).
+  // prompt göndermiyoruz: 'none' yalnız önceden yetki vermiş kullanıcıda
+  // sessiz geçer; ilk girişte sheet gerekir ve çağrı hata fırlatır. prompt'u
+  // boş bırakınca istemci gerektiğinde sheet gösterir, verilmişse sessiz geçer.
   const authorization = await at('authorize', () => sdk.commands.authorize({
     client_id: clientId,
     response_type: 'code',
-    scope: ['identify'],
+    scope: ['identify', 'rpc.activities.write', 'rpc.voice.read'],
   }))
 
   // Discord iframe'inde CSP dış adresleri engeller: sunucuya yalnızca kendi
@@ -176,6 +181,15 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
     /* platform desteklemiyor — dikey düzen devreye girer */
   }
 
+  // Discord dilini arayüz diline öneri olarak taşır; desteklemeyen
+  // istemcilerde komut reddeder — sessizce undefined kalır.
+  let locale: string | undefined
+  try {
+    locale = (await sdk.commands.userSettingsGetLocale()).locale
+  } catch {
+    /* eski istemci ya da kapsam yok */
+  }
+
   return {
     sdk,
     identity: {
@@ -184,6 +198,7 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
       guildId: sdk.guildId,
       sessionToken: session.session_token,
       user: session.user,
+      locale,
       isDiscord: true,
     },
   }
@@ -215,6 +230,10 @@ export function useDiscordActivity() {
   const [status, setStatus] = useState<'booting' | 'ready' | 'fallback' | 'error'>('booting')
   const [error, setError] = useState<string | null>(null)
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => layoutFromQuery() ?? 'focused')
+  // Discord THERMAL_STATE_UPDATE: cihaz ısınınca dekoratif shader kapatılır.
+  const [lowPower, setLowPower] = useState(false)
+  // Ses kanalında şu an konuşan Discord kullanıcı id'leri (SPEAKING_* event).
+  const [speakingIds, setSpeakingIds] = useState<Set<string>>(() => new Set())
   const [attempt, setAttempt] = useState(0)
   const sdkRef = useRef<DiscordSDK | null>(null)
   const retry = useCallback(() => {
@@ -238,16 +257,15 @@ export function useDiscordActivity() {
     return () => window.clearTimeout(timer)
   }, [identity.isDiscord, identity.sessionToken, retry])
 
-  /**
-   * Discord davet diyaloğunu açar (boş koltuk → arkadaş çağır). SDK kısıtları:
-   * yalnız guild kanalında (DM'de guildId null) ve CREATE_INSTANT_INVITE izni
-   * olan kullanıcıda çalışır. Aksi halde false döner → çağıran oda-kodu ipucuna
-   * düşer. Büyüme döngüsü ama sessizce başarısız olmalı.
-   */
-  const invite = useCallback(async (): Promise<boolean> => {
+  const invite = useCallback(async (message: string): Promise<boolean> => {
     const sdk = sdkRef.current
-    if (!sdk || !sdk.guildId) return false
-    try { await sdk.commands.openInviteDialog(); return true } catch { return false }
+    if (!sdk) return false
+    return inviteWithFallback(sdk, message)
+  }, [])
+
+  /** Discord durum çubuğunda görünen satır; SDK yoksa no-op. */
+  const setPresence = useCallback((state: string): void => {
+    if (sdkRef.current) updatePresence(sdkRef.current, state)
   }, [])
 
   useEffect(() => {
@@ -260,21 +278,17 @@ export function useDiscordActivity() {
     }
 
     let sdk: DiscordSDK | null = null
-    const onLayout = ({ layout_mode }: { layout_mode: number }) => {
-      // Bilinmeyen kod (UNHANDLED) geldiğinde tam ekran varsayarız: oyunu
-      // tanımadığımız bir yerleşim yüzünden kompakt karta düşürmeyelim.
-      setLayoutMode(LAYOUT_BY_CODE[layout_mode] ?? 'focused')
-    }
+    let unsubs: (() => void)[] = []
     connectOnce(clientId)
       .then((session) => {
         if (cancelled) return
         sdk = session.sdk
         sdkRef.current = session.sdk
-        try {
-          sdk.subscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
-        } catch {
-          /* eski istemci bu olayı bilmiyor — tam ekran varsayılır */
-        }
+        unsubs = [
+          subscribeLayoutModeCompat(session.sdk, setLayoutMode),
+          subscribeThermalState(session.sdk, setLowPower),
+          subscribeSpeaking(session.sdk, setSpeakingIds),
+        ]
         setIdentity(session.identity)
         setStatus('ready')
       })
@@ -290,15 +304,11 @@ export function useDiscordActivity() {
 
     return () => {
       cancelled = true
-      try {
-        sdk?.unsubscribe(Events.ACTIVITY_LAYOUT_MODE_UPDATE, onLayout)
-      } catch {
-        /* zaten abone değiliz */
-      }
+      unsubs.forEach((unsub) => { try { unsub() } catch { /* zaten kapalı */ } })
     }
   }, [attempt, localRoomId])
 
   // Query ile zorlanan yerleşim her zaman kazanır (yerel PIP denemesi için).
   const forced = layoutFromQuery()
-  return { identity, status, error, layoutMode: forced ?? layoutMode, invite, retry }
+  return { identity, status, error, layoutMode: forced ?? layoutMode, lowPower, speakingIds, invite, setPresence, retry }
 }

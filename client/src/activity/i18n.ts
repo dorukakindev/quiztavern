@@ -20,6 +20,7 @@ const tr = {
   // Açılış
   'boot.title': 'QuizTavern hazırlanıyor',
   'boot.subtitle': 'Masa kuruluyor…',
+  'boot.unreachable': 'Oyun sunucusuna ulaşılamadı',
   'boot.retry': 'Tekrar dene',
 
   // Lobi
@@ -92,6 +93,11 @@ const tr = {
   'table.readyCount': '{ready} / {total} oyuncu hazır',
   'table.start': 'Masayı Başlat',
   'table.invite': 'Davet et',
+  'invite.shareText': 'QuizTavern masama gel — soruları birlikte çözelim!',
+  'presence.lobby': 'Masada bekliyor',
+  'presence.playing': 'Soru {current}/{total}',
+  'presence.podium': 'Podyumda',
+  'presence.spectating': 'Masanın başında izliyor',
   'table.emptySeat': 'Boş koltuk',
   'host.menuTitle': 'Masa sahibi işlemleri',
   'host.transfer': 'Masa sahipliğini devret',
@@ -303,6 +309,7 @@ const en: Record<StringKey, string> = {
 
   'boot.title': 'Getting QuizTavern ready',
   'boot.subtitle': 'Setting up the table…',
+  'boot.unreachable': 'Could not reach the game server',
   'boot.retry': 'Try again',
 
   'lobby.liveTable': 'LIVE TABLE',
@@ -381,6 +388,11 @@ const en: Record<StringKey, string> = {
   'howto.close': "Got it, back to the table",
   'table.start': 'Start the table',
   'table.invite': 'Invite',
+  'invite.shareText': 'Join my QuizTavern table — trivia together!',
+  'presence.lobby': 'Waiting in the lobby',
+  'presence.playing': 'Question {current}/{total}',
+  'presence.podium': 'On the podium',
+  'presence.spectating': 'Spectating at the table',
   'table.emptySeat': 'Empty seat',
   'host.menuTitle': 'Host controls',
   'host.transfer': 'Transfer table ownership',
