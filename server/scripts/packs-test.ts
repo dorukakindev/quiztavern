@@ -101,7 +101,7 @@ async function main() {
   const { rmSync, readdirSync } = await import("node:fs");
   const packsDir = fileURLToPath(new URL("../src/../data/packs", import.meta.url));
   try {
-    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi")) rmSync(`${packsDir}/${file}`);
+    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`);
   } catch { /* dizin henüz yok */ }
 
   const port = await findFreePort();
@@ -159,6 +159,52 @@ async function main() {
     const listRes = await fetch(`${baseUrl}/api/question-packs`);
     const listBody = await listRes.json() as { packs: { id: string; count: number }[] };
     assert(listBody.packs.some((p) => p.id === packId && p.count === 6), "GET listesi paketi gösteriyor");
+
+    // ── Editör CRUD'u: sahiplik x-dev-id ile, tam içerik yalnız sahibe ──────
+    console.log("\nHTTP — editör CRUD + sahiplik");
+    const editorAuth = { "content-type": "application/json", "x-dev-id": "editor-user-001" };
+    const ownedRes = await fetch(`${baseUrl}/api/question-packs`, {
+      method: "POST", headers: editorAuth,
+      body: JSON.stringify({ name: "Editör Paketi", format: "json", content: packQuestions }),
+    });
+    assert(ownedRes.status === 201, "oturumlu (dev-id) yükleme 201 döndü");
+    const ownedId = ((await ownedRes.json()) as { pack?: { id: string } }).pack?.id ?? "";
+    assert(!!ownedId, `editör paketi id üretildi (${ownedId})`);
+
+    const anonGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`);
+    assert(anonGet.status === 403, "kimliksiz GET /:id reddedildi (403)");
+    const strangerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { headers: { "x-dev-id": "baska-kullanici" } });
+    assert(strangerGet.status === 403, "başkasının paketi GET /:id reddedildi (403)");
+    const ownerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { headers: { "x-dev-id": "editor-user-001" } });
+    assert(ownerGet.status === 200, "sahip GET /:id 200 döndü");
+    const ownerBody = await ownerGet.json() as { pack?: { questions?: { correctIndex: number }[] } };
+    assert(ownerBody.pack?.questions?.[0]?.correctIndex === 0, "sahip tam içeriği (correctIndex) aldı");
+
+    const strangerPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      method: "PUT", headers: { "content-type": "application/json", "x-dev-id": "baska-kullanici" },
+      body: JSON.stringify({ name: "Çalıntı", format: "json", content: packQuestions }),
+    });
+    assert(strangerPut.status === 403, "başkasının paketi PUT reddedildi (403)");
+    const ownerPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      method: "PUT", headers: editorAuth,
+      body: JSON.stringify({ name: "Editör Paketi v2", format: "json", content: packQuestions.slice(0, 3) }),
+    });
+    assert(ownerPut.status === 200, "sahip PUT 200 döndü");
+    const putBody = await ownerPut.json() as { pack?: { name: string; count: number } };
+    assert(putBody.pack?.name === "Editör Paketi v2" && putBody.pack?.count === 3, "PUT adı ve soru sayısını güncelledi");
+    const badPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      method: "PUT", headers: editorAuth,
+      body: JSON.stringify({ name: "Bozuk", format: "json", content: [{ id: "x", text: "s?", category: "G", choices: ["A", "B"], correctIndex: 9, difficulty: "kolay" }] }),
+    });
+    assert(badPut.status === 422, "bozuk PUT gövdesi 422 döndü");
+
+    const strangerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { method: "DELETE", headers: { "x-dev-id": "baska-kullanici" } });
+    assert(strangerDel.status === 403, "başkasının paketi DELETE reddedildi (403)");
+    const ownerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { method: "DELETE", headers: { "x-dev-id": "editor-user-001" } });
+    assert(ownerDel.status === 204, "sahip DELETE 204 döndü");
+    const afterDel = await fetch(`${baseUrl}/api/question-packs`);
+    const afterDelBody = await afterDel.json() as { packs: { id: string }[] };
+    assert(!afterDelBody.packs.some((p) => p.id === ownedId), "silinen paket listede yok");
 
     // Socket: host paketi seçer → state.pack; start soruları paketten çeker.
     console.log("\nSocket — masa ayarı + maçta paket havuzu");
