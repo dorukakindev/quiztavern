@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
 import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type XpGain } from '../../../shared/types'
-import { useRealtimeGame, type LiveEmote } from '../lib/realtime'
+import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
 import { I18nContext, categoryLabel, formatNumber, translate, useI18n, type ActivityLanguage, type StringKey } from './i18n'
@@ -11,7 +11,7 @@ import { GalaxyLoop, MusicToggle, TableBackdrop, TableLogo } from './TableScener
 import { PodiumCharacter } from './PodiumCharacter'
 import { CATEGORY_ICON_PATHS } from './categoryIcons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
-import { listPacks, uploadPack, type PackUploadResult, type QuestionPackMeta } from './packs'
+import { deletePack, getPack, listPacks, savePack, uploadPack, type PackAuth, type PackQuestion, type PackUploadResult, type QuestionPackMeta } from './packs'
 
 type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more' | 'flag' | 'calendar'
 
@@ -793,6 +793,130 @@ function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
   </div>
 }
 
+function emptyPackQuestion(): PackQuestion {
+  return { id: '', category: '', text: '', textEn: '', choices: ['', '', '', ''], choicesEn: ['', '', '', ''], correctIndex: 0, difficulty: 'orta' }
+}
+
+/** Uygulama içi paket editörü: JSON/CSV yazmadan soru kartlarıyla paket kurar.
+ *  Sahiplik sunucuda doğrulanır — tam içerik (doğru şıklar dahil) yalnızca
+ *  paketi oluşturan kişiye döner; burada "Paketlerim" yalnız kendi paketlerini
+ *  listeler. EN alanları boş bırakılırsa kaydetme sırasında TR'den kopyalanır. */
+function PackEditor({ packs, myId, auth, categories, onSaved }: { packs: QuestionPackMeta[]; myId: string; auth: PackAuth; categories: string[]; onSaved: () => void }) {
+  const { t } = useI18n()
+  const mine = packs.filter((pack) => pack.createdBy === myId || (!auth.sessionToken && pack.createdBy === 'dev'))
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [name, setName] = useState('')
+  const [questions, setQuestions] = useState<PackQuestion[]>([emptyPackQuestion()])
+  const [busy, setBusy] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [result, setResult] = useState<PackUploadResult | null>(null)
+
+  const startNew = () => {
+    setEditingId(null); setName('')
+    setQuestions([emptyPackQuestion()])
+    setResult(null); setConfirmDelete(false)
+  }
+  const loadPack = async (id: string) => {
+    setBusy(true); setResult(null); setConfirmDelete(false)
+    const pack = await getPack(id, auth)
+    if (!pack) { setResult({ ok: false, message: t('pack.loadFailed') }); setBusy(false); return }
+    setEditingId(pack.id)
+    setName(pack.name)
+    // EN alanı TR ile aynıysa boş göster — "boş = TR kopya" kuralı görünür kalsın.
+    setQuestions(pack.questions.map((q) => ({
+      ...q,
+      choices: [...q.choices],
+      textEn: q.textEn === q.text ? '' : q.textEn,
+      choicesEn: q.choices.map((c, i) => (q.choicesEn?.[i] && q.choicesEn[i] !== c ? q.choicesEn[i] : '')),
+    })))
+    setBusy(false)
+  }
+
+  const patchQ = (i: number, patch: Partial<PackQuestion>) =>
+    setQuestions((qs) => qs.map((q, j) => (j === i ? { ...q, ...patch } : q)))
+  const patchChoice = (i: number, ci: number, value: string, en = false) =>
+    setQuestions((qs) => qs.map((q, j) => {
+      if (j !== i) return q
+      const list = [...(en ? q.choicesEn : q.choices)]
+      list[ci] = value
+      return en ? { ...q, choicesEn: list } : { ...q, choices: list }
+    }))
+
+  const ready = !busy && !!name.trim() && questions.length > 0
+    && questions.every((q) => q.text.trim() && q.category.trim() && q.choices.every((c) => c.trim()))
+  const save = async () => {
+    setBusy(true); setResult(null)
+    const normalized = questions.map((q, i) => ({
+      ...q,
+      id: q.id.trim() || `q-${i + 1}`,
+      category: q.category.trim(),
+      text: q.text.trim(),
+      textEn: q.textEn.trim() || q.text.trim(),
+      choices: q.choices.map((c) => c.trim()),
+      choicesEn: q.choices.map((c, ci) => q.choicesEn[ci]?.trim() || c.trim()),
+    }))
+    const res = await savePack({ id: editingId, name: name.trim(), questions: normalized, auth })
+    setResult(res)
+    if (res.ok) {
+      setEditingId(res.pack?.id ?? editingId)
+      setQuestions(normalized)
+      onSaved()
+    }
+    setBusy(false)
+  }
+  const remove = async () => {
+    if (!editingId) return
+    if (!confirmDelete) { setConfirmDelete(true); return }
+    setBusy(true)
+    const ok = await deletePack(editingId, auth)
+    setBusy(false)
+    if (ok) { startNew(); setResult({ ok: true, message: t('pack.deleted') }); onSaved() }
+    else setResult({ ok: false, message: t('pack.failed') })
+  }
+
+  return <div className="qt-pack-form qt-pack-editor">
+    {mine.length > 0 && <div className="qt-count-row qt-pack-mine">
+      <button className={`qt-count-chip ${editingId === null ? 'is-selected' : ''}`} onClick={startNew}>{t('pack.new')}</button>
+      {mine.map((pack) => <button key={pack.id} className={`qt-count-chip ${editingId === pack.id ? 'is-selected' : ''}`} disabled={busy} onClick={() => void loadPack(pack.id)}>{pack.name}<small>{pack.count}</small></button>)}
+    </div>}
+    <input className="qt-pack-input" value={name} onChange={(event) => setName(event.target.value)} placeholder={t('pack.name')} maxLength={60} />
+    <datalist id="qt-pack-cats">{categories.map((c) => <option key={c} value={c} />)}</datalist>
+    {questions.map((q, i) => <div className="qt-pack-qcard" key={i}>
+      <div className="qt-pack-qcard__head">
+        <b>{t('pack.question', { n: i + 1 })}</b>
+        <button className="qt-icon-button" onClick={() => setQuestions((qs) => qs.filter((_, j) => j !== i))} disabled={questions.length <= 1} aria-label={t('pack.qDelete')} title={t('pack.qDelete')}><Icon name="close" /></button>
+      </div>
+      <input className="qt-pack-input" value={q.text} onChange={(event) => patchQ(i, { text: event.target.value })} placeholder={t('pack.qText')} maxLength={240} />
+      <div className="qt-pack-qcard__row">
+        <input className="qt-pack-input" value={q.category} onChange={(event) => patchQ(i, { category: event.target.value })} placeholder={t('pack.qCategory')} list="qt-pack-cats" maxLength={40} />
+        <div className="qt-count-row">{(['kolay', 'orta', 'zor'] as const).map((d) => <button key={d} className={`qt-count-chip ${q.difficulty === d ? 'is-selected' : ''}`} aria-pressed={q.difficulty === d} onClick={() => patchQ(i, { difficulty: d })}>{t(d === 'kolay' ? 'difficulty.easy' : d === 'orta' ? 'difficulty.medium' : 'difficulty.hard')}</button>)}</div>
+      </div>
+      <div className="qt-pack-choices">
+        {q.choices.map((choice, ci) => <label key={ci} className={`qt-pack-choice ${q.correctIndex === ci ? 'is-correct' : ''}`}>
+          <input type="radio" name={`qt-pack-correct-${i}`} checked={q.correctIndex === ci} onChange={() => patchQ(i, { correctIndex: ci })} aria-label={t('pack.correct')} title={t('pack.correct')} />
+          <input className="qt-pack-input" value={choice} onChange={(event) => patchChoice(i, ci, event.target.value)} placeholder={t('pack.choice', { n: ci + 1 })} maxLength={120} />
+        </label>)}
+      </div>
+      <details className="qt-pack-en">
+        <summary>{t('pack.enOptional')}</summary>
+        <input className="qt-pack-input" value={q.textEn} onChange={(event) => patchQ(i, { textEn: event.target.value })} placeholder={t('pack.qTextEn')} maxLength={240} />
+        {q.choicesEn.map((choice, ci) => <input key={ci} className="qt-pack-input" value={choice} onChange={(event) => patchChoice(i, ci, event.target.value, true)} placeholder={t('pack.choice', { n: ci + 1 })} maxLength={120} />)}
+      </details>
+    </div>)}
+    <div className="qt-pack-actions">
+      <button className="qt-count-chip" onClick={() => setQuestions((qs) => [...qs, emptyPackQuestion()])}>{t('pack.addQuestion')}</button>
+      <button className="qt-button qt-pack-submit" disabled={!ready} onClick={() => void save()}>{t('pack.save')}</button>
+      {editingId && <button className={`qt-count-chip ${confirmDelete ? 'is-danger' : ''}`} disabled={busy} onClick={() => void remove()}>{confirmDelete ? t('pack.deleteConfirm') : t('pack.deletePack')}</button>}
+    </div>
+    {result && !result.ok && <div className="qt-pack-feedback is-error">
+      {result.message && <span>{result.message}</span>}
+      {result.errors?.slice(0, 4).map((error) => <span key={error}>{error}</span>)}
+      {(result.errors?.length ?? 0) > 4 && <span>+{(result.errors?.length ?? 0) - 4}</span>}
+    </div>}
+    {result?.ok && <div className="qt-pack-feedback is-ok">{result.message ?? t('pack.saved', { count: result.pack?.count ?? 0 })}{result.warnings?.length ? ` · ${result.warnings.length} ⚠` : ''}</div>}
+  </div>
+}
+
 function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
@@ -927,6 +1051,16 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {packs.map((pack) => <button key={pack.id} className={`qt-count-chip qt-pack-chip ${state?.pack?.id === pack.id ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.pack?.id === pack.id} title={t('pack.count', { count: pack.count })} onClick={() => onSetPack(pack.id)}>{pack.name}<small>{pack.count}</small></button>)}
             {state?.pack && !packs.some((pack) => pack.id === state.pack?.id) && <span className="qt-count-chip is-selected qt-pack-chip">{state.pack.name}</span>}
           </div>
+          {isHost && <details className="qt-pack-upload">
+            <summary>{t('pack.editor')}</summary>
+            <PackEditor
+              packs={packs}
+              myId={identity.user?.id ?? `dev:${getDevIdentity().id}`}
+              auth={{ sessionToken: identity.sessionToken ?? null, devId: identity.isDiscord ? null : getDevIdentity().id }}
+              categories={(state?.availableCategories ?? []).map((c) => c.name)}
+              onSaved={() => void listPacks().then(setPacks)}
+            />
+          </details>}
           {isHost && <details className="qt-pack-upload">
             <summary>{t('pack.upload')}</summary>
             <PackUploadForm onUploaded={() => void listPacks().then(setPacks)} />
