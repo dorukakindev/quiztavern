@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type MatchSummary, type PodiumEntry, type PublicPlayer, type ReviewItem } from '../../../shared/types'
+import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem } from '../../../shared/types'
 import { useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -53,6 +53,59 @@ function FlameIcon() {
     <defs><linearGradient id={gradId} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#ef8674" /><stop offset="1" stopColor="#f3c362" /></linearGradient></defs>
     <path d="M16 4c2.3 4 6 6.2 6 11.2a6 6 0 0 1-12 0c0-1.8.5-3 1.5-4.4.3 1.5 1.2 2.3 2.5 2.6-1-4 .7-7.6 2-9.4Z" fill="none" stroke={`url(#${gradId})`} strokeWidth="2.2" strokeLinejoin="round" />
   </svg>
+}
+
+/** Lig anahtarı → i18n anahtarı (tek tablo: sunucu lig adını değil anahtarı yollar,
+ *  ad her istemcide kendi dilinde yazılır). */
+const LEAGUE_KEYS: Record<LeagueKey, StringKey> = {
+  acemi: 'league.acemi', cirak: 'league.cirak', kalfa: 'league.kalfa', usta: 'league.usta', efsane: 'league.efsane',
+}
+
+/** Kompakt lig+seviye rozeti: lig renginde nokta + "Sv N" (verbose'da lig adı). */
+function LeagueBadge({ badge, verbose = false }: { badge: ProgressBadge; verbose?: boolean }) {
+  const { t } = useI18n()
+  const league = LEAGUE_KEYS[badge.league] ?? 'league.acemi'
+  return <span className={`qt-league is-${badge.league}`} title={t(league)}><i aria-hidden="true" />{verbose ? t(league) : t('progress.level', { n: badge.level })}</span>
+}
+
+/** Lobide "SENİN KOLTUĞUN" altındaki ince XP şeridi: seviye, lig ve sonraki
+ *  seviyeye kalan bar; art-arda-gün serisi varsa küçük alevle gösterilir. */
+function XpStrip({ snapshot }: { snapshot: ProgressSnapshot | null }) {
+  const { t } = useI18n()
+  if (!snapshot) return null
+  const pct = Math.min(100, Math.round((snapshot.intoLevel / Math.max(1, snapshot.levelSize)) * 100))
+  const remaining = Math.max(0, snapshot.levelSize - snapshot.intoLevel)
+  return <div className="qt-xp-strip">
+    <div className="qt-xp-strip__head">
+      <LeagueBadge badge={snapshot} verbose />
+      <b>{t('progress.level', { n: snapshot.level })}</b>
+      {snapshot.streakDays > 1 && <span className="qt-xp-streak" title={t('progress.streak', { n: snapshot.streakDays })}><FlameIcon />{snapshot.streakDays}</span>}
+    </div>
+    <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
+    <small>{t('progress.nextLevel', { xp: remaining })}</small>
+  </div>
+}
+
+/** Lobide güncel sezonun ilk 5'i + sıralamada olmayan senin satırın. */
+function SeasonStrip({ state }: { state: GameState }) {
+  const { t, language } = useI18n()
+  const board = state.seasonBoard
+  if (!board) return null
+  const yourRank = state.progress?.seasonRank ?? null
+  const youIn = board.entries.some((entry) => entry.userId === state.youId)
+  return <div className="qt-season">
+    <div className="qt-season__head"><span>{t('season.title', { season: board.season })}</span></div>
+    {board.entries.length
+      ? <ol className="qt-season__list">
+        {board.entries.map((entry) => <li key={entry.userId} className={entry.userId === state.youId ? 'is-you' : ''}>
+          <b>#{entry.rank}</b><i className={`qt-league-dot is-${entry.league}`} aria-hidden="true" /><span title={entry.name}>{entry.name}</span><em>{formatNumber(language, entry.xp)} XP</em>
+        </li>)}
+        {!youIn && yourRank !== null && state.progress && <li className="is-you">
+          <b>#{yourRank}</b><i className={`qt-league-dot is-${state.progress.league}`} aria-hidden="true" /><span>{t('podium.you')}</span><em>{formatNumber(language, state.progress.seasonXp)} XP</em>
+        </li>}
+      </ol>
+      : <small className="qt-season__empty">{t('season.empty')}</small>}
+  </div>
 }
 
 function LanguagePicker({ language, onChange }: { language: ActivityLanguage; onChange: (language: ActivityLanguage) => void }) {
@@ -412,7 +465,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b title={player.name}>{player.name}</b><small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}</b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -894,6 +947,9 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
         <div className="qt-you-card">{isSpectator
           ? <><i className="qt-you-card__eye" aria-hidden="true"><Icon name="eye" /></i><div><b>{t('spectator.watching')}</b><small>{t('spectator.count', { count: state?.spectatorCount ?? 1 })}</small></div></>
           : self ? <><Avatar player={self} /><div><b>{self.name}</b><small>{isHost ? t('lobby.host') : self.ready ? t('lobby.ready') : t('lobby.preparing')}</small></div></> : <div className="qt-loading-line">{t('lobby.joining')}</div>}</div>
+        {/* Kalıcı ilerleme: seviye/lig çubuğu + sezon lider tablosu —
+            sunucu progress deposu bağlıysa dolu gelir, değilse hiç çizilmez. */}
+        {state?.progress && <XpStrip snapshot={state.progress} />}
         {isSpectator
           ? <div className="qt-you-cta"><button className="qt-button qt-button--primary" disabled={tableFull} onClick={onTakeSeat}><Icon name="people" /> {tableFull ? t('spectator.full') : t('spectator.play')}</button></div>
           : <>
@@ -910,6 +966,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {self && <button className="qt-button qt-btn-home qt-spectate-btn" onClick={onSpectate}>{t('spectator.become')}</button>}
             {(state?.spectatorCount ?? 0) > 0 && <small className="qt-spectator-count"><Icon name="eye" /> {t('spectator.count', { count: state!.spectatorCount })}</small>}
           </>}
+        {state?.seasonBoard && <SeasonStrip state={state} />}
         <div className="qt-howto"><span>{t('table.howTo')}</span><p>{t('table.howToBody')}</p></div>
       </aside>
     </section>
@@ -1375,6 +1432,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
           <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
           <b title={winner.name}>{winner.name}</b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
+          {state.xpGains?.[winner.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[winner.id].gained })}</em>}
         </>}
       </section>
       <section className="qt-podium-side">
@@ -1383,6 +1441,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
           <div className={`qt-avatar ${colorClass(player.id)}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
           <span title={player.name}>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
+          {state.xpGains?.[player.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[player.id].gained })}</em>}
         </div>)}</div>
         {/* Altın: token kuralı "altın = eylem & zafer (CTA, taç, kazanan)".
             Turkuazdı; maket 3a da altın gösteriyor. */}
@@ -1437,6 +1496,22 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
         ? <div className="qt-summary-tile is-fast"><small>{t('summary.fastest')}</small><div><b>{summary.fastest.name}</b><span>{(summary.fastest.ms / 1000).toFixed(1)} {t('summary.sec')}</span></div></div>
         : <div className="qt-summary-tile"><small>{t('summary.fastest')}</small><div><b>—</b></div></div>}
     </div>
+    {(() => {
+      // Kalıcı ilerleme kazancı: bu maçtan alınan XP + seviye/lig geçişi.
+      // levelFloor formülü sunucudakiyle aynı (xp.ts: 100·(L-1)·L/2).
+      const gain = state.xpGains?.[state.youId]
+      if (!gain) return null
+      const intoLevel = gain.xp - (100 * (gain.level - 1) * gain.level) / 2
+      const pct = Math.min(100, Math.round((intoLevel / Math.max(1, 100 * gain.level)) * 100))
+      return <div className="qt-summary-xp">
+        <div className="qt-summary-xp__head"><small>{t('summary.xpGain')}</small><b>{t('podium.xpGain', { xp: gain.gained })}</b>
+          {gain.leveledUp && <span className="qt-summary-xp__flag">{t('podium.levelUp')}</span>}
+          {gain.leagueChanged && <span className="qt-summary-xp__flag is-league">{t('podium.newLeague', { league: t(LEAGUE_KEYS[gain.league] ?? 'league.acemi') })}</span>}
+        </div>
+        <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
+        <small className="qt-summary-xp__foot">{t('progress.level', { n: gain.level })} · {t(LEAGUE_KEYS[gain.league] ?? 'league.acemi')}</small>
+      </div>
+    })()}
     {cats.length > 0 && <div className="qt-summary-cats">
       {cats.map((item) => <div key={item.category} className="qt-summary-cat">
         <small>{categoryLabel(language, item.category)}</small>
