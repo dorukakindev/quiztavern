@@ -17,7 +17,7 @@ import {
 } from "./config";
 import { exchangeCode, verifyInstanceMembership, verifySession, type SessionUser } from "./auth";
 import { Room } from "./rooms";
-import { EMOTE_KEYS, EV, type EmoteKey, type ToastKey, type ToastPayload } from "../../shared/types";
+import { BADGE_KEYS, EMOTE_KEYS, EV, type BadgeKey, type EmoteKey, type ToastKey, type ToastPayload } from "../../shared/types";
 import { toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
@@ -612,6 +612,18 @@ io.on("connection", (socket) => {
     } catch (error) {
       log.error({ err: error }, "soru bildirimi yazılamadı");
       toast(socket.id, "report.failed");
+    }
+  });
+  // Unvan: { title: BadgeKey | null } — doğruluk BADGE_KEYS kümesi + depodaki
+  // kazanılmış-rozet kontrolüyle sağlanır (kazanılmamış rozet takılamaz).
+  socket.on(EV.SET_TITLE, (payload: unknown) => {
+    const raw = (payload as { title?: unknown } | undefined)?.title;
+    const title = typeof raw === "string" && (BADGE_KEYS as readonly string[]).includes(raw)
+      ? (raw as BadgeKey) : null;
+    try {
+      room.setTitle(user.id, title);
+    } catch (error) {
+      const t = toToast(error, "err.title"); toast(socket.id, t.key, t.params);
     }
   });
   // socket.id koşulu: eski bağlantının geç gelen disconnect'i yeni bağlantıyı düşüremez.

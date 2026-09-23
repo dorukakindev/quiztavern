@@ -8,6 +8,7 @@ import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyResultEntry } from "./daily";
 import type { MatchFinishedEntry } from "./xp";
 import type {
+  BadgeKey,
   BetPayload,
   CirclePayload,
   CircleRevealPayload,
@@ -51,6 +52,8 @@ export interface RoomPlayer {
   disconnectedAt: number | null;
   /** Emote hız sınırı OYUNCUYA bağlıdır; socket'e bağlansa yeniden bağlanan sınırı sıfırlar. */
   lastEmoteAt: number;
+  /** Takılan unvan — kazanılmış rozetlerden biri; ProgressStore'dan yüklenir. */
+  title: BadgeKey | null;
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
@@ -85,6 +88,8 @@ export interface ProgressStore {
   snapshot(userId: string): ProgressSnapshot | null;
   seasonBoard(limit?: number): SeasonBoard;
   recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
+  title(userId: string): BadgeKey | null;
+  setTitle(userId: string, title: BadgeKey | null): boolean;
 }
 
 /** Sunucunun otorite olduğu tek bir eşzamanlı maç odası. */
@@ -164,7 +169,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -177,6 +182,8 @@ export class Room {
       existing.socketId = player.socketId;
       existing.name = player.name;
       existing.avatarUrl = player.avatarUrl;
+      // Unvanı tazele — başka oturumda değiştirilmiş olabilir.
+      existing.title = this.progress?.title(player.id) ?? null;
       // Masa sahipsiz kaldıysa (tek insan kopmuştu) dönen oyuncu sahipliği geri alır.
       this.reassignHost();
       this.broadcast();
@@ -212,6 +219,7 @@ export class Room {
       stats: emptyStats(),
       answers: [],
       typed: [],
+      title: player.isBot ? null : (this.progress?.title(player.id) ?? null),
     };
     this.players.set(record.id, record);
     this.reassignHost();
@@ -257,6 +265,18 @@ export class Room {
     // Kopan oyuncu beklenen son yanıtsa kalanları süre sonuna kadar bekletme.
     this.revealIfEveryoneAnswered();
     this.advanceIfEveryoneBet();
+  }
+
+  /** Unvan takma/kaldırma — geçerlilik ProgressStore'da (yalnız kazanılmış
+   *  rozet). Depo kapalıysa oturumluk uygulanır; yeniden girişte sıfırlanır. */
+  setTitle(playerId: string, title: BadgeKey | null) {
+    const player = this.players.get(playerId);
+    if (!player || player.isBot) return;
+    if (this.progress && !this.progress.setTitle(playerId, title)) {
+      throw new GameError("err.title");
+    }
+    player.title = title;
+    this.broadcast();
   }
 
   /** Oyuncuyu masadan çıkarır (ayrılma, grace bitişi veya kick); kalan masa kesintisiz devam eder. */
@@ -1143,7 +1163,7 @@ export class Room {
   }
 
   private snapshotPodium(): PodiumEntry[] {
-    return this.sortedPlayers().map(({ id, name, avatarUrl, score, team }) => ({ id, name, avatarUrl, score, team }));
+    return this.sortedPlayers().map(({ id, name, avatarUrl, score, team, title }) => ({ id, name, avatarUrl, score, team, ...(title ? { title } : {}) }));
   }
 
   private hasAnswered(player: RoomPlayer) {
@@ -1170,7 +1190,10 @@ export class Room {
       waiting: player.eligibleFrom > this.qIndex,
       streak: player.stats.currentStreak,
       team: player.team,
-      ...(player.isBot ? {} : { progress: this.progress?.badge(player.id) ?? undefined }),
+      ...(player.isBot ? {} : {
+        progress: this.progress?.badge(player.id) ?? undefined,
+        ...(player.title ? { title: player.title } : {}),
+      }),
     };
   }
 }

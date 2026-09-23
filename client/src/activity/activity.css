@@ -1436,6 +1436,15 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-badge-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
 .qt-badge { display: inline-flex; align-items: center; gap: 3px; padding: 1.5px 7px; border-radius: 999px; border: 1px solid rgba(243,195,98,.32); background: rgba(243,195,98,.08); font-size: 9.5px; font-weight: 700; letter-spacing: .02em; color: #e8c98a; white-space: nowrap; }
 .qt-badge .qt-icon { width: 9px; height: 9px; }
+/* Unvan seçimi: rozet hapları tıklanabilir (button reset) — takılı olanı
+   dolgun altınla işaretler. */
+button.qt-badge { font-family: inherit; cursor: pointer; transition: filter .12s ease, background .12s ease, border-color .12s ease; }
+button.qt-badge:hover { filter: brightness(1.18); }
+button.qt-badge:active { transform: scale(.96); }
+button.qt-badge:focus-visible { outline: 2px solid rgba(243,195,98,.9); outline-offset: 1px; }
+.qt-badge.is-title { background: rgba(243,195,98,.85); border-color: #f3c362; color: #241a05; }
+/* İsmin yanındaki küçük unvan etiketi — rozet hapından daha silik, altın. */
+.qt-title { display: inline-block; font-style: normal; font-size: 8.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #f3c362; border: 1px solid rgba(243,195,98,.4); background: rgba(243,195,98,.08); border-radius: 4px; padding: 0 4px; margin-left: 5px; vertical-align: 1px; white-space: nowrap; }
 
 /* Maçta İLK KEZ kazanılan rozetler — podyumda ve özet kartta parlayan altın hap. */
 .qt-badge-new-row { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: auto; }
