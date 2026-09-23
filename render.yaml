@@ -1,0 +1,30 @@
+# QuizTavern — Render Blueprint (https://render.com/docs/blueprint-spec)
+# Dashboard → New → Blueprint → repo'yu seç → Apply. Ayrıntılar: docs/DEPLOY.md §Render.
+services:
+  - type: web
+    name: quiztavern
+    runtime: docker            # kökteki Dockerfile kullanılır (monorepo tek imaj)
+    plan: free                 # ücretsiz katman — uyur, ilk istek ~30 sn'de uyanır
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # PORT'u Render kendisi enjekte eder; sunucu process.env.PORT'u okur.
+      - key: DISCORD_CLIENT_ID
+        sync: false            # ilk deploy'da dashboard'da sorulur
+      - key: DISCORD_CLIENT_SECRET
+        sync: false
+      - key: DISCORD_BOT_TOKEN
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true    # Render güvenli rastgele değer üretir
+      - key: PUBLIC_BASE_URL
+        sync: false            # https://<servis>.onrender.com — deploy sonrası adı görünce yaz
+      # ALLOW_MOCK_AUTH kesinlikle eklenmez.
+    # ── Kalıcı SQLite (xp.db, daily.db, question-reports.db) ────────────────
+    # Ücretsiz planda disk YOK: render disk eklemek planı "starter"a yükseltir.
+    # Kalıcılık istersen planı starter yap ve şu bloğu aç:
+    # disk:
+    #   name: quiztavern-data
+    #   mountPath: /app/server/data
+    #   sizeGB: 1
