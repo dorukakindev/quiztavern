@@ -4,6 +4,7 @@ import { ActivityApp } from './activity/ActivityApp'
 import { ActivityErrorBoundary } from './activity/ActivityErrorBoundary'
 import { installClientErrorReporting } from './lib/clientErrors'
 import './activity/activity.css'
+import './activity/layout-fixes.css'
 
 installClientErrorReporting()
 

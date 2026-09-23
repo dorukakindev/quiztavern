@@ -1,0 +1,269 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   YERLEŞİM DÜZELTMELERİ (tasarım turu · 2026-09)
+   activity.css'ten SONRA yüklenir (activity-main.tsx) — aynı özgüllükte son
+   yazan kazanır. Her blok, ölçülen bir sıkışma/kayma/taşma hatasını düzeltir;
+   neyi neden değiştirdiği yanında yazılı. Ölçüm: 1440×900, 1366×625,
+   1280×720, 1024×600, 900×640, 768×1024, 844×390, 390×844 — oyun akışının
+   her fazında (lobi → geri sayım → soru → reveal → podyum/özet/inceleme).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ───────────────────────── 1 · LOBİ ───────────────────────── */
+
+/* 1a · Masaüstü: yan paneller ekrandan taşıyordu. Sağ panel y=0'a yapışıp
+   altta kırpılıyor ("Nasıl oynanır" hiç görünmüyordu), sol panel alttaki
+   yüzen denetimlerin (ses/müzik/dil) üstüne biniyordu. Sebep: kabuğun satırı
+   'auto' olduğu için panellerin max-height:100%'ü çözülemiyordu. Satırı
+   viewport'a kilitleyince iç kaydırma (+ alt solma maskesi) gerçekten çalışır. */
+@media (min-width: 1001px) {
+  .qt-table-shell {
+    height: 100vh;
+    height: 100dvh;
+    grid-template-rows: minmax(0, 1fr);
+    padding-top: max(14px, var(--qt-sait));
+    padding-bottom: max(14px, var(--qt-saib));
+  }
+  .qt-you-panel { align-self: center; max-height: 100%; }
+  /* Alt 52px yüzen denetimlere ayrılır: panel ortalanır ama onlara değmez. */
+  .qt-settings { align-self: center; max-height: calc(100% - 52px); margin-bottom: 52px; }
+}
+
+/* 1b · Kısa ekranda "Nasıl oynanır" kutusu en alta itilip kesiliyordu; aynı
+   bilgi ilk ziyarette modal olarak zaten gösteriliyor. */
+@media (min-width: 1001px) and (max-height: 760px) {
+  .qt-you-panel .qt-howto { display: none; }
+}
+
+/* 1c · "Günlük Meydan Okuma" 15px kalın yazıyla iki satıra kırılıp paneldeki
+   en iri öğe oluyordu (ikincil bir eylem). Tek satır, sakin ikincil buton. */
+.qt-daily-start { min-height: 40px; font-size: 13px; white-space: nowrap; overflow: hidden; }
+.qt-daily-start .qt-icon { width: 15px; height: 15px; }
+
+/* 1d · Mod kartı: "Diğer modlar" dar kartta "Diğer m…" diye kesiliyordu. */
+.qt-mode-card b { white-space: normal; text-overflow: clip; font-size: 13px; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* 1e · Zorluk çipleri: dört sütunda "Karışık" kutusundan taşıyordu. */
+.qt-difficulty-row .qt-count-chip { font-size: 12px; padding-inline: 2px; letter-spacing: -.01em; }
+
+/* 1f · Masa (yörünge) küçükken koltuk jetonları ve disk orantılı küçülür.
+   Sabit 58px jetonlar 230–400px yörüngede diske biniyordu. */
+.qt-orbit.is-compact .qt-seat--filled,
+.qt-orbit.is-compact .qt-seat__token { width: 46px; height: 46px; }
+.qt-orbit.is-compact .qt-seat__token { font-size: 16px; }
+.qt-orbit.is-compact .qt-seat--empty,
+.qt-orbit.is-compact .qt-seat--empty i { width: 40px; height: 40px; }
+.qt-orbit.is-compact .qt-seat__label b,
+.qt-orbit.is-compact .qt-seat--empty span { font-size: 11px; }
+.qt-orbit.is-compact .qt-seat__crown { top: -16px; width: 17px; height: 17px; }
+.qt-orbit.is-compact .qt-orbit__disc { inset: max(80px, 23%); }
+.qt-orbit.is-compact .qt-orbit__ring-inner { inset: 58px; }
+
+/* 1g · Dar ekran (dikey yığın): tepe koltuğu ekranın üst kenarında kesiliyor,
+   ses/müzik/dil denetimleri ise upuzun sayfanın EN ALTINDA kayboluyordu.
+   Denetimler sol üste yüzer; masaya onlar ve taç için üstten pay verilir.
+   Koltuk etiketleri yörünge kutusunun altına sarktığından alt pay da gerekir. */
+@media (max-width: 1000px) {
+  .qt-lobby-controls { top: max(10px, var(--qt-sait)); bottom: auto !important; left: max(10px, var(--qt-sail)); }
+  .qt-table-shell { padding-top: calc(58px + var(--qt-sait)); }
+  .qt-orbit { margin-bottom: 26px; }
+}
+
+/* 1h · Kısa YATAY ekran (telefon yatay, alçak pencere): alttaki sabit
+   Hazır/Başlat çubuğu ekranın ~%35'ini kaplıyor, masayı 230px'e ezip
+   koltukları diske bindiriyordu. Bu bantta panel zaten masanın YANINDA:
+   CTA panelin içinde akar, panel kendi içinde kayar. */
+@media (max-width: 1000px) and (max-height: 560px) and (min-width: 680px) {
+  .qt-table-shell { padding-top: max(10px, var(--qt-sait)); padding-bottom: 16px; align-items: center; }
+  .qt-orbit { margin-bottom: 18px; }
+  .qt-you-panel { align-self: center; max-height: calc(100vh - 20px); max-height: calc(100dvh - 20px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; gap: 9px; padding: 12px; }
+  .qt-you-cta { position: static; display: grid; gap: 8px; padding: 0; border: 0; background: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .qt-you-cta .qt-button { min-height: 42px; }
+  .qt-you-cta .qt-orbit__ready { order: 0; justify-content: flex-start; }
+  /* Denetimler tepe/sol-üst koltukların arasına düşmesin: yalnız ikonlar kalır. */
+  .qt-lobby-controls { top: max(8px, var(--qt-sait)); left: max(8px, var(--qt-sail)); }
+  .qt-lobby-controls .qt-connection { display: none; }
+}
+
+/* ───────────────────────── 2 · OYUN SAHNESİ ───────────────────────── */
+
+/* 2a · Üst sağdaki "İzleyici ol / Masadan ayrıl" 1024px'te iki satıra
+   kırılıp hap gibi değil blok gibi duruyordu. Asla kırılmaz; dar ekranda
+   "Masadan ayrıl" yalnız ikon (ad title/aria-label'da). */
+.qt-game-exit { white-space: nowrap; }
+.qt-game-exit__label { display: inline; }
+@media (max-width: 1180px) {
+  .qt-game-head .qt-game-exit:not(.qt-game-spectate) { padding-inline: 11px; gap: 0; }
+  .qt-game-head .qt-game-exit:not(.qt-game-spectate) .qt-game-exit__label { display: none; }
+}
+
+/* 2b · Başlıktaki kilit sayacı: telefonda "Soru 1 / 10  0 / 6 kilitledi" hapı
+   sağdaki butonlara dayanıyordu. Dar ekranda kısa hâli (🔒 0/6) gösterilir. */
+.qt-game-summary__short { display: none; align-items: center; gap: 4px; }
+.qt-game-summary__short .qt-icon { width: 13px; height: 13px; }
+@media (max-width: 560px) {
+  .qt-game-summary__full { display: none; }
+  .qt-game-summary__short { display: inline-flex; justify-content: flex-end; }
+}
+
+/* 2c · Soldaki masa şeridi: isim, lig rozeti ve durum ÜÇ satıra dizilip
+   "Düşünü…" diye kesiliyordu. İsim + rozet aynı satırda, durum altında.
+   Şerit daralınca (≤1150px) rozet düşer — isim önceliklidir. */
+.qt-player-card > div:nth-child(2) { grid-template-columns: minmax(0, 1fr) auto; align-items: center; column-gap: 6px; row-gap: 2px; }
+.qt-player-card > div:nth-child(2) > small { grid-column: 1 / -1; font-size: 11px; }
+.qt-player-card .qt-league { margin-top: 0; }
+@media (max-width: 1150px) {
+  .qt-player-card .qt-league { display: none; }
+}
+
+/* 2d · Sayaç: tarama çizgisi (sweep) halkanın 5px DIŞINA taşıp sayacın
+   yanından çıkan başıboş bir çubuk gibi görünüyordu. Halka bandına maskelenir. */
+.qt-timer__sweep { inset: 0; -webkit-mask: radial-gradient(circle, transparent 0 58%, #000 60%); mask: radial-gradient(circle, transparent 0 58%, #000 60%); }
+
+/* 2e · Reveal sayımı: yüzde etiketi sağ-üstte ✓/✗ rozetinin üstüne biniyor,
+   oy veren avatarlar kartın altından taşıp (tek sütunda) bir sonraki şıkkın
+   metnini örtüyordu. İkisi artık TEK rozet: kartın alt kenarına oturur, ✓/✗
+   sütununun solunda durur. Mutlak konumlu — kart ölçüsü değişmez (0px). */
+.qt-answer__tally { position: absolute; right: 46px; bottom: 0; z-index: 2; translate: 0 50%; display: flex; align-items: center; gap: 4px; pointer-events: none; }
+.qt-answer__tally .qt-answer__pct { position: static; padding: 2px 8px; border-radius: var(--r-pill); border: 1px solid rgba(105,155,181,.45); background: rgba(6,17,28,.94); color: #c7d8e4; font-size: 11px; line-height: 1.3; animation: qtVoterPop .3s cubic-bezier(.2,.8,.25,1) both; }
+.qt-answer__tally.is-right .qt-answer__pct { border-color: rgba(91,227,189,.65); color: #7df0cf; }
+.qt-answer .qt-answer__tally .qt-voters { position: static; }
+.qt-answer .qt-voters .qt-avatar { width: 22px; height: 22px; font-size: 10px; }
+/* Rozet alttan ~14px sarkar: satır aralığı her düzende en az bunu karşılar. */
+.qt-answers { row-gap: max(18px, 2.6vh); }
+@media (min-width: 901px) and (max-height: 640px) { .qt-answers { row-gap: 18px; } }
+
+/* 2f · Dar tablet/küçük pencere (561–900px, yüksek ekran): tek sütuna düşen
+   ızgarada sağ sütun (sayaç) hâlâ 3. sütunu istediği için soru kartı ekranın
+   yarısına sıkışıyor, üstte 150px boşluk kalıyor, oyuncu listesi foldun altına
+   iniyordu. Telefon düzeni (avatar şeridi → sayaç → kart) burada da kullanılır
+   (activity.css'teki medya sorgusu genişletildi); tablette şıklar 2 sütun ve
+   tur noktaları görünür kalır. */
+@media (min-width: 561px) and (max-width: 900px) and (min-height: 561px) {
+  .qt-game { padding-inline: clamp(14px, 4vw, 32px); }
+  .qt-game-grid { width: 100%; max-width: 720px; }
+  .qt-answers { grid-template-columns: 1fr 1fr; }
+  .qt-game-top { grid-template-columns: auto 1fr auto; text-align: left; font-size: 12px; }
+  .qt-game-top > div:first-child { justify-content: flex-start; }
+  .qt-game-top > span { text-align: right; }
+  .qt-progress, .qt-progress-bar { display: flex; }
+  .qt-progress i { width: 14px; }
+  .qt-player-card, .qt-player-card:hover { border: 0; background: none; }
+  .qt-player-stack { flex-wrap: wrap; justify-content: center; }
+}
+/* Telefon/tablet avatar şeridi: masaüstü kartının iç ışık çizgisi ve gölgesi
+   çıplak şeridin üstünde yüzen bir çizgi olarak kalıyordu. */
+@media (max-width: 900px) and (min-height: 561px) {
+  .qt-table-strip { box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* 2g · Kısa-yatay telefonda sayım rozeti küçülür; satır aralığı onu taşır. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 560px) {
+  .qt-answers { row-gap: 16px; }
+  .qt-answer__tally { right: 38px; }
+  .qt-answer__tally .qt-answer__pct { padding: 1px 6px; font-size: 10px; }
+  .qt-answer .qt-voters .qt-avatar { width: 18px; height: 18px; font-size: 9px; }
+}
+
+/* 2h · Bildirim (toast) sağ-altta emote çubuğunun üstüne düşüp onu
+   örtüyordu (ikisi de sağ alt). Üst-ortaya taşındı. */
+.qt-toast { right: auto; bottom: auto; left: 50%; top: max(14px, var(--qt-sait)); translate: -50% 0; max-width: min(420px, calc(100vw - 24px)); animation-name: qtToastDrop; }
+@keyframes qtToastDrop { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ───────────────────────── 3 · PODYUM / ÖZET / İNCELEME ───────────────────────── */
+
+/* 3a · Sekmeler (Sıralama/Özet/İnceleme) her sekmede farklı yükseklikte
+   duruyordu (69 → 88 → 126px): ızgara, sekmeleri içeriğin boyuna göre
+   ortalıyordu. Sekmeler artık tepeye sabit; içerik kalan alanda ortalanır ve
+   sığmazsa sayfa kayar (eskiden altı kesiliyordu). */
+.qt-podium { display: flex; flex-direction: column; align-items: center; height: 100vh; height: 100dvh; min-height: 0; overflow-x: hidden; overflow-y: auto; padding: clamp(14px, 3vh, 26px) 16px clamp(14px, 3vh, 26px); }
+.qt-podium > .qt-podium-tabs { flex: none; margin-bottom: clamp(10px, 2vh, 16px); }
+.qt-podium > .qt-podium-glass,
+.qt-podium > .qt-summary-card,
+.qt-podium > .qt-review-card { flex: none; margin-block: auto; }
+/* Telefonda yüzen "Masadan ayrıl" sekmelerin üstüne biniyordu. */
+@media (max-width: 760px) {
+  .qt-podium { padding-top: calc(60px + var(--qt-sait)); }
+}
+
+/* 3b · 3B karakter yuvası: sabit yükseklik (model sonradan gelince podyum
+   kaymasın), yükleme çubuğu (siyah şerit) gizli, model yumuşak belirir.
+   Alçak ekranda hiç yok — JS de yüklemez (PodiumCharacter, aynı eşik). */
+.qt-podium-model-slot { width: 100%; height: 150px; }
+.qt-podium-model-slot .qt-podium-model { height: 100%; animation: qtFadeIn .5s var(--ease) both; }
+.qt-podium-model::part(default-progress-bar) { display: none; }
+@media (max-height: 700px) {
+  .qt-podium-model-slot { display: none; }
+  /* Alçak ekranda 5 satırlık liste + iki buton kartı taşırıyordu. */
+  .qt-podium-glass { padding: 20px clamp(16px, 3vw, 28px); }
+  .qt-podium-list { gap: 6px; }
+  .qt-podium-list > div { padding: 6px 12px; }
+  .qt-podium-list .qt-avatar { width: 34px; height: 34px; }
+  .qt-podium-side .qt-button { min-height: 42px; }
+}
+
+/* 3c · Özet: kategori çubukları XP kutusuna yapışıktı (aralık yoktu). */
+.qt-summary-cats { margin-top: 14px; }
+.qt-summary-xp + .qt-summary-cats { margin-top: 16px; }
+
+/* 3d · İnceleme: seçili tur düğümünün halkası kaydırma kabı tarafından
+   kırpılıp kare gibi görünüyordu. Kaba nefes payı. */
+.qt-review-timeline { padding: 6px 4px; }
+.qt-review-answers { max-width: none; }
+
+/* ───────────────────────── 4 · İNCE AYARLAR (2. ölçüm turu) ───────────────────────── */
+
+/* 4a · Kategori tetikleyicisi grup etiketinden 12px fazladan kopuktu. */
+.qt-settings__group .qt-category-picker { margin-top: 0; }
+
+/* 4b · Dağılım çubuğu 5px yukarıda duruyor, 2-3 satırlık şık metninin son
+   satırının içinden geçiyordu. Kartın en alt kenarına iner. */
+.qt-answer__dist { bottom: 3px; height: 3px; }
+
+/* 4c · Alçak masaüstünde (1024×600) kartın yan boşluğu 41px'ti; şıklar
+   ~160px metin alanına düşüp 4 satıra kırılıyordu. */
+@media (min-width: 901px) and (max-height: 640px) {
+  .qt-question-stage { padding-inline: clamp(14px, 2.2vw, 30px); }
+  .qt-answer { font-size: 14px; }
+}
+
+/* 4d · Telefon/tablet dikey: ızgara dikeyde ORTALANIYORDU (margin:auto) —
+   768×1024'te başlıkla oyuncular arasında 200px boş bant kalıyordu. Üste yaslanır. */
+@media (max-width: 560px) and (orientation: portrait), (max-width: 900px) and (min-height: 561px) {
+  .qt-game-grid { margin-block: clamp(8px, 2.5vh, 24px) auto; }
+}
+
+/* 4e · Özet: "Video Oyunları" gibi adlar 76px sütunda iki satıra kırılıyordu. */
+.qt-summary-cat > small:first-child { width: clamp(84px, 22%, 132px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 4f · Çok alçak ekran (telefon yatay ~390px): podyum listesi + iki buton
+   ekrana sığmıyordu. Satırlar ve sekmeler sıkılaşır; yine taşarsa sayfa kayar. */
+@media (max-height: 480px) {
+  .qt-podium { padding-top: 10px; }
+  .qt-podium > .qt-podium-tabs { margin-bottom: 8px; }
+  .qt-podium-tabs button { min-height: 28px; padding: 0 14px; font-size: 12px; }
+  .qt-podium-glass { padding: 12px 18px; gap: 14px; }
+  .qt-podium-list { gap: 4px; }
+  .qt-podium-list > div { padding: 3px 10px; gap: 10px; }
+  .qt-podium-list .qt-avatar { width: 28px; height: 28px; font-size: 12px; }
+  .qt-podium-side { gap: 7px; }
+  .qt-podium-side .qt-button { min-height: 38px; }
+  .qt-avatar.qt-podium-winner { width: 54px; height: 54px; font-size: 22px; }
+  .qt-podium .qt-game-exit--floating { top: 10px; right: 10px; }
+}
+
+/* 4g · Masa şeridi 1024px'te 154px'e düşüyor; Çifte Bahis'te "1.000" gibi
+   bakiye skorları isim alanını "B…", "C…" diye yok ediyordu. Şerit biraz
+   genişler, sağ sütun (sayaç 82px) biraz daralır; bahis bakiyesi küçük yazılır. */
+@media (min-width: 901px) {
+  .qt-game-grid { grid-template-columns: clamp(170px, 16.5vw, 200px) minmax(0, 720px) clamp(104px, 11vw, 156px); }
+}
+.qt-game--bet .qt-player-score { font-size: 12px; }
+@media (min-width: 901px) and (max-height: 640px) {
+  .qt-player-card { gap: 7px; padding-inline: 7px; }
+}
+
+/* 4h · Takım bandı: "Takım A" dar kutuda "Takım / A" diye iki satıra kırılıyordu. */
+.qt-strip-team b { white-space: nowrap; font-size: 10px; }
+
+/* 4i · Bahis başlığı: alt metin -16px negatif boşlukla başlığın harf
+   kuyruklarına biniyordu. */
+.qt-bet-stage .qt-question-head p { margin: 4px auto 0; }

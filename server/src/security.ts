@@ -112,7 +112,7 @@ export function contentSecurityPolicy(production: boolean): string {
   const localConnectSources = production
     ? ""
     : " http://127.0.0.1:* ws://127.0.0.1:* http://localhost:* ws://localhost:*";
-  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://cdn.discordapp.com; media-src 'self' blob:; connect-src 'self'${localConnectSources} https://discord.com https://*.discord.com https://*.discordsays.com wss://*.discordsays.com https://*.trycloudflare.com wss://*.trycloudflare.com; form-action 'self' https://discord.com; frame-ancestors https://discord.com https://*.discord.com https://*.discordapp.com`;
+  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: blob: https://cdn.discordapp.com; media-src 'self' blob:; connect-src 'self'${localConnectSources} https://discord.com https://*.discord.com https://*.discordsays.com wss://*.discordsays.com https://*.trycloudflare.com wss://*.trycloudflare.com; form-action 'self' https://discord.com; frame-ancestors https://discord.com https://*.discord.com https://*.discordapp.com`;
 }
 
 /** API başlıkları; Discord Activity iframe'ini engelleyecek global frame policy uygulanmaz. */
