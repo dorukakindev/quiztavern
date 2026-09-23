@@ -1363,6 +1363,58 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
   .qt-emote-bar { left: 50%; right: auto; bottom: max(6px, var(--qt-saib)); translate: -50% 0; }
 }
 
+/* ── İlerleme meta'sı: lig rozeti, XP bar, sezon tablosu, kazanım ────────
+   Lig renkleri palet ailesinde: acemi=soluk gri, çırak=mint, kalfa=cyan,
+   usta=altın, efsane=mor. Renk yalnız aksan — metin her durumda okunur. */
+.qt-league { display: inline-flex; align-items: center; gap: 4px; padding: 1px 6px; border-radius: 999px; font-size: 9px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border: 1px solid var(--league-c, #9aa8b8); color: var(--league-c, #9aa8b8); background: color-mix(in srgb, var(--league-c, #9aa8b8) 12%, transparent); white-space: nowrap; }
+.qt-league > i { width: 6px; height: 6px; border-radius: 50%; background: var(--league-c, #9aa8b8); box-shadow: 0 0 6px var(--league-c, #9aa8b8); }
+.qt-league.is-acemi, .qt-league-dot.is-acemi { --league-c: #9aa8b8; }
+.qt-league.is-cirak, .qt-league-dot.is-cirak { --league-c: #5ee6c1; }
+.qt-league.is-kalfa, .qt-league-dot.is-kalfa { --league-c: #62c9e8; }
+.qt-league.is-usta, .qt-league-dot.is-usta { --league-c: #f3c362; }
+.qt-league.is-efsane, .qt-league-dot.is-efsane { --league-c: #c99df5; }
+.qt-league-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--league-c); box-shadow: 0 0 5px var(--league-c); flex: none; }
+.qt-player-card .qt-league { margin-top: 2px; justify-self: start; }
+
+/* XP şeridi (lobi, senin koltuğun altında + özet kartının içinde aynı bar) */
+.qt-xp-strip { display: grid; gap: 5px; padding: 9px 11px; border: 1px solid rgba(72,180,204,.2); border-radius: var(--r-md, 12px); background: rgba(6,20,38,.55); }
+.qt-xp-strip__head { display: flex; align-items: center; gap: 7px; font-size: 10px; }
+.qt-xp-strip__head b { font-size: 11px; color: #eef8ff; }
+.qt-xp-streak { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 800; color: #f3c362; }
+.qt-xp-bar { height: 5px; border-radius: 99px; background: rgba(255,255,255,.09); overflow: hidden; }
+.qt-xp-bar > i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #62c9e8, #5ee6c1); transition: width .6s ease; }
+.qt-xp-strip > small { font-size: 9px; color: #8fa9bc; }
+
+/* Sezon lider tablosu (lobi sağ panel) */
+.qt-season { display: grid; gap: 6px; padding: 9px 11px; border: 1px solid rgba(72,180,204,.2); border-radius: var(--r-md, 12px); background: rgba(6,20,38,.55); }
+.qt-season__head span { color: #4bccd6; font-size: 9px; font-weight: 900; letter-spacing: .12em; }
+.qt-season__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.qt-season__list > li { display: flex; align-items: center; gap: 6px; padding: 2px 5px; border-radius: 6px; font-size: 10.5px; color: #d8ecf7; }
+.qt-season__list > li.is-you { background: rgba(98,201,232,.13); }
+.qt-season__list b { flex: none; width: 22px; font-size: 9px; color: #8fa9bc; }
+.qt-season__list span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qt-season__list em { flex: none; font-style: normal; font-size: 9.5px; font-weight: 700; color: #5ee6c1; }
+.qt-season__empty { font-size: 10px; color: #8fa9bc; }
+
+/* Podyum XP kazanım rozetleri */
+.qt-podium-list .qt-xp-gain { font-style: normal; font-size: 10px; font-weight: 800; color: #5ee6c1; }
+.qt-podium-spot .qt-xp-gain { display: inline-block; margin-top: 5px; padding: 3px 11px; border-radius: 999px; font-style: normal; font-size: 12px; font-weight: 800; color: #5ee6c1; background: rgba(94,230,193,.13); border: 1px solid rgba(94,230,193,.4); }
+
+/* Maç özeti kartındaki XP bloğu */
+.qt-summary-xp { display: grid; gap: 5px; margin-top: 10px; padding: 9px 12px; border-radius: var(--r-md, 12px); background: rgba(94,230,193,.07); border: 1px solid rgba(94,230,193,.28); }
+.qt-summary-xp__head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.qt-summary-xp__head > small { font-size: 9px; font-weight: 800; letter-spacing: .08em; color: #8fa9bc; }
+.qt-summary-xp__head > b { font-size: 15px; font-weight: 800; color: #5ee6c1; }
+.qt-summary-xp__flag { margin-left: auto; font-size: 9px; font-weight: 800; letter-spacing: .06em; color: #f3c362; }
+.qt-summary-xp__flag.is-league { color: #c99df5; }
+.qt-summary-xp__foot { font-size: 9.5px; color: #8fa9bc; }
+
+/* Kısa-yatay telefon düzeninde ilerleme blokları yer kaplamasın */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 560px) {
+  .qt-xp-strip, .qt-season { padding: 6px 8px; gap: 4px; }
+  .qt-xp-strip__head b { font-size: 10px; }
+}
+
 /* ── Podyum 3B karakteri ──────────────────────────────────────────────── */
 /* Kutlama dekoru: kazanan kartının üstünde sahne ışığındaki sunucu.
    Yüklenmezse boş kalır — layout sabit yükseklikte olduğundan kayma olmaz. */

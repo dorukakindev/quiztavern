@@ -19,7 +19,8 @@
     "test:daily": "tsx scripts/daily-test.ts",
     "test:anticheat": "tsx scripts/anticheat-test.ts",
     "test:circle-alias": "tsx scripts/circle-alias-test.ts",
-    "test:packs": "tsx scripts/packs-test.ts"
+    "test:packs": "tsx scripts/packs-test.ts",
+    "test:xp": "tsx scripts/xp-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
