@@ -2,6 +2,7 @@ import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
 import type {
+  BadgeKey,
   LeagueKey,
   ProgressBadge,
   ProgressSnapshot,
@@ -70,6 +71,49 @@ function dayKey(now: Date): string {
 function previousDayKey(now: Date): string {
   return new Date(now.getTime() - 86_400_000).toISOString().slice(0, 10);
 }
+
+// ── Başarım rozetleri ────────────────────────────────────────────────────
+// Kümülatif koşullar maç sonrası oyuncu istatistiğine; maç-içi koşullar
+// (podyum/tamİsabet) ise o maçın özetine bakar. Rozet bir kez kazanılır —
+// `earned` artık doğru dönmese bile kayıt kalıcıdır (geriye doğru kayıp yok).
+
+interface BadgeStats {
+  xp: number;
+  matches: number;
+  wins: number;
+  correctTotal: number;
+  bestStreak: number;
+  streakDays: number;
+}
+
+interface BadgeDef {
+  key: BadgeKey;
+  earned: (s: BadgeStats, e: MatchFinishedEntry) => boolean;
+}
+
+const leagueMinXp = (key: LeagueKey) =>
+  LEAGUE_THRESHOLDS.find((tier) => tier.key === key)?.minXp ?? 0;
+
+/** shared/types.ts BADGE_KEYS ile birebir aynı anahtar kümesi — tip denetimi
+ *  katar üstünden değil, eksik/fazla anahtar derlemede yakalanır. */
+export const BADGE_DEFS: readonly BadgeDef[] = [
+  { key: "ilkMac", earned: (s) => s.matches >= 1 },
+  { key: "onMac", earned: (s) => s.matches >= 10 },
+  { key: "elliMac", earned: (s) => s.matches >= 50 },
+  { key: "ilkGalibiyet", earned: (s) => s.wins >= 1 },
+  { key: "onGalibiyet", earned: (s) => s.wins >= 10 },
+  { key: "keskin", earned: (s) => s.correctTotal >= 100 },
+  { key: "kartalGoz", earned: (s) => s.correctTotal >= 500 },
+  { key: "seriAvcisi", earned: (s) => s.bestStreak >= 5 },
+  { key: "alev", earned: (s) => s.bestStreak >= 10 },
+  { key: "gunluk3", earned: (s) => s.streakDays >= 3 },
+  { key: "gunluk7", earned: (s) => s.streakDays >= 7 },
+  { key: "podyum", earned: (_s, e) => e.placement <= 3 },
+  { key: "tamIsabet", earned: (_s, e) => e.total >= 5 && e.correct === e.total },
+  { key: "ligKalfa", earned: (s) => s.xp >= leagueMinXp("kalfa") },
+  { key: "ligUsta", earned: (s) => s.xp >= leagueMinXp("usta") },
+  { key: "ligEfsane", earned: (s) => s.xp >= leagueMinXp("efsane") },
+];
 
 /** Odanın maç sonunda ilettiği tek oyuncu özeti. `total` = eligible olduğu tur. */
 export interface MatchFinishedEntry {
@@ -146,6 +190,12 @@ export function createXpStore(file: string): XpStore {
     name TEXT NOT NULL DEFAULT '',
     PRIMARY KEY (user_id, season)
   )`);
+  db.exec(`CREATE TABLE IF NOT EXISTS achievements (
+    user_id TEXT NOT NULL,
+    badge TEXT NOT NULL,
+    earned_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, badge)
+  )`);
 
   const getPlayer = db.prepare("SELECT * FROM players WHERE user_id = ?");
   const upsertPlayer = db.prepare(`INSERT INTO players
@@ -165,6 +215,19 @@ export function createXpStore(file: string): XpStore {
   const seasonRank = db.prepare(`SELECT COUNT(*) + 1 AS rank FROM season_points
     WHERE season = ? AND xp > (SELECT xp FROM season_points WHERE user_id = ? AND season = ?)`);
   const seasonRow = db.prepare("SELECT xp FROM season_points WHERE user_id = ? AND season = ?");
+  const earnedBadgeRows = db.prepare("SELECT badge FROM achievements WHERE user_id = ?");
+  const insertBadge = db.prepare(
+    "INSERT OR IGNORE INTO achievements (user_id, badge, earned_at) VALUES (?, ?, ?)",
+  );
+
+  const knownBadges = new Set(BADGE_DEFS.map((def) => def.key));
+  /** Kazanılmış rozetler — BADGE_DEFS sırasında, tanınmayan (eski/yanlış) key'ler atılır. */
+  function badgesFor(userId: string): BadgeKey[] {
+    const owned = new Set(
+      (earnedBadgeRows.all(userId) as { badge: string }[]).map((row) => row.badge as BadgeKey),
+    );
+    return BADGE_DEFS.map((def) => def.key).filter((key) => owned.has(key) && knownBadges.has(key));
+  }
 
   function rowToBadge(row: PlayerRow): ProgressBadge {
     return { level: levelFor(row.xp), league: leagueFor(row.xp) };
@@ -189,6 +252,7 @@ export function createXpStore(file: string): XpStore {
       seasonXp,
       seasonRank: rankRow,
       streakDays: row.streak_days,
+      badges: badgesFor(userId),
     };
   }
 
@@ -234,6 +298,25 @@ export function createXpStore(file: string): XpStore {
           upsertSeason.run({ userId: entry.userId, season, xp: gained, name: entry.name });
           const level = levelFor(xp);
           const league = leagueFor(xp);
+          // Başarım: maç sonrası sayaçlara + bu maçın özetine bak. Rozetler
+          // INSERT OR IGNORE — önceki maçlarda alınmış olanlar tekrar sayılmaz.
+          const stats: BadgeStats = {
+            xp,
+            matches: (row?.matches ?? 0) + 1,
+            wins: (row?.wins ?? 0) + (entry.won ? 1 : 0),
+            correctTotal: (row?.correct_total ?? 0) + entry.correct,
+            bestStreak: Math.max(row?.best_streak ?? 0, entry.bestStreak),
+            streakDays,
+          };
+          const owned = new Set(
+            (earnedBadgeRows.all(entry.userId) as { badge: string }[]).map((r) => r.badge),
+          );
+          const newBadges = BADGE_DEFS
+            .filter((def) => !owned.has(def.key) && def.earned(stats, entry))
+            .map((def) => def.key);
+          for (const badge of newBadges) {
+            insertBadge.run(entry.userId, badge, now.getTime());
+          }
           gains.set(entry.userId, {
             gained,
             xp,
@@ -241,6 +324,7 @@ export function createXpStore(file: string): XpStore {
             league,
             leveledUp: level > oldLevel,
             leagueChanged: league !== oldLeague,
+            ...(newBadges.length ? { newBadges } : {}),
           });
         }
       });

@@ -197,4 +197,52 @@ test("depo kapalıyken oda değişmez: progress/xpGains/seasonBoard null", () =>
   } finally { stop(room); }
 });
 
+test("rozetler: ilk maçta temel başarımlar açılır ve yalnızca bir kez sayılır", () => {
+  const store = createXpStore(":memory:");
+  try {
+    // 5/5 doğru + 5 seri + 1. bitiriş → ilkMac, ilkGalibiyet, seriAvcisi, podyum, tamIsabet
+    const gains = store.recordMatch([entry({
+      correct: 5, total: 5, bestStreak: 5, placement: 1, won: true,
+    })]).get("u1")!;
+    assert.deepEqual(gains.newBadges,
+      ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
+    // Aynı sonuç ikinci maçta rozet döndürmez (kayıt kalıcı, tekrar yok).
+    const again = store.recordMatch([entry({
+      correct: 5, total: 5, bestStreak: 5, placement: 1, won: true,
+    })]).get("u1")!;
+    assert.equal(again.newBadges, undefined);
+    // Snapshot'ta BADGE_DEFS sırasında listelenir.
+    assert.deepEqual(store.snapshot("u1")!.badges,
+      ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
+  } finally { store.close(); }
+});
+
+test("rozetler: kümülatif eşikler (maç sayısı + günlük seri) doğru anda açılır", () => {
+  const store = createXpStore(":memory:");
+  try {
+    const day1 = new Date("2026-09-20T12:00:00Z");
+    let last: import("../../shared/types").XpGain | undefined;
+    for (let i = 0; i < 10; i++) {
+      last = store.recordMatch([entry({ correct: 1, placement: 2 })], day1).get("u1");
+    }
+    // 10. maç onMac'i açar; ilkMac/podyum zaten 1. maçta alınmıştı → tekrar yok.
+    assert.deepEqual(last!.newBadges, ["onMac"]);
+    // Günlük seri: 20→21→22 üç ardışık gün, 3. günde gunluk3 (7 değil).
+    store.recordMatch([entry({ correct: 1, placement: 2 })], new Date("2026-09-21T12:00:00Z"));
+    const g3 = store.recordMatch([entry({ correct: 1, placement: 2 })], new Date("2026-09-22T12:00:00Z")).get("u1")!;
+    assert.ok(g3.newBadges!.includes("gunluk3"));
+    assert.ok(!g3.newBadges!.includes("gunluk7"));
+  } finally { store.close(); }
+});
+
+test("rozetler: koşul tutmayan maçta başarım yazılmaz", () => {
+  const store = createXpStore(":memory:");
+  try {
+    // Doğrusuz, sonuncu, yenilmiş maç → yalnız ilkMac.
+    const g = store.recordMatch([entry({ correct: 0, placement: 4, won: false })]).get("u1")!;
+    assert.deepEqual(g.newBadges, ["ilkMac"]);
+    assert.deepEqual(store.snapshot("u1")!.badges, ["ilkMac"]);
+  } finally { store.close(); }
+});
+
 console.log(`\n[xp] sonuç: ${passed} geçti, 0 kaldı`);

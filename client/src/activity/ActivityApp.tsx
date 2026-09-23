@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem } from '../../../shared/types'
+import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type XpGain } from '../../../shared/types'
 import { useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -84,7 +84,20 @@ function XpStrip({ snapshot }: { snapshot: ProgressSnapshot | null }) {
     </div>
     <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
     <small>{t('progress.nextLevel', { xp: remaining })}</small>
+    {snapshot.badges.length > 0 && <div className="qt-badge-row" aria-label={t('badge.title')}>
+      {snapshot.badges.map((badge) => <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {t(`badge.${badge}` as StringKey)}</span>)}
+    </div>}
   </div>
+}
+
+/** Maçta ilk kez kazanılan rozetler — podyumda XP kazanımının yanında
+ *  parlayan altın haplar; isim değil koşulu tooltip'te. */
+function NewBadgeChips({ gain }: { gain: XpGain }) {
+  const { t } = useI18n()
+  if (!gain.newBadges?.length) return null
+  return <span className="qt-badge-new-row" role="status" aria-label={t('badge.new')}>
+    {gain.newBadges.map((badge) => <em key={badge} className="qt-badge-new" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {t(`badge.${badge}` as StringKey)}</em>)}
+  </span>
 }
 
 /** Lobide güncel sezonun ilk 5'i + sıralamada olmayan senin satırın. */
@@ -1437,6 +1450,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
           <b title={winner.name}>{winner.name}</b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
           {state.xpGains?.[winner.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[winner.id].gained })}</em>}
+          {state.xpGains?.[winner.id] && <NewBadgeChips gain={state.xpGains[winner.id]} />}
         </>}
       </section>
       <section className="qt-podium-side">
@@ -1446,6 +1460,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
           <span title={player.name}>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
           {state.xpGains?.[player.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[player.id].gained })}</em>}
+          {state.xpGains?.[player.id] && <NewBadgeChips gain={state.xpGains[player.id]} />}
         </div>)}</div>
         {/* Altın: token kuralı "altın = eylem & zafer (CTA, taç, kazanan)".
             Turkuazdı; maket 3a da altın gösteriyor. */}
@@ -1511,6 +1526,7 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
         <div className="qt-summary-xp__head"><small>{t('summary.xpGain')}</small><b>{t('podium.xpGain', { xp: gain.gained })}</b>
           {gain.leveledUp && <span className="qt-summary-xp__flag">{t('podium.levelUp')}</span>}
           {gain.leagueChanged && <span className="qt-summary-xp__flag is-league">{t('podium.newLeague', { league: t(LEAGUE_KEYS[gain.league] ?? 'league.acemi') })}</span>}
+          <NewBadgeChips gain={gain} />
         </div>
         <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
         <small className="qt-summary-xp__foot">{t('progress.level', { n: gain.level })} · {t(LEAGUE_KEYS[gain.league] ?? 'league.acemi')}</small>
