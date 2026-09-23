@@ -170,7 +170,11 @@ function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
  * renk olurdu.)
  */
 function Avatar({ player, compact = false, mode }: { player: PublicPlayer; compact?: boolean; mode?: GameMode }) {
-  return <div className={`qt-avatar ${playerColorClass(player, mode)} ${compact ? 'qt-avatar--compact' : ''}`} title={player.name}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
+  // Lig çerçevesi: kozmetik kimlik, progress.league'den beslenir (botta/rozet
+  // kaydı olmayanda çerçeve yok). Koltuk rengi (--seat border) ile çakışmamak
+  // için iç border'a değil dış outline halkasına yazılır.
+  const frame = player.progress?.league
+  return <div className={`qt-avatar ${playerColorClass(player, mode)} ${compact ? 'qt-avatar--compact' : ''} ${frame ? `is-frame-${frame}` : ''}`} title={player.name}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
 }
 
 /**
@@ -497,7 +501,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b title={player.name}>{player.name}<TitleTag title={player.title} /></b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}</b><TitleTag title={player.title} />{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -685,7 +689,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
       onManage(player, rect.left + rect.width / 2, rect.top + rect.height / 2, event.currentTarget as HTMLElement)
     } : undefined
     return <div key={seat} className={`qt-seat qt-seat--filled ${playerColorClass(player, state?.gameMode)} ${isHost ? 'is-host' : ''} ${player.ready ? 'is-ready' : ''} ${player.id === state?.youId ? 'is-you' : ''} ${manageable ? 'is-manageable' : ''} ${justJoined[seat] ? 'is-joining' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ transform, '--seat-delay': `${seat * 60}ms` } as CSSProperties} onClick={manage} onContextMenu={manage} onKeyDown={manageKey} {...(manageable ? { role: 'button', tabIndex: 0, title: t('host.hint'), 'aria-haspopup': 'menu' as const, 'aria-expanded': player.id === openManageId, 'aria-controls': player.id === openManageId ? `qt-host-menu-${player.id}` : undefined } : {})}>
-      <div className="qt-seat__token">
+      <div className={`qt-seat__token ${player.progress?.league ? `is-frame-${player.progress.league}` : ''}`}>
         {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
         {isHost && <svg className="qt-seat__crown" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 8 3.5 2.5L12 5l4.5 5.5L20 8l-1.6 8H5.6L4 8Z" /></svg>}
         {player.ready
@@ -1615,7 +1619,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
             fazda dinamik yüklenir, yüklenmezse boş kalır (avatar yeter). */}
         <PodiumCharacter />
         {winner && <>
-          <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
+          <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)} ${winner.league ? `is-frame-${winner.league} qt-winner--${winner.league}` : ''}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
           <b title={winner.name}>{winner.name}<TitleTag title={winner.title} /></b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
           {state.xpGains?.[winner.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[winner.id].gained })}</em>}
@@ -1625,7 +1629,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
       <section className="qt-podium-side">
         <div className="qt-podium-list">{rest.map((player, index) => <div key={player.id} className={`${player.id === state.youId ? 'is-you' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ '--row-delay': `${index * 90}ms` } as CSSProperties}>
           <b>#{index + 2}</b>
-          <div className={`qt-avatar ${colorClass(player.id)}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
+          <div className={`qt-avatar ${colorClass(player.id)} ${player.league ? `is-frame-${player.league}` : ''}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
           <span title={player.name}>{player.name}<TitleTag title={player.title} />{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
           {state.xpGains?.[player.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[player.id].gained })}</em>}
