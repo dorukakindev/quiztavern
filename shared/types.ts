@@ -53,6 +53,24 @@ export interface ProgressBadge {
   league: LeagueKey;
 }
 
+/**
+ * Kalıcı başarım rozetleri. Anahtar listesi SUNUCU ile ortaktır
+ * (server/src/xp.ts BADGE_DEFS — eşikler ve koşullar orada yaşar); istemci
+ * her anahtarın adını/açıklamasını i18n'den üretir (`badge.<key>` +
+ * `badge.<key>.hint`). Sunucu meta değil ANAHTAR yollar — aynı
+ * ToastKey sözleşmesi.
+ */
+export const BADGE_KEYS = [
+  "ilkMac", "onMac", "elliMac",
+  "ilkGalibiyet", "onGalibiyet",
+  "keskin", "kartalGoz",
+  "seriAvcisi", "alev",
+  "gunluk3", "gunluk7",
+  "podyum", "tamIsabet",
+  "ligKalfa", "ligUsta", "ligEfsane",
+] as const;
+export type BadgeKey = (typeof BADGE_KEYS)[number];
+
 /** İzleyen oyuncunun kendi ilerleme özeti — lobide XP bar'ı, podyumda
  *  kazanım satırı ve sezon sırası bununla çizilir. */
 export interface ProgressSnapshot extends ProgressBadge {
@@ -67,6 +85,8 @@ export interface ProgressSnapshot extends ProgressBadge {
   seasonRank: number | null;
   /** Art arda en az bir maç oynanan UTC günü sayısı. */
   streakDays: number;
+  /** Kazanılmış başarım rozetleri (BADGE_KEYS sırasında). */
+  badges: BadgeKey[];
 }
 
 /** Maç bitince bir oyuncuya yazılan kazanım — podyumda "+X XP" animasyonu. */
@@ -78,6 +98,8 @@ export interface XpGain {
   league: LeagueKey;
   leveledUp: boolean;
   leagueChanged: boolean;
+  /** Bu maçta İLK KEZ kazanılan rozetler; yoksa eksik/ dizidir. */
+  newBadges?: BadgeKey[];
 }
 
 /** Sezon lider tablosunda bir satır. */
