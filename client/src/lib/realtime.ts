@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
-import { EV, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type ToastPayload } from '../../../shared/types'
+import { EV, type BadgeKey, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type ToastPayload } from '../../../shared/types'
 import { browserRandomId, storageGet, storageSet } from './storage'
 
 /** Ekranda gösterilen tepki; `uid` aynı oyuncunun arka arkaya attığı tepkileri ayırır. */
@@ -199,6 +199,8 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     spectate: () => socket.emit(EV.SPECTATE),
     takeSeat: () => socket.emit(EV.TAKE_SEAT),
     reportQuestion: (note?: string) => { if (socket.connected) socket.emit(EV.QUESTION_REPORT, { note }) },
+    // Unvan tak/kaldır (null = kaldır) — kazanılmış rozetlerden biri olmalı.
+    setTitle: (title: BadgeKey | null) => socket.emit(EV.SET_TITLE, { title }),
     /**
      * Kapatmayı SUNUCU yapar (LEAVE_GAME handler'ı removePlayer'dan sonra
      * socket.disconnect(true) çağırıyor). Burada emit'in hemen ardından

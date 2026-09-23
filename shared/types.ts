@@ -41,6 +41,8 @@ export interface PublicPlayer {
   /** Kalıcı ilerleme rozeti (seviye + lig). Botlarda ve ilerleme deposu
    *  kapalıyken yoktur; hiç maç oynamamış oyuncuda da boş kalabilir. */
   progress?: ProgressBadge;
+  /** Oyuncunun taktığı unvan (kazanılmış rozetlerden biri). Seçilmemişse yok. */
+  title?: BadgeKey;
 }
 
 /** Kalıcı ilerleme meta'sı: lig kademeleri. XP eşikleri sunucudaki
@@ -224,6 +226,7 @@ export type ToastKey =
   | "err.kicked"
   | "err.kickFailed"
   | "err.transferFailed"
+  | "err.title"
   | "err.dailyDone"
   | "info.kicked"
   | "report.sent"
@@ -255,6 +258,8 @@ export interface PodiumEntry {
   avatarUrl: string | null;
   score: number;
   team?: number;
+  /** Podyum anında takılı unvan (kazanılmış rozetlerden biri). */
+  title?: BadgeKey;
 }
 
 /** Maç özeti kartı (4d). İzleyen oyuncuya ÖZEL hesaplanır (isabet/seri/kategori
@@ -408,4 +413,6 @@ export const EV = {
   TAKE_SEAT: "take-seat",
   /** Reveal'da "bu soru hatalı" bildirimi: { note? } — soru kimliği sunucuda çözülür */
   QUESTION_REPORT: "question-report",
+  /** Unvan seçimi: { title: BadgeKey | null } — yalnız kazanılmış rozet; null kaldırır */
+  SET_TITLE: "set-title",
 } as const;

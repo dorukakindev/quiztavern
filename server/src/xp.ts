@@ -149,6 +149,11 @@ export interface XpStore {
   recordMatch(entries: MatchFinishedEntry[], now?: Date): Map<string, XpGain>;
   /** Güncel sezonun ilk `limit` sırası. */
   seasonBoard(limit?: number, now?: Date): SeasonBoard;
+  /** Seçili unvan (kazanılmış rozetlerden biri) veya null. */
+  title(userId: string): BadgeKey | null;
+  /** Unvan seç: yalnız kazanılmış rozet geçerli; null seçimi kaldırır.
+   *  Geçersiz/rozet kazanılmamışsa false döner. */
+  setTitle(userId: string, title: BadgeKey | null): boolean;
   close(): void;
 }
 
@@ -163,6 +168,8 @@ interface PlayerRow {
   best_streak: number;
   streak_days: number;
   last_day: string | null;
+  /** Seçili unvan (kazanılmış BadgeKey) — kolon sonradan eklendi, null olabilir. */
+  title: string | null;
 }
 
 export function createXpStore(file: string): XpStore {
@@ -196,6 +203,10 @@ export function createXpStore(file: string): XpStore {
     earned_at INTEGER NOT NULL,
     PRIMARY KEY (user_id, badge)
   )`);
+  // Unvan kolonu sonradan eklendi — mevcut veritabanları için ALTER.
+  if (!(db.prepare("PRAGMA table_info(players)").all() as { name: string }[]).some((col) => col.name === "title")) {
+    db.exec("ALTER TABLE players ADD COLUMN title TEXT");
+  }
 
   const getPlayer = db.prepare("SELECT * FROM players WHERE user_id = ?");
   const upsertPlayer = db.prepare(`INSERT INTO players
@@ -216,6 +227,7 @@ export function createXpStore(file: string): XpStore {
     WHERE season = ? AND xp > (SELECT xp FROM season_points WHERE user_id = ? AND season = ?)`);
   const seasonRow = db.prepare("SELECT xp FROM season_points WHERE user_id = ? AND season = ?");
   const earnedBadgeRows = db.prepare("SELECT badge FROM achievements WHERE user_id = ?");
+  const setPlayerTitle = db.prepare("UPDATE players SET title = ? WHERE user_id = ?");
   const insertBadge = db.prepare(
     "INSERT OR IGNORE INTO achievements (user_id, badge, earned_at) VALUES (?, ?, ?)",
   );
@@ -330,6 +342,23 @@ export function createXpStore(file: string): XpStore {
       });
       writeAll();
       return gains;
+    },
+    title(userId) {
+      const row = getPlayer.get(userId) as PlayerRow | undefined;
+      const key = row?.title as BadgeKey | null | undefined;
+      // Savunma: unvan ancak hâlâ kazanılmış listesindeyse geçerli.
+      return key && badgesFor(userId).includes(key) ? key : null;
+    },
+    setTitle(userId, title) {
+      if (title === null) {
+        // Satır yoksa zaten unvan yok — idempotent başarı.
+        if (!getPlayer.get(userId)) return true;
+        setPlayerTitle.run(null, userId);
+        return true;
+      }
+      if (!badgesFor(userId).includes(title)) return false;
+      setPlayerTitle.run(title, userId);
+      return true;
     },
     seasonBoard(limit = 5, now = new Date()) {
       const season = seasonKey(now);

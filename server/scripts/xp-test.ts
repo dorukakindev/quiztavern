@@ -245,4 +245,54 @@ test("rozetler: koşul tutmayan maçta başarım yazılmaz", () => {
   } finally { store.close(); }
 });
 
+test("unvan: yalnız kazanılmış rozet takılabilir, null kaldırır, kalıcıdır", () => {
+  const store = createXpStore(":memory:");
+  try {
+    // Hiç kayıt yokken: unvan yok, takma reddedilir, kaldırma idempotent.
+    assert.equal(store.title("u1"), null);
+    assert.equal(store.setTitle("u1", "keskin"), false);
+    assert.equal(store.setTitle("u1", null), true);
+    // Rozet kazan → takılabilir.
+    store.recordMatch([entry({ correct: 5, total: 5, bestStreak: 5, placement: 1, won: true })]);
+    assert.equal(store.setTitle("u1", "tamIsabet"), true);
+    assert.equal(store.title("u1"), "tamIsabet");
+    // Kazanılmamış rozet reddedilir ve seçimi bozmaz.
+    assert.equal(store.setTitle("u1", "ligEfsane"), false);
+    assert.equal(store.title("u1"), "tamIsabet");
+    // null kaldırır; tekrar kaldırmak da sorunsuz.
+    assert.equal(store.setTitle("u1", null), true);
+    assert.equal(store.title("u1"), null);
+    assert.equal(store.setTitle("u1", null), true);
+  } finally { store.close(); }
+});
+
+test("unvan: odaya yayınlanır, geçersiz seçim err.title fırlatır", () => {
+  const store = createXpStore(":memory:");
+  const room = new Room("r-title", () => {}, { minPlayers: 1, questionCount: 5 });
+  room.setProgressStore(store);
+  try {
+    store.recordMatch([entry({ userId: "host", correct: 5, total: 5, bestStreak: 5, placement: 1, won: true })]);
+    room.join(player("host"));
+    // Girişte depodaki seçim (yok) → title alanı yayında olmaz.
+    assert.equal(room.stateFor("host", true).players[0].title, undefined);
+    // Kazanılmış rozet takılır → publicPlayer + podyum anlığında görünür.
+    room.setTitle("host", "ilkGalibiyet");
+    const card = room.stateFor("host", true).players[0];
+    assert.equal(card.title, "ilkGalibiyet");
+    // Kazanılmamış rozet sunucu tarafında reddedilir.
+    assert.throws(() => room.setTitle("host", "ligEfsane"), /err\.title/);
+    assert.equal(room.stateFor("host", true).players[0].title, "ilkGalibiyet");
+    // null kaldırır.
+    room.setTitle("host", null);
+    assert.equal(room.stateFor("host", true).players[0].title, undefined);
+    // Depo kapalıyken oturumluk takma çalışır (kalıcı değildir).
+    const plain = new Room("r-plain", () => {}, { minPlayers: 1 });
+    try {
+      plain.join(player("solo"));
+      plain.setTitle("solo", "keskin");
+      assert.equal(plain.stateFor("solo", true).players[0].title, "keskin");
+    } finally { stop(plain); }
+  } finally { stop(room); store.close(); }
+});
+
 console.log(`\n[xp] sonuç: ${passed} geçti, 0 kaldı`);

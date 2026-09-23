@@ -71,7 +71,7 @@ function LeagueBadge({ badge, verbose = false }: { badge: ProgressBadge; verbose
 
 /** Lobide "SENİN KOLTUĞUN" altındaki ince XP şeridi: seviye, lig ve sonraki
  *  seviyeye kalan bar; art-arda-gün serisi varsa küçük alevle gösterilir. */
-function XpStrip({ snapshot }: { snapshot: ProgressSnapshot | null }) {
+function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | null; title?: BadgeKey | null; onTitle?: (title: BadgeKey | null) => void }) {
   const { t } = useI18n()
   if (!snapshot) return null
   const pct = Math.min(100, Math.round((snapshot.intoLevel / Math.max(1, snapshot.levelSize)) * 100))
@@ -85,9 +85,25 @@ function XpStrip({ snapshot }: { snapshot: ProgressSnapshot | null }) {
     <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
     <small>{t('progress.nextLevel', { xp: remaining })}</small>
     {snapshot.badges.length > 0 && <div className="qt-badge-row" aria-label={t('badge.title')}>
-      {snapshot.badges.map((badge) => <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {t(`badge.${badge}` as StringKey)}</span>)}
+      {snapshot.badges.map((badge) => {
+        const selected = badge === title
+        // Unvan: kazanılmış rozet tıklanınca takılır, takılı olana tıklanınca
+        // kaldırılır. onTitle yoksa (başkasının görünümü) salt görüntü.
+        const label = t(`badge.${badge}` as StringKey)
+        const hint = `${t(`badge.${badge}.hint` as StringKey)} · ${t(selected ? 'title.unset' : 'title.pick')}`
+        return onTitle
+          ? <button key={badge} type="button" className={`qt-badge ${selected ? 'is-title' : ''}`} title={hint} aria-pressed={selected} onClick={() => onTitle(selected ? null : badge)}><Icon name="spark" /> {label}</button>
+          : <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {label}</span>
+      })}
     </div>}
   </div>
+}
+
+/** İsmin yanındaki küçük altın unvan etiketi — takılı rozetin adını taşır. */
+function TitleTag({ title }: { title?: BadgeKey | null }) {
+  const { t } = useI18n()
+  if (!title) return null
+  return <em className="qt-title" title={t(`badge.${title}.hint` as StringKey)}>{t(`badge.${title}` as StringKey)}</em>
 }
 
 /** Maçta ilk kez kazanılan rozetler — podyumda XP kazanımının yanında
@@ -274,7 +290,7 @@ function StartCountdown({ state }: { state: GameState }) {
           font küçülmezse çemberden taşar (madde: kutunun içinde kalmalı). */}
       <div className={`qt-start-countdown__number ${seconds ? `is-${seconds}` : 'is-go'}`} key={seconds}>{seconds || t('countdown.go')}</div>
       <div className="qt-start-countdown__players" aria-label={t('countdown.players')}>
-        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span title={player.name}>{player.name}</span></div>)}
+        {[...state.players].sort((a, b) => a.seat - b.seat).map((player) => <div key={player.id} className={player.id === state.youId ? 'is-you' : ''}><Avatar player={player} compact /><span title={player.name}>{player.name}<TitleTag title={player.title} /></span></div>)}
       </div>
     </section>
   </main>
@@ -481,7 +497,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b title={player.name}>{player.name}</b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}<TitleTag title={player.title} /></b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -677,7 +693,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
           : <span className="qt-seat__prep" aria-hidden="true" />}
         {justJoined[seat] && <Burst triggerKey={justJoined[seat]} />}
       </div>
-      <div className="qt-seat__label"><b>{player.name}</b>{badge && <small>{badge}</small>}</div>
+      <div className="qt-seat__label"><b>{player.name}<TitleTag title={player.title} /></b>{badge && <small>{badge}</small>}</div>
     </div>
   })}</>
 }
@@ -744,7 +760,7 @@ function HostMenu({ player, x, y, trigger, mode, onTransfer, onKick, onSetTeam, 
   // lobinin ".qt-lobby > * { position: relative }" kuralına ve .qt-activity'nin
   // overflow:hidden kırpmasına takılmadan gerçekten fixed konumlanır.
   return createPortal(<div id={`qt-host-menu-${player.id}`} ref={ref} className="qt-host-menu" style={{ left: pos.left, top: pos.top, visibility: pos.ready ? 'visible' : 'hidden' } as CSSProperties} role="menu" aria-label={t('host.menuTitle')} onKeyDown={onMenuKeyDown}>
-    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b title={player.name}>{player.name}</b><small>{t('host.menuTitle')}</small></div></div>
+    <div className="qt-host-menu__head"><Avatar player={player} compact mode={mode} /><div><b title={player.name}>{player.name}<TitleTag title={player.title} /></b><small>{t('host.menuTitle')}</small></div></div>
     {mode === 'team' && <button className="qt-host-menu__item is-team" role="menuitem" onClick={() => { onSetTeam(player.id, player.team === 1 ? 0 : 1); closeAndRestore() }}><Icon name="people" /> {t('team.swap', { team: player.team === 1 ? t('team.a') : t('team.b') })}</button>}
     {!player.isBot && <button className="qt-host-menu__item is-transfer" role="menuitem" onClick={() => { onTransfer(player.id); closeAndRestore() }}><Icon name="crown" /> {t('host.transfer')}</button>}
     <button className="qt-host-menu__item is-kick" role="menuitem" onClick={() => { onKick(player.id); closeAndRestore() }}><Icon name="exit" /> {t('host.kick')}</button>
@@ -927,7 +943,7 @@ function PackEditor({ packs, myId, auth, categories, onSaved }: { packs: Questio
   </div>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetTitle, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetTitle: (title: BadgeKey | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -1106,10 +1122,10 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             koltuğa oturt). Oyuncuyken normal hazır/başlat + "İzleyici ol". */}
         <div className="qt-you-card">{isSpectator
           ? <><i className="qt-you-card__eye" aria-hidden="true"><Icon name="eye" /></i><div><b>{t('spectator.watching')}</b><small>{t('spectator.count', { count: state?.spectatorCount ?? 1 })}</small></div></>
-          : self ? <><Avatar player={self} /><div><b>{self.name}</b><small>{isHost ? t('lobby.host') : self.ready ? t('lobby.ready') : t('lobby.preparing')}</small></div></> : <div className="qt-loading-line">{t('lobby.joining')}</div>}</div>
+          : self ? <><Avatar player={self} /><div><b>{self.name}<TitleTag title={self.title} /></b><small>{isHost ? t('lobby.host') : self.ready ? t('lobby.ready') : t('lobby.preparing')}</small></div></> : <div className="qt-loading-line">{t('lobby.joining')}</div>}</div>
         {/* Kalıcı ilerleme: seviye/lig çubuğu + sezon lider tablosu —
             sunucu progress deposu bağlıysa dolu gelir, değilse hiç çizilmez. */}
-        {state?.progress && <XpStrip snapshot={state.progress} />}
+        {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
         {isSpectator
           ? <div className="qt-you-cta"><button className="qt-button qt-button--primary" disabled={tableFull} onClick={onTakeSeat}><Icon name="people" /> {tableFull ? t('spectator.full') : t('spectator.play')}</button></div>
           : <>
@@ -1600,7 +1616,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
         <PodiumCharacter />
         {winner && <>
           <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
-          <b title={winner.name}>{winner.name}</b>
+          <b title={winner.name}>{winner.name}<TitleTag title={winner.title} /></b>
           <small>{isTeam ? t('team.mvp') : '#1'} · {t('podium.points', { score: formatNumber(language, winnerScore) })}</small>
           {state.xpGains?.[winner.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[winner.id].gained })}</em>}
           {state.xpGains?.[winner.id] && <NewBadgeChips gain={state.xpGains[winner.id]} />}
@@ -1610,7 +1626,7 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
         <div className="qt-podium-list">{rest.map((player, index) => <div key={player.id} className={`${player.id === state.youId ? 'is-you' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ '--row-delay': `${index * 90}ms` } as CSSProperties}>
           <b>#{index + 2}</b>
           <div className={`qt-avatar ${colorClass(player.id)}`}>{player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}</div>
-          <span title={player.name}>{player.name}{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
+          <span title={player.name}>{player.name}<TitleTag title={player.title} />{player.id === state.youId && <i>· {t('podium.you')}</i>}</span>
           <strong>{formatNumber(language, player.score)}</strong>
           {state.xpGains?.[player.id] && <em className="qt-xp-gain">{t('podium.xpGain', { xp: state.xpGains[player.id].gained })}</em>}
           {state.xpGains?.[player.id] && <NewBadgeChips gain={state.xpGains[player.id]} />}
@@ -1997,7 +2013,7 @@ export function ActivityApp() {
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
         : <GameSkeleton />
     }
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetTitle={game.setTitle} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
