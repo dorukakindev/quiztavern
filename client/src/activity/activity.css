@@ -185,7 +185,7 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
    olarak görünüyordu (maketlerde temiz koyu zemin var). Lobide arka plan
    kalabalık olduğu için ikisi de gizleniyordu -- orada dokunulmuyor. */
 .qt-game::before, .qt-start-countdown::before { background: rgba(5, 11, 21, .72); }
-.qt-game::after, .qt-start-countdown::after { display: none; }.qt-game-top { max-width: 1320px; margin: auto; min-height: clamp(44px, 8vh, 58px); display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 18px; align-items: center; padding: 0 20px; border: 1px solid rgba(67,203,225,.42); border-radius: var(--r-pill); background: rgba(5,19,32,.72); color: #92aabd; font-size: 13px; }.qt-game-top > div:first-child { display: flex; gap: 11px; }.qt-game-top b { color: #6ae8ef; }.qt-game-top > span { text-align: right; color: #65dfe9; font-size: 12px; }.qt-progress { display: flex; justify-content: center; gap: 7px; }.qt-progress i { width: 25px; height: 7px; border-radius: var(--r-pill); background: #193850; }.qt-progress i.is-done { background: #54dce7; box-shadow: 0 0 10px rgba(84,220,231,.55); }
+.qt-game::after, .qt-start-countdown::after { display: none; }.qt-game-top { max-width: 1320px; margin: auto; min-height: clamp(44px, 8vh, 58px); display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 18px; align-items: center; padding: 0 20px; border: 1px solid rgba(67,203,225,.42); border-radius: var(--r-pill); background: rgba(5,19,32,.72); color: #92aabd; font-size: 13px; }.qt-game-top > div:first-child { display: flex; gap: 11px; white-space: nowrap; }.qt-game-top b { color: #6ae8ef; }.qt-game-top > span { text-align: right; color: #65dfe9; font-size: 12px; }.qt-progress { display: flex; justify-content: center; gap: 7px; }.qt-progress i { width: 25px; height: 7px; border-radius: var(--r-pill); background: #193850; }.qt-progress i.is-done { background: #54dce7; box-shadow: 0 0 10px rgba(84,220,231,.55); }
 /* min-height YOK: .qt-game zaten 'auto 1fr' satÄ±rlÄ± ve 100vh; buraya ayrÄ±ca
    100vh tÃ¼revi bir taban vermek kÄ±sa ekranda taÅŸmayÄ± garantiliyordu.
    SÃ¼tunlar akÄ±ÅŸkan: 495px'te de 720px'te de aynÄ± yatay dÃ¼zen, sadece daralÄ±r. */
@@ -1292,4 +1292,73 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 @keyframes qt-speaking {
   0%, 100% { box-shadow: 0 0 0 2px rgba(87, 242, 135, .75), 0 0 12px rgba(87, 242, 135, .25); }
   50% { box-shadow: 0 0 0 3px rgba(87, 242, 135, .95), 0 0 20px rgba(87, 242, 135, .45); }
+}
+
+/* ── Kısa YATAY telefon/tablet oyun sahnesi (≤900px genişlik, ≤560px yükseklik,
+   landscape): ≤900px tek sütun kuralı bu bandda soru kartını foldun altına
+   atıyordu — masa AVATAR ŞERİDİNE iner, 3 sütun geri gelir, her şey ilk
+   ekranda ve kaydırmasız sığar. Dokunma hedefleri ≥44px korunur. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 560px) {
+  .qt-game { height: 100dvh; overflow: hidden; padding: 6px 8px calc(52px + var(--qt-saib)); }
+  /* Üst hap tek satır, küçük — "Soru 4 / 10" gibi metinler kırılmaz. */
+  .qt-game-head { grid-template-columns: minmax(0, 1fr) auto; gap: 6px; }
+  .qt-game-top { grid-template-columns: auto 1fr auto; min-height: 34px; padding: 0 12px; gap: 10px; border-radius: 16px; font-size: 11px; text-align: left; }
+  .qt-game-top > div:first-child { justify-content: flex-start; text-align: left; white-space: nowrap; gap: 7px; }
+  .qt-game-top > span { text-align: right; font-size: 10px; }
+  .qt-progress { gap: 4px; }
+  .qt-progress i { width: 13px; height: 5px; }
+  .qt-progress-bar > i { width: clamp(80px, 16vw, 140px); height: 5px; }
+  .qt-game-head .qt-game-exit { min-height: 32px; padding: 0 10px; font-size: 10px; }
+  .qt-game-grid { grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+  /* Masa: isim/durum satırı gizlenir, avatar + puan dikey mini kart olur;
+     8 oyuncu bile şeridi taşırmaz (gerekirse kendi içinde kayar). */
+  .qt-table-strip { order: 1; grid-column: 1; align-self: center; padding: 5px 4px; max-height: 100%; }
+  .qt-strip-title, .qt-strip-teams { display: none; }
+  .qt-player-stack { grid-template-columns: 1fr; gap: 3px; margin-top: 0; min-height: 0; max-height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .qt-player-card { flex-direction: column; gap: 1px; min-height: 0; padding: 3px 2px; }
+  .qt-player-card > div:nth-child(2) { display: none; }
+  .qt-player-card > .qt-icon { display: none; }
+  .qt-player-card .qt-avatar { width: 26px; height: 26px; font-size: 10px; border-width: 1px; }
+  .qt-player-score { font-size: 9px; }
+  .qt-strip-crown { top: -8px; }
+  .qt-strip-crown .qt-icon { width: 10px; height: 10px; }
+  .qt-streak-flame .qt-icon { width: 10px; height: 10px; }
+  /* Soru kartı: 2x2 şıklar korunur, hepsi ilk ekranda. */
+  .qt-question-stage { order: 2; grid-column: 2; padding: 6px 14px 8px; max-height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; }
+  .qt-category { padding: 2px 8px; font-size: 9px; letter-spacing: .1em; }
+  .qt-question-image { max-width: 120px; max-height: 70px; margin: 3px auto; }
+  .qt-question-head h1 { margin: 4px auto 6px; font-size: clamp(14px, 5vh, 20px); line-height: 1.15; }
+  .qt-question-head--circle p { margin-top: 4px; font-size: clamp(13px, 4vh, 18px); }
+  .qt-circle-letter { width: 38px; height: 38px; margin: 3px auto; border-width: 2px; font-size: 20px; }
+  .qt-answers { gap: 6px; row-gap: 6px; }
+  .qt-answer { min-height: 44px; padding: 4px 9px; gap: 7px; font-size: 12.5px; }
+  .qt-answer b:not(.qt-answer__pct) { width: 24px; height: 24px; font-size: 11px; }
+  .qt-locked-note { margin-top: 4px; min-height: 14px; font-size: 10px; }
+  .qt-report-flag { left: 7px; bottom: 7px; width: 26px; height: 26px; }
+  /* Çember girişi + bahis: aynı bantta sıkıştır. */
+  .qt-circle-entry { gap: 6px; }
+  .qt-circle-entry input { padding: 0 10px; min-height: 38px; font-size: 13px; }
+  .qt-circle-entry .qt-button { min-height: 38px; padding: 0 12px; font-size: 12px; }
+  .qt-bet-stage { gap: 8px; }
+  .qt-bet-stage .qt-category { font-size: 15px; padding: 5px 14px; }
+  .qt-bet-bank { padding: 5px 11px; }
+  .qt-bet-bank b { font-size: 15px; }
+  .qt-bet-options { gap: 6px; }
+  .qt-bet-option { min-height: 44px; padding: 6px 4px; }
+  .qt-bet-option b { font-size: 12px; }
+  .qt-bet-option span { font-size: 11px; }
+  /* Sağ sütun: sayaç/kazanç kutusu küçülür. */
+  .qt-game-side { order: 3; grid-column: 3; gap: 5px; }
+  .qt-timer { width: 54px; height: 54px; }
+  .qt-timer::after { inset: 4px; border-width: 2px; }
+  .qt-timer span { font-size: 19px; }
+  .qt-timer small { font-size: 8px; margin-top: 1px; }
+  .qt-timer__sweep { inset: -3px; }
+  .qt-your-gain > b { padding: 4px 9px; font-size: 11px; }
+  .qt-your-gain > .qt-score-flight { min-width: 56px; font-size: 17px; }
+  .qt-your-gain > small { font-size: 9px; }
+  .qt-reveal-progress { margin-top: 4px; }
+  .qt-spectator-bar { padding: 7px 10px; font-size: 10px; bottom: max(8px, var(--qt-saib)); }
+  /* Emote çubuğu: portrait'la aynı şekilde alta ortalanır — sağ sütunla çakışmaz. */
+  .qt-emote-bar { left: 50%; right: auto; bottom: max(6px, var(--qt-saib)); translate: -50% 0; }
 }
