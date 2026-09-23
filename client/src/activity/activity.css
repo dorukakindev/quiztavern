@@ -866,7 +866,7 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
      tek karede (nabız yok). Global .01ms kuralı zaten uygular; bu satırlar
      niyeti açıkça sabitler ve sonsuz animasyonu tamamen durdurur. */
   .qt-avatar.is-frame-efsane, .qt-seat__token.is-frame-efsane { animation: none !important; }
-  .qt-avatar.qt-podium-winner::before { animation: none !important; opacity: .55; }
+  .qt-avatar.qt-podium-winner::before { animation: none !important; opacity: .55 !important; }
   .qt-emote-btn:hover { transform: none !important; }
   /* Emote'u yeni bir animasyonla söndürmeye ÇALIŞMA: global reduced-motion kuralı
      animation-duration'ı .01ms'e !important ile sabitlediği için tepki göz açıp
