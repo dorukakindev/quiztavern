@@ -8,6 +8,7 @@ import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
 import { I18nContext, categoryLabel, formatNumber, translate, useI18n, type ActivityLanguage, type StringKey } from './i18n'
 import { GalaxyLoop, MusicToggle, TableBackdrop, TableLogo } from './TableScenery'
+import { PodiumCharacter } from './PodiumCharacter'
 import { CATEGORY_ICON_PATHS } from './categoryIcons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
 import { listPacks, uploadPack, type PackUploadResult, type QuestionPackMeta } from './packs'
@@ -1371,6 +1372,9 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
         {/* Lider altın mikrofonu taşır: taç değil — gece yarısı yayın teması.
             (Makette kupa var; mikrofon bilinçli bir tema kararıydı, duruyor.) */}
         <i className="qt-podium-mic" aria-hidden="true"><Icon name="mic" /></i>
+        {/* 3B taverna karakteri: kutlama dekoru; model-viewer yalnızca bu
+            fazda dinamik yüklenir, yüklenmezse boş kalır (avatar yeter). */}
+        <PodiumCharacter />
         {winner && <>
           <div className={`qt-avatar qt-podium-winner ${colorClass(winner.id)}`}>{winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}</div>
           <b title={winner.name}>{winner.name}</b>
