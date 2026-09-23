@@ -325,6 +325,22 @@ const tr = {
   'daily.copied': 'Kopyalandı',
   'err.dailyDone': 'Bugünkü meydan okumayı masadaki herkes tamamladı — yarın yeni sorular gelir.',
   'err.connection': 'Sunucu bağlantısı kurulamadı.',
+
+  // Kalıcı ilerleme (XP / seviye / lig / sezon)
+  'league.acemi': 'Acemi',
+  'league.cirak': 'Çırak',
+  'league.kalfa': 'Kalfa',
+  'league.usta': 'Usta',
+  'league.efsane': 'Efsane',
+  'progress.level': 'Sv {n}',
+  'progress.streak': '{n} gün seri',
+  'progress.nextLevel': 'sonraki seviyeye {xp} XP kaldı',
+  'season.title': 'SEZON · {season}',
+  'season.empty': 'Bu sezonun ilk maçı lideri belirler.',
+  'podium.xpGain': '+{xp} XP',
+  'podium.levelUp': 'Seviye atladın!',
+  'podium.newLeague': 'Yeni lig: {league}',
+  'summary.xpGain': 'BU MAÇ KAZANCIN',
 } as const
 
 export type StringKey = keyof typeof tr
@@ -629,6 +645,22 @@ const en: Record<StringKey, string> = {
   'daily.copied': 'Copied',
   'err.dailyDone': 'Everyone at this table already finished today\'s challenge — new questions tomorrow.',
   'err.connection': 'Could not reach the game server.',
+
+  // Persistent progression (XP / level / league / season)
+  'league.acemi': 'Rookie',
+  'league.cirak': 'Apprentice',
+  'league.kalfa': 'Adept',
+  'league.usta': 'Master',
+  'league.efsane': 'Legend',
+  'progress.level': 'Lv {n}',
+  'progress.streak': '{n}-day streak',
+  'progress.nextLevel': '{xp} XP to next level',
+  'season.title': 'SEASON · {season}',
+  'season.empty': 'The season leaderboard starts with the first match.',
+  'podium.xpGain': '+{xp} XP',
+  'podium.levelUp': 'Level up!',
+  'podium.newLeague': 'New league: {league}',
+  'summary.xpGain': 'YOUR XP THIS MATCH',
 }
 
 export const STRINGS: Record<ActivityLanguage, Record<StringKey, string>> = { tr, en }
