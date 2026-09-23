@@ -1163,7 +1163,10 @@ export class Room {
   }
 
   private snapshotPodium(): PodiumEntry[] {
-    return this.sortedPlayers().map(({ id, name, avatarUrl, score, team, title }) => ({ id, name, avatarUrl, score, team, ...(title ? { title } : {}) }));
+    return this.sortedPlayers().map(({ id, name, avatarUrl, score, team, title }) => {
+      const league = this.progress?.badge(id)?.league;
+      return { id, name, avatarUrl, score, team, ...(title ? { title } : {}), ...(league ? { league } : {}) };
+    });
   }
 
   private hasAnswered(player: RoomPlayer) {

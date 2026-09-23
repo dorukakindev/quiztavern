@@ -862,6 +862,11 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
   /* Bilgi kalır, hareket gider. Sayaç halkası (--ratio, JS'ten) akmaya devam eder:
      o bir süsleme değil, kalan süreyi taşıyan bilginin kendisidir. */
   .qt-drop-card, .qt-podium-list > div, .qt-emote-btn { animation: none !important; }
+  /* Kozmetik hareketler de kapanır: efsane halkası sabit kalır, kazanan halkası
+     tek karede (nabız yok). Global .01ms kuralı zaten uygular; bu satırlar
+     niyeti açıkça sabitler ve sonsuz animasyonu tamamen durdurur. */
+  .qt-avatar.is-frame-efsane, .qt-seat__token.is-frame-efsane { animation: none !important; }
+  .qt-avatar.qt-podium-winner::before { animation: none !important; opacity: .55; }
   .qt-emote-btn:hover { transform: none !important; }
   /* Emote'u yeni bir animasyonla söndürmeye ÇALIŞMA: global reduced-motion kuralı
      animation-duration'ı .01ms'e !important ile sabitlediği için tepki göz açıp
@@ -1400,6 +1405,34 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-league.is-usta, .qt-league-dot.is-usta { --league-c: #f3c362; }
 .qt-league.is-efsane, .qt-league-dot.is-efsane { --league-c: #c99df5; }
 .qt-league-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--league-c); box-shadow: 0 0 5px var(--league-c); flex: none; }
+
+/* Lig çerçevesi — kozmetik kimlik: avatar/koltuk dışında lig rengi halkası.
+   İç border (--seat rengi) ile çakışmamak için outline'a yazılır. Efsane
+   halkası yavaşça nefes alır; lig yoksa çerçeve de yok. */
+.qt-avatar.is-frame-acemi, .qt-seat__token.is-frame-acemi { --frame-c: #9aa8b8; }
+.qt-avatar.is-frame-cirak, .qt-seat__token.is-frame-cirak { --frame-c: #5ee6c1; }
+.qt-avatar.is-frame-kalfa, .qt-seat__token.is-frame-kalfa { --frame-c: #62c9e8; }
+.qt-avatar.is-frame-usta, .qt-seat__token.is-frame-usta { --frame-c: #f3c362; }
+.qt-avatar.is-frame-efsane, .qt-seat__token.is-frame-efsane { --frame-c: #c99df5; }
+.qt-avatar[class*="is-frame-"], .qt-seat__token[class*="is-frame-"] { outline: 2px solid var(--frame-c); outline-offset: 2px; }
+.qt-avatar.is-frame-efsane, .qt-seat__token.is-frame-efsane { animation: qtFramePulse 2.2s ease-in-out infinite; }
+@keyframes qtFramePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,157,245,.0); }
+  50% { box-shadow: 0 0 0 4px rgba(201,157,245,.28); }
+}
+
+/* Podyum kazananı girişi — lig ne kadar yüksekse halka o kadar parlak açılır.
+   Halka kazanan avatarının ARKASINA oturur (avatar overflow:hidden kalır). */
+.qt-avatar.qt-podium-winner { position: relative; }
+.qt-avatar.qt-podium-winner::before {
+  content: ''; position: absolute; z-index: -1; inset: -14px; border-radius: 50%;
+  background: radial-gradient(circle, var(--frame-c, #f3c362) 0 22%, transparent 68%);
+  opacity: 0; animation: qtWinnerRing .85s cubic-bezier(.2,.8,.25,1) .12s both;
+}
+@keyframes qtWinnerRing { 0% { opacity: 0; scale: .4; } 45% { opacity: .9; scale: 1.08; } 100% { opacity: .55; scale: 1; } }
+/* Üst liglerde halka biraz daha geniş ve kalıcı parlar. */
+.qt-avatar.qt-podium-winner.qt-winner--usta::before { inset: -18px; }
+.qt-avatar.qt-podium-winner.qt-winner--efsane::before { inset: -22px; animation-duration: 1.1s; }
 .qt-player-card .qt-league { margin-top: 2px; justify-self: start; }
 
 /* XP şeridi (lobi, senin koltuğun altında + özet kartının içinde aynı bar) */

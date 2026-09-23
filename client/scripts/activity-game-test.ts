@@ -209,4 +209,23 @@ test('faz geçişleri ortak giriş animasyonunu paylaşır ve reduced-motion kap
   assert.match(activityCss, /prefers-reduced-motion: reduce[\s\S]*?\.qt-player-card\.is-awaiting[\s\S]*?\.qt-game-grid \{ animation: none !important; \}/)
 })
 
+test('lig çerçevesi progress.league\'e bağlı: avatar, koltuk, podyum + reduced-motion', () => {
+  // Avatar bileşeni lig çerçevesini progress.league'den üretir.
+  assert.match(activitySource, /player\.progress\?\.league/)
+  assert.match(activitySource, /is-frame-\$\{frame\}/)
+  // Lobi koltuğu da aynı kaynağı kullanır.
+  assert.match(activitySource, /qt-seat__token \$\{player\.progress\?\.league \? `is-frame-\$\{player\.progress\.league\}`/)
+  // Podyum satırları/kazananı PodiumEntry.league üzerinden işaretlenir.
+  assert.match(activitySource, /qt-winner--\$\{winner\.league\}/)
+  assert.match(activitySource, /is-frame-\$\{player\.league\}/)
+  // Tüm lig renkleri çerçeve değişkenine eşlenir + efsane nabzı.
+  assert.match(activityCss, /\.qt-avatar\.is-frame-efsane[\s\S]*?--frame-c: #c99df5/)
+  assert.match(activityCss, /@keyframes qtFramePulse/)
+  assert.match(activityCss, /@keyframes qtWinnerRing/)
+  // Reduced-motion: sonsuz çerçeve nabzı durur, kazanan halkası sabit kalır.
+  assert.match(activityCss, /prefers-reduced-motion: reduce[\s\S]*?\.qt-avatar\.is-frame-efsane[\s\S]*?animation: none !important/)
+  // Kazanılmamış oyuncu çerçevesizdir — koşul `progress?.league` varlığına bağlı.
+  assert.match(activitySource, /frame \? `is-frame-\$\{frame\}` : ''/)
+})
+
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

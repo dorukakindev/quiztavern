@@ -153,6 +153,11 @@ test("oda entegrasyonu: finish() XP yazar, state rozet+kazanım+sezon taşır", 
     assert.equal(hostCard.progress!.level, gains.host.level);
     const botCard = state.players.find((p) => p.isBot)!;
     assert.equal(botCard.progress, undefined);
+    // Podyum satırları da ligi taşır (kozmetik çerçeve); botta alan yok.
+    const hostPodium = state.podium!.find((p) => p.id === "host")!;
+    assert.equal(hostPodium.league, gains.host.league);
+    const botPodium = state.podium!.find((p) => p.id === bot.id)!;
+    assert.equal(botPodium.league, undefined);
     // İzleyenin snapshot'ı ve sezon tablosu dolu
     assert.equal(state.progress!.xp, gains.host.xp);
     assert.equal(state.seasonBoard!.season, seasonKey());
