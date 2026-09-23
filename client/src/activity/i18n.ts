@@ -192,6 +192,7 @@ const tr = {
   'game.leader': 'Lider',
   'game.thinking': 'Düşünüyor',
   'game.connecting': 'Bağlanıyor',
+  'game.missed': 'Cevapsız',
   'game.nextRound': 'Sonraki tur',
   'spectator.watching': 'İzliyorsun',
   'spectator.play': 'Oyna',
@@ -575,6 +576,7 @@ const en: Record<StringKey, string> = {
   'game.leader': 'Leader',
   'game.thinking': 'Thinking',
   'game.connecting': 'Connecting',
+  'game.missed': 'No answer',
   'game.nextRound': 'Next round',
   'spectator.watching': "You're watching",
   'spectator.play': 'Play',
@@ -862,4 +864,9 @@ export function useI18n(): I18nValue {
 /** Sayıları arayüz diline göre biçimler (ör. 12.400 / 12,400). */
 export function formatNumber(language: ActivityLanguage, value: number): string {
   return value.toLocaleString(language === 'tr' ? 'tr-TR' : 'en-US')
+}
+
+/** Yüzde yazımı dile göre: Türkçede işaret önde ("%60"), İngilizcede sonda ("60%"). */
+export function formatPercent(language: ActivityLanguage, value: number): string {
+  return language === 'tr' ? `%${value}` : `${value}%`
 }

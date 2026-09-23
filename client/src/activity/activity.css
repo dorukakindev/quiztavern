@@ -34,8 +34,8 @@
   --c-mint: #5be3bd;    /* doğru & başarı */
   --c-coral: #ef8674;   /* yanlış & tehlike */
   --c-bg: #060d1c;      /* kozmik zemin */
-  /* Telefon Ã§entiÄŸi ve home indicator payÄ±. Discord kendi deÄŸiÅŸkenlerini
-     enjekte eder; env() yalnÄ±zca Discord dÄ±ÅŸÄ±nda (yerel test) devreye girer. */
+  /* Telefon çentiği ve home indicator payı. Discord kendi değişkenlerini
+     enjekte eder; env() yalnızca Discord dışında (yerel test) devreye girer. */
   --qt-sait: var(--discord-safe-area-inset-top, env(safe-area-inset-top, 0px));
   --qt-saib: var(--discord-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
   --qt-sail: var(--discord-safe-area-inset-left, env(safe-area-inset-left, 0px));
@@ -59,7 +59,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 textarea:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible {
   outline: 3px solid #8ff2ff; outline-offset: 2px;
 }
-/* Pay kÃ¶kte bir kez verilir: her ekran otomatik gÃ¼venli alanda kalÄ±r. */
+/* Pay kökte bir kez verilir: her ekran otomatik güvenli alanda kalır. */
 .qt-activity-root { padding: var(--qt-sait) var(--qt-sair) var(--qt-saib) var(--qt-sail); }
 .qt-activity-root { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #e8f2ff; background: #050b15; }
 .qt-ambient-shader { position: fixed; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; opacity: .82; }
@@ -145,7 +145,7 @@ textarea:focus-visible, [role="button"]:focus-visible, [tabindex]:focus-visible 
    (TableBackdrop) oynuyor ve arkayı tamamen örtüyor — görsele gerek yok,
    yalan referans kalktı. */
 .qt-lobby { background-image: linear-gradient(90deg, rgba(5,11,21,.54) 0%, rgba(5,11,21,.42) 38%, rgba(5,11,21,.12) 78%); background-size: cover; background-position: center; }.qt-lobby::before { background: radial-gradient(circle at 62% 40%, rgba(25, 128, 164, .12), transparent 30%), radial-gradient(circle at 10% 84%, rgba(8, 154, 174, .08), transparent 34%), rgba(5, 11, 21, .26); }.qt-lobby-haze { position: absolute; inset: 70px 0 0; z-index: -1; background: linear-gradient(90deg, rgba(4,10,20,.34), transparent 55%); }
-.qt-lobby-dot-field { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .78; background-image: radial-gradient(circle, rgba(71, 231, 240, .86) 0 1px, transparent 1.45px), radial-gradient(circle, rgba(244, 190, 82, .52) 0 .85px, transparent 1.3px); background-size: 60px 60px, 180px 180px; background-position: 0 0, 29px 37px; mask-image: linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52) 60%, rgba(0,0,0,.76)); -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52) 60%, rgba(0,0,0,.76)); animation: qtDotDrift 24s ease-in-out infinite alternate, qtDotPulse 4.5s ease-in-out infinite; }/* Lobi Ã§ocuklarÄ± iÃ§eriktir ve arka planÄ±n Ã¼stÃ¼nde durur; sahne dekoru (.qt-backdrop) hariÃ§ â€” o en arkada, kendi absolute konumunda kalÄ±r. */
+.qt-lobby-dot-field { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: .78; background-image: radial-gradient(circle, rgba(71, 231, 240, .86) 0 1px, transparent 1.45px), radial-gradient(circle, rgba(244, 190, 82, .52) 0 .85px, transparent 1.3px); background-size: 60px 60px, 180px 180px; background-position: 0 0, 29px 37px; mask-image: linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52) 60%, rgba(0,0,0,.76)); -webkit-mask-image: linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52) 60%, rgba(0,0,0,.76)); animation: qtDotDrift 24s ease-in-out infinite alternate, qtDotPulse 4.5s ease-in-out infinite; }/* Lobi çocukları içeriktir ve arka planın üstünde durur; sahne dekoru (.qt-backdrop) hariç — o en arkada, kendi absolute konumunda kalır. */
 .qt-lobby > :not(.qt-lobby-dot-field):not(.qt-backdrop) { position: relative; z-index: 1; }
 .qt-lobby-shell { min-height: calc(100vh - 70px); max-width: 1280px; margin: auto; padding: clamp(38px, 8vh, 94px) clamp(24px, 6vw, 90px); display: grid; grid-template-columns: 1.2fr .8fr; align-items: center; gap: clamp(42px, 10vw, 160px); }.qt-kicker { display: inline-flex; border: 1px solid rgba(76, 224, 235, .5); color: #68e8f0; border-radius: var(--r-pill); padding: 8px 13px; font-weight: 800; font-size: 11px; letter-spacing: .13em; }.qt-lobby-copy h1 { font-size: clamp(48px, 6vw, 78px); letter-spacing: -.07em; line-height: .94; margin: 22px 0 18px; }.qt-lobby-copy h1 em { font-style: normal; color: #55dcea; }.qt-lobby-copy p { max-width: 530px; color: #a3b9c9; font-size: 18px; line-height: 1.55; }
 .qt-mode-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 34px; }.qt-mode-tab { display: flex; gap: 10px; text-align: left; align-items: center; min-height: 72px; padding: 12px; border-radius: var(--r-md); border: 1px solid rgba(92, 165, 195, .28); background: rgba(8, 25, 42, .68); color: #c4d2df; cursor: pointer; transition: var(--t-micro) var(--ease); }.qt-mode-tab:hover, .qt-mode-tab.is-selected { border-color: #53dbe8; background: rgba(17, 66, 83, .75); box-shadow: 0 0 22px rgba(43, 220, 234, .12); color: #f2fbff; }.qt-mode-tab span { display: grid; gap: 2px; }.qt-mode-tab b { font-size: 14px; }.qt-mode-tab small { font-size: 11px; color: #8aa4b8; }
@@ -186,9 +186,9 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
    kalabalık olduğu için ikisi de gizleniyordu -- orada dokunulmuyor. */
 .qt-game::before, .qt-start-countdown::before { background: rgba(5, 11, 21, .72); }
 .qt-game::after, .qt-start-countdown::after { display: none; }.qt-game-top { max-width: 1320px; margin: auto; min-height: clamp(44px, 8vh, 58px); display: grid; grid-template-columns: 1fr 1.6fr 1fr; gap: 18px; align-items: center; padding: 0 20px; border: 1px solid rgba(67,203,225,.42); border-radius: var(--r-pill); background: rgba(5,19,32,.72); color: #92aabd; font-size: 13px; }.qt-game-top > div:first-child { display: flex; gap: 11px; white-space: nowrap; }.qt-game-top b { color: #6ae8ef; }.qt-game-top > span { text-align: right; color: #65dfe9; font-size: 12px; }.qt-progress { display: flex; justify-content: center; gap: 7px; }.qt-progress i { width: 25px; height: 7px; border-radius: var(--r-pill); background: #193850; }.qt-progress i.is-done { background: #54dce7; box-shadow: 0 0 10px rgba(84,220,231,.55); }
-/* min-height YOK: .qt-game zaten 'auto 1fr' satÄ±rlÄ± ve 100vh; buraya ayrÄ±ca
-   100vh tÃ¼revi bir taban vermek kÄ±sa ekranda taÅŸmayÄ± garantiliyordu.
-   SÃ¼tunlar akÄ±ÅŸkan: 495px'te de 720px'te de aynÄ± yatay dÃ¼zen, sadece daralÄ±r. */
+/* min-height YOK: .qt-game zaten 'auto 1fr' satırlı ve 100vh; buraya ayrıca
+   100vh türevi bir taban vermek kısa ekranda taşmayı garantiliyordu.
+   Sütunlar akışkan: 495px'te de 720px'te de aynı yatay düzen, sadece daralır. */
 .qt-game-grid { max-width: 1320px; min-height: 0; margin: auto; display: grid; grid-template-columns: clamp(150px, 15vw, 195px) minmax(0, 720px) clamp(120px, 12vw, 156px); gap: clamp(14px, 2.4vw, 32px); align-items: center; justify-content: center; }/* Kartla ayni boy: makette serit sahnenin tepesinden dibine uzaniyor.
    Icerik kadar olunca 2 oyuncuda ortada yuzen kucuk bir kutu kaliyordu. */
 .qt-table-strip { grid-column: 1; align-self: stretch; display: flex; flex-direction: column; border-radius: var(--r-lg); padding: 14px; }.qt-strip-title { display: flex; justify-content: space-between; font-size: 11px; color: #85a2b8; padding: 5px 4px 13px; border-bottom: 1px solid rgba(150,200,220,.16); }.qt-strip-title b { color: #62e5db; }.qt-player-stack { display: grid; gap: 8px; margin-top: 12px; }.qt-player-card { min-height: clamp(44px, 8.6vh, 61px); padding: clamp(5px, 1vh, 8px) clamp(9px, 1.4vh, 12px); display: flex; align-items: center; gap: 8px; color: #c9d9e5; border-radius: var(--r-sm); }
@@ -206,8 +206,8 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-player-card.is-you { border: 2px solid rgba(92,231,239,.7); background: rgba(28,79,96,.24); }.qt-player-card.is-locked { background: color-mix(in srgb, var(--seat-bg, #308782) 62%, transparent); border-left: 2px solid var(--seat-border, #5ce7ef); }/* min-width:0 sart: flex:1 oge varsayilan min-width:auto ile icerigin (uzun isim)
    min-content genisligine kilitlenip karti tasiyordu. b/small'a ellipsis eslik eder. */
 .qt-player-card > div:nth-child(2) { display: grid; gap: 4px; flex: 1; min-width: 0; }.qt-player-card b:not(.qt-player-score) { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.qt-player-card small { font-size: 12px; color: #879eb1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.qt-player-card > .qt-icon { width: 15px; flex: none; margin-left: 4px; color: #60e8c4; }
-/* Ãœstteki dev iÃ§ boÅŸluk, tepeden taÅŸan sayaca yer aÃ§mak iÃ§indi; sayaÃ§ saÄŸ
-   sÃ¼tuna taÅŸÄ±ndÄ±, boÅŸluk da onunla gitti. */
+/* Üstteki dev iç boşluk, tepeden taşan sayaca yer açmak içindi; sayaç sağ
+   sütuna taşındı, boşluk da onunla gitti. */
 .qt-question-stage { grid-column: 2; position: relative; padding: clamp(18px, 3vh, 34px) clamp(20px, 5vw, 70px) clamp(18px, 3vh, 30px); border-radius: var(--r-lg); text-align: center; }
 /* Hic cevap vermeden sure biterse sahne hafifce sallanir — tek tek sik yerine
    butun karti kapsayan daha dramatik bir "kacirdin" isareti. */
@@ -219,8 +219,8 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-report-flag:hover:not(:disabled) { color: #f3c362; border-color: #f3c362; }
 .qt-report-flag:disabled { opacity: .45; cursor: default; }
 @keyframes qtShakeScene { 10% { transform: translate(-3px,1px); } 30% { transform: translate(4px,-1px); } 50% { transform: translate(-3px,0); } 70% { transform: translate(2px,1px); } 90% { transform: translate(-1px,0); } }
-/* SaÄŸ sÃ¼tun: sayaÃ§ Ã¼stte, emote ÅŸeridi (fixed) altta durur â€” ikisi de artÄ±k
-   ÅŸÄ±klarÄ±n Ã¼zerine binmiyor. */
+/* Sağ sütun: sayaç üstte, emote şeridi (fixed) altta durur — ikisi de artık
+   şıkların üzerine binmiyor. */
 /* Sayaç/puan üstte, geri sayım çizgisi altta; ikisinin arası esner ki faz
    değişince sütunun içindekiler yer değiştirmesin. */
 .qt-game-side { grid-column: 3; display: grid; grid-template-rows: 1fr auto; justify-items: center; align-items: center; gap: 10px; height: 100%; }
@@ -345,11 +345,11 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 @media (max-width: 900px) { .qt-lobby-shell { grid-template-columns: 1fr; gap: 34px; padding-top: 52px; }.qt-game { padding: 13px 14px 34px; }.qt-game-grid { grid-template-columns: 1fr; gap: 16px; min-height: auto; }.qt-table-strip { grid-column: 1; order: 2; }.qt-player-stack { grid-template-columns: repeat(2,1fr); }.qt-question-stage { grid-column: 1; order: 1; }.qt-game-top { grid-template-columns: 1fr; border-radius: var(--r-lg); padding: 13px; text-align: center; }.qt-game-top > div:first-child, .qt-game-top > span { justify-content: center; text-align: center; }.qt-progress i { width: 17px; }.qt-question-stage { padding-top: 65px; }.qt-lobby-copy h1 { font-size: 54px; } }
 @media (max-width: 560px) { .qt-activity-bar { height: 58px; padding: 0 17px; }.qt-brand-mark b { font-size: 17px; }.qt-connection { font-size: 12px; }.qt-lobby-shell { min-height: calc(100vh - 58px); padding: 32px 18px; }.qt-mode-row { grid-template-columns: 1fr; }.qt-lobby-actions { grid-template-columns: 1fr; }.qt-answers { grid-template-columns: 1fr; }.qt-question-stage,.qt-podium-glass { padding-left: 18px; padding-right: 18px; }.qt-circle-entry { grid-template-columns: 1fr; }.qt-player-stack { grid-template-columns: 1fr; }.qt-lobby-copy h1 { font-size: 44px; }.qt-question-head h1 { font-size: 27px; }.qt-podium-glass h1 { font-size: 37px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; } }
-/* Lobi hero ve oda paneli aynÄ± Ã¼st Ã§izgiden baÅŸlamalÄ±; uzun sol iÃ§erik saÄŸ paneli dikeyde kaydÄ±rmamalÄ±. */
+/* Lobi hero ve oda paneli aynı üst çizgiden başlamalı; uzun sol içerik sağ paneli dikeyde kaydırmamalı. */
 .qt-lobby-shell { align-items: start; }
-/* Modlar ilk bakÄ±ÅŸta farklÄ± oyun kimlikleri taÅŸÄ±sÄ±n. */
+/* Modlar ilk bakışta farklı oyun kimlikleri taşısın. */
 .qt-mode-tab { min-height: 86px; }.qt-mode-tab__visual { position: relative; display: grid; place-items: center; width: 40px; height: 40px; flex: 0 0 40px; overflow: hidden; border: 1px solid rgba(108, 209, 223, .38); border-radius: var(--r-sm); color: #78e9ef; background: rgba(9, 36, 56, .9); }.qt-mode-tab__visual::before { content: ''; position: absolute; inset: 7px; border: 1px solid currentColor; border-radius: inherit; opacity: .3; }.qt-mode-tab__visual .qt-icon { position: relative; z-index: 1; width: 20px; height: 20px; }.qt-mode-tab--classic .qt-mode-tab__visual { color: #f3c362; background: radial-gradient(circle at 50% 20%, rgba(241, 191, 84, .24), rgba(11, 35, 55, .92) 68%); }.qt-mode-tab--lightning .qt-mode-tab__visual { color: #62e8df; background: linear-gradient(135deg, rgba(33, 204, 196, .26), rgba(7, 33, 53, .94)); }.qt-mode-tab--circle .qt-mode-tab__visual { color: #85d9ff; background: radial-gradient(circle, rgba(83, 189, 244, .2), rgba(10, 29, 53, .94) 64%); }.qt-mode-tab--circle .qt-mode-tab__visual::before { border-radius: 50%; }.qt-mode-tab.is-selected .qt-mode-tab__visual { box-shadow: 0 0 19px currentColor; }
-/* Oyuncular soru sahnesinin sabit parÃ§asÄ±: durum gÃ¶rÃ¼nÃ¼r, konum sabit. */
+/* Oyuncular soru sahnesinin sabit parçası: durum görünür, konum sabit. */
 .qt-player-card.is-locked .qt-avatar { box-shadow: 0 0 18px rgba(92, 229, 192, .3); }.qt-voters .qt-avatar { transform-origin: center; animation: qtVoterPop .34s cubic-bezier(.2,.8,.25,1) both; }.qt-voters .qt-avatar:nth-child(2) { animation-delay: .06s; }.qt-voters .qt-avatar:nth-child(3) { animation-delay: .12s; }.qt-voters .qt-avatar:nth-child(4) { animation-delay: .18s; }
 @keyframes qtVoterPop { from { opacity: 0; transform: scale(.45); } to { opacity: 1; transform: scale(1); } } @keyframes qtCorrectBloom { from { filter: brightness(1.45); } to { filter: brightness(1); } }
 /* ---- Motion paketi ---- reduced-motion tüm bunları global blok (satır ~190) ile kısar. */
@@ -433,9 +433,9 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-you-card__eye .qt-icon { width: 22px; }
 .qt-spectator-count { display: inline-flex; align-items: center; justify-content: center; gap: 6px; color: #8ba6ba; font-size: 12px; }
 .qt-spectator-count .qt-icon { width: 14px; }
-/* Oyun tahtasÄ± da Discord iframe'ine SIÄAR (lobiyle aynÄ± ilke): Ã¼st bar sabit,
-   sahne kalan alanÄ± doldurur. KaydÄ±rma Ã§ubuÄŸu Ã§Ä±karsa reveal koreografisi
-   ekranÄ±n dÄ±ÅŸÄ±nda kalÄ±r â€” kartlar oynamasa bile oyuncu gÃ¶remez. */
+/* Oyun tahtası da Discord iframe'ine SIĞAR (lobiyle aynı ilke): üst bar sabit,
+   sahne kalan alanı doldurur. Kaydırma çubuğu çıkarsa reveal koreografisi
+   ekranın dışında kalır — kartlar oynamasa bile oyuncu göremez. */
 .qt-game { display: grid; grid-template-rows: auto 1fr; height: 100vh; min-height: 0; }
 .qt-game-grid { min-height: 0; align-items: center; }
 .qt-question-stage { max-height: 100%; overflow-y: auto; overscroll-behavior: contain; }
@@ -453,10 +453,10 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 @media (max-width: 900px) {
   .qt-game { height: auto; min-height: 100vh; min-height: 100dvh; overflow: visible; padding-bottom: calc(86px + var(--qt-saib)); }
 }
-/* â€”â€”â€” Reveal koreografisi â€”â€”â€”
-   DeÄŸiÅŸmesi yasak olan her ÅŸey (kart kutusu, metin geniÅŸliÄŸi, grid) burada sabittir:
-   avatar rafÄ± mutlak konumludur, kilit iÅŸareti sabit yuvada, not satÄ±rÄ± yer tutar.
-   Reveal'de yalnÄ±zca renk/opacity/animasyon deÄŸiÅŸir â€” asla Ã¶lÃ§Ã¼ veya konum. */
+/* ——— Reveal koreografisi ———
+   Değişmesi yasak olan her şey (kart kutusu, metin genişliği, grid) burada sabittir:
+   avatar rafı mutlak konumludur, kilit işareti sabit yuvada, not satırı yer tutar.
+   Reveal'de yalnızca renk/opacity/animasyon değişir — asla ölçü veya konum. */
 .qt-answers { row-gap: 32px; }
 .qt-answer { position: relative; transition: border-color var(--t-micro) var(--ease), background-color var(--t-micro) var(--ease), opacity var(--t-scene) var(--ease), box-shadow var(--t-micro) var(--ease); }
 /* L3 mod-özel hareket: Fitil (yıldırım) keskin/hızlı geçer -- tasarım "keskin
@@ -515,15 +515,15 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 @keyframes qtAnswerShake { 0%, 100% { translate: 0; } 20% { translate: -4px 0; } 45% { translate: 4px 0; } 70% { translate: -3px 0; } 88% { translate: 2px 0; } }
 @keyframes qtVoterShake { 0%, 100% { translate: 0; } 25% { translate: -3px 0; } 75% { translate: 3px 0; } }
 @keyframes qtVoterGlow { 0%, 100% { box-shadow: 0 0 0 rgba(91, 227, 189, 0); } 50% { box-shadow: 0 0 16px rgba(91, 227, 189, .85); } }
-/* Not satÄ±rÄ± reveal'de boÅŸalsa da yer tutar; yoksa kartlar aÅŸaÄŸÄ±-yukarÄ± zÄ±plar. */
+/* Not satırı reveal'de boşalsa da yer tutar; yoksa kartlar aşağı-yukarı zıplar. */
 .qt-locked-note { min-height: 20px; }
 .qt-locked-note[data-empty="true"] { visibility: hidden; }
 .qt-gain-chip { color: #67eac5; font-size: 12px; font-weight: 900; animation: qtVoterPop .3s ease-out both; }
 .qt-reveal-progress { margin-top: 14px; display: grid; gap: 6px; justify-items: center; opacity: 0; transition: opacity var(--t-micro) var(--ease); }
 .qt-reveal-progress[data-active="true"] { opacity: 1; }
-/* SABÄ°T yÃ¼kseklik (min- deÄŸil): boÅŸken 14px, metin gelince satÄ±r 15px olup
-   sahneyi 1px bÃ¼yÃ¼tÃ¼yordu. OrtalanmÄ±ÅŸ dÃ¼zende bu, reveal anÄ±nda tÃ¼m kartlarÄ±
-   yarÄ±m piksel kaydÄ±rÄ±r â€” madde 1/9 sÄ±fÄ±r sapma ister. */
+/* SABİT yükseklik (min- değil): boşken 14px, metin gelince satır 15px olup
+   sahneyi 1px büyütüyordu. Ortalanmış düzende bu, reveal anında tüm kartları
+   yarım piksel kaydırır — madde 1/9 sıfır sapma ister. */
 /* İki satırlık yer HER ZAMAN ayrılır (opacity ile gizlenir, display ile değil):
    dar sağ sütunda metin sarıyor, 15px'lik tek satırlık kutuda çubuğun altına
    taşıyordu. Sabit yükseklik şart -- 'auto' olsaydı reveal başlarken sütun
@@ -532,9 +532,9 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-reveal-progress span { height: 34px; line-height: 1.3; color: #9db3c5; font-size: 12px; font-weight: 700; text-align: center; overflow: hidden; }
 .qt-reveal-progress i { width: 100%; height: 4px; border-radius: var(--r-pill); background: rgba(21, 44, 68, .9); overflow: hidden; }
 .qt-reveal-progress b { display: block; width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #5ce7ef, #5be3bd); transform-origin: left center; }
-/* â€”â€”â€” Sahne dekoru: arkaplan videosu, maskot, galaksi â€”â€”â€”
-   Asset'ler kendi origin'imizden (public/table/) gelir; kÃ¼tÃ¼phaneler npm'den
-   bundle'a girer. Discord CSP'si yalnÄ±zca kendi proxy alan adÄ±mÄ±za izin verir. */
+/* ——— Sahne dekoru: arkaplan videosu, maskot, galaksi ———
+   Asset'ler kendi origin'imizden (public/table/) gelir; kütüphaneler npm'den
+   bundle'a girer. Discord CSP'si yalnızca kendi proxy alan adımıza izin verir. */
 .qt-backdrop { position: absolute; inset: -14px; overflow: hidden; pointer-events: none; }
 .qt-backdrop__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s var(--ease); }
 .qt-backdrop__video.is-ready { opacity: 1; }
@@ -558,7 +558,7 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-music-toggle.is-on { color: #59dbe9; border-color: rgba(89,219,233,.5); }
 .qt-music-toggle__slash { position: absolute; width: 17px; height: 2px; border-radius: 2px; background: currentColor; rotate: -45deg; }
 @media (prefers-reduced-motion: reduce) {
-  /* Video dekor: hareket istemeyen oyuncu poster'Ä± gÃ¶rÃ¼r, oyun aynen Ã§alÄ±ÅŸÄ±r. */
+  /* Video dekor: hareket istemeyen oyuncu poster'ı görür, oyun aynen çalışır. */
   .qt-backdrop__video { display: none; }
 }
 /* Lobi Discord iframe'ine SIGAR: baslik ustte, masa kalan alani ortalar.
@@ -571,9 +571,9 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 @media (max-width: 1000px) {
   .qt-lobby { height: auto; min-height: 100vh; overflow: visible; }
 }
-/* â€”â€”â€” YÃ¶rÃ¼nge masasÄ± (lobi) â€”â€”â€”
-   TasarÄ±mÄ±n kuralÄ±: masa ORTADA kalÄ±r. YerleÅŸim ofsetiyle (translateX vb.)
-   kaydÄ±rÄ±lmaz â€” dar ekranda sÃ¼tunlar altÄ±na iner, masa merkezini korur. */
+/* ——— Yörünge masası (lobi) ———
+   Tasarımın kuralı: masa ORTADA kalır. Yerleşim ofsetiyle (translateX vb.)
+   kaydırılmaz — dar ekranda sütunlar altına iner, masa merkezini korur. */
 /* Alt boşluk 34 (eski 12): koltuk etiketi jetonun ALTINDA sarkıyor
    (top: calc(100% + 6px)) ve yörüngenin kutusuna dahil değil -- 1289x495'te
    en alttaki yazı 5px kırpılıyordu. Kabuk yörüngeyi ALTA yaslıyor, o yüzden
@@ -612,13 +612,13 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-orbit__ready { display: inline-flex; align-items: center; gap: 6px; color: #7fa3b5; font-size: 11px; }
 .qt-orbit__ready i { width: 6px; height: 6px; border-radius: var(--r-pill); background: #5ee6c1; animation: qtReadyPulse 2s ease-in-out infinite; }
 @keyframes qtReadyPulse { 0%, 100% { opacity: 1; scale: 1; } 50% { opacity: .45; scale: .82; } }
-/* Koltuk: rotate(Î¸) â†’ translateY(-R) â†’ rotate(-Î¸). Balonun MERKEZÄ° tam ring
-   Ã¼stÃ¼ndedir ve koltuÄŸun boyutu bu konumu etkilemez. Ä°sim/rozet mutlak
-   konumludur; akÄ±ÅŸta yer kaplasalardÄ± Ã§apayÄ± kaydÄ±rÄ±rlardÄ±. */
-/* KRÄ°TÄ°K: koltuÄŸun kendi transform'u yalnÄ±zca KONUMLANDIRMADIR ve asla
-   animasyonlanmaz. `scale` (baÄŸÄ±msÄ±z Ã¶zellik) transform'dan Ã–NCE uygulandÄ±ÄŸÄ±
-   iÃ§in buradaki bir Ã¶lÃ§ek, translateY(-R) Ã¶telemesini de Ã§arpar ve koltuÄŸu
-   ring'in Ã¼stÃ¼nden merkeze doÄŸru kaydÄ±rÄ±r. Pop bu yÃ¼zden iÃ§teki balonda. */
+/* Koltuk: rotate(θ) → translateY(-R) → rotate(-θ). Balonun MERKEZİ tam ring
+   üstündedir ve koltuğun boyutu bu konumu etkilemez. İsim/rozet mutlak
+   konumludur; akışta yer kaplasalardı çapayı kaydırırlardı. */
+/* KRİTİK: koltuğun kendi transform'u yalnızca KONUMLANDIRMADIR ve asla
+   animasyonlanmaz. `scale` (bağımsız özellik) transform'dan ÖNCE uygulandığı
+   için buradaki bir ölçek, translateY(-R) ötelemesini de çarpar ve koltuğu
+   ring'in üstünden merkeze doğru kaydırır. Pop bu yüzden içteki balonda. */
 .qt-seat { position: absolute; top: 50%; left: 50%; display: grid; place-items: center; }
 .qt-seat--filled { width: 58px; height: 58px; }
 .qt-seat--empty { width: 50px; height: 50px; padding: 0; border: none; background: none; cursor: pointer; }
@@ -680,7 +680,7 @@ button.qt-button--danger:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(214
 .qt-podium-team b { font-size: 12px; color: var(--seat-text); }
 .qt-podium-team em { font-style: normal; font-size: 22px; font-weight: 900; color: var(--seat-text); font-variant-numeric: tabular-nums; }
 .qt-podium-teams__result { font-size: 12px; font-weight: 800; color: #f3c362; letter-spacing: .04em; text-align: center; }
-/* Masa ayarlarÄ± paneli */
+/* Masa ayarları paneli */
 .qt-settings, .qt-you-panel { display: grid; min-width: 0; max-width: 100%; gap: 14px; align-content: start; padding: 16px; border: 1px solid rgba(72,180,204,.28); border-radius: var(--r-lg); background: rgba(8,25,42,.72); backdrop-filter: blur(12px); }
 .qt-settings-panel { display: block; min-width: 0; max-width: 100%; }
 .qt-settings__head { display: flex; align-items: center; gap: 10px; cursor: pointer; list-style: none; user-select: none; }
@@ -760,7 +760,7 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-count-chip { min-width: 0; min-height: 40px; padding-inline: 5px; border: 1px solid rgba(92,165,195,.28); border-radius: var(--r-sm); background: rgba(8,25,42,.78); color: #c4d2df; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; transition: var(--t-fast) var(--ease); }
 .qt-count-chip:disabled { cursor: default; opacity: .82; }
 .qt-count-chip.is-selected { border-color: #f0bd58; background: rgba(74,56,18,.42); color: #fdf4e2; }
-/* Senin koltuÄŸun */
+/* Senin koltuğun */
 .qt-you-panel__head span { color: #4bccd6; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
 .qt-you-card { display: flex; align-items: center; gap: 11px; min-height: 56px; padding: 10px; border: 1px solid rgba(72,180,204,.24); border-radius: var(--r-md); background: rgba(6,20,38,.7); }
 .qt-you-card > div { display: grid; gap: 3px; }
@@ -788,7 +788,7 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
   .qt-lobby-controls { bottom: calc(112px + var(--qt-saib)) !important; }
 }
 .qt-invite-hint { position: fixed; left: 50%; bottom: 24px; translate: -50% 0; z-index: 20; padding: 10px 16px; border: 1px solid rgba(72,180,204,.4); border-radius: var(--r-pill); background: rgba(6,20,38,.94); color: #d9efff; font-size: 12px; cursor: pointer; }
-/* Dar ekran: sÃ¼tunlar masanÄ±n altÄ±na iner â€” masa merkezde kalÄ±r, kaydÄ±rÄ±lmaz. */
+/* Dar ekran: sütunlar masanın altına iner — masa merkezde kalır, kaydırılmaz. */
 @media (max-width: 1000px) {
   /* Dikey düzen sırası: masa → koltuğun+CTA (you-panel) → ayarlar. Eskiden CTA
      ayarların ALTINDA, ekranın çok aşağısında kalıyordu (audit P0). İçerik üstten
@@ -813,9 +813,9 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 @media (prefers-reduced-motion: reduce) {
   .qt-orbit__ring, .qt-orbit__disc, .qt-seat__token, .qt-seat__token::after, .qt-seat__prep, .qt-orbit__ready i, .qt-mode-scene, .qt-scene-clock__hand, .qt-scene-letters { animation: none !important; }
 }
-/* â€”â€”â€” BaÄŸlantÄ± koptu â€”â€”â€”
-   SayaÃ§ gÃ¶stergedir, karar sunucunundur. Halka conic-gradient ile doluluÄŸu
-   gÃ¶sterir; --ratio 1â†’0 akar. */
+/* ——— Bağlantı koptu ———
+   Sayaç göstergedir, karar sunucunundur. Halka conic-gradient ile doluluğu
+   gösterir; --ratio 1→0 akar. */
 .qt-drop-backdrop { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 18px; background: rgba(3,8,16,.74); backdrop-filter: blur(6px); }
 .qt-drop-card { width: min(430px, 100%); padding: 30px 26px 24px; border: 1px solid rgba(241,185,78,.45); border-radius: var(--r-lg); background: linear-gradient(145deg, rgba(46,38,20,.6), rgba(5,18,32,.97)); box-shadow: 0 32px 90px rgba(0,0,0,.55); text-align: center; animation: qtDropIn .35s cubic-bezier(.18,.86,.2,1) both; }
 @keyframes qtDropIn { from { opacity: 0; transform: scale(.9); } to { opacity: 1; transform: scale(1); } }
@@ -828,9 +828,9 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-drop-card h1 em { color: #f1b94e; font-style: normal; }
 .qt-drop-card p { max-width: 320px; margin: 0 auto 16px; color: #b9a98a; font-size: 13px; line-height: 1.55; }
 .qt-drop-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-/* â€”â€”â€” Emote â€”â€”â€”
-   HÄ±z sÄ±nÄ±rÄ± SUNUCUDA; buradaki dÃ¼ÄŸmeler serbest basÄ±labilir, fazlasÄ± elenir. */
-/* SaÄŸ altta: ortada dururken kÄ±sa ekranda ÅŸÄ±klarÄ±n Ã¼zerine biniyordu. */
+/* ——— Emote ———
+   Hız sınırı SUNUCUDA; buradaki düğmeler serbest basılabilir, fazlası elenir. */
+/* Sağ altta: ortada dururken kısa ekranda şıkların üzerine biniyordu. */
 .qt-emote-bar { position: fixed; right: max(14px, var(--qt-sair)); bottom: max(14px, var(--qt-saib)); z-index: 6; display: flex; gap: 8px; padding: 8px 10px; border: 1px solid rgba(65,190,206,.3); border-radius: var(--r-pill); background: rgba(6,20,35,.82); backdrop-filter: blur(10px); }
 .qt-emote-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgba(105,155,181,.28); border-radius: 50%; background: rgba(8,25,42,.7); font-size: 18px; line-height: 1; cursor: pointer; transition: transform var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease); }
 .qt-emote-btn:hover { transform: translateY(-3px) scale(1.08); border-color: #59dbe9; }
@@ -846,7 +846,7 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
   18% { opacity: 1; transform: translate(calc(var(--drift) * .3), -12px) scale(1.12); }
   100% { opacity: 0; transform: translate(var(--drift), -120px) scale(.9); }
 }
-/* Podyum: lider altÄ±n mikrofonu taÅŸÄ±r */
+/* Podyum: lider altın mikrofonu taşır */
 .qt-podium-list > div { animation: qtPodiumRow .42s ease-out var(--row-delay, 0ms) both; }
 @keyframes qtPodiumRow { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
 .qt-podium-mic { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(243,195,98,.16); color: #f3c362; filter: drop-shadow(0 0 6px rgba(243,195,98,.5)); }
@@ -859,14 +859,14 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-avatar.is-sky { border-color: #85d9ff; color: #a5e3ff; }
 .qt-avatar.is-pink { border-color: #f29ec4; color: #f7bcd6; }
 @media (prefers-reduced-motion: reduce) {
-  /* Bilgi kalÄ±r, hareket gider. SayaÃ§ halkasÄ± (--ratio, JS'ten) akmaya devam eder:
-     o bir sÃ¼sleme deÄŸil, kalan sÃ¼reyi taÅŸÄ±yan bilginin kendisidir. */
+  /* Bilgi kalır, hareket gider. Sayaç halkası (--ratio, JS'ten) akmaya devam eder:
+     o bir süsleme değil, kalan süreyi taşıyan bilginin kendisidir. */
   .qt-drop-card, .qt-podium-list > div, .qt-emote-btn { animation: none !important; }
   .qt-emote-btn:hover { transform: none !important; }
-  /* Emote'u yeni bir animasyonla sÃ¶ndÃ¼rmeye Ã‡ALIÅMA: global reduced-motion kuralÄ±
-     animation-duration'Ä± .01ms'e !important ile sabitlediÄŸi iÃ§in tepki gÃ¶z aÃ§Ä±p
-     kapayana dek yok olur ve oyuncu hiÃ§bir ÅŸey gÃ¶rmez. Statik dursun; bileÅŸen
-     zaten 2.2 sn sonra kendini sÃ¶kÃ¼yor. */
+  /* Emote'u yeni bir animasyonla söndürmeye ÇALIŞMA: global reduced-motion kuralı
+     animation-duration'ı .01ms'e !important ile sabitlediği için tepki göz açıp
+     kapayana dek yok olur ve oyuncu hiçbir şey görmez. Statik dursun; bileşen
+     zaten 2.2 sn sonra kendini söküyor. */
   .qt-emote-fly { animation: none !important; opacity: 1; transform: translate(var(--drift), -40px); }
 }
 /* Alcak iframe'de yan paneller kendi icinde kayar; masa sabit ve ortada kalir.
@@ -917,9 +917,9 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
    gelen table-shell'i uste alarak butonlari tiklanamaz yapiyordu. */
 .qt-lobby-controls { position: absolute !important; bottom: max(12px, var(--qt-saib)); left: max(12px, var(--qt-sail)); z-index: 4 !important; display: flex; align-items: center; gap: 8px; }
 .qt-lobby-controls .qt-connection { padding: 5px 10px; border-radius: var(--r-pill); background: rgba(6,20,35,.82); backdrop-filter: blur(10px); font-size: 11px; }
-/* â€”â€”â€” PIP kompakt kartÄ± â€”â€”â€”
-   MasanÄ±n kÃ¼Ã§Ã¼ltÃ¼lmÃ¼ÅŸÃ¼ DEÄÄ°L, ayrÄ± bir ekran. ~320Ã—180 pencereye gÃ¶re: az
-   Ã¶ÄŸe, iri tipografi, tek bakÄ±ÅŸta okunur. TÄ±klanÄ±nca Discord tam ekrana dÃ¶ner. */
+/* ——— PIP kompakt kartı ———
+   Masanın küçültülmüşü DEĞİL, ayrı bir ekran. ~320×180 pencereye göre: az
+   öğe, iri tipografi, tek bakışta okunur. Tıklanınca Discord tam ekrana döner. */
 .qt-pip { width: 100%; height: 100vh; display: grid; grid-template-rows: auto 1fr auto; gap: 4px; padding: 8px 12px; background: linear-gradient(150deg, #0e2237, #060d1c); color: #eef8ff; cursor: pointer; }
 .qt-pip__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 18px; }
 .qt-pip__brand { display: flex; align-items: center; gap: 6px; min-width: 0; }
@@ -939,20 +939,20 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-pip__stack em.is-wrong { color: #f1c264; }
 .qt-pip__lock { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: var(--r-pill); font-size: 12px; font-weight: 800; }
 .qt-pip__lock.is-locked { background: rgba(94, 230, 193, .14); color: #6ceaca; }
-/* Kilitlemediysen kart seni geri Ã§aÄŸÄ±rÄ±r â€” PIP'in tek kritik iÅŸlevi budur. */
+/* Kilitlemediysen kart seni geri çağırır — PIP'in tek kritik işlevi budur. */
 .qt-pip__lock.is-open { background: rgba(241, 120, 90, .16); color: #f7a08c; animation: qtPipBlink .9s ease-in-out infinite; }
 .qt-pip__hint { color: #5c7689; font-size: 12px; text-align: center; }
 @keyframes qtPipBlink { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
-/* Reduced-motion: hareket yok, bilgi tam. SayÄ± akÄ±ÅŸÄ± JS tarafÄ±nda son deÄŸere sabitlenir. */
+/* Reduced-motion: hareket yok, bilgi tam. Sayı akışı JS tarafında son değere sabitlenir. */
 @media (prefers-reduced-motion: reduce) {
   .qt-answer.is-selected, .qt-answer.is-correct, .qt-answer.is-wrong, .qt-voters .qt-avatar, .qt-voters small, .qt-gain-chip, .qt-score-flight, .qt-shimmer, .qt-answer__dist, .qt-final-intro__title, .qt-player-card.is-awaiting, .qt-lobby-shell, .qt-start-countdown, .qt-game-grid { animation: none !important; }
   .qt-reveal-progress b { transition: none !important; }
-  /* YanÄ±p sÃ¶nme kapalÄ± ama uyarÄ± gÃ¶rÃ¼nÃ¼r kalmalÄ±: rengi bilgiyi taÅŸÄ±r. */
+  /* Yanıp sönme kapalı ama uyarı görünür kalmalı: rengi bilgiyi taşır. */
   .qt-pip__lock.is-open { animation: none !important; }
 }
 @media (max-width: 560px) { .qt-game-summary { text-align: center; }.qt-game-exit { min-height: 32px; }.qt-game-exit--floating { top: 14px; right: 14px; }.qt-leave-dialog > div { grid-template-columns: 1fr; } }
-/* GEÃ‡Ä°CÄ° Ã–LÃ‡ÃœM OKUMASI â€” Ã¶lÃ§Ã¼m bitince bu blok ve ViewportProbe silinecek.
-   Sol Ã¼stte durur: lobi denetimleri saÄŸ Ã¼st kÃ¶ÅŸede, Ã§akÄ±ÅŸmasÄ±n. */
+/* GEÇİCİ ÖLÇÜM OKUMASI — ölçüm bitince bu blok ve ViewportProbe silinecek.
+   Sol üstte durur: lobi denetimleri sağ üst köşede, çakışmasın. */
 /* KATEGORİ açılır kutusu — maket: 11 çip yerine tek satır tetikleyici.
    Panelde ~200px yer kazandırır; seçim üstte açılan katmanda yapılır. */
 .qt-category-picker { position: relative; margin-top: 12px; }
@@ -1017,7 +1017,10 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
    Maket: durum şeridi üstte, oyuncular YATAY avatar şeridi, sayaç ortada,
    şıklar TEK SÜTUN, emote altta ortada. Eskiden oyuncular sorunun ALTINA
    iki sütun halinde düşüyordu — makette değil. */
-@media (max-width: 560px) and (orientation: portrait) {
+/* Kapsam genişletildi: 561–900px geniş YÜKSEK ekranlar (tablet dikey, küçük
+   masaüstü penceresi) da bu düzeni kullanır — eski tek-sütun kuralında kart
+   ekranın yarısına sıkışıp oyuncular foldun altına iniyordu (layout-fixes.css 2f). */
+@media (max-width: 560px) and (orientation: portrait), (max-width: 900px) and (min-height: 561px) {
   /* dvh: telefonda adres çubuğu 100vh'yi yalan yapar, alt satır kırpılır. */
   /* Alt boşluk emote çubuğunu (44px + pay) kartın dışında tutar. */
   .qt-game { height: 100dvh; padding: max(8px, var(--qt-sait)) 12px calc(86px + var(--qt-saib)); }

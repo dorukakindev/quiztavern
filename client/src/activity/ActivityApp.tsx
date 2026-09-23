@@ -6,7 +6,7 @@ import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, t
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
-import { I18nContext, categoryLabel, formatNumber, translate, useI18n, type ActivityLanguage, type StringKey } from './i18n'
+import { I18nContext, categoryLabel, formatNumber, formatPercent, translate, useI18n, type ActivityLanguage, type StringKey } from './i18n'
 import { GalaxyLoop, MusicToggle, TableBackdrop, TableLogo } from './TableScenery'
 import { PodiumCharacter } from './PodiumCharacter'
 import { CATEGORY_ICON_PATHS } from './categoryIcons'
@@ -454,7 +454,9 @@ function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boole
 
 function GameLeaveButton({ onLeave, floating = false }: { onLeave: () => void; floating?: boolean }) {
   const { t } = useI18n()
-  return <button type="button" className={`qt-game-exit ${floating ? 'qt-game-exit--floating' : ''}`} onClick={onLeave}><Icon name="exit" /> {t('game.leave')}</button>
+  // Etiket ayrı span'de: dar ekranda CSS yalnız ikonu bırakır (buton iki satıra
+  // kırılıp başlığı ezmesin); ad title/aria-label'da kalır.
+  return <button type="button" className={`qt-game-exit ${floating ? 'qt-game-exit--floating' : ''}`} onClick={onLeave} title={t('game.leave')} aria-label={t('game.leave')}><Icon name="exit" /><span className="qt-game-exit__label">{t('game.leave')}</span></button>
 }
 
 /** İzleyici çubuğu: oyun/podyum fazlarında izleyene "izliyorsun" der ve boş koltuk
@@ -495,7 +497,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b title={player.name}>{player.name}<TitleTag title={player.title} /></b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}<TitleTag title={player.title} /></b>{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -586,6 +588,14 @@ function useOrbitSize() {
   const measure = () => {
     if (typeof window === 'undefined') return 520
     const stacked = window.innerWidth <= STACK_WIDTH
+    // Kısa-yatay (telefon yatay / alçak pencere): masa ile "senin koltuğun"
+    // paneli YAN YANA durur (CSS ile aynı eşik). Eskiden burada da dikey yığın
+    // formülü (yüksekliğin yarısı) kullanılıyordu: 844×390'da masa 230px'e
+    // çöküyor, koltuklar diskin üstüne biniyordu.
+    if (stacked && window.innerHeight <= 560 && window.innerWidth >= 680) {
+      const side = Math.min(300, Math.max(230, window.innerWidth * 0.36))
+      return Math.max(230, Math.min(460, window.innerWidth - side - 56, window.innerHeight - 28))
+    }
     // Üç sütunda orta sütuna kalan yer; altına inince tüm genişlik.
     const widthBudget = stacked ? window.innerWidth - 40 : window.innerWidth - 640
     // Mobil/dikey (stacked): masa üstte; ALTINDA koltuk kartı + CTA ilk ekranda
@@ -1087,7 +1097,9 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
       </aside>
 
       {/* Orta: masa. Tasarımın kuralı — masa ortada kalır, ofsetle kaydırılmaz. */}
-      <div className="qt-orbit" style={{ '--orbit-size': `${orbitSize}px` } as CSSProperties} aria-label={t('table.seats')}>
+      {/* is-compact: küçük masada koltuk jetonları ve disk orantılı küçülür —
+          sabit 58px jetonlar 230-400px'lik yörüngede diske biniyordu. */}
+      <div className={`qt-orbit ${orbitSize < 400 ? 'is-compact' : ''}`} style={{ '--orbit-size': `${orbitSize}px` } as CSSProperties} aria-label={t('table.seats')}>
         <div className="qt-orbit__shadow" aria-hidden="true" />
         <div className="qt-orbit__ring" aria-hidden="true" />
         <div className="qt-orbit__ring-inner" aria-hidden="true" />
@@ -1281,7 +1293,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
       <header className="qt-game-top">
         <div><b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b><span>{t(isCircle ? 'game.roundOf' : 'game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
         <RoundProgress index={state.round.index} total={state.round.total} />
-        <span className="qt-game-summary">{beats.active ? t('game.revealed') : t('game.lockedCount', { answered: state.answeredCount, total: state.eligibleCount })}</span>
+        <span className="qt-game-summary"><span className="qt-game-summary__full">{beats.active ? t('game.revealed') : t('game.lockedCount', { answered: state.answeredCount, total: state.eligibleCount })}</span><span className="qt-game-summary__short" aria-hidden="true">{beats.active ? <Icon name="check" /> : <><Icon name="lock" />{state.answeredCount}/{state.eligibleCount}</>}</span></span>
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
@@ -1309,6 +1321,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
             // Dağılım yalnız puan beat'inde (650ms) belirir; mutlak+transform, kartı
             // KIMILDATMAZ (0px kuralı). Çubuk kartın alt kenarında scaleX ile açılır.
             const showDist = beats.gains && totalPicks > 0
+            // Kimsenin seçmediği yanlış şıkta "%0" rozeti bilgi değil gürültü.
+            const showPct = showDist && (picks.length > 0 || index === correctIndex)
             return <button
               className={`qt-answer ${selected === index ? 'is-selected' : ''} ${isCorrect ? 'is-correct' : ''} ${isWrong ? 'is-wrong' : ''} ${isDimmed ? 'is-dimmed' : ''}`}
               disabled={locked}
@@ -1321,12 +1335,17 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
               <b>{'ABCD'[index]}</b>
               <span className="qt-answer__text">{choice}</span>
               {showDist && <i className={`qt-answer__dist ${index === correctIndex ? 'is-right' : ''}`} style={{ '--pct': pct / 100 } as CSSProperties} aria-hidden="true" />}
-              {showDist && <b className="qt-answer__pct">%{pct}</b>}
               {/* Reveal'de doğru ✓ / (kendi) yanlış ✗ rozeti renkten bağımsız
                   işaretlenir (renk-körlüğü erişilebilirliği). Slot sabit 24px:
                   ikon gelince kart kımıldamaz. */}
               <i className="qt-answer__mark" aria-hidden="true">{beats.cards && isCorrect ? <span className="qt-verdict-pop is-right"><Icon name="check" /></span> : beats.cards && isWrong ? <span className="qt-verdict-pop is-wrong"><Icon name="close" /></span> : !beats.cards && selected === index && !beats.active ? <span className="qt-lock-pop" key="lock"><Icon name="check" /></span> : null}</i>
-              <VoterDock voters={voters} correct={index === correctIndex} beats={beats} />
+              {/* Yüzde + oy veren avatarlar TEK rozet olarak kartın alt kenarına
+                  oturur (mutlak, 0px). Eskiden yüzde sağ-üstte ✓/✗ rozetinin,
+                  avatarlar alt kenarda bir alttaki kartın üstüne biniyordu. */}
+              {(showPct || (beats.voters && voters.length > 0)) && <span className={`qt-answer__tally ${index === correctIndex ? 'is-right' : ''}`}>
+                {showPct && <b className="qt-answer__pct">{formatPercent(language, pct)}</b>}
+                <VoterDock voters={voters} correct={index === correctIndex} beats={beats} />
+              </span>}
             </button>
           })}
         </div>
@@ -1384,7 +1403,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
       <header className="qt-game-top">
         <div><b>{t(MODE_KEYS.bet.tag)}</b><span>{t('game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
         <RoundProgress index={state.round.index} total={state.round.total} />
-        <span className="qt-game-summary">{t('bet.lockedCount', { locked: state.answeredCount, total: state.eligibleCount })}</span>
+        <span className="qt-game-summary"><span className="qt-game-summary__full">{t('bet.lockedCount', { locked: state.answeredCount, total: state.eligibleCount })}</span><span className="qt-game-summary__short" aria-hidden="true"><Icon name="lock" />{state.answeredCount}/{state.eligibleCount}</span></span>
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
@@ -1511,7 +1530,7 @@ function MatchReview({ review }: { review: ReviewItem[] }) {
       <span className="qt-review-cat">{categoryLabel(language, item.category)} · {t('review.q', { n: sel + 1 })}</span>
       <h3>{prompt}</h3>
       <div className="qt-review-answers">
-        {!item.correct && <div className="qt-review-answer is-wrong"><Icon name="exit" /> {yourAnswer ? `${t('review.yours')}: ${yourAnswer}` : t('review.noAnswer')}</div>}
+        {!item.correct && <div className="qt-review-answer is-wrong"><Icon name="close" /> {yourAnswer ? `${t('review.yours')}: ${yourAnswer}` : t('review.noAnswer')}</div>}
         <div className="qt-review-answer is-correct"><Icon name="check" /> {t('review.correct')}: {correctAnswer}</div>
       </div>
     </div>}
@@ -1659,7 +1678,7 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
       {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
-      <div className="qt-summary-tile is-accuracy"><small>{t('summary.accuracy')}</small><div><b>{summary.correct} / {summary.total}</b><span>%{pct}</span></div></div>
+      <div className="qt-summary-tile is-accuracy"><small>{t('summary.accuracy')}</small><div><b>{summary.correct} / {summary.total}</b><span>{formatPercent(language, pct)}</span></div></div>
       <div className="qt-summary-tile is-streak"><small>{t('summary.streak')}</small><div><b>{summary.bestStreak}</b><span>{t('summary.streakUnit')} 🔥</span></div></div>
       {summary.fastest
         ? <div className="qt-summary-tile is-fast"><small>{t('summary.fastest')}</small><div><b>{summary.fastest.name}</b><span>{(summary.fastest.ms / 1000).toFixed(1)} {t('summary.sec')}</span></div></div>

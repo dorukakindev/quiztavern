@@ -53,3 +53,32 @@ node /tmp/cdp-eval.mjs "new Promise(res=>{const p=()=>{document.querySelector('.
 ```
 
 (or a `watch-reveal.mjs` CDP script that polls `document.querySelector('.is-revealing')` every ~50ms then triggers the screenshot immediately).
+
+## Progression (XP/league/season) checks
+
+- `?as=X` maps to a **persistent** userId `dev:as-X-tab` — XP/season data in `server/data/xp.db` accumulates across runs for that name; use a fresh `?as=` name (or delete `server/data/xp.db`) for first-run states.
+- `state.progress` is `null` before a player's first finished match — the lobby XP strip renders nothing until then (by design, not a bug). Season board (`state.seasonBoard`) shows regardless.
+- Raw state sniff without UI (e.g. asserting `players[].progress` on broadcast): connect `socket.io-client` with `auth: { roomId, devName: 'x', devId: 'dev:as-x-tab', instanceId: 'dev-instance' }` and read the `state` event.
+
+## Branch-switching gotchas
+
+- `git checkout` while `npm run dev` is up: tsx watch can keep serving a **stale** server build — check `ss -tlnp | grep 3001` pid start time against the checkout; when in doubt restart `npm run dev` cleanly.
+- `Emulation.setEmulatedMedia` (e.g. `prefers-reduced-motion`) is **per-CDP-session** — it drops when the ws closes; assert and verify within the same session.
+
+## Short-lived element checks (reveal beats, flag, toast)
+
+- `.qt-report-flag` only mounts while `beats.active` (~2-3s reveal). Do the wait→click→assert in ONE page eval (poll→click→sleep→read toast) — separate `ev.mjs` calls round-trip slower than the reveal window.
+- `ev.mjs` needs an outer `setTimeout` LONGER than any inner promise poll (I use 90s), and must import `ws` via CJS default (`import wspkg from '.../ws/index.js'; const {WebSocket}=wspkg`) — Node's native WebSocket global lacks `.on()`.
+- Reveal beats sequence: `beats.voters` (avatars in `.qt-answer__tally`) → `beats.gains` (`.qt-answer__pct` + dist bar). Poll for the specific element of the beat you want, not just `.qt-answer__tally`.
+- Toast trigger for position checks: flag click → `report.sent` ("Question reported — thanks!"), `.qt-toast` ~4.5s lifetime.
+
+## Question-pack API checks
+
+- `GET/POST/PUT/DELETE /api/question-packs` takes `x-dev-id: <devId>` in mock mode (prod: Bearer session) — userId becomes `dev:<devId>`, so `x-dev-id: as-<name>-tab` matches a `?as=<name>` browser session.
+- Full pack questions (incl. `correctIndex`) come ONLY from `GET /api/question-packs/:id` as owner — strangers get 403 "Bu paketi yalnızca oluşturan kişi düzenleyebilir."; list route returns metadata only. Legacy `createdBy:'dev'` packs are owner-editable by anyone in mock mode.
+- PackEditor lives in MASA AYARLARI → SORU PAKETİ → details "Paket oluştur / düzenle" (`<details.qt-pack-upload>` — the old "Paket yükle" details sits below it). React inputs need native-setter+`input` event for programmatic fills.
+- Rate limit: ~20 pack writes/60s per user — spaced curl checks fine, bursts of save/delete loops trip 429.
+
+## CSP probe for viewer features
+
+- The app's own CSP meta (`client/index.html`: `script-src 'self'`, tight `connect-src`) blocks third-party viewer needs — for anything shipping 3D/texture/WASM (model-viewer etc.), the fast first probes are `fetch('blob:')` in page and a console `CompileError`/texture-load check. `KHR_draco_mesh_compression` GLBs cannot work under this CSP at all — decode the asset (`npx @gltf-transform/cli optimize in.glb out.glb --compress false --texture-compress false`) instead of relaxing `script-src`.
