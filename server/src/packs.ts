@@ -212,6 +212,32 @@ export function addPack(name: string, questions: Question[], createdBy: string):
   return meta;
 }
 
+/** Var olan paketi yeniden doğrulanmış sorularla günceller; meta'yı döner. */
+export function updatePack(id: string, name: string, questions: Question[]): QuestionPackMeta | null {
+  const pack = packs.get(id);
+  if (!pack) return null;
+  const next: StoredPack = {
+    ...pack,
+    name: name.slice(0, 60),
+    count: questions.length,
+    categories: [...new Set(questions.map((q) => q.category))],
+    questions,
+  };
+  packs.set(id, next);
+  persist(next);
+  const { questions: _q, ...meta } = next;
+  return meta;
+}
+
+/** Paketi bellekten ve diskten siler. Odada seçiliyse sonraki start() err.packUnknown verir. */
+export function deletePack(id: string): boolean {
+  if (!packs.delete(id)) return false;
+  try {
+    fs.unlinkSync(path.join(PACKS_DIR, `${id}.json`));
+  } catch { /* dosya zaten yoksa da silinmiş sayılır */ }
+  return true;
+}
+
 function shuffle<T>(items: T[]): T[] {
   const pool = [...items];
   for (let i = pool.length - 1; i > 0; i--) {

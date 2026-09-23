@@ -35,7 +35,7 @@ export function isAuthRequiredError(error: unknown): boolean {
  * gereği ikinci sekme birinciyi atar. İki oyuncuyu tek tarayıcıda denemek için
  * `?as=Ayse` verin: her ad kendi kalıcı kimliğini alır.
  */
-const getDevIdentity = () => {
+export const getDevIdentity = () => {
   const as = new URLSearchParams(window.location.search).get('as')?.trim().slice(0, 24)
   if (as) return { id: `as-${as.toLowerCase().replace(/[^a-z0-9]/g, '-')}-tab`, name: as }
   const key = 'qt-dev-player-id'

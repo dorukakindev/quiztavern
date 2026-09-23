@@ -25,7 +25,7 @@ import { log } from "./logger";
 import { createReportsStore } from "./reports";
 import { createDailyStore, dailyDayNumber } from "./daily";
 import { createXpStore } from "./xp";
-import { addPack, listPacks, parseCsvQuestions, parseJsonQuestions, validatePackQuestions } from "./packs";
+import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
 
 const app = express();
 app.disable("x-powered-by");
@@ -83,27 +83,102 @@ app.get(PACK_PATHS, (_req, res) => {
   res.json({ packs: listPacks() });
 });
 
-app.post(PACK_PATHS, (req, res) => {
-  if (!ALLOW_MOCK_AUTH) {
-    if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "Paket yükleme kapalı (QT_ADMIN_TOKEN tanımsız)." });
-    const auth = req.headers.authorization ?? "";
-    if (auth !== `Bearer ${QT_ADMIN_TOKEN}`) return res.status(401).json({ error: "Yetkisiz — geçerli yönetici belirteci gerekli." });
+/**
+ * Paket isteğinin kimliği. Üç kaynak denenir (öncelik sırasıyla):
+ *  1) `Bearer QT_ADMIN_TOKEN` → "admin" (operatör; her paketi yönetir)
+ *  2) `Bearer <oturum>` → verifySession'dan geçen Discord kullanıcısı
+ *  3) ALLOW_MOCK_AUTH'ta `x-dev-id` → socket yoluyla aynı `dev:<id>` kimliği;
+ *     başlıksız istekler eski davranışa düşer ("dev").
+ * Prod'da geçerli kimlik yoksa null — yazma uçları 401 döner.
+ */
+function packRequestUser(req: import("express").Request): SessionUser | null {
+  const auth = req.headers.authorization ?? "";
+  if (auth.startsWith("Bearer ")) {
+    const token = auth.slice("Bearer ".length);
+    if (QT_ADMIN_TOKEN && token === QT_ADMIN_TOKEN) {
+      return { id: "admin", name: "admin", avatarUrl: null };
+    }
+    const session = verifySession(token);
+    if (session) return session;
   }
-  const body = req.body as { name?: unknown; format?: unknown; content?: unknown } | undefined;
-  const name = typeof body?.name === "string" ? body.name.trim() : "";
-  if (!name) return res.status(400).json({ error: "name eksik." });
+  if (!ALLOW_MOCK_AUTH) return null;
+  const devId = req.headers["x-dev-id"];
+  if (typeof devId === "string" && /^[a-zA-Z0-9_-]{8,80}$/.test(devId)) {
+    return { id: `dev:${devId}`, name: "dev", avatarUrl: null };
+  }
+  return { id: "dev", name: "dev", avatarUrl: null };
+}
+
+/** Paketi düzenleme/silme hakkı: admin veya oluşturan. Mock modda "dev"
+ *  sahipli eski paketler tüm yerel kullanıcılara açıktır. */
+function canManagePack(user: SessionUser | null, pack: StoredPack): boolean {
+  if (!user) return false;
+  if (user.id === "admin" || user.id === pack.createdBy) return true;
+  return ALLOW_MOCK_AUTH && pack.createdBy === "dev" && user.id.startsWith("dev:");
+}
+
+function parsePackBody(body: unknown): { name: string; questions: ReturnType<typeof parseJsonQuestions> } | { error: string; status: number } {
+  const b = body as { name?: unknown; format?: unknown; content?: unknown } | undefined;
+  const name = typeof b?.name === "string" ? b.name.trim() : "";
+  if (!name) return { error: "name eksik.", status: 400 };
   let questions;
   try {
-    questions = body?.format === "csv"
-      ? parseCsvQuestions(String(body?.content ?? ""))
-      : parseJsonQuestions(body?.format === "text" ? JSON.parse(String(body?.content ?? "")) : body?.content);
+    questions = b?.format === "csv"
+      ? parseCsvQuestions(String(b?.content ?? ""))
+      : parseJsonQuestions(b?.format === "text" ? JSON.parse(String(b?.content ?? "")) : b?.content);
   } catch (error) {
-    return res.status(400).json({ error: `İçerik ayrıştırılamadı: ${error instanceof Error ? error.message : error}` });
+    return { error: `İçerik ayrıştırılamadı: ${error instanceof Error ? error.message : error}`, status: 400 };
   }
-  const { errors, warnings } = validatePackQuestions(questions);
+  return { name, questions };
+}
+
+app.post(PACK_PATHS, (req, res) => {
+  const user = packRequestUser(req);
+  if (!user) {
+    if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "Paket yükleme kapalı (Discord oturumu ya da QT_ADMIN_TOKEN gerekli)." });
+    return res.status(401).json({ error: "Yetkisiz — oturum ya da geçerli yönetici belirteci gerekli." });
+  }
+  const parsed = parsePackBody(req.body);
+  if ("error" in parsed) return res.status(parsed.status).json({ error: parsed.error });
+  const { errors, warnings } = validatePackQuestions(parsed.questions);
   if (errors.length) return res.status(422).json({ error: "Paket doğrulamadan geçemedi.", errors, warnings });
-  const createdBy = ALLOW_MOCK_AUTH ? "dev" : "admin";
-  res.status(201).json({ pack: addPack(name, questions, createdBy), warnings });
+  res.status(201).json({ pack: addPack(parsed.name, parsed.questions, user.id), warnings });
+});
+
+const PACK_ID_PATHS = PACK_PATHS.map((p) => `${p}/:id`);
+
+// Tam içerik (correctIndex dahil) yalnızca sahibine/admin'e açılır — aksi
+// halde paketlerin cevap anahtarı herkese sızardı (anti-hile sözleşmesi).
+app.get(PACK_ID_PATHS, (req, res) => {
+  const pack = getPack(String(req.params.id));
+  if (!pack) return res.status(404).json({ error: "Paket bulunamadı." });
+  if (!canManagePack(packRequestUser(req), pack)) {
+    return res.status(403).json({ error: "Bu paketi yalnızca oluşturan kişi düzenleyebilir." });
+  }
+  res.json({ pack });
+});
+
+app.put(PACK_ID_PATHS, (req, res) => {
+  const pack = getPack(String(req.params.id));
+  if (!pack) return res.status(404).json({ error: "Paket bulunamadı." });
+  if (!canManagePack(packRequestUser(req), pack)) {
+    return res.status(403).json({ error: "Bu paketi yalnızca oluşturan kişi düzenleyebilir." });
+  }
+  const parsed = parsePackBody(req.body);
+  if ("error" in parsed) return res.status(parsed.status).json({ error: parsed.error });
+  const { errors, warnings } = validatePackQuestions(parsed.questions);
+  if (errors.length) return res.status(422).json({ error: "Paket doğrulamadan geçemedi.", errors, warnings });
+  res.json({ pack: updatePack(pack.id, parsed.name, parsed.questions), warnings });
+});
+
+app.delete(PACK_ID_PATHS, (req, res) => {
+  const pack = getPack(String(req.params.id));
+  if (!pack) return res.status(404).json({ error: "Paket bulunamadı." });
+  if (!canManagePack(packRequestUser(req), pack)) {
+    return res.status(403).json({ error: "Bu paketi yalnızca oluşturan kişi silebilir." });
+  }
+  deletePack(pack.id);
+  res.status(204).end();
 });
 
 // İstemciden gelen yakalanmamış hataları yapılandırılmış log'a düşürür
