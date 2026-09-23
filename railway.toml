@@ -1,0 +1,14 @@
+# QuizTavern — Railway yapılandırması (https://docs.railway.com/reference/config-as-code)
+# Railway repo'yu bağlayınca Dockerfile'ı otomatik görür; bu dosya deploy
+# davranışını sabitler. Adımlar: docs/DEPLOY.md §Railway.
+
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+# CMD imajdan gelir; PORT'u Railway enjekte eder (sunucu process.env.PORT'u okur).
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
