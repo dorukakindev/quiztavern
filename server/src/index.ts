@@ -24,6 +24,7 @@ import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
 import { createDailyStore, dailyDayNumber } from "./daily";
+import { createXpStore } from "./xp";
 import { addPack, listPacks, parseCsvQuestions, parseJsonQuestions, validatePackQuestions } from "./packs";
 
 const app = express();
@@ -39,6 +40,8 @@ const httpServer = createServer(app);
 const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(process.cwd(), "data", "question-reports.db"));
 // Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
+// Kalıcı ilerleme (XP/seviye/lig/sezon/seri) tek dosyada; XP_DB_PATH ile ezilebilir.
+const xpStore = createXpStore(process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db"));
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
   // Bu yüzden origin standart Socket.IO yolunu dinlemeli; istemci Discord
@@ -222,6 +225,7 @@ function getRoom(roomId: string) {
   if (!room) {
     room = new Room(id, () => emitRoom(room!), {});
     room.setQuestionStartedHandler(scheduleBotAnswers);
+    room.setProgressStore(xpStore);
     room.onDailyFinished = (entries) => {
       for (const entry of entries) {
         try { dailyStore.record(entry); }

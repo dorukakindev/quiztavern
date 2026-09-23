@@ -38,6 +38,62 @@ export interface PublicPlayer {
   /** Takım modu: oyuncunun takımı (0 veya 1). Otomatik dengeli atanır, host
    *  değiştirebilir. Diğer modlarda anlamsızdır (yine de atanır, kullanılmaz). */
   team: number;
+  /** Kalıcı ilerleme rozeti (seviye + lig). Botlarda ve ilerleme deposu
+   *  kapalıyken yoktur; hiç maç oynamamış oyuncuda da boş kalabilir. */
+  progress?: ProgressBadge;
+}
+
+/** Kalıcı ilerleme meta'sı: lig kademeleri. XP eşikleri sunucudaki
+ *  sıralamayla aynıdır (server/src/xp.ts LEAGUE_THRESHOLDS). */
+export type LeagueKey = "acemi" | "cirak" | "kalfa" | "usta" | "efsane";
+
+/** Oyuncu kartında görünen kompakt ilerleme rozeti. */
+export interface ProgressBadge {
+  level: number;
+  league: LeagueKey;
+}
+
+/** İzleyen oyuncunun kendi ilerleme özeti — lobide XP bar'ı, podyumda
+ *  kazanım satırı ve sezon sırası bununla çizilir. */
+export interface ProgressSnapshot extends ProgressBadge {
+  xp: number;
+  /** Bu seviyede katedilen XP / seviye geçişi için gereken toplam — bar genişliği. */
+  intoLevel: number;
+  levelSize: number;
+  /** UTC ay anahtarı "YYYY-MM"; sezon her ay sıfırlanır. */
+  season: string;
+  seasonXp: number;
+  /** Bu sezondaki sıralama (1 = lider); hiç puanı yoksa null. */
+  seasonRank: number | null;
+  /** Art arda en az bir maç oynanan UTC günü sayısı. */
+  streakDays: number;
+}
+
+/** Maç bitince bir oyuncuya yazılan kazanım — podyumda "+X XP" animasyonu. */
+export interface XpGain {
+  gained: number;
+  /** Yeni toplam XP (gained dahil). */
+  xp: number;
+  level: number;
+  league: LeagueKey;
+  leveledUp: boolean;
+  leagueChanged: boolean;
+}
+
+/** Sezon lider tablosunda bir satır. */
+export interface SeasonEntry {
+  rank: number;
+  userId: string;
+  name: string;
+  /** Bu sezonda kazanılan XP. */
+  xp: number;
+  league: LeagueKey;
+}
+
+/** Güncel sezonun ilk N sırası (lobi ve podyumda gösterilir). */
+export interface SeasonBoard {
+  season: string;
+  entries: SeasonEntry[];
 }
 
 export interface QuestionPayload {
@@ -278,6 +334,12 @@ export interface GameState {
   pack: { id: string; name: string } | null;
   availableCategories: CategoryOption[];
   devMode: boolean;
+  /** İzleyenin kalıcı ilerlemesi; ilerleme deposu yoksa/null oyuncuda null. */
+  progress: ProgressSnapshot | null;
+  /** Yalnız podyumda: oyuncu id → bu maçtan kazanılan XP (animasyon için). */
+  xpGains: Record<string, XpGain> | null;
+  /** Güncel sezon lider tablosu (lobi + podyum); depo kapalıysa null. */
+  seasonBoard: SeasonBoard | null;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
   serverNow: number;
 }

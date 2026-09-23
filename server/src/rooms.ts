@@ -6,6 +6,7 @@ import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questi
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyResultEntry } from "./daily";
+import type { MatchFinishedEntry } from "./xp";
 import type {
   BetPayload,
   CirclePayload,
@@ -16,11 +17,15 @@ import type {
   GameState,
   MatchSummary,
   PodiumEntry,
+  ProgressBadge,
+  ProgressSnapshot,
   PublicPlayer,
   ReviewItem,
   QuestionCount,
   QuestionPayload,
   RevealPayload,
+  SeasonBoard,
+  XpGain,
 } from "../../shared/types";
 
 export interface RoomPlayer {
@@ -71,6 +76,16 @@ function emptyStats(): MatchStats {
 
 type Broadcast = () => void;
 type QuestionStarted = (room: Room) => void;
+
+/** Kalıcı ilerleme deposunun odaya görünen yüzü (server/src/xp.ts uygular).
+ *  Enjekte edilmezse XP/lig/sezon özellikleri tamamen kapalı kalır —
+ *  testler ve saf oyun mantığı depodan bağımsız çalışır. */
+export interface ProgressStore {
+  badge(userId: string): ProgressBadge | null;
+  snapshot(userId: string): ProgressSnapshot | null;
+  seasonBoard(limit?: number): SeasonBoard;
+  recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
+}
 
 /** Sunucunun otorite olduğu tek bir eşzamanlı maç odası. */
 export class Room {
@@ -131,6 +146,10 @@ export class Room {
   private dailyResults = new Map<string, string>();
   /** Günlük maç bittiğinde kalıcı depo index.ts tarafından yazılır (kanca). */
   onDailyFinished: ((entries: DailyResultEntry[]) => void) | null = null;
+  /** Kalıcı ilerleme deposu (XP/lig/sezon); null = özellik kapalı. */
+  private progress: ProgressStore | null = null;
+  /** Biten maçın oyuncu başına XP kazanımı — podyum yayınlarında taşınır. */
+  private xpGains = new Map<string, XpGain>();
   /** `undefined` = no finished match yet; `null` = the finished match had no correct answer. */
   private fastestFingerSnapshot: { name: string; ms: number } | null | undefined = undefined;
   private onQuestionStarted: QuestionStarted | null = null;
@@ -273,6 +292,7 @@ export class Room {
     this.fastestFingerSnapshot = undefined;
     this.dailyMatch = false;
     this.dailyResults = new Map();
+    this.xpGains = new Map();
     if (this.spectators.size === 0) this.onEmptied?.();
     else this.broadcast();
     return true;
@@ -295,6 +315,7 @@ export class Room {
     this.fastestFingerSnapshot = undefined;
     this.dailyMatch = false;
     this.dailyResults = new Map();
+    this.xpGains = new Map();
     this.onEmptied?.();
     return true;
   }
@@ -582,6 +603,7 @@ export class Room {
     this.dailyMatch = daily;
     this.dailyDay = daily ? dailyDayNumber() : 0;
     this.dailyResults = new Map();
+    this.xpGains = new Map();
     this.qIndex = 0;
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
@@ -697,6 +719,11 @@ export class Room {
     this.onQuestionStarted = handler;
   }
 
+  /** Kalıcı ilerleme deposunu bağlar; null geçilirse özellik kapanır. */
+  setProgressStore(store: ProgressStore | null) {
+    this.progress = store;
+  }
+
   stateFor(youId: string, devMode: boolean): GameState {
     const question = this.currentQuestion();
     const circlePrompt = this.currentCirclePrompt();
@@ -773,6 +800,11 @@ export class Room {
       pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
       availableCategories: CATEGORY_CATALOG,
       devMode,
+      progress: this.progress?.snapshot(youId) ?? null,
+      xpGains: this.phase === "podium" && this.progress && this.xpGains.size
+        ? Object.fromEntries(this.xpGains)
+        : null,
+      seasonBoard: this.progress?.seasonBoard(5) ?? null,
       serverNow: Date.now(),
     };
   }
@@ -1025,6 +1057,31 @@ export class Room {
         catch (error) { console.error("[daily] günlük sonuç yazılamadı:", error); }
       }
     }
+    if (this.progress) {
+      // Kalıcı ilerleme: kazananı ve sıralamayı otoriter maç sonucundan hesapla.
+      // Takım modunda galibiyet takım puanına göredir (beraberlikte galip yok).
+      const order = this.sortedPlayers();
+      const winningTeam = this.gameMode === "team" && this.teamScores[0] !== this.teamScores[1]
+        ? (this.teamScores[0] > this.teamScores[1] ? 0 : 1)
+        : -1;
+      const matchEntries = order
+        .map((player, index) => ({ player, placement: index + 1 }))
+        .filter(({ player }) => !player.isBot && player.stats.total > 0)
+        .map(({ player, placement }): MatchFinishedEntry => ({
+          userId: player.id,
+          name: player.name,
+          avatarUrl: player.avatarUrl,
+          correct: player.stats.correct,
+          total: player.stats.total,
+          bestStreak: player.stats.bestStreak,
+          placement,
+          won: this.gameMode === "team" ? player.team === winningTeam : placement === 1,
+        }));
+      if (matchEntries.length) {
+        try { this.xpGains = this.progress.recordMatch(matchEntries); }
+        catch (error) { console.error("[xp] maç sonucu yazılamadı:", error); }
+      }
+    }
     this.podiumSnapshot = this.snapshotPodium();
     this.fastestFingerSnapshot = this.fastestFinger();
     this.phase = "podium";
@@ -1113,6 +1170,7 @@ export class Room {
       waiting: player.eligibleFrom > this.qIndex,
       streak: player.stats.currentStreak,
       team: player.team,
+      ...(player.isBot ? {} : { progress: this.progress?.badge(player.id) ?? undefined }),
     };
   }
 }
