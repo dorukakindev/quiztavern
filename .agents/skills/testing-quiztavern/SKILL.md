@@ -79,6 +79,12 @@ node /tmp/cdp-eval.mjs "new Promise(res=>{const p=()=>{document.querySelector('.
 - PackEditor lives in MASA AYARLARI → SORU PAKETİ → details "Paket oluştur / düzenle" (`<details.qt-pack-upload>` — the old "Paket yükle" details sits below it). React inputs need native-setter+`input` event for programmatic fills.
 - Rate limit: ~20 pack writes/60s per user — spaced curl checks fine, bursts of save/delete loops trip 429.
 
+## Dead sockets & multi-user tabs
+
+- **Dead-socket symptom**: the page renders fine (React state intact) but every socket `emit` silently drops — a UI click that "does nothing" (no state change, no toast) may be a dead socket on the tab, not a product bug. Verify by driving the same emit over a raw socket (see sniff below) or a second tab before reporting; a page reload fixes the tab.
+- **Multi-user in one Chrome**: `PUT /json/new?<url>` creates a real tab as a CDP target (it joins the room in URL order — first joiner is host); `/json/activate/<id>` brings it to GUI focus for screenshots; drive each tab's DOM via `ev.mjs '<expr>' 'as=<name>'` (urlSub filter). Two tabs + `?room=` + `?as=` gives host-vs-joiner perspective tests without a second browser.
+- **Adversarial emits without UI**: `/tmp/sniff.mjs <roomId> <devId> <devName> <secs> '{"ev":..,"payload":..}'` — connects a raw `socket.io-client` (auto-seats in lobby), emits after ~2s, prints every `state` player title/progress + `toast` payloads. Use it to prove server-side validation (e.g. unearned title → `{key:"err.title"}`, bogus key → silent null) independent of the client.
+
 ## CSP probe for viewer features
 
 - The app's own CSP meta (`client/index.html`: `script-src 'self'`, tight `connect-src`) blocks third-party viewer needs — for anything shipping 3D/texture/WASM (model-viewer etc.), the fast first probes are `fetch('blob:')` in page and a console `CompileError`/texture-load check. `KHR_draco_mesh_compression` GLBs cannot work under this CSP at all — decode the asset (`npx @gltf-transform/cli optimize in.glb out.glb --compress false --texture-compress false`) instead of relaxing `script-src`.
