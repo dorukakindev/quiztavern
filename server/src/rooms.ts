@@ -103,6 +103,7 @@ export interface ProgressStore {
   badge(userId: string): ProgressBadge | null;
   snapshot(userId: string): ProgressSnapshot | null;
   seasonBoard(limit?: number): SeasonBoard;
+  weeklyBoard(limit?: number): SeasonBoard;
   recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
   /** Maç dışı küçük XP grantı — izleyici kazanan tahmini. Sayaçlara yazmaz. */
   bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
@@ -1185,6 +1186,7 @@ export class Room {
         ? Object.fromEntries(this.xpGains)
         : null,
       seasonBoard: this.progress?.seasonBoard(5) ?? null,
+      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
       dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
       serverNow: Date.now(),
     };
