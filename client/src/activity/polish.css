@@ -277,3 +277,7 @@
 .qt-reveal-fact { color: #f3d9a4; font-size: 13px; line-height: 1.45; text-align: center; max-width: 640px; margin-left: auto; margin-right: auto; }
 .qt-reveal-fact svg { color: #ffd166; flex: none; }
 .qt-reveal-fact b { color: #ffd166; font-weight: 700; }
+
+/* Reveal'de bahis rozeti: oyuncu kartında yatırılan miktar, jeton ikonuyla. */
+.qt-player-bet { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; color: #f3c362; background: rgba(240,189,88,.12); border: 1px solid rgba(240,189,88,.35); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.qt-player-bet svg { width: 11px; height: 11px; }

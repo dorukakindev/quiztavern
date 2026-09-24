@@ -183,6 +183,8 @@ export interface RevealPayload {
   durationMs: number;
   /** Çifte Bahis: bu soruda kurtarma turunda olanlar (bakiye 0, doğru = sabit ödül). */
   rescued?: string[];
+  /** Çifte Bahis: oyuncu id → bu turda kilitlediği bahis (reveal'de gösterilir). */
+  bets?: Record<string, number>;
   /** Opsiyonel: doğru cevapla ilgili kısa trivia notu — reveal'da gösterilir. */
   fact?: string;
   /** İngilizce arayüz için fact çevirisi. */
