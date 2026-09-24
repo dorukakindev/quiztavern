@@ -18,6 +18,7 @@ import type {
   GameMode,
   GameState,
   LastMatch,
+  MatchMoment,
   MatchSummary,
   PodiumEntry,
   ProgressBadge,
@@ -86,11 +87,13 @@ interface MatchStats {
   bestStreak: number;
   /** Doğru cevapların en hızlısı (ms, soru başlangıcına göre). Cevap yoksa null. */
   fastestMs: number | null;
+  /** Tek turda en yüksek kazanç — anlar kartı "en büyük bahis" (§6.3). */
+  maxGain: number;
   perCategory: Map<string, { correct: number; total: number }>;
 }
 
 function emptyStats(): MatchStats {
-  return { correct: 0, total: 0, currentStreak: 0, bestStreak: 0, fastestMs: null, perCategory: new Map() };
+  return { correct: 0, total: 0, currentStreak: 0, bestStreak: 0, fastestMs: null, maxGain: 0, perCategory: new Map() };
 }
 
 type Broadcast = () => void;
@@ -210,10 +213,11 @@ export class Room {
   private xpGains = new Map<string, XpGain>();
   /** `undefined` = no finished match yet; `null` = the finished match had no correct answer. */
   private fastestFingerSnapshot: { name: string; ms: number } | null | undefined = undefined;
+  private momentsSnapshot: import("../../shared/types").MatchMoment[] | null = null;
   /** Son biten maçın dondurulmuş sonucu. Podyumdan lobiye dönülse de sonuç
    *  ekranına hâlâ bakan oyuncular (inResults) onu görmeye devam eder. */
   private matchSeq = 0;
-  private lastMatchMeta: { id: number; gameMode: GameMode; roundTotal: number; teamScores: [number, number]; podium: PodiumEntry[]; xpGains: Record<string, XpGain> | null; dailyDay: number | null } | null = null;
+  private lastMatchMeta: { id: number; gameMode: GameMode; roundTotal: number; teamScores: [number, number]; podium: PodiumEntry[]; moments: MatchMoment[] | null; xpGains: Record<string, XpGain> | null; dailyDay: number | null } | null = null;
   /** Lobi günlük lider tablosu — index.ts'den depo erişimiyle bağlanır. */
   private dailyBoardProvider: ((userId: string) => DailyBoard | null) | null = null;
   setDailyBoardProvider(fn: (userId: string) => DailyBoard | null) { this.dailyBoardProvider = fn; }
@@ -387,6 +391,7 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
+    this.momentsSnapshot = null;
     this.dailyMatch = false;
     this.dailyResults = new Map();
     this.xpGains = new Map();
@@ -412,6 +417,7 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
+    this.momentsSnapshot = null;
     this.dailyMatch = false;
     this.dailyResults = new Map();
     this.xpGains = new Map();
@@ -870,6 +876,7 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
+    this.momentsSnapshot = null;
     // Soru sayısı masa ayarıdır; Çember'de aynı alan tur sayısı olarak okunur.
     this.roundLimit = this.questionCount;
     const compatibleCategories = this.categorySelection.filter((name) => {
@@ -1117,6 +1124,7 @@ export class Room {
     const matchSummary: MatchSummary | null = this.phase === "podium"
       ? this.frozenSummaries.get(youId) ?? (self ? this.summaryFor(self) : null)
       : null;
+    const moments = this.phase === "podium" ? this.momentsSnapshot : null;
     const meta = this.lastMatchMeta;
     const lastMatch: LastMatch | null = this.phase === "lobby" && meta && this.inResults.has(youId)
       ? {
@@ -1126,6 +1134,7 @@ export class Room {
           teamScores: meta.teamScores,
           podium: meta.podium,
           matchSummary: this.frozenSummaries.get(youId) ?? null,
+          moments: meta.moments,
           xpGains: meta.xpGains,
           daily: meta.dailyDay !== null ? { day: meta.dailyDay, pattern: this.frozenDaily.get(youId) ?? null } : null,
         }
@@ -1157,6 +1166,7 @@ export class Room {
       word,
       podium,
       matchSummary,
+      moments,
       lastMatch,
       lastMatchId: this.phase === "podium" && meta ? meta.id : null,
       daily: this.dailyMatch ? { day: this.dailyDay, pattern: this.dailyResults.get(youId) ?? null } : null,
@@ -1405,6 +1415,27 @@ export class Room {
     return best;
   }
 
+  /** §6.3 anlar kartı: maçın unutulmaz anları (masa geneli, podyumda gösterilir). */
+  private matchMoments(): MatchMoment[] {
+    const humans = [...this.players.values()].filter((player) => !player.isBot && player.stats.total > 0);
+    const moments: MatchMoment[] = [];
+    const flawless = humans.find((player) => player.stats.total >= 5 && player.stats.correct === player.stats.total);
+    if (flawless) moments.push({ key: "flawless", playerId: flawless.id, name: flawless.name, value: flawless.stats.total });
+    let bigBet: RoomPlayer | null = null;
+    for (const player of humans) if (!bigBet || player.stats.maxGain > bigBet.stats.maxGain) bigBet = player;
+    if (bigBet && bigBet.stats.maxGain > 0) moments.push({ key: "bigBet", playerId: bigBet.id, name: bigBet.name, value: bigBet.stats.maxGain });
+    let streak: RoomPlayer | null = null;
+    for (const player of humans) if (!streak || player.stats.bestStreak > streak.stats.bestStreak) streak = player;
+    if (streak && streak.stats.bestStreak >= 3) moments.push({ key: "streak", playerId: streak.id, name: streak.name, value: streak.stats.bestStreak });
+    let fastest: RoomPlayer | null = null;
+    for (const player of humans) {
+      if (player.stats.fastestMs === null) continue;
+      if (!fastest || player.stats.fastestMs < fastest.stats.fastestMs!) fastest = player;
+    }
+    if (fastest) moments.push({ key: "fastest", playerId: fastest.id, name: fastest.name, value: fastest.stats.fastestMs! });
+    return moments;
+  }
+
   private reveal() {
     if (this.phase !== "question") return;
     this.clearBotTimers();
@@ -1448,6 +1479,7 @@ export class Room {
         if (this.gameMode === "elim" && !correct) player.lives = Math.max(0, player.lives - 1);
       }
       gains[player.id] = gain;
+      if (gain > player.stats.maxGain) player.stats.maxGain = gain;
       // Maç özeti (4d): en hızlı yalnızca gerçekten cevaplanan doğrularda sayılır
       // (deadline'a düşen cevapsız tur "hız" değil).
       // Tavern kartı Kalkan: yanlış cevap seriyi bozmaz (istatistikte yanlış
@@ -1637,6 +1669,7 @@ export class Room {
     }
     this.podiumSnapshot = this.snapshotPodium();
     this.fastestFingerSnapshot = this.fastestFinger();
+    this.momentsSnapshot = this.matchMoments();
     // İzleyici tahmini: podyum birincisini bilenlere XP (sayaçlara yazmaz).
     if (this.progress && this.predictions.size) {
       const winnerId = this.podiumSnapshot?.[0]?.id;
@@ -1657,6 +1690,7 @@ export class Room {
       roundTotal: this.gameMode === "circle" ? this.circlePrompts.length : this.roundLimit,
       teamScores: [this.teamScores[0], this.teamScores[1]],
       podium: this.podiumSnapshot,
+      moments: this.momentsSnapshot,
       xpGains: this.progress && this.xpGains.size ? Object.fromEntries(this.xpGains) : null,
       dailyDay: this.dailyMatch ? this.dailyDay : null,
     };

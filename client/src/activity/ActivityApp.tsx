@@ -1674,7 +1674,12 @@ function Podium({ state, onAgain, onRematch, onBackToLobby, onLeave, speakingIds
     </div>}
     {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onRematch={onRematch} onBackToLobby={onBackToLobby} />
       : active === 'review' && summary ? <MatchReview review={summary.review} />
-      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onRematch={onRematch} onBackToLobby={onBackToLobby} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
+      : <>
+        {state.moments?.length ? <div className="qt-moments" aria-label={t('moment.title')}>
+          {state.moments.map((m) => <span key={`${m.key}:${m.playerId}`} className={`qt-moment is-${m.key}`}><Icon name={m.key === 'fastest' ? 'flame' : m.key === 'streak' ? 'bolt' : m.key === 'bigBet' ? 'coins' : 'medal'} />{t(`moment.${m.key}`, { name: m.name, n: m.value })}</span>)}
+        </div> : null}
+        <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onRematch={onRematch} onBackToLobby={onBackToLobby} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />
+      </>}
   </main>
 }
 
