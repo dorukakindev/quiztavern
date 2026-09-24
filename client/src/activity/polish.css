@@ -297,6 +297,20 @@
 .qt-player-bet { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 800; color: #f3c362; background: rgba(240,189,88,.12); border: 1px solid rgba(240,189,88,.35); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
 .qt-player-bet svg { width: 11px; height: 11px; }
 
+
+/* Kategori kartı "az içerik" rozeti — mod için önerilen minimumun altındaki havuz. */
+.qt-category-card__low {
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f0c76a;
+  border: 1px solid rgba(240, 199, 106, 0.45);
+  border-radius: 999px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  white-space: nowrap;
+}
 /* Tavern kartları (joker) — soru fazında, cevaptan önce; tur başına bir. */
 .qt-card-bar {
   position: relative;
