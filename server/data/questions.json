@@ -57,8 +57,7 @@
       "James Cameron",
       "Christopher Nolan",
       "Peter Jackson"
-    ],
-    "image": "visualq-cinema-titanic.webp"
+    ]
   },
   {
     "id": "cinema-pulpfiction",
@@ -78,8 +77,7 @@
       "David Fincher",
       "Coen Brothers",
       "Guy Ritchie"
-    ],
-    "image": "visualq-cinema-pulpfiction.webp"
+    ]
   },
   {
     "id": "cinema-toystory",
@@ -99,8 +97,7 @@
       "Pixar",
       "Disney",
       "Illumination"
-    ],
-    "image": "visualq-cinema-toystory.webp"
+    ]
   },
   {
     "id": "cinema-starwars",
@@ -180,8 +177,7 @@
       "Osmium",
       "Oxygen",
       "Nitrogen"
-    ],
-    "image": "visualq-science-oxygen.webp"
+    ]
   },
   {
     "id": "science-sound",
@@ -221,8 +217,7 @@
       "Liver",
       "Skin",
       "Lung"
-    ],
-    "image": "visualq-science-skin.webp"
+    ]
   },
   {
     "id": "history-istanbul",
@@ -302,8 +297,7 @@
       "Osman Gazi",
       "Mehmed the Conqueror",
       "Ertuğrul Gazi"
-    ],
-    "image": "visualq-history-osman.webp"
+    ]
   },
   {
     "id": "history-frenchrev",
@@ -343,8 +337,7 @@
       "Thessaloniki",
       "Ankara",
       "Izmir"
-    ],
-    "image": "visualq-history-ataturk.webp"
+    ]
   },
   {
     "id": "music-vivaldi",
@@ -364,8 +357,7 @@
       "Mozart",
       "Bach",
       "Beethoven"
-    ],
-    "image": "visualq-music-vivaldi.webp"
+    ]
   },
   {
     "id": "music-piano",
@@ -405,8 +397,7 @@
       "Michael Jackson",
       "Freddie Mercury",
       "Prince"
-    ],
-    "image": "visualq-music-mj.webp"
+    ]
   },
   {
     "id": "music-notes",
@@ -446,8 +437,7 @@
       "Beethoven",
       "Mozart",
       "Wagner"
-    ],
-    "image": "visualq-music-beethoven.webp"
+    ]
   },
   {
     "id": "geography-pacific",
@@ -487,8 +477,7 @@
       "Everest",
       "Mount Ararat",
       "Mont Blanc"
-    ],
-    "image": "visualq-geography-everest.webp"
+    ]
   },
   {
     "id": "geography-van",
@@ -508,8 +497,7 @@
       "Lake Van",
       "Lake Beyşehir",
       "Lake Eğirdir"
-    ],
-    "image": "visualq-geography-van.webp"
+    ]
   },
   {
     "id": "geography-sahara",
@@ -529,8 +517,7 @@
       "Africa",
       "Australia",
       "South America"
-    ],
-    "image": "visualq-geography-sahara.webp"
+    ]
   },
   {
     "id": "geography-kizilirmak",
@@ -570,8 +557,7 @@
       "Paris",
       "Marseille",
       "Nice"
-    ],
-    "image": "visualq-geography-capital-fr.webp"
+    ]
   },
   {
     "id": "math-triangle",
@@ -771,8 +757,7 @@
       "Ampere",
       "Watt",
       "Ohm"
-    ],
-    "image": "visualq-physics-current.webp"
+    ]
   },
   {
     "id": "physics-energy",
@@ -792,8 +777,7 @@
       "Joule",
       "Pascal",
       "Kelvin"
-    ],
-    "image": "visualq-physics-energy.webp"
+    ]
   },
   {
     "id": "physics-temp",
@@ -913,8 +897,7 @@
       "Kidney",
       "Spleen",
       "Pancreas"
-    ],
-    "image": "visualq-biology-kidney.webp"
+    ]
   },
   {
     "id": "biology-chloroplast",
@@ -934,8 +917,7 @@
       "Ribosome",
       "Chloroplast",
       "Nucleus"
-    ],
-    "image": "visualq-biology-chloroplast.webp"
+    ]
   },
   {
     "id": "technology-http",
@@ -995,8 +977,7 @@
       "Web Wide World",
       "Wireless Web",
       "World Web Wide"
-    ],
-    "image": "visualq-technology-www.webp"
+    ]
   },
   {
     "id": "technology-byte",
@@ -1076,8 +1057,7 @@
       "Ankara",
       "Izmir",
       "Bursa"
-    ],
-    "image": "visualq-general-ankara.webp"
+    ]
   },
   {
     "id": "general-planets",
@@ -1137,8 +1117,7 @@
       "Orange",
       "Purple",
       "Brown"
-    ],
-    "image": "visualq-general-purple.webp"
+    ]
   },
   {
     "id": "general-currency",
@@ -1198,8 +1177,7 @@
       "Bruce Lee",
       "Jet Li",
       "Chuck Norris"
-    ],
-    "image": "visualq-cinema-enterdragon.webp"
+    ]
   },
   {
     "id": "cinema-humantorch",
@@ -1359,8 +1337,7 @@
       "Mike Dirnt",
       "Tré Cool",
       "Tom DeLonge"
-    ],
-    "image": "visualq-music-greenday.webp"
+    ]
   },
   {
     "id": "music-mustaine",
@@ -1400,8 +1377,7 @@
       "General Processing Utility",
       "Graphic Program Unit",
       "Global Processor Unit"
-    ],
-    "image": "visualq-technology-gpu.webp"
+    ]
   },
   {
     "id": "technology-mp3",
@@ -1441,8 +1417,7 @@
       "Harrison-Peterson",
       "Hamilton-Price",
       "Henderson-Powell"
-    ],
-    "image": "visualq-technology-hp.webp"
+    ]
   },
   {
     "id": "technology-int32",
@@ -1682,8 +1657,7 @@
       "Pulmonary artery",
       "Carotid artery",
       "Femoral artery"
-    ],
-    "image": "visualq-biology-pulmonaryartery.webp"
+    ]
   },
   {
     "id": "biology-elbow",
@@ -1703,8 +1677,7 @@
       "Elbow",
       "Shoulder",
       "Wrist"
-    ],
-    "image": "visualq-biology-elbow.webp"
+    ]
   },
   {
     "id": "biology-chromosomes",
@@ -1924,8 +1897,7 @@
       "René Descartes",
       "Immanuel Kant",
       "Socrates"
-    ],
-    "image": "visualq-general-descartes.webp"
+    ]
   },
   {
     "id": "general-apollo11",
@@ -2085,8 +2057,7 @@
       "Joseph Stalin",
       "Leon Trotsky",
       "Nicholas II"
-    ],
-    "image": "visualq-history-lenin.webp"
+    ]
   },
   {
     "id": "history-ww2start",
@@ -2106,8 +2077,7 @@
       "Poland",
       "Belgium",
       "Denmark"
-    ],
-    "image": "visualq-history-ww2start.webp"
+    ]
   },
   {
     "id": "science-laser",
@@ -2127,8 +2097,7 @@
       "Long Array Sensor Emission Ray",
       "Linear Amplified Signal Energy Radiation",
       "Light Array System for Energy Release"
-    ],
-    "image": "visualq-science-laser.webp"
+    ]
   },
   {
     "id": "science-nasa",
@@ -2228,8 +2197,7 @@
       "CO2",
       "NO3",
       "CH4"
-    ],
-    "image": "visualq-science-ammonia.webp"
+    ]
   },
   {
     "id": "science-helium",
@@ -3469,8 +3437,7 @@
       "Eagle",
       "Flamingo",
       "Birdie"
-    ],
-    "image": "visualq-sport-bowlingturkey.webp"
+    ]
   },
   {
     "id": "sport-button2009",
@@ -3610,8 +3577,7 @@
       "Pablo Picasso",
       "Henri Matisse",
       "Leonardo da Vinci"
-    ],
-    "image": "visualq-art-guernica.webp"
+    ]
   },
   {
     "id": "art-vangoghnat",
@@ -3651,8 +3617,7 @@
       "Sunflowers",
       "Wheatfield with Crows",
       "Self-Portrait"
-    ],
-    "image": "visualq-art-starrynight.webp"
+    ]
   },
   {
     "id": "art-persistmemory",
@@ -3692,8 +3657,7 @@
       "Jörmungandr",
       "Sleipnir",
       "Garm"
-    ],
-    "image": "visualq-myth-fenrir.webp"
+    ]
   },
   {
     "id": "myth-kappa",
@@ -3713,8 +3677,7 @@
       "Fish",
       "Rice",
       "Plum"
-    ],
-    "image": "visualq-myth-kappa.webp"
+    ]
   },
   {
     "id": "myth-apollo",
@@ -3734,8 +3697,7 @@
       "Apollo",
       "Athena",
       "Demeter"
-    ],
-    "image": "visualq-myth-apollo.webp"
+    ]
   },
   {
     "id": "myth-vulcan",
@@ -3775,8 +3737,7 @@
       "Monkey",
       "Wild dog",
       "Crocodile"
-    ],
-    "image": "visualq-myth-anansi.webp"
+    ]
   },
   {
     "id": "myth-centaur",
@@ -3856,8 +3817,7 @@
       "Stephen King",
       "R. L. Stine",
       "George Orwell"
-    ],
-    "image": "visualq-lit-fahrenheit451.webp"
+    ]
   },
   {
     "id": "lit-ofmiceandmen",
@@ -3877,8 +3837,7 @@
       "John Steinbeck",
       "Harper Lee",
       "George Orwell"
-    ],
-    "image": "visualq-lit-ofmiceandmen.webp"
+    ]
   },
   {
     "id": "lit-matchgirl",
@@ -3898,8 +3857,7 @@
       "Hans Christian Andersen",
       "Lewis Carroll",
       "Oscar Wilde"
-    ],
-    "image": "visualq-lit-matchgirl.webp"
+    ]
   },
   {
     "id": "lit-nautilus",
@@ -3919,8 +3877,7 @@
       "Neptune",
       "Poseidon",
       "Atlantis"
-    ],
-    "image": "visualq-lit-nautilus.webp"
+    ]
   },
   {
     "id": "lit-mobydick",
@@ -4180,8 +4137,7 @@
       "New York Mets",
       "Baltimore Orioles",
       "Milwaukee Brewers"
-    ],
-    "image": "visualq-tv-cheers.webp"
+    ]
   },
   {
     "id": "tv-startrekblood",
@@ -4201,8 +4157,7 @@
       "Red",
       "Green",
       "Purple"
-    ],
-    "image": "visualq-tv-startrekblood.webp"
+    ]
   },
   {
     "id": "tv-breakingbad",
@@ -4662,8 +4617,7 @@
       "Belgium",
       "France",
       "England"
-    ],
-    "image": "visualq-sport-worldcup2018.webp"
+    ]
   },
   {
     "id": "sport-manutd1999",
@@ -4723,8 +4677,7 @@
       "Benetton",
       "Jordan",
       "Mercedes"
-    ],
-    "image": "visualq-sport-schumacherdebut.webp"
+    ]
   },
   {
     "id": "sport-nationsleague",
@@ -5104,8 +5057,7 @@
       "KCl",
       "CaCO3",
       "NaOH"
-    ],
-    "image": "visualq-chem-salt.webp"
+    ]
   },
   {
     "id": "chem-mendeleev",
@@ -5125,8 +5077,7 @@
       "Dmitri Mendeleev",
       "Marie Curie",
       "Niels Bohr"
-    ],
-    "image": "visualq-chem-mendeleev.webp"
+    ]
   },
   {
     "id": "chem-ph7",
@@ -5186,8 +5137,7 @@
       "Carbon dioxide",
       "Nitrogen",
       "Argon"
-    ],
-    "image": "visualq-chem-nitrogen.webp"
+    ]
   },
   {
     "id": "phil-descartesquote",
@@ -5347,8 +5297,7 @@
       "Yogurt",
       "Flour",
       "Oil"
-    ],
-    "image": "visualq-food-cheese.webp"
+    ]
   },
   {
     "id": "food-sushi",
@@ -5408,8 +5357,7 @@
       "Milan",
       "Naples",
       "Venice"
-    ],
-    "image": "visualq-food-pizzanaples.webp"
+    ]
   },
   {
     "id": "food-cacao",
@@ -5449,8 +5397,7 @@
       "Saffron",
       "Black pepper",
       "Cinnamon"
-    ],
-    "image": "visualq-food-saffron.webp"
+    ]
   },
   {
     "id": "food-vinegar",
@@ -5470,8 +5417,7 @@
       "Acetic acid",
       "Lactic acid",
       "Ascorbic acid"
-    ],
-    "image": "visualq-food-vinegar.webp"
+    ]
   },
   {
     "id": "animal-falcon",
@@ -5491,8 +5437,7 @@
       "Peregrine falcon",
       "Golden eagle",
       "Horsefly"
-    ],
-    "image": "visualq-animal-falcon.webp"
+    ]
   },
   {
     "id": "animal-dalmatian",
@@ -5532,8 +5477,7 @@
       "King Cobra",
       "Inland Taipan",
       "Yellow-bellied Sea Snake"
-    ],
-    "image": "visualq-animal-kingcobra.webp"
+    ]
   },
   {
     "id": "animal-madcow",
@@ -5613,8 +5557,7 @@
       "Pink",
       "Black",
       "Gray"
-    ],
-    "image": "visualq-animal-polarbear.webp"
+    ]
   },
   {
     "id": "animal-bonobo",
@@ -5654,8 +5597,7 @@
       "Bulldog",
       "Boxer",
       "Chihuahua"
-    ],
-    "image": "visualq-animal-pug.webp"
+    ]
   },
   {
     "id": "anime-narutokonoha",
@@ -5775,8 +5717,7 @@
       "Super Nintendo",
       "Sega Genesis",
       "PlayStation"
-    ],
-    "image": "visualq-anime-pokemongameboy.webp"
+    ]
   },
   {
     "id": "anime-sailormoonyear",
@@ -5836,8 +5777,7 @@
       "Water",
       "Earth",
       "Air"
-    ],
-    "image": "visualq-cartoon-avataraang.webp"
+    ]
   },
   {
     "id": "cartoon-spongebobpineapple",
@@ -5877,8 +5817,7 @@
       "Scar",
       "Zazu",
       "Timon"
-    ],
-    "image": "visualq-cartoon-lionkingscar.webp"
+    ]
   },
   {
     "id": "cartoon-scoobydoo",
@@ -5918,8 +5857,7 @@
       "Snail",
       "Crab",
       "Fish"
-    ],
-    "image": "visualq-cartoon-spongebobgary.webp"
+    ]
   },
   {
     "id": "cartoon-anthropomorphic",
@@ -6019,8 +5957,7 @@
       "Elon Musk",
       "Bill Gates",
       "Mark Zuckerberg"
-    ],
-    "image": "visualq-auto-teslamusk.webp"
+    ]
   },
   {
     "id": "auto-toyotajapan",
@@ -6140,8 +6077,7 @@
       "Inflation",
       "Devaluation",
       "Recession"
-    ],
-    "image": "visualq-econ-inflation.webp"
+    ]
   },
   {
     "id": "econ-supply",
@@ -6181,8 +6117,7 @@
       "Gross Domestic Product (GDP)",
       "Interest rate",
       "External debt"
-    ],
-    "image": "visualq-econ-gdp.webp"
+    ]
   },
   {
     "id": "econ-fed",
@@ -6262,8 +6197,7 @@
       "China",
       "England",
       "Netherlands"
-    ],
-    "image": "visualq-econ-paperchina.webp"
+    ]
   },
   {
     "id": "health-handwash",
@@ -6283,8 +6217,7 @@
       "Infectious diseases",
       "Chronic diseases",
       "Hereditary diseases"
-    ],
-    "image": "visualq-health-handwash.webp"
+    ]
   },
   {
     "id": "health-water",
@@ -6324,8 +6257,7 @@
       "Fever",
       "Anemia",
       "Migraine"
-    ],
-    "image": "visualq-health-fever.webp"
+    ]
   },
   {
     "id": "health-vaccine",
@@ -6445,8 +6377,7 @@
       "Music",
       "Literature",
       "Fashion"
-    ],
-    "image": "visualq-pop-grammy.webp"
+    ]
   },
   {
     "id": "pop-facebook",
@@ -6566,8 +6497,7 @@
       "Charles Darwin",
       "Stephen Hawking",
       "Carl Sagan"
-    ],
-    "image": "visualq-pop-memedawkins.webp"
+    ]
   },
   {
     "id": "internet-google",
@@ -6747,8 +6677,7 @@
       "Izmir",
       "Istanbul",
       "Bursa"
-    ],
-    "image": "visualq-turkey-plate34.webp"
+    ]
   },
   {
     "id": "turkey-flagcolor",
@@ -6768,8 +6697,7 @@
       "Red",
       "Blue",
       "Green"
-    ],
-    "image": "visualq-turkey-flagcolor.webp"
+    ]
   },
   {
     "id": "turkey-firstpresident",
@@ -6789,8 +6717,7 @@
       "Mustafa Kemal Atatürk",
       "Celal Bayar",
       "Fevzi Çakmak"
-    ],
-    "image": "visualq-turkey-firstpresident.webp"
+    ]
   },
   {
     "id": "turkey-nazarboncugu",
@@ -6810,8 +6737,7 @@
       "Green",
       "Blue",
       "Yellow"
-    ],
-    "image": "visualq-turkey-nazarboncugu.webp"
+    ]
   },
   {
     "id": "turkey-bosphorusbridge",
@@ -6931,8 +6857,7 @@
       "Energy cutlass",
       "Plasma blade",
       "Photon sword"
-    ],
-    "image": "visualq-scifi-lightsaber.webp"
+    ]
   },
   {
     "id": "scifi-matrixneo",
@@ -6952,8 +6877,7 @@
       "Brad Pitt",
       "Tom Cruise",
       "Will Smith"
-    ],
-    "image": "visualq-scifi-matrixneo.webp"
+    ]
   },
   {
     "id": "scifi-jurassicdna",
@@ -6993,8 +6917,7 @@
       "Martians",
       "Zombies",
       "Artificial intelligences"
-    ],
-    "image": "visualq-scifi-warofworlds.webp"
+    ]
   },
   {
     "id": "scifi-hal9000",
@@ -7074,8 +6997,7 @@
       "Sulaco",
       "Prometheus",
       "Discovery"
-    ],
-    "image": "visualq-scifi-aliennostromo.webp"
+    ]
   },
   {
     "id": "fashion-nike",
@@ -7115,8 +7037,7 @@
       "Italy",
       "Spain",
       "England"
-    ],
-    "image": "visualq-fashion-italianbrands.webp"
+    ]
   },
   {
     "id": "fashion-levis",
@@ -7136,8 +7057,7 @@
       "Wrangler",
       "Lee",
       "Diesel"
-    ],
-    "image": "visualq-fashion-levis.webp"
+    ]
   },
   {
     "id": "fashion-chanel",
@@ -7157,8 +7077,7 @@
       "Christian Dior",
       "Yves Saint Laurent",
       "Karl Lagerfeld"
-    ],
-    "image": "visualq-fashion-chanel.webp"
+    ]
   },
   {
     "id": "fashion-cashmere",
@@ -7238,8 +7157,7 @@
       "Raphael",
       "Michelangelo",
       "Botticelli"
-    ],
-    "image": "visualq-art-monalisa.webp"
+    ]
   },
   {
     "id": "art-florence",
@@ -7259,8 +7177,7 @@
       "Venice",
       "Florence",
       "Milan"
-    ],
-    "image": "visualq-art-florence.webp"
+    ]
   },
   {
     "id": "art-sistine",
@@ -9060,8 +8977,7 @@
       "Carpenter",
       "Firefighter",
       "Doctor"
-    ],
-    "image": "visualq-vgame-mariojob.webp"
+    ]
   },
   {
     "id": "vgame-zeldalink",
@@ -9101,8 +9017,7 @@
       "Microsoft",
       "Nintendo",
       "Sega"
-    ],
-    "image": "visualq-vgame-playstationsony.webp"
+    ]
   },
   {
     "id": "vgame-tetrisrussia",
@@ -9142,8 +9057,7 @@
       "Valve",
       "Epic Games",
       "Ubisoft"
-    ],
-    "image": "visualq-vgame-minecraftmojang.webp"
+    ]
   },
   {
     "id": "tv-rossjob",
@@ -9203,8 +9117,7 @@
       "Matt Groening",
       "Trey Parker",
       "Mike Judge"
-    ],
-    "image": "visualq-tv-simpsonscreator.webp"
+    ]
   },
   {
     "id": "tv-simpsonscity",
@@ -9304,8 +9217,7 @@
       "Melting point",
       "Freezing point",
       "Evaporation point"
-    ],
-    "image": "visualq-chem-melting.webp"
+    ]
   },
   {
     "id": "chem-acidic",
@@ -9665,8 +9577,7 @@
       "Speed",
       "Engine power",
       "Weight"
-    ],
-    "image": "visualq-auto-kmh.webp"
+    ]
   },
   {
     "id": "auto-fuelgauge",
@@ -9706,8 +9617,7 @@
       "Germany",
       "Italy",
       "Sweden"
-    ],
-    "image": "visualq-auto-bmwgermany.webp"
+    ]
   },
   {
     "id": "auto-evbattery",
@@ -9947,8 +9857,7 @@
       "YouTube",
       "Dailymotion",
       "Twitch"
-    ],
-    "image": "visualq-pop-youtubebiggest.webp"
+    ]
   },
   {
     "id": "pop-hashtag",
@@ -10068,8 +9977,7 @@
       "Silkworm",
       "Bee",
       "Butterfly"
-    ],
-    "image": "visualq-fashion-silkworm.webp"
+    ]
   },
   {
     "id": "fashion-pretaporter",
@@ -10309,8 +10217,7 @@
       "Red blood cell",
       "Platelet",
       "Plasma cell"
-    ],
-    "image": "visualq-health-redcells.webp"
+    ]
   },
   {
     "id": "health-osteoporosis",
@@ -10690,8 +10597,7 @@
       "Nintendo",
       "Sega",
       "Microsoft"
-    ],
-    "image": "visualq-vgame-switchnintendo.webp"
+    ]
   },
   {
     "id": "vgame-fortnitebr",
@@ -10871,8 +10777,7 @@
       "Tokyo",
       "Kyoto",
       "Yokohama"
-    ],
-    "image": "visualq-anime-tokyocenter.webp"
+    ]
   },
   {
     "id": "anime-fmaequivalent",
@@ -10952,8 +10857,7 @@
       "Akira Toriyama",
       "Eiichiro Oda",
       "Hayao Miyazaki"
-    ],
-    "image": "visualq-anime-tezukastyle.webp"
+    ]
   },
   {
     "id": "scifi-avatarpandora",
@@ -11633,8 +11537,7 @@
       "Barcelona",
       "Manchester City",
       "Juventus"
-    ],
-    "image": "visualq-football-messibarcelona.webp"
+    ]
   },
   {
     "id": "football-hattrick",
@@ -11774,8 +11677,7 @@
       "Riot Games",
       "Blizzard",
       "Epic Games"
-    ],
-    "image": "visualq-esports-riotlol.webp"
+    ]
   },
   {
     "id": "esports-riotvalorant",
@@ -11875,8 +11777,7 @@
       "Checkmate",
       "Castling",
       "Draw"
-    ],
-    "image": "visualq-chess-checkmate.webp"
+    ]
   },
   {
     "id": "chess-castling",
@@ -11936,8 +11837,7 @@
       "Soviet Union (USSR)",
       "Ukraine",
       "Armenia"
-    ],
-    "image": "visualq-chess-kasparov.webp"
+    ]
   },
   {
     "id": "dino-trex",
@@ -11957,8 +11857,7 @@
       "Tyrannosaurus Rex",
       "Stegosaurus",
       "Velociraptor"
-    ],
-    "image": "visualq-dino-trex.webp"
+    ]
   },
   {
     "id": "dino-brachiosaurus",
@@ -11978,8 +11877,7 @@
       "Ankylosaurus",
       "Pterodactyl",
       "Compsognathus"
-    ],
-    "image": "visualq-dino-brachiosaurus.webp"
+    ]
   },
   {
     "id": "dino-paleontology",
@@ -12199,8 +12097,7 @@
       "Chuck Berry",
       "Little Richard",
       "Buddy Holly"
-    ],
-    "image": "visualq-celeb-elviskral.webp"
+    ]
   },
   {
     "id": "celeb-jobsapple",
@@ -12220,8 +12117,7 @@
       "Steve Jobs",
       "Larry Page",
       "Jeff Bezos"
-    ],
-    "image": "visualq-celeb-jobsapple.webp"
+    ]
   },
   {
     "id": "celeb-einsteinrelativity",
@@ -12241,8 +12137,7 @@
       "Albert Einstein",
       "Niels Bohr",
       "Stephen Hawking"
-    ],
-    "image": "visualq-celeb-einsteinrelativity.webp"
+    ]
   },
   {
     "id": "celeb-gandhi",
@@ -12262,8 +12157,7 @@
       "Mahatma Gandhi",
       "Subhas Chandra Bose",
       "Muhammad Ali Jinnah"
-    ],
-    "image": "visualq-celeb-gandhi.webp"
+    ]
   },
   {
     "id": "celeb-napoleongeneral",
@@ -12323,8 +12217,7 @@
       "Jeff Bezos",
       "Bill Gates",
       "Mark Zuckerberg"
-    ],
-    "image": "visualq-brand-amazonbezos.webp"
+    ]
   },
   {
     "id": "brand-mcdonalds",
@@ -12364,8 +12257,7 @@
       "Pepsi",
       "Sprite",
       "7Up"
-    ],
-    "image": "visualq-brand-pepsi.webp"
+    ]
   },
   {
     "id": "brand-applelogo",
@@ -12385,8 +12277,7 @@
       "Apple",
       "Peach",
       "Cherry"
-    ],
-    "image": "visualq-brand-applelogo.webp"
+    ]
   },
   {
     "id": "brand-starbucksusa",
@@ -12606,8 +12497,7 @@
       "Mary Shelley",
       "Edgar Allan Poe",
       "H.P. Lovecraft"
-    ],
-    "image": "visualq-horror-draculastoker.webp"
+    ]
   },
   {
     "id": "horror-frankensteinshelley",
@@ -12627,8 +12517,7 @@
       "Bram Stoker",
       "Jane Austen",
       "Emily Brontë"
-    ],
-    "image": "visualq-horror-frankensteinshelley.webp"
+    ]
   },
   {
     "id": "horror-halloweenceltic",
@@ -12668,8 +12557,7 @@
       "H.P. Lovecraft",
       "Nathaniel Hawthorne",
       "Washington Irving"
-    ],
-    "image": "visualq-horror-poeraven.webp"
+    ]
   },
   {
     "id": "horror-batesmotel",
@@ -12749,8 +12637,7 @@
       "Yellow",
       "Blue",
       "Green"
-    ],
-    "image": "visualq-detective-crimescenetape.webp"
+    ]
   },
   {
     "id": "detective-fingerprint",
@@ -12850,8 +12737,7 @@
       "Ancient Rome",
       "Ancient Egypt",
       "Phoenicia"
-    ],
-    "image": "visualq-lang-latinalphabet.webp"
+    ]
   },
   {
     "id": "lang-englishsecond",
@@ -12931,8 +12817,7 @@
       "Turkic languages",
       "Semitic languages",
       "Slavic languages"
-    ],
-    "image": "visualq-lang-turkicfamily.webp"
+    ]
   },
   {
     "id": "arch-eiffeltower",
@@ -12952,8 +12837,7 @@
       "Eiffel Tower",
       "Leaning Tower of Pisa",
       "London Eye"
-    ],
-    "image": "visualq-arch-eiffeltower.webp"
+    ]
   },
   {
     "id": "arch-tajmahal",
@@ -12973,8 +12857,7 @@
       "Taj Mahal",
       "Golden Temple",
       "Amber Fort"
-    ],
-    "image": "visualq-arch-tajmahal.webp"
+    ]
   },
   {
     "id": "arch-burjkhalifa",
@@ -13014,8 +12897,7 @@
       "Pyramids of Giza",
       "Colossus of Rhodes",
       "Temple of Artemis"
-    ],
-    "image": "visualq-arch-gizapyramid.webp"
+    ]
   },
   {
     "id": "arch-gothicarch",
@@ -13195,8 +13077,7 @@
       "Alexander Graham Bell",
       "Nikola Tesla",
       "Guglielmo Marconi"
-    ],
-    "image": "visualq-invent-bellphone.webp"
+    ]
   },
   {
     "id": "invent-edisonbulb",
@@ -13216,8 +13097,7 @@
       "Alexander Graham Bell",
       "James Watt",
       "Michael Faraday"
-    ],
-    "image": "visualq-invent-edisonbulb.webp"
+    ]
   },
   {
     "id": "invent-wrightbrothers",
@@ -13257,8 +13137,7 @@
       "Leonardo da Vinci",
       "Isaac Newton",
       "Galileo Galilei"
-    ],
-    "image": "visualq-invent-gutenbergprinting.webp"
+    ]
   },
   {
     "id": "invent-flemingpenicillin",
@@ -13278,8 +13157,7 @@
       "Alexander Fleming",
       "Robert Koch",
       "Edward Jenner"
-    ],
-    "image": "visualq-invent-flemingpenicillin.webp"
+    ]
   },
   {
     "id": "invent-nobeldynamite",
@@ -13539,8 +13417,7 @@
       "Hydrology",
       "Limnology",
       "Geomorphology"
-    ],
-    "image": "visualq-ocean-oceanography.webp"
+    ]
   },
   {
     "id": "deyim-burnubuyumek",
@@ -13780,8 +13657,7 @@
       "Slavic languages",
       "Romance languages",
       "Semitic languages"
-    ],
-    "image": "visualq-dil-cyrillicslavic.webp"
+    ]
   },
   {
     "id": "dil-basqueisolate",
@@ -13881,8 +13757,7 @@
       "Stegosaurus",
       "Iguanodon",
       "Parasaurolophus"
-    ],
-    "image": "visualq-dino-triceratops.webp"
+    ]
   },
   {
     "id": "dino-stegosaurus",
@@ -13902,8 +13777,7 @@
       "Triceratops",
       "Diplodocus",
       "Iguanodon"
-    ],
-    "image": "visualq-dino-stegosaurus.webp"
+    ]
   },
   {
     "id": "dino-ankylosaurus",
@@ -14043,8 +13917,7 @@
       "Riot Games",
       "Blizzard Entertainment",
       "Epic Games"
-    ],
-    "image": "visualq-espor-dota2dev.webp"
+    ]
   },
   {
     "id": "espor-twitchfound",
@@ -14124,8 +13997,7 @@
       "China",
       "United States",
       "Germany"
-    ],
-    "image": "visualq-espor-skt1origin.webp"
+    ]
   },
   {
     "id": "espor-tibattlepass",
@@ -14285,8 +14157,7 @@
       "1990 World Cup",
       "1982 World Cup",
       "1994 World Cup"
-    ],
-    "image": "visualq-futbol2-handofgod.webp"
+    ]
   },
   {
     "id": "futbol2-pelethreetitles",
@@ -14446,8 +14317,7 @@
       "Wes Craven",
       "Sean S. Cunningham",
       "Tobe Hooper"
-    ],
-    "image": "visualq-korku-halloweencarpenter.webp"
+    ]
   },
   {
     "id": "korku-rosemarysbaby",
@@ -14687,8 +14557,7 @@
       "Notre Dame",
       "Hagia Sophia",
       "Colosseum"
-    ],
-    "image": "visualq-mimari-sagradafamilia.webp"
+    ]
   },
   {
     "id": "mimari-sydneyopera",
@@ -14908,8 +14777,7 @@
       "Whale shark",
       "Manta ray",
       "Grouper"
-    ],
-    "image": "visualq-okyanus-whaleshark.webp"
+    ]
   },
   {
     "id": "okyanus-plankton",
@@ -14929,8 +14797,7 @@
       "Coral polyps",
       "Starfish",
       "Weedy seadragon"
-    ],
-    "image": "visualq-okyanus-plankton.webp"
+    ]
   },
   {
     "id": "okyanus-midatlanticridge",
@@ -14950,8 +14817,7 @@
       "Mid-Atlantic Ridge",
       "Andes",
       "Ural Mountains"
-    ],
-    "image": "visualq-okyanus-midatlanticridge.webp"
+    ]
   },
   {
     "id": "okyanus-sargasso",
@@ -15011,8 +14877,7 @@
       "Agatha Christie",
       "Edgar Allan Poe",
       "Raymond Chandler"
-    ],
-    "image": "visualq-polisiye-conandoyle.webp"
+    ]
   },
   {
     "id": "polisiye-orientexpress",
@@ -15072,8 +14937,7 @@
       "10 Downing Street",
       "4 Privet Drive",
       "12 Grimmauld Place"
-    ],
-    "image": "visualq-polisiye-bakerstreet.webp"
+    ]
   },
   {
     "id": "polisiye-marlowe",
@@ -15333,8 +15197,7 @@
       "Black",
       "Red",
       "Green"
-    ],
-    "image": "visualq-satranc-firstmove.webp"
+    ]
   },
   {
     "id": "satranc-pawncount",
@@ -15594,8 +15457,7 @@
       "Stormbreaker",
       "Gungnir",
       "Excalibur"
-    ],
-    "image": "visualq-shero-mjolnir.webp"
+    ]
   },
   {
     "id": "shero-batmancreators",
@@ -16195,8 +16057,7 @@
       "Deciduous",
       "Parasitic",
       "Aquatic"
-    ],
-    "image": "visualq-doga-ayni-yaprakli.webp"
+    ]
   },
   {
     "id": "doga-amfibi",
@@ -16216,8 +16077,7 @@
       "Mammals",
       "Birds",
       "Fish"
-    ],
-    "image": "visualq-doga-amfibi.webp"
+    ]
   },
   {
     "id": "doga-mantar-ayristirici",
@@ -16297,8 +16157,7 @@
       "Sedimentation",
       "Germination",
       "Condensation"
-    ],
-    "image": "visualq-doga-erozyon.webp"
+    ]
   },
   {
     "id": "doga-heyelan",
@@ -16358,8 +16217,7 @@
       "Tundra",
       "Steppe",
       "Savanna"
-    ],
-    "image": "visualq-doga-mangrov.webp"
+    ]
   },
   {
     "id": "doga-tundra",
@@ -16959,8 +16817,7 @@
       "Mercury",
       "Mars",
       "Jupiter"
-    ],
-    "image": "visualq-uzay-venus-hot.webp"
+    ]
   },
   {
     "id": "uzay-earth-third",
@@ -17020,8 +16877,7 @@
       "Jupiter",
       "Uranus",
       "Neptune"
-    ],
-    "image": "visualq-uzay-saturn-rings.webp"
+    ]
   },
   {
     "id": "uzay-uranus-tilt",
@@ -17041,8 +16897,7 @@
       "Mars",
       "Venus",
       "Mercury"
-    ],
-    "image": "visualq-uzay-uranus-tilt.webp"
+    ]
   },
   {
     "id": "uzay-neptune-winds",
@@ -17062,8 +16917,7 @@
       "Mars",
       "Jupiter",
       "Saturn"
-    ],
-    "image": "visualq-uzay-neptune-winds.webp"
+    ]
   },
   {
     "id": "uzay-pluto-dwarf",
@@ -17743,8 +17597,7 @@
       "Baltimore",
       "Chicago",
       "Detroit"
-    ],
-    "image": "visualq-dizi-tv-the-wire-baltimore.webp"
+    ]
   },
   {
     "id": "dizi-tv-black-mirror-brooker",
@@ -23524,8 +23377,7 @@
       "Krypton",
       "Oa",
       "Apokolips"
-    ],
-    "image": "visualq-shero4-kryptonplanet.webp"
+    ]
   },
   {
     "id": "shero4-thorasgard",
@@ -23605,8 +23457,7 @@
       "Bob Kane",
       "Jerry Siegel",
       "Bill Finger"
-    ],
-    "image": "visualq-shero4-wonderwomancreator.webp"
+    ]
   },
   {
     "id": "shero4-greengoblin",
@@ -23906,8 +23757,7 @@
       "Johan Cruyff",
       "Franz Beckenbauer",
       "Michel Platini"
-    ],
-    "image": "visualq-futbol4-panenka.webp"
+    ]
   },
   {
     "id": "futbol4-fafounding",

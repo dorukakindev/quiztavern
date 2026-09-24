@@ -105,6 +105,9 @@ export const GAME = {
   // (−bahis), yani skor aşağı da inebilir.
   BET_MS: 9_000,
   BET_STARTING_BANKROLL: 1000,
+  // Bakiyesi 0'a düşen oyuncu elenmiş gibi kalmasın: bahis yapamaz ama o
+  // soruyu doğru bilirse bu kadar kazanır (kurtarma turu).
+  BET_BROKE_REWARD: 50,
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,

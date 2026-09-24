@@ -329,7 +329,8 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
   const summary = selection.length ? selection.map((name) => categoryLabel(language, name)).join(', ') : t('category.mixed')
   // Türkçe-duyarlı, aksan/harf toleranslı arama (İ/ı dahil).
   const q = query.trim().toLocaleLowerCase('tr-TR')
-  const filtered = q ? categories.filter((category) => category.name.toLocaleLowerCase('tr-TR').includes(q)) : categories
+  // Hem Türkçe anahtar hem ekrandaki (EN) adla ara — EN arayüzde "geo" bulunmuyordu.
+  const filtered = q ? categories.filter((category) => category.name.toLocaleLowerCase('tr-TR').includes(q) || categoryLabel(language, category.name).toLocaleLowerCase(language === 'en' ? 'en-US' : 'tr-TR').includes(q)) : categories
   // Seçili kategoriler arama boşken en başta görünsün (sekmeden bakınca anlaşılır).
   const ordered = q ? filtered : [...filtered].sort((a, b) => Number(selection.includes(b.name)) - Number(selection.includes(a.name)))
   return <div className="qt-category-picker">
@@ -649,7 +650,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
     // Taç zaten "masa sahibi" der; ayrıca rozet yazmak hem tekrar hem yer israfı.
     // Rozet kalkınca hazır durumu SADECE işaretle taşınır — bu yüzden işaret
     // artık masa sahibinde de gösterilir, yoksa onun durumu görünmez olurdu.
-    const badge = isHost ? null : player.ready ? t('table.readyBadge') : t('table.preparingBadge')
+    const badge = player.inResults ? t('table.resultsBadge') : isHost ? null : player.ready ? t('table.readyBadge') : t('table.preparingBadge')
     // Host araçları (4a): sahip, KENDİSİ olmayan bir koltuğa tık/sağ-tık ile
     // menü açar. Yetki sunucuda; burası yalnızca menüyü konumlandırır.
     const manageable = viewerIsHost && player.id !== state?.youId
@@ -934,7 +935,15 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
   const isSpectator = !!state?.youAreSpectator
   const tableFull = (state?.players.length ?? 0) >= 8
   const teamsReady = !!state && bothTeamsPresent(mode, state.players)
-  const canStart = !!state && state.hostId === state.youId && state.players.filter((player) => player.connected).length >= state.minPlayers && state.players.filter((player) => player.connected).every((player) => player.ready) && teamsReady
+  // Sunucuyla aynı kural (rooms.ts start): host'un kendisi ve hâlâ sonuç
+  // ekranına bakanlar "hazır" beklemez.
+  const mustBeReady = (state?.players ?? []).filter((player) => player.connected && player.id !== state?.hostId && !player.inResults)
+  const everyoneReady = mustBeReady.every((player) => player.ready)
+  const enoughPlayers = !!state && state.players.filter((player) => player.connected).length >= state.minPlayers
+  const canStart = !!state && state.hostId === state.youId && enoughPlayers && everyoneReady && teamsReady
+  // Günlük her zaman Klasik oynanır: takım dengesi şartı ona uygulanmaz.
+  const canStartDaily = !!state && state.hostId === state.youId && enoughPlayers && everyoneReady
+  const inResultsCount = (state?.players ?? []).filter((player) => player.inResults).length
   // canStart false->true'ya döndüğü AN'da Başlat butonunda küçük bir patlama:
   // altın nabzın (is-launch-ready) yanına ek bir noktalama.
   const wasCanStart = useRef(canStart)
@@ -979,7 +988,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
   }
   // Soru sayısını modun doğal değerine döndürme işi SUNUCUDA (setGameMode):
   // tek olay, atomik değişim — istemciden çifte emit yarışı yok.
-  const readyCount = state?.players.filter((player) => player.ready).length ?? 0
+  const readyCount = mustBeReady.filter((player) => player.ready).length
   // Özel soru paketleri (FAZ 4.4): liste HTTP'den; seçim masa ayarı olarak
   // state.pack üzerinden yayınlanır. Yükleme sonrası liste tazelenir.
   const [packs, setPacks] = useState<QuestionPackMeta[]>([])
@@ -1108,12 +1117,13 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           ? <div className="qt-you-cta"><button className="qt-button qt-button--primary" disabled={tableFull} onClick={onTakeSeat}><Icon name="people" /> {tableFull ? t('spectator.full') : t('spectator.play')}</button></div>
           : <>
             <div className="qt-you-cta">
-            <button className={`qt-button ${self?.ready ? 'is-ready' : 'qt-button--primary'}`} disabled={!self} onClick={() => onReady(!self?.ready)}>{self?.ready ? <><Icon name="check" /> {t('lobby.readyState')}</> : t('lobby.readyButton')}</button>
+            {!isHost && <button className={`qt-button ${self?.ready ? 'is-ready' : 'qt-button--primary'}`} disabled={!self} onClick={() => onReady(!self?.ready)}>{self?.ready ? <><Icon name="check" /> {t('lobby.readyState')}</> : t('lobby.readyButton')}</button>}
             {/* Başlat: "Hazırım"ın altında. Sahip değilsen gösterilmez. */}
             {isHost && <>
               <button className={`qt-button qt-button--gold qt-start-table ${canStart ? 'is-launch-ready' : ''}`} disabled={!canStart} onClick={() => onStart(mode)}>{t('table.start')}{canStart && <Burst triggerKey={startBurst} />}</button>
-              <button className="qt-button qt-daily-start" disabled={!canStart} title={t('daily.meta')} onClick={onStartDaily}><Icon name="calendar" /> {t('daily.start')}</button>
-              {!canStart && <small className="qt-orbit__ready"><i aria-hidden="true" />{mode === 'team' && !teamsReady ? t('team.needBoth') : t('table.readyCount', { ready: readyCount, total: state?.players.length ?? 0 })}</small>}
+              <button className="qt-button qt-daily-start" disabled={!canStartDaily} title={t('daily.meta')} onClick={onStartDaily}><Icon name="calendar" /> {t('daily.start')}</button>
+              {!canStart && <small className="qt-orbit__ready"><i aria-hidden="true" />{mode === 'team' && !teamsReady ? t('team.needBoth') : t('table.readyCount', { ready: readyCount, total: mustBeReady.length })}</small>}
+              {inResultsCount > 0 && <small className="qt-orbit__ready is-results"><i aria-hidden="true" />{t('lobby.inResults', { count: inResultsCount })}</small>}
             </>}
             </div>
             {/* Oyuncu koltuğu bırakıp izleyebilir; izleyici sayısı da burada. */}
@@ -1293,12 +1303,12 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
     </div>
     <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className={`qt-question-stage ${youMissed ? 'qt-stage-shake' : ''}`}>
       {isCircle && shownCircle ? <>
-        <div className="qt-question-head qt-question-head--circle"><span className="qt-category">{categoryLabel(language, shownCircle.category)}</span><span className="qt-circle-letter" aria-hidden="true" key={shownCircle.deadline}>{shownCircle.letter}</span><p>{shownCircle.clue}</p></div>
+        <div className="qt-question-head qt-question-head--circle"><span className="qt-category">{categoryLabel(language, shownCircle.category)}</span><span className="qt-circle-letter" aria-hidden="true" key={shownCircle.deadline}>{language === 'en' && shownCircle.letterEn ? shownCircle.letterEn : shownCircle.letter}</span><p>{language === 'en' && shownCircle.clueEn ? shownCircle.clueEn : shownCircle.clue}</p></div>
         <div className="qt-circle-entry">
           <input ref={circleInputRef} value={beats.active ? (state.yourCircleAnswer ?? '') : (state.yourCircleAnswer ?? circleAnswer)} disabled={circleLocked} maxLength={48} onChange={(event) => setCircleAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && circleAnswer.trim() && !circleLocked) { event.preventDefault(); sfx.play('lock'); onCircleAnswer(circleAnswer) } }} placeholder={beats.active ? t('review.noAnswer') : t('circle.placeholder')} aria-label={t('circle.placeholder')} className={circleVerdict === 'right' ? 'is-correct' : circleVerdict === 'wrong' ? 'is-wrong' : state.yourCircleAnswer !== null ? 'is-locked' : ''} />
           <button className={`qt-button ${circleLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!circleAnswer.trim() || circleLocked} onClick={() => { sfx.play('lock'); onCircleAnswer(circleAnswer) }}>{circleLocked && state.yourCircleAnswer !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
         </div>
-        <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
+        <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.circleReveal?.answerEn ? state.circleReveal.answerEn : state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
         <div className="qt-question-head" key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span>{shown.image && <img className="qt-question-image" src={`/questions/${shown.image}`} alt="" />}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div>
         <div className="qt-answers">
@@ -1406,6 +1416,12 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
       <div className="qt-bet-bank"><Icon name="coins" weight="duotone" /><b>{formatNumber(language, bankroll)}</b><span>{t('bet.bankroll')}</span></div>
       {youAreSpectator ? <p className="qt-locked-note"><Icon name="eye" /> {t('spectator.watching')}</p>
         : waiting ? <p className="qt-locked-note">{t('bet.waitingNextMatch')}</p>
+        // Bakiye 0: bahis yok, sunucu bahsi 0'a kilitledi. Doğru cevap sabit ödül.
+        : state.bet?.broke ? <div className="qt-bet-rescue" role="status">
+            <b>{t('bet.broke.title')}</b>
+            <span>{t('bet.broke.body', { points: formatNumber(language, state.bet.brokeReward) })}</span>
+            <small><Icon name="lock" /> {t('bet.broke.locked')}</small>
+          </div>
         : <>
           <div className="qt-bet-options" role="group" aria-label={t('bet.heading')}>
             {options.map((option, index) => <button key={option.key} type="button" className={`qt-bet-option ${locked && state.yourBet === option.amount ? 'is-selected' : ''}`} disabled={!canBet} onClick={() => { sfx.play('lock'); onBet(option.amount) }}>
@@ -1426,7 +1442,9 @@ function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
   const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const rescued = state.gameMode === 'bet' && !!state.reveal?.rescued?.includes(state.youId)
   if (!beats.gains) return <div className="qt-your-gain" aria-hidden="true" />
+  if (rescued && gain <= 0) return <div className="qt-your-gain is-zero"><b>{t('reveal.noGain')}</b><small>{t('reveal.betRescueMiss')}</small></div>
   // Çifte Bahis'te yanlış cevap bahsi YAKAR: sıfır değil, eksi göster (kayıp).
   if (state.gameMode === 'bet' && gain < 0) return <div className="qt-your-gain is-loss" aria-live="polite" aria-atomic="true">
     <span className="qt-sr-only">{t('reveal.betLost', { points: -gain })}</span>
@@ -1437,7 +1455,7 @@ function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   return <div className="qt-your-gain" aria-live="polite" aria-atomic="true">
     <span className="qt-sr-only">{t('reveal.gainPoints', { points: gain })}</span>
     <b className="qt-score-flight" aria-hidden="true">+{formatNumber(language, countUpValue(gain, beats.elapsedMs - BEAT_GAINS_MS, reduced))}</b>
-    <small>{state.gameMode === 'bet' ? t('reveal.betWon') : t('reveal.speedIncluded')}</small>
+    <small>{rescued ? t('reveal.betRescued') : state.gameMode === 'bet' ? t('reveal.betWon') : t('reveal.speedIncluded')}</small>
   </div>
 }
 
@@ -1466,7 +1484,7 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
   </div>
 }
 
-function Podium({ state, onAgain, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
+function Podium({ state, onAgain, onBackToLobby, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain?: () => void; onBackToLobby: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const winner = state.podium?.[0]
   const rest = state.podium?.slice(1) ?? []
@@ -1487,9 +1505,9 @@ function Podium({ state, onAgain, onLeave, speakingIds, isDiscord, onShare }: { 
       <button role="tab" aria-selected={active === 'summary'} className={active === 'summary' ? 'is-active' : ''} onClick={() => setTab('summary')}>{t('podium.tabSummary')}</button>
       {hasReview && <button role="tab" aria-selected={active === 'review'} className={active === 'review' ? 'is-active' : ''} onClick={() => setTab('review')}>{t('review.tab')}</button>}
     </div>}
-    {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onLeave={onLeave} />
+    {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onBackToLobby={onBackToLobby} />
       : active === 'review' && summary ? <MatchReview review={summary.review} />
-      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onLeave={onLeave} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
+      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onBackToLobby={onBackToLobby} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
   </main>
 }
 
@@ -1573,7 +1591,7 @@ function Confetti() {
   </div>
 }
 
-function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
+function PodiumRanking({ state, winner, rest, onAgain, onBackToLobby, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain?: () => void; onBackToLobby: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const reduced = usePrefersReducedMotion()
   const winnerScore = useCountUp(winner?.score ?? 0, reduced)
@@ -1623,13 +1641,14 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
         </div>)}</div>
         {/* Altın: token kuralı "altın = eylem & zafer (CTA, taç, kazanan)".
             Turkuazdı; maket 3a da altın gösteriyor. */}
-        {isHost
+        {/* onAgain yoksa oda zaten lobiye dönmüş: yeni maç lobiden başlar. */}
+        {onAgain && (isHost
           ? <button className="qt-button qt-button--gold qt-podium-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
-          : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>}
+          : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>)}
         {/* Kanala paylaş: SDK shareLink sonuç kartı (metin + aktivite linki);
             Discord dışında (yerel test) SDK yok — buton gizlenir. */}
         {isDiscord && onShare && winner && <button className="qt-button qt-podium-share" onClick={() => onShare(t('share.message', { name: winner.name, score: formatNumber(language, winner.score), mode: t(MODE_KEYS[modeKeyOf(state.gameMode)].name) }))}><Icon name="globe" /> {t('podium.share')}</button>}
-        <button className="qt-button qt-btn-home qt-podium-home" onClick={onLeave}><Icon name="exit" /> {t('podium.home')}</button>
+        <button className="qt-button qt-btn-home qt-podium-home" onClick={onBackToLobby}><Icon name="arrowBack" /> {t('podium.home')}</button>
       </section>
     </div>
 }
@@ -1656,7 +1675,7 @@ function DailyShare({ day, pattern }: { day: number; pattern: string }) {
   </div>
 }
 
-function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameState; summary: MatchSummary; onAgain: () => void; onLeave: () => void }) {
+function MatchSummaryCard({ state, summary, onAgain, onBackToLobby }: { state: GameState; summary: MatchSummary; onAgain?: () => void; onBackToLobby: () => void }) {
   const { t, language } = useI18n()
   const winner = state.podium?.[0]
   const isHost = state.youId === state.hostId
@@ -1699,10 +1718,10 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
       </div>)}
     </div>}
     {state.daily?.pattern && <DailyShare day={state.daily.day} pattern={state.daily.pattern} />}
-    {isHost
+    {onAgain && (isHost
       ? <button className="qt-button qt-button--gold qt-summary-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
-      : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>}
-    <button className="qt-button qt-btn-home qt-summary-home" onClick={onLeave}><Icon name="exit" /> {t('podium.home')}</button>
+      : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>)}
+    <button className="qt-button qt-btn-home qt-summary-home" onClick={onBackToLobby}><Icon name="arrowBack" /> {t('podium.home')}</button>
   </div>
 }
 
@@ -1770,7 +1789,7 @@ function PipCard({ state }: { state: GameState | null }) {
     body = <div className="qt-pip__row">
       <b className={`qt-pip__big ${seconds <= 3 ? 'is-urgent' : ''}`}>{seconds}</b>
       <span className={`qt-pip__lock ${locked ? 'is-locked' : 'is-open'}`}>
-        {locked ? <><Icon name="check" /> {t('pip.locked')}</> : t('bet.pipPlace')}
+        {state.bet?.broke ? t('bet.broke.locked') : locked ? <><Icon name="check" /> {t('pip.locked')}</> : t('bet.pipPlace')}
       </span>
     </div>
   } else if (beats.active) {
@@ -1780,7 +1799,7 @@ function PipCard({ state }: { state: GameState | null }) {
     body = <div className="qt-pip__stack">
       <em className={gain > 0 ? 'is-right' : 'is-wrong'}>{gain > 0 ? t('pip.correct') : t('pip.result')}</em>
       <b className="qt-pip__big is-letter">{letter}</b>
-      <span>{gain > 0 ? t('pip.gained', { score: gain }) : t('pip.noPoints')}</span>
+      <span>{gain > 0 ? t('pip.gained', { score: gain }) : gain < 0 ? `−${gain * -1}` : t('pip.noPoints')}</span>
     </div>
   } else {
     tag = t('pip.round', { index: state.round.index + 1, total: state.round.total })
@@ -1932,6 +1951,8 @@ export function ActivityApp() {
   const game = useRealtimeGame(roomId, activity.identity, activity.retry)
   const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false)
   const [hasLeftGame, setHasLeftGame] = useState(false)
+  // "Sonucu gördüm" işareti: bu maç kimliği için sonuç ekranı bir daha açılmaz.
+  const [seenMatchId, setSeenMatchId] = useState<number | null>(null)
   // Açılış perdesi: her oturumda EN AZ 1.5sn — bağlantı ne kadar hızlı olursa
   // olsun marka anı atlanmaz. booted true olunca fade başlar, fade bitince
   // (500ms sonra, CSS transition süresiyle eşleşir) tamamen unmount olur.
@@ -2003,21 +2024,27 @@ export function ActivityApp() {
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
         : <GameSkeleton />
     }
+    // Oda lobiye dönmüş olabilir ama bu oyuncu sonuç ekranından henüz çıkmadı:
+    // son maçı lastMatch'ten çizmeye devam et (başkası "Lobiye dön" dedi diye
+    // kimsenin ekranı zorla değişmez).
+    const lm = game.state!.lastMatch
+    if (game.state!.phase === 'lobby' && lm && lm.id !== seenMatchId) {
+      const resultsState: GameState = { ...game.state!, phase: 'podium', gameMode: lm.gameMode, teamScores: lm.teamScores, podium: lm.podium, matchSummary: lm.matchSummary, xpGains: lm.xpGains, daily: lm.daily, round: { index: Math.max(0, lm.roundTotal - 1), total: lm.roundTotal } }
+      return <Podium state={resultsState} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onBackToLobby={() => { setSeenMatchId(lm.id); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
+    }
     if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetTitle={game.setTitle} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
     if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} speakingIds={activity.speakingIds} />
-    // Podyumda maç bitti: ayrılmak yıkıcı değil, onay diyaloğu sürtünme. Doğrudan
-    // ayrıl (confirmLeave ile aynı iş): tek insan bensem sunucu odayı kapatır,
-    // reconnect taze lobi verir ("ana menü"); başkası varsa bekleme ekranı.
-    return <Podium state={game.state!} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onAgain={() => game.start(game.state!.gameMode)} onLeave={() => {
-      const alone = !game.state!.players.some((player) => player.id !== game.state!.youId && !player.isBot)
-      game.leaveGame(alone)
-      if (!alone) setHasLeftGame(true)
-    }} />
-  }, [activity.error, activity.identity, activity.layoutMode, activity.status, game, hasLeftGame, i18n, isLoading, language])
+    // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
+    // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
+    // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.
+    // Gerçek ayrılma sağ üstteki onaylı "Masadan ayrıl"da.
+    const matchId = game.state!.lastMatchId
+    return <Podium state={game.state!} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onAgain={() => game.start(game.state!.gameMode)} onBackToLobby={() => { if (matchId !== null) setSeenMatchId(matchId); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
+  }, [activity.error, activity.identity, activity.layoutMode, activity.status, game, hasLeftGame, i18n, isLoading, language, seenMatchId])
   /**
    * Discord Activity'de instance = masa; gidilecek ayrı bir "ana sayfa" yok.
    * O yüzden ayrılmanın anlamı masadaki başka insana bağlı:
@@ -2028,7 +2055,8 @@ export function ActivityApp() {
    *    Bu durumda bekleme ekranı doğru cevap.
    * Kararı istemci verebilir: durum paketinde zaten kim insan, kim bot yazıyor.
    */
-  const aloneAtTable = !game.state?.players.some((player) => player.id !== game.state!.youId && !player.isBot)
+  // Bağlantısı kopmuş (grace'te bekleyen) insan "masada başkası var" sayılmaz.
+  const aloneAtTable = !game.state?.players.some((player) => player.id !== game.state!.youId && !player.isBot && player.connected)
   const confirmLeave = () => {
     game.leaveGame(aloneAtTable)
     setLeaveConfirmOpen(false)

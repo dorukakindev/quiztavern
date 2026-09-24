@@ -582,6 +582,7 @@ io.on("connection", (socket) => {
     socket.leave(room.id);
     socket.disconnect(true);
   });
+  socket.on(EV.RETURN_TO_LOBBY, () => room.returnToLobby(user.id));
   socket.on(EV.PLAY_AGAIN, () => {
     if (room.phase !== "podium") return;
     try {

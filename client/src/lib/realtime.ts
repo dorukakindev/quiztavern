@@ -216,6 +216,8 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
       if (thenRejoin) socket.once('disconnect', () => { window.setTimeout(() => socket.connect(), 60) });
       socket.emit(EV.LEAVE_GAME);
     },
+    /** Podyumdan lobiye dön: odada kalır, sahiplik değişmez (sunucu: Room.returnToLobby). */
+    returnToLobby: () => socket.emit(EV.RETURN_TO_LOBBY),
     rejoinGame: () => socket.connect(),
   }
 }
