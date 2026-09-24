@@ -17,10 +17,13 @@ Triviara, Discord ses kanalında oynanan takımlı bilgi yarışmasıdır. Aktiv
 aç, masana otur, soruları kapış — takım arkadaşlarınla aynı anda cevaplayın,
 en hızlı doğrular daha çok puan alır.
 
-• Takımlı veya serbest mod, Çember kelime turu, bahisli "Hepsi içerde" anları
-• Günlük Meydan Okuma: herkes aynı 5 soru — Wordle usulü skoru kanala at
-• Kalıcı ilerleme: XP, ligler (Acemi → Efsane), rozetler, takılabilir unvanlar
-• Kendi soru paketin: JSON/CSV yükle veya uygulama içi editörle kürate et
+• 14 oyun modu: Klasik, Fitil, Çember, Çifte Bahis, Takım — üstüne Düello,
+  Zil, Yakın Tahmin, Zaman Çizelgesi, Tavern Panosu, Kelime Oyunu, D/Y Blitz,
+  Son Masa ve Bulanık Resim
+• Tavern Kartları: %50, Çifte Puan, Kalkan, Dondur jokerleriyle taktiksel oyun
+• Günlük Meydan Okuma + Haftalık Turnuva: kalıcı tablolar, Wordle usulü paylaşım
+• Kalıcı ilerleme: XP, ligler (Acemi → Efsane), rozetler, unvanlar, masa temaları
+• Kendi soru paketin + lobiden soru yazma: sorun doğrudan maça karışır
 • Mola verenin koltuğu 30 sn korunur; maç sonuçlarını kanala paylaş
 ```
 
@@ -30,10 +33,13 @@ Triviara is a team trivia game played inside a Discord voice channel. Open the
 activity, take a seat, race to answer — answer together with your teammates and
 the fastest correct answers earn the most points.
 
-• Team or free-for-all modes, a Çember letter round, "all-in" betting moments
-• Daily Challenge: everyone gets the same 5 questions — share your score Wordle-style
-• Persistent progression: XP, leagues (Novice → Legend), badges, selectable titles
-• Your own question packs: upload JSON/CSV or curate with the in-app editor
+• 14 game modes: Classic, Fuse, Circle, Double Bet, Teams — plus Duel,
+  Bell, Close Guess, Timeline, Tavern Board, Word Game, T/F Blitz,
+  Last Table and Blurry Picture
+• Tavern Cards: tactical jokers — 50/50, Double Points, Shield, Freeze
+• Daily Challenge + Weekly Tournament: persistent boards, Wordle-style sharing
+• Persistent progression: XP, leagues (Novice → Legend), badges, titles, table themes
+• Your own question packs + write a question in the lobby — it joins the match
 • Disconnecting players keep their seat for 30s; share match results to the channel
 ```
 
