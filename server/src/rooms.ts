@@ -2,7 +2,7 @@ import { GAME } from "./config";
 import { GameError } from "./errors";
 import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
-import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
+import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
 import { sampleOrderQuestions, type OrderQuestion } from "./questions-order";
 import { sampleBoardCells, type BoardCellSpec } from "./questions-board";
@@ -2016,7 +2016,9 @@ export class Room {
           : (correct ? (allIn ? Math.round(stake * (GAME.BET_ALL_IN_MULTIPLIER - 1)) : stake) : -stake);
         player.score = Math.max(0, player.score + gain);
       } else {
-        const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
+        // Zorluk bonusu tabana eklenir (hız bileşeni saf süre kalır); kalibre
+        // zorluk varsa o sayılır. Zil/pano kendi şemasıyla üstünü yazar.
+        const base = (this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS) + GAME.DIFF_BONUS[effectiveDifficulty(question)];
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre

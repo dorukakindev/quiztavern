@@ -42,7 +42,8 @@
     "test:numeric": "tsx scripts/numeric-test.ts",
     "test:blitz": "tsx scripts/blitz-test.ts",
     "test:board": "tsx scripts/board-test.ts",
-    "test:catbalance": "tsx scripts/category-balance-test.ts"
+    "test:catbalance": "tsx scripts/category-balance-test.ts",
+    "test:diffbonus": "tsx scripts/difficulty-bonus-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

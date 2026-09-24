@@ -172,6 +172,11 @@ export const GAME = {
   TEAM_VOTE_PTS: 100,
   BASE_POINTS: 700,
   SPEED_POINTS: 300,
+  /** Zorluk bonusu: tabana eklenir (hız bileşeni ayrı kalır — hız hâlâ saf
+   *  süreyle ölçülür). Karışık maçta zor soru daha çok kazandırır.
+   *  Yalnız klasik şemalı modlar: zil/pano/blitz/bahis kendi değer
+   *  şemasını kullanır, bunlara dokunmaz. */
+  DIFF_BONUS: { kolay: 0, orta: 60, zor: 120 } as const,
   // Çember: yalnız en hızlı 3 doğru puanlanır — gerisi +0 (doğru bilen 4.+ puansız kalır).
   CIRCLE_RANK_POINTS: [450, 320, 220] as const,
   // Tek kaynak: istemci de aynı sabitten sayar (bkz. shared/types.ts).
