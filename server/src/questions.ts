@@ -17,6 +17,8 @@ export interface Question {
   /** Opsiyonel: client/public/questions/<image> altındaki dosya adı. Varsa
    *  soru ekranında metnin üstünde gösterilir. Yoksa (çoğu soru) hiç render edilmez. */
   image?: string;
+  /** Opsiyonel: görselin kredi/atıf satırı; `image` varken anlamlı, istemci ⓘ ile gösterir. */
+  imageCredit?: string;
 }
 
 // Sorular başlangıçta bir kez yüklenir ve şema kontrolünden geçirilir.
@@ -51,6 +53,8 @@ function load(): Question[] {
       throw new Error(`${where}: difficulty "kolay" | "orta" | "zor" olmalı`);
     if (q.image !== undefined && (typeof q.image !== "string" || !q.image))
       throw new Error(`${where}: image verilmişse boş olmayan bir dosya adı olmalı`);
+    if (q.imageCredit !== undefined && (typeof q.imageCredit !== "string" || !q.imageCredit))
+      throw new Error(`${where}: imageCredit verilmişse boş olmayan bir metin olmalı`);
   });
   return raw as Question[];
 }

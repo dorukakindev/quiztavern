@@ -150,6 +150,7 @@ export function parseJsonQuestions(content: unknown): Question[] {
       correctIndex: Number(q.correctIndex),
       difficulty: q.difficulty as Question["difficulty"],
       ...(typeof q.image === "string" && q.image ? { image: q.image } : {}),
+      ...(typeof q.imageCredit === "string" && q.imageCredit ? { imageCredit: q.imageCredit } : {}),
     } satisfies Question;
   });
 }

@@ -179,3 +179,36 @@
 
 /* Lobi: sonuç ekranında kalanlar */
 .qt-orbit__ready.is-results i { background: #f3c362; }
+
+/* ---------- Resimli soru: yatay düzen + kredi + lightbox (G8) ----------
+   Eskiden görsel başlığın üstünde tam genişlik duruyordu; uzun sorularda
+   şıkları ekrandan itiyordu. Artık görsel solda, metin sağda; kredi ⓘ altında. */
+.qt-question-head.has-image .qt-question-body { display: flex; align-items: center; gap: clamp(12px, 2.4vw, 22px); text-align: left; }
+.qt-question-head.has-image .qt-question-body h1 { flex: 1; min-width: 0; text-align: left; }
+.qt-question-figure { flex: 0 0 auto; margin: 0; display: grid; justify-items: center; gap: 4px; }
+.qt-question-imagebtn { display: block; padding: 0; border: 0; border-radius: var(--r-md); background: none; cursor: zoom-in; transition: transform .18s ease; }
+.qt-question-imagebtn:hover { transform: scale(1.03); }
+.qt-question-imagebtn:focus-visible { outline: 2px solid var(--cat-accent, #5bd6e4); outline-offset: 3px; }
+.qt-question-head.has-image .qt-question-image { margin: 0; }
+.qt-question-credit { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; color: #9db4c4; opacity: .75; }
+.qt-question-credit .qt-icon { width: 12px; height: 12px; flex: 0 0 auto; }
+.qt-question-credit span { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Lightbox */
+.qt-lightbox { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 20px; background: rgba(2, 8, 15, .82); backdrop-filter: blur(8px); animation: qtFadeIn .18s ease; }
+.qt-lightbox-card { position: relative; margin: 0; display: grid; justify-items: center; gap: 8px; max-width: min(92vw, 760px); }
+.qt-lightbox-card img { display: block; max-width: 100%; max-height: 78vh; object-fit: contain; border-radius: var(--r-lg); border: 1px solid rgba(160, 210, 230, .22); box-shadow: 0 28px 80px rgba(0,0,0,.55); }
+.qt-lightbox-close { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(160,210,230,.35); border-radius: 50%; background: rgba(6, 18, 30, .85); color: #d7e8f2; cursor: pointer; }
+.qt-lightbox-close:hover { background: rgba(20, 52, 74, .95); }
+.qt-lightbox-close .qt-icon { width: 16px; }
+@keyframes qtFadeIn { from { opacity: 0; } }
+
+/* Dar/düşük ekranlarda görsel üstte kalıp dikey dizsin — zaten küçükler. */
+@media (max-height: 560px) {
+  .qt-question-head.has-image .qt-question-body { gap: 8px; }
+  .qt-question-head.has-image .qt-question-image { max-width: 110px; max-height: 72px; }
+}
+@media (max-width: 640px) {
+  .qt-question-head.has-image .qt-question-body { flex-direction: column; text-align: center; }
+  .qt-question-head.has-image .qt-question-body h1 { text-align: center; }
+}
