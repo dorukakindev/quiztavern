@@ -14,7 +14,7 @@
 import type { ComponentType } from 'react'
 import type { IconProps as PhosphorProps, IconWeight } from '@phosphor-icons/react'
 import {
-  ArrowRight, ArrowUUpLeft, Atom, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards,
+  ArrowClockwise, ArrowRight, ArrowUUpLeft, Atom, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards,
   CardsThree, ChartLineUp, Check, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
   Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
@@ -45,6 +45,7 @@ const UI_ICONS = {
   close: X,
   arrow: ArrowRight,
   arrowBack: ArrowUUpLeft,
+  refresh: ArrowClockwise,
   people: UsersThree,
   seat: UserPlus,
   exit: SignOut,

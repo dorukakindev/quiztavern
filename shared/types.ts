@@ -318,6 +318,7 @@ export type ToastKey =
   | "err.cardFailed"
   | "err.cardMode"
   | "err.cardPhase"
+  | "err.rematchPhase"
   | "err.cardLate"
   | "err.cardUsed"
   | "err.cardEmpty"
@@ -475,6 +476,10 @@ export interface GameState {
   youAreSpectator: boolean;
   /** Masayı izleyen (oyuncu olmayan) kişi sayısı. */
   spectatorCount: number;
+  /** Podyumda rövanş oylaması; diğer fazlarda null. Oy sayısı bağlı
+   *  (oynamayan bot hariç) oyuncuların yarısından fazlasına ulaşınca sunucu
+   *  host'u beklemeden yeni maçı başlatır. */
+  rematch: { votes: number; needed: number; youVoted: boolean } | null;
   minPlayers: number;
   /** Boş dizi, tüm kategorilerin karışık kullanılacağı anlamına gelir. */
   categorySelection: string[];
@@ -516,6 +521,8 @@ export const EV = {
   TEAM_SHUFFLE: "team-shuffle",
   /** Tavern kartı: { type: CardType, targetId? } — soru fazında, cevaptan önce, tur başına bir. */
   USE_CARD: "use-card",
+  /** Podyumda rövanş oyu: {} — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
+  REMATCH: "rematch",
   PLAY_AGAIN: "play-again",
   ADD_BOT: "add-bot",
   READY: "ready",

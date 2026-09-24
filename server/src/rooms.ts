@@ -168,6 +168,9 @@ export class Room {
   private wordRoundStartedAt = 0;
   /** Fitil: bu maçta doğru cevap çıkan tur sayısı — her biri fitili bir kademe kısaltır. */
   private lightningBurn = 0;
+  /** Podyumda rövanş isteyen oyuncular. Eşik: bağlı insan oyuncuların
+   *  yarısından fazlası; aşılınca host'u beklemeden yeni maç başlar. */
+  private rematchVotes = new Set<string>();
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
@@ -305,6 +308,7 @@ export class Room {
     player.socketId = null;
     player.disconnectedAt = Date.now();
     if (this.hostId === playerId) this.reassignHost();
+    this.checkRematchTrigger();
     this.clearGrace(playerId);
     this.graceTimers.set(playerId, setTimeout(() => {
       this.graceTimers.delete(playerId);
@@ -336,8 +340,11 @@ export class Room {
     this.clearGrace(playerId);
     this.players.delete(playerId);
     this.inResults.delete(playerId);
+    this.rematchVotes.delete(playerId);
     if (this.hostId === playerId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
+    // Ayrılma eşiği düşürmüş olabilir — bekleyen çoğunluk artık yeterli olabilir.
+    this.checkRematchTrigger();
     this.broadcast();
     // Ayrılan oyuncu beklenen son yanıtsa, kalanları gereksizce süre sonuna kadar bekletme.
     this.revealIfEveryoneAnswered();
@@ -430,9 +437,11 @@ export class Room {
     const { id, name, avatarUrl, socketId } = player;
     this.clearGrace(userId);
     this.players.delete(userId);
+    this.rematchVotes.delete(userId);
     if (this.hostId === userId) this.reassignHost();
-    this.spectators.set(id, { id, name, avatarUrl, socketId });
-    if (this.handleNoPlayersLeft()) return; // artık izleyici olduğu için oda kapanmaz, lobiye döner
+    if (this.handleNoPlayersLeft()) return;
+    this.checkRematchTrigger();
+    this.spectators.set(id, { id, name, avatarUrl, socketId }); // artık izleyici olduğu için oda kapanmaz, lobiye döner
     this.broadcast();
     this.revealIfEveryoneAnswered();
     this.advanceIfEveryoneBet();
@@ -511,7 +520,45 @@ export class Room {
       if (!player.isBot) player.ready = false;
       player.eligibleFrom = 0;
     }
+    this.rematchVotes.clear();
     this.broadcast();
+  }
+
+  /** Rövanş için gereken oy: masadaki bağlı İNSAN oyuncuların yarısından fazlası. */
+  private rematchNeeded(): number {
+    const eligible = [...this.players.values()].filter((player) => player.connected && !player.isBot);
+    return Math.floor(eligible.length / 2) + 1;
+  }
+
+  /** Podyumda "Rövanş?" oyu (§6.3). Oy bir kez sayılır; eşik aşılınca sunucu
+   *  masanın host'u adına aynı ayarlarla yeni maçı başlatır — `start()`'ın tüm
+   *  doğrulamaları (min oyuncu, takım dengesi) korunur. Botlar ve izleyiciler
+   *  oy kullanamaz; ayrılanların oyu düşer. */
+  voteRematch(playerId: string): void {
+    if (this.phase !== "podium") throw new GameError("err.rematchPhase");
+    const player = this.players.get(playerId);
+    if (!player || player.isBot || !player.connected || this.rematchVotes.has(playerId)) return;
+    this.rematchVotes.add(playerId);
+    this.checkRematchTrigger();
+    if (this.phase === "podium") this.broadcast();
+  }
+
+  /** Eşik sağlandıysa rövanşı başlatır — yalnız oy anında değil, kopma/ayrılma
+   *  sonrası da denetlenir: bağlı insan azaldığında bekleyen çoğunluk zaten
+   *  yeterli olabilir (masa gereksiz yere host beklemesin). */
+  private checkRematchTrigger(): void {
+    if (this.phase !== "podium" || !this.rematchVotes.size) return;
+    if (this.rematchVotes.size < this.rematchNeeded()) return;
+    this.rematchVotes.clear();
+    const by = this.hostId && this.players.has(this.hostId) ? this.hostId : this.rematchVotes.values().next().value;
+    // Oylar temizlendi; tetikleyici kalmadıysa ilk bağlı oyuncu adına başlat.
+    const requester = by ?? [...this.players.values()].find((p) => p.connected && !p.isBot)?.id;
+    if (!requester) return;
+    try {
+      this.start(requester, this.gameMode);
+    } catch {
+      // Örn. takım dengesi bozuldu — podyum açık kalır, host elle başlatabilir.
+    }
   }
 
   private clearLastMatch() {
@@ -752,6 +799,7 @@ export class Room {
     this.clearLastMatch();
     this.rescueRound = new Set();
     this.lightningBurn = 0;
+    this.rematchVotes.clear();
     this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
     this.gameMode = normalizedMode;
     this.dailyMatch = daily;
@@ -1058,6 +1106,9 @@ export class Room {
       firstAnswerId: this.firstAnswerId,
       youAreSpectator: this.spectators.has(youId),
       spectatorCount: this.spectators.size,
+      rematch: this.phase === "podium"
+        ? { votes: this.rematchVotes.size, needed: this.rematchNeeded(), youVoted: this.rematchVotes.has(youId) }
+        : null,
       minPlayers: this.minPlayers,
       questionCount: this.questionCount,
       difficulty: this.difficulty,
