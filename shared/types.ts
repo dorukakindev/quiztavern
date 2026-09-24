@@ -168,6 +168,13 @@ export interface DailyBoard {
   streak: number;
 }
 
+/** Soru yazarı turu istemci → sunucu girdisi. */
+export interface WrittenQuestionInput {
+  text: string;
+  choices: string[];
+  correctIndex: number;
+}
+
 export interface QuestionPayload {
   category: string;
   text: string;
@@ -184,6 +191,10 @@ export interface QuestionPayload {
   image?: string;
   /** Opsiyonel: görselin kredi/atıf satırı — resimli soruda ⓘ ile gösterilir. */
   imageCredit?: string;
+  /** Soru yazarı turu: soruyu yazan oyuncunun adı (written-* id'li soruda). */
+  writtenByName?: string | null;
+  /** Soru yazarı turu: bu soruyu SEN yazdın — istemci cevap yerine izleme ekranı gösterir. */
+  writtenByYou?: boolean;
 }
 
 export interface RevealPayload {
@@ -325,6 +336,7 @@ export type ToastKey =
   | "err.settingHostOnly"
   | "err.settingInvalid"
   | "err.settingFailed"
+  | "err.questionInvalid"
   | "err.modeHostOnly"
   | "err.modeInvalid"
   | "err.teamHostOnly"
@@ -555,6 +567,8 @@ export interface GameState {
   seasonBoard: SeasonBoard | null;
   /** Haftalık turnuva tablosu (§6.3): geçerli ISO haftası; season alanı 'YYYY-Www'. */
   weeklyBoard: SeasonBoard | null;
+  /** Soru yazarı turu: lobide soru yazmış oyuncu id'leri. */
+  writers: string[];
   /** Bugünün günlük lider tablosu (lobi); depo kapalıysa null. */
   dailyBoard: DailyBoard | null;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
@@ -623,4 +637,8 @@ export const EV = {
   QUESTION_REPORT: "question-report",
   /** Unvan seçimi: { title: BadgeKey | null } — yalnız kazanılmış rozet; null kaldırır */
   SET_TITLE: "set-title",
+  /** Soru yazarı turu: { text, choices[4], correctIndex } — lobide, oyuncu başına bir; ikinci gönderim üzerine yazar */
+  SUBMIT_QUESTION: "submit-question",
+  /** Yazılan soruyu geri alır: {} — lobide, yalnız kendi sorunu */
+  DELETE_QUESTION: "delete-question",
 } as const;

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
-import { EV, type BadgeKey, type CardType, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type TableTheme, type ToastPayload } from '../../../shared/types'
+import { EV, type BadgeKey, type CardType, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type TableTheme, type ToastPayload, type WrittenQuestionInput } from '../../../shared/types'
 import { browserRandomId, storageGet, storageSet } from './storage'
 
 /** Ekranda gösterilen tepki; `uid` aynı oyuncunun arka arkaya attığı tepkileri ayırır. */
@@ -192,6 +192,8 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     setDifficulty: (difficulty: Difficulty | null) => socket.emit(EV.SET_DIFFICULTY, { difficulty }),
     setPack: (packId: string | null) => socket.emit(EV.SET_PACK, { packId }),
     setTableTheme: (theme: TableTheme) => socket.emit(EV.SET_THEME, { theme }),
+    submitQuestion: (q: WrittenQuestionInput) => socket.emit(EV.SUBMIT_QUESTION, q),
+    deleteQuestion: () => socket.emit(EV.DELETE_QUESTION),
     setQuestionTime: (ms: number | null) => socket.emit(EV.SET_QUESTION_TIME, { ms }),
     setSpeedBonus: (value: boolean) => socket.emit(EV.SET_SPEED_BONUS, { value }),
     setImageOnly: (value: boolean) => socket.emit(EV.SET_IMAGE_ONLY, { value }),

@@ -121,6 +121,21 @@ export interface ProgressStore {
 }
 
 /** Sunucunun otorite olduğu tek bir eşzamanlı maç odası. */
+
+/** Soru yazarı turunun puan-akışlı modları — bu modlarda yazılan sorular maça
+ *  karışır; bahis/çember/kelime/bulanık kendi mekaniğine sahip olduğu için dışarıda. */
+const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team"]);
+
+/** 0..n-1 karışık indeksler — yazılan soruların hangi slotlara düşeceğini belirler. */
+function shuffleIdx(n: number): number[] {
+  const idx = Array.from({ length: n }, (_, i) => i);
+  for (let i = idx.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [idx[i], idx[j]] = [idx[j], idx[i]];
+  }
+  return idx;
+}
+
 export class Room {
   readonly players = new Map<string, RoomPlayer>();
   questions: Question[];
@@ -161,6 +176,10 @@ export class Room {
    *  klasik soru havuzu paketin listesiyle değişir (kategori/zorluk filtreleri
    *  atlanır); Çember kendi prompt havuzunu kullandığı için etkilenmez. */
   packId: string | null = null;
+  /** Soru yazarı turu (§6.3): lobide oyuncu başına bir yazılan soru; puan-akışlı
+   *  modlarda (klasik/fitil/takım/son masa) maça karışır. Yazar kendi turunda
+   *  oynamaz; puan kazananların ortalamasını alır. */
+  private writtenQuestions = new Map<string, Question>();
   hostId: string | null = null;
   questionStartedAt = 0;
   questionDeadline = 0;
@@ -365,6 +384,7 @@ export class Room {
     this.players.delete(playerId);
     this.inResults.delete(playerId);
     this.rematchVotes.delete(playerId);
+    this.writtenQuestions.delete(playerId);
     if (this.hostId === playerId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
     // Ayrılma eşiği düşürmüş olabilir — bekleyen çoğunluk artık yeterli olabilir.
@@ -464,6 +484,7 @@ export class Room {
     this.clearGrace(userId);
     this.players.delete(userId);
     this.rematchVotes.delete(userId);
+    this.writtenQuestions.delete(userId);
     if (this.hostId === userId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
     this.checkRematchTrigger();
@@ -798,6 +819,40 @@ export class Room {
     this.broadcast();
   }
 
+  /** Soru yazarı turu: oyuncu lobide bir soru yazar; metin + 4 farklı şık + doğru şık.
+   *  İkinci gönderim eskisinin üstüne yazar (düzeltme). */
+  submitQuestion(playerId: string, q: unknown): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    const player = this.players.get(playerId);
+    if (!player || player.isBot) throw new GameError("err.notAtTable");
+    const text = typeof (q as { text?: unknown })?.text === "string" ? (q as { text: string }).text.trim() : "";
+    const choices = Array.isArray((q as { choices?: unknown })?.choices) ? (q as { choices: unknown[] }).choices : [];
+    const correctIndex = (q as { correctIndex?: unknown })?.correctIndex;
+    if (text.length < 8 || text.length > 200
+      || choices.length !== 4
+      || choices.some((c) => typeof c !== "string" || !(c as string).trim() || (c as string).length > 80)
+      || new Set(choices.map((c) => (c as string).trim().toLocaleLowerCase("tr"))).size !== 4
+      || !Number.isInteger(correctIndex) || (correctIndex as number) < 0 || (correctIndex as number) > 3) {
+      throw new GameError("err.questionInvalid");
+    }
+    this.writtenQuestions.set(playerId, {
+      id: `written-${playerId}`,
+      category: "community",
+      text, textEn: text,
+      choices: choices.map((c) => (c as string).trim()),
+      choicesEn: choices.map((c) => (c as string).trim()),
+      correctIndex: correctIndex as number,
+      difficulty: "orta",
+    });
+    this.broadcast();
+  }
+
+  /** Yazılan soruyu geri alır (yalnız lobi, yalnız kendi sorunu). */
+  removeQuestion(playerId: string): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.writtenQuestions.delete(playerId)) this.broadcast();
+  }
+
   /** Özel soru paketi ayarı: id ya da null (standart havuza dön). Yalnız host, lobide. */
   setPack(playerId: string, packId: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
@@ -930,6 +985,21 @@ export class Room {
           : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
       this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
+      // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
+      // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
+      // turunda oynamaz — reveal'de yazara puan kazananların ortalaması yazılır.
+      if (WRITTEN_MODES.has(this.gameMode) && this.writtenQuestions.size) {
+        const pool = [...this.players.keys()]
+          .filter((id) => this.writtenQuestions.has(id))
+          .map((id) => this.writtenQuestions.get(id)!);
+        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
+        if (count > 0) {
+          const slots = shuffleIdx(this.roundLimit).slice(0, count);
+          shuffleIdx(pool.length).slice(0, count).forEach((poolIdx, i) => {
+            this.questions[slots[i]] = pool[poolIdx];
+          });
+        }
+      }
     }
 
     // Dar havuz benzersiz çekildi -> istenen sayıdan az olabilir. Klasik round.total
@@ -988,6 +1058,8 @@ export class Room {
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
+    // Soru yazarı turu: yazar kendi sorusunda oynamaz.
+    if (this.currentQuestion()?.id === `written-${playerId}`) return;
     // Dondur jokeri: yiyen oyuncunun süresi genel deadline'dan önce dolar.
     if (Date.now() >= this.deadlineFor(player)) return;
     if (this.gameMode === "elim" && player.lives <= 0) return;
@@ -1086,6 +1158,7 @@ export class Room {
     const inQuestion = this.phase === "question" && question;
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
+    const writerId = question && question.id.startsWith("written-") ? question.id.slice(8) : null;
     const questionPayload: QuestionPayload | null = inQuestion
       ? {
           category: question.category,
@@ -1099,6 +1172,7 @@ export class Room {
           durationMs: this.questionDuration(),
           ...(question.image ? { image: question.image } : {}),
           ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
+          ...(writerId ? { writtenByName: this.players.get(writerId)?.name ?? null, writtenByYou: writerId === youId } : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle
@@ -1196,6 +1270,7 @@ export class Room {
       rematch: this.phase === "podium"
         ? { votes: this.rematchVotes.size, needed: this.rematchNeeded(), youVoted: this.rematchVotes.has(youId) }
         : null,
+      writers: [...this.writtenQuestions.keys()],
       yourPrediction: this.predictions.get(youId) ?? null,
       predictOpen: this.predictOpen(),
       minPlayers: this.minPlayers,
@@ -1407,6 +1482,7 @@ export class Room {
     } else {
       this.questions.slice(0, this.roundLimit).forEach((question, i) => {
         if (player.eligibleFrom > i) return;
+        if (question.id === `written-${player.id}`) return; // kendi sorusu — oynamadı
         const choice = player.answers[i] ?? null;
         items.push({
           category: question.category,
@@ -1466,7 +1542,10 @@ export class Room {
     const gains: Record<string, number> = {};
     // Çifte Bahis: reveal'de herkesin bahsi görünür (masadaki gerçek kumar hissi).
     const bets: Record<string, number> = {};
+    const writerId = question.id.startsWith("written-") ? question.id.slice(8) : null;
     for (const player of this.eligiblePlayers()) {
+      // Soru yazarı turu: yazar bu turda oynamaz — sonradan ortalama kazanç alır.
+      if (player.id === writerId) continue;
       if (player.choice !== null) picks[player.choice].push(player.id);
       const correct = player.choice === question.correctIndex;
       const elapsed = Math.max(0, (player.answeredAt ?? this.questionDeadline) - this.questionStartedAt);
@@ -1504,6 +1583,17 @@ export class Room {
       // sayılır ama currentStreak korunur).
       this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null, player.cardUsed === "shield");
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
+    }
+    // Soru yazarı turu: yazar, o soruda puan alanların ortalamasını kazanır.
+    if (writerId) {
+      const writer = this.players.get(writerId);
+      if (writer) {
+        const earned = Object.entries(gains).filter(([id, g]) => id !== writerId && g > 0).map(([, g]) => g);
+        const writerGain = earned.length ? Math.round(earned.reduce((a, b) => a + b, 0) / earned.length) : 0;
+        writer.score += writerGain;
+        gains[writerId] = writerGain;
+        if (writerGain > writer.stats.maxGain) writer.stats.maxGain = writerGain;
+      }
     }
     // Takım modu (§6.2): takım puanı kişisel kazançların toplamı değil, takımın
     // TEK cevabının doğruluğu — üyeler çoğunluk oyu verir, eşitlikte kaptanın
