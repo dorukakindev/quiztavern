@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import { DIFFICULTIES, type Question } from "./questions";
 
 export interface QuestionPackMeta {
@@ -16,7 +15,9 @@ export interface StoredPack extends QuestionPackMeta {
   questions: Question[];
 }
 
-const PACKS_DIR = fileURLToPath(new URL("../data/packs", import.meta.url));
+// cwd tabanlı: geliştirmede server/, üretimde WORKDIR(/app/server) — ikisinde de
+// <cwd>/data/packs; volume'a denk gelir, dist içine yazıp kaybolmaz (PACKS_DIR ezilebilir).
+const PACKS_DIR = process.env.PACKS_DIR ? path.resolve(process.env.PACKS_DIR) : path.resolve(process.cwd(), "data", "packs");
 const packs = new Map<string, StoredPack>();
 
 export interface PackValidation {
