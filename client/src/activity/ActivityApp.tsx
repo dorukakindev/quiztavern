@@ -46,7 +46,7 @@ function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | nu
     </div>
     <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
     <small>{t('progress.nextLevel', { xp: remaining })}</small>
-    {snapshot.badges.length > 0 && <div className="qt-badge-row" aria-label={t('badge.title')}>
+    {(snapshot.badges.length > 0 || snapshot.badgeProgress.length > 0) && <div className="qt-badge-row" aria-label={t('badge.title')}>
       {snapshot.badges.map((badge) => {
         const selected = badge === title
         // Unvan: kazanılmış rozet tıklanınca takılır, takılı olana tıklanınca
@@ -56,6 +56,13 @@ function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | nu
         return onTitle
           ? <button key={badge} type="button" className={`qt-badge ${selected ? 'is-title' : ''}`} title={hint} aria-pressed={selected} onClick={() => onTitle(selected ? null : badge)}><Icon name="medal" weight="fill" /> {label}</button>
           : <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="medal" weight="fill" /> {label}</span>
+      })}
+      {snapshot.badgeProgress.map((entry) => {
+        // Kilitli rozet: hedefe ne kadar yaklaşıldığı mini barla görünür;
+        // tıklanamaz (kazanılmamış rozet unvan olamaz).
+        const label = t(`badge.${entry.key}` as StringKey)
+        const goalPct = Math.min(100, Math.round((entry.current / entry.target) * 100))
+        return <span key={entry.key} className="qt-badge is-locked" title={t(`badge.${entry.key}.hint` as StringKey)}><Icon name="lock" /> {label}<i className="qt-badge__bar"><i style={{ width: `${goalPct}%` }} /></i><em>{entry.current}/{entry.target}</em></span>
       })}
     </div>}
   </div>

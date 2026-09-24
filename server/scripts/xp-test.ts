@@ -300,4 +300,26 @@ test("unvan: odaya yayınlanır, geçersiz seçim err.title fırlatır", () => {
   } finally { stop(room); store.close(); }
 });
 
+test("badgeProgress: hedefli rozetler n/t taşır, kazanılan ve olay rozetleri düşer", () => {
+  const store = createXpStore(":memory:");
+  try {
+    store.recordMatch([entry({ correct: 3, total: 5, bestStreak: 3, placement: 2 })]);
+    const snap = store.snapshot("u1")!;
+    const byKey = new Map(snap.badgeProgress.map((p) => [p.key, p]));
+    assert.equal(byKey.get("onMac")!.current, 1);
+    assert.equal(byKey.get("onMac")!.target, 10);
+    assert.equal(byKey.get("seriAvcisi")!.current, 3);
+    assert.equal(byKey.get("seriAvcisi")!.target, 5);
+    assert.equal(byKey.get("keskin")!.current, 3);
+    // Olay rozetleri (tek maçta koşulanlar) hedefsizdir, listede yok.
+    assert.ok(!byKey.has("podyum"));
+    assert.ok(!byKey.has("tekeTek"));
+    // Kazanılan hedef rozeti artık listede yok (ilkMac bu maçta alındı).
+    assert.ok(!byKey.has("ilkMac"));
+    // Sıralama orana göre azalan: en yakın hedef önde.
+    const ratios = snap.badgeProgress.map((p) => p.current / p.target);
+    assert.ok(ratios.every((r, i) => i === 0 || ratios[i - 1] >= r));
+  } finally { store.close(); }
+});
+
 console.log(`\n[xp] sonuç: ${passed} geçti, 0 kaldı`);
