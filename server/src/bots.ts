@@ -125,12 +125,40 @@ export function scheduleBotAnswers(room: Room): void {
     if (room.gameMode === "elim" && p.lives <= 0) continue;
     const delay = botDelay(room.questionDuration());
     const roundAtSchedule = room.qIndex;
+    // Joker kartı (Klasik/Takım): elinde kart olan bot bazen cevabından hemen
+    // önce oynar. Yarış durumları (kart harcanmış, hedef cevaplamış) yutulur.
+    if ((room.gameMode === "classic" || room.gameMode === "team") && p.cards > 0 && Math.random() < 0.35) {
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule) return;
+        try {
+          const roll = Math.random();
+          if (roll < 0.45) {
+            room.useCard(p.id, "fifty");
+          } else if (roll < 0.75) {
+            room.useCard(p.id, "double");
+          } else if (roll < 0.9) {
+            room.useCard(p.id, "shield");
+          } else {
+            const targets = [...room.players.values()].filter(
+              (t) => t.id !== p.id && t.connected && t.eligibleFrom <= room.qIndex && t.choice === null,
+            );
+            if (targets.length === 0) return;
+            room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);
+          }
+        } catch {
+          // Bot yarış durumunu yoksayar.
+        }
+      }, Math.max(300, delay - 400));
+    }
     room.scheduleBotTask(() => {
       if (room.qIndex !== roundAtSchedule) return; // bayat zamanlayıcı
       const correct = Math.random() < 0.45;
       let choice = q.correctIndex;
       if (!correct) {
-        const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex);
+        // %50 kullandıysa silinen şıkları seçemez.
+        const removed = new Set(p.fiftyRemoved ?? []);
+        const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex && !removed.has(i));
+        if (wrong.length === 0) return;
         choice = wrong[Math.floor(Math.random() * wrong.length)];
       }
       room.answer(p.id, choice);
