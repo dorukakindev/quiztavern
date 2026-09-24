@@ -14,9 +14,3 @@ declare namespace JSX {
   }
 }
 declare module '*.png'
-/** lottie-web'in hafif sürümü tip tanımı taşımıyor; ana paketinkini kullan. */
-declare module 'lottie-web/build/player/lottie_light' {
-  export * from 'lottie-web'
-  import lottie from 'lottie-web'
-  export default lottie
-}

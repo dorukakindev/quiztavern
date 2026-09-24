@@ -1,0 +1,171 @@
+/*
+ * polish.css — ikon seti + tipografi + boşluk cilası.
+ * En SON yüklenir (activity.css → layout-fixes.css → polish.css): burada aynı
+ * özgüllükteki kurallar öncekileri ezer. Yerleşimi (grid/konum) değiştirmez;
+ * yalnız ikon görünümü, yazı ölçeği/aralıkları ve nefes payı.
+ */
+
+/* ---------- Yazı tipi ---------- */
+:root {
+  /* Başlıklar için karakterli bir grotesk (self-host, CSP 'self'). Gövde Inter kalır. */
+  --font-display: 'Bricolage Grotesque Variable', Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ---------- İkonlar (Phosphor) ---------- */
+/* Eski ikonlar stroke ile çiziliyordu; activity.css'teki onlarca .qt-icon kuralı
+   stroke/stroke-width basıyor. Phosphor dolgulu çizer: stroke'u kapat, rengi
+   currentColor'dan al, yüksekliği genişliğe kilitle (bazı kurallar yalnız width veriyor). */
+.qt-icon.qt-ph { fill: currentColor; stroke: none !important; stroke-width: 0 !important; height: auto; aspect-ratio: 1; }
+.qt-icon.qt-ph path { stroke-dasharray: none !important; animation: none; }
+
+.qt-flame { color: #ff9a4d; width: 14px !important; vertical-align: -2px; margin-left: 4px; }
+.qt-summary-tile .qt-flame { width: 16px !important; }
+.qt-xp-streak .qt-flame { margin-left: 0; }
+
+/* Mod kartı karoları: duotone ikon biraz daha büyük ve dolgun */
+.qt-mode-card__tile .qt-icon { width: 22px; }
+.qt-mode-card--classic .qt-mode-card__tile { color: #f3c362; }
+.qt-mode-card--circle .qt-mode-card__tile { color: #85d9ff; }
+.qt-mode-card--other .qt-mode-card__tile { color: #b9a6ff; }
+.qt-settings__head i .qt-icon { width: 18px; }
+
+/* Kategori kartı ikonları */
+.qt-category-card__icon .qt-icon { width: 22px; }
+
+/* Rozetler / unvan çipleri: madalya */
+.qt-badge .qt-icon, .qt-badge-new .qt-icon { width: 11px; color: #f3c362; vertical-align: -1px; }
+
+/* Masa: host tacı ve boş koltuk */
+.qt-seat__crown.qt-ph { width: 20px; color: #f3c362; filter: drop-shadow(0 0 6px rgba(243,195,98,.55)); }
+.qt-seat--empty i .qt-icon { width: 18px; }
+
+/* Masa ortası mod sahneleri */
+.qt-scene-deck b .qt-icon { width: clamp(28px, 4.6vw, 40px); color: #f3c362; filter: drop-shadow(0 0 12px rgba(243,195,98,.35)); }
+.qt-scene-clock b .qt-icon { width: 30px; }
+.qt-scene-emblem { display: grid; place-items: center; width: 74%; aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(243,195,98,.14), transparent 68%); }
+.qt-scene-emblem .qt-icon { width: 58%; }
+.qt-scene-emblem.is-bet { color: #f3c362; }
+.qt-scene-emblem.is-team { color: #8fd9ff; }
+
+/* Ses/müzik düğmeleri: ayrı "çizgi" hilesi yok, gerçek kapalı ikon */
+.qt-music-toggle .qt-icon { width: 16px; }
+.qt-music-toggle .qt-icon.is-muted { opacity: .75; }
+
+/* Marka işareti: "Q" harfi yerine gerçek logo */
+.qt-brand-mark img, .qt-pip__brand img, .qt-summary-brand img { flex: none; object-fit: contain; }
+.qt-brand-mark img { width: 26px; height: 26px; }
+.qt-pip__brand img { width: 18px; height: 18px; }
+.qt-summary-brand img { width: 34px; height: 34px; }
+
+/* Emote: emoji yerine renkli ikon */
+.qt-emote-btn .qt-icon { width: 20px; }
+.qt-emote-btn.is-flame, .qt-emote-fly.is-flame { color: #ff8a3d; }
+.qt-emote-btn.is-heart, .qt-emote-fly.is-heart { color: #ff6b8b; }
+.qt-emote-btn.is-star, .qt-emote-fly.is-star { color: #ffc94d; }
+.qt-emote-fly .qt-icon { width: 28px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
+
+.qt-howto-modal__checkbox .qt-icon { width: 12px; }
+
+/* ---------- Soru kartı: tipografi ve nefes payı ---------- */
+/* Eskiden: 43px'e kadar, -.045em harf aralığı, şıklarla arası ~12px. Uzun
+   sorular 6-7 satıra taşıp şıklara yapışıyordu. */
+.qt-question-head h1 {
+  max-width: 700px;
+  margin: clamp(12px, 2.2vh, 24px) auto clamp(20px, 3.6vh, 38px);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(22px, min(2.7vw, 4.8vh), 38px);
+  line-height: 1.22;
+  letter-spacing: -.012em;
+  text-wrap: balance;
+}
+.qt-question-head h1.is-mid { font-size: clamp(20px, min(2.35vw, 4.2vh), 32px); }
+.qt-question-head h1.is-long { max-width: 740px; font-size: clamp(18px, min(2vw, 3.6vh), 27px); line-height: 1.28; letter-spacing: 0; }
+.qt-question-head h1.is-xlong { max-width: 780px; font-size: clamp(17px, min(1.75vw, 3.2vh), 23px); line-height: 1.32; letter-spacing: 0; font-weight: 650; }
+
+.qt-category { margin-bottom: 2px; }
+.qt-question-image { margin: clamp(10px, 1.8vh, 18px) auto clamp(6px, 1vh, 10px); border: 1px solid rgba(160,210,230,.18); }
+
+/* Şıklar: satırlar arası daha fazla boşluk (reveal rozeti alt kenara biniyor),
+   metin daha rahat satır aralığıyla */
+.qt-answers { column-gap: clamp(12px, 1.4vw, 16px); row-gap: clamp(16px, 2.6vh, 22px); }
+.qt-answer { padding-block: clamp(10px, 1.6vh, 13px); line-height: 1.25; font-weight: 650; }
+.qt-answer__text { overflow-wrap: anywhere; }
+.qt-answer__tally { translate: 0 42%; }
+
+/* Çember: ipucu kutusu ve giriş alanı arasında boşluk; ipucu display fontta */
+.qt-question-head--circle p { margin-bottom: clamp(16px, 2.8vh, 26px); font-family: var(--font-display); font-weight: 650; line-height: 1.32; text-wrap: balance; }
+.qt-circle-letter { font-family: var(--font-display); }
+.qt-circle-entry input.is-locked { border-color: rgba(243,190,85,.55); background: rgba(124,89,25,.18); color: #f6e3b8; caret-color: transparent; }
+.qt-circle-entry input.is-wrong { border-color: #ef8674; color: #ffd7cf; background: rgba(116,42,37,.28); text-decoration: line-through; text-decoration-color: rgba(239,134,116,.7); opacity: 1; }
+.qt-circle-entry input.is-correct { opacity: 1; }
+.qt-circle-lock.is-locked { border-color: rgba(94,230,193,.45); color: #7df0cf; background: rgba(20,70,60,.45); box-shadow: none; opacity: 1; cursor: default; }
+.qt-circle-lock.is-locked:disabled { opacity: 1; }
+
+.qt-locked-note { margin-top: clamp(14px, 2.2vh, 20px); }
+
+/* ---------- Oyuncu şeridi: isimler kesilmesin ---------- */
+/* Maç sırasında lig rozeti isme yer bırakmıyordu ("F.", "Niha…"). Lig lobide
+   ve podyumda görünüyor; avatar çerçevesi zaten ligi taşıyor. */
+.qt-table-strip .qt-league { display: none; }
+.qt-player-card > div:nth-child(2) { grid-template-columns: minmax(0, 1fr); }
+.qt-player-card b:not(.qt-player-score) { font-size: 12.5px; }
+.qt-player-card small { letter-spacing: .01em; }
+.qt-strip-crown { top: -9px; }
+
+/* ---------- Başlıklar: display font ---------- */
+.qt-podium-spot > b, .qt-howto-modal b#howto-title, .qt-leave-dialog h2, .qt-return-home__card h1,
+.qt-start-countdown__number, .qt-final-intro__title, .qt-bet-stage h1, .qt-summary-tile b,
+.qt-your-gain b, .qt-timer span {
+  font-family: var(--font-display);
+}
+.qt-bet-stage h1 { letter-spacing: -.015em; }
+
+/* ---------- Özet kartı: XP satırı hizası ---------- */
+.qt-summary-xp__head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.qt-summary-xp__head > small { flex: none; }
+.qt-summary-xp__flag { margin: 0; }
+.qt-summary-xp__head .qt-badge-new-row { margin-left: auto; }
+
+/* ---------- "Diğer modlar" penceresi: çıplak çipler yerine mod kartları ---------- */
+.qt-mode-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 14px; }
+.qt-mode-option { position: relative; display: grid; justify-items: start; gap: 6px; padding: 14px 14px 13px; border: 1px solid rgba(92,165,195,.28); border-radius: var(--r-md); background: rgba(8,25,42,.78); color: #d7e4ee; font: inherit; text-align: left; cursor: pointer; transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease), translate var(--t-fast) var(--ease); }
+.qt-mode-option:hover { border-color: rgba(120,210,230,.6); translate: 0 -2px; }
+.qt-mode-option.is-selected { border-color: #f3c362; background: rgba(124,89,25,.22); }
+.qt-mode-option__icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 2px; border-radius: var(--r-sm); border: 1px solid rgba(92,165,195,.3); background: rgba(8,28,48,.85); }
+.qt-mode-option__icon .qt-icon { width: 24px; }
+.qt-mode-option.is-lightning .qt-mode-option__icon { color: #ff9a4d; }
+.qt-mode-option.is-bet .qt-mode-option__icon { color: #f3c362; }
+.qt-mode-option.is-team .qt-mode-option__icon { color: #8fd9ff; }
+.qt-mode-option b { font-family: var(--font-display); font-size: 16px; font-weight: 700; color: #eef8ff; }
+.qt-mode-option small { color: #8ea8bb; font-size: 12px; line-height: 1.35; }
+.qt-mode-option__check { position: absolute; top: 10px; right: 10px; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #f3c362; color: #2b1d04; }
+.qt-mode-option__check .qt-icon { width: 12px; }
+
+/* ---------- Lobi masası: "galaksi/yörünge" yerine kart masası ---------- */
+/* Lottie galaksi + iç içe neon halkalar + uçuşan noktalar tipik "AI orb"
+   görüntüsüydü. Masa artık ahşap kenarlı, keçe kaplı bir oyun masası. */
+.qt-orbit__ring-inner { display: none; }
+.qt-orbit__ring { border-color: rgba(243,195,98,.16); }
+.qt-orbit__disc {
+  border: 0;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,.06), transparent 55%),
+    repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.012) 0 2px, transparent 2px 5px),
+    radial-gradient(circle at 50% 45%, #145159 0%, #0d363d 55%, #082127 100%);
+  box-shadow:
+    0 0 0 7px #3a2716,
+    0 0 0 9px #5a3d22,
+    0 0 0 10px rgba(243,195,98,.35),
+    0 24px 60px rgba(0,0,0,.55),
+    inset 0 0 40px rgba(0,0,0,.45);
+  backdrop-filter: none;
+  animation: none;
+}
+.qt-orbit__disc::before { content: ''; position: absolute; inset: 9%; border: 1px dashed rgba(243,195,98,.22); border-radius: 50%; pointer-events: none; }
+.qt-orbit__shadow { background: radial-gradient(ellipse, rgba(0,0,0,.45), transparent 68%); }
+.qt-mode-scene { filter: drop-shadow(0 6px 14px rgba(0,0,0,.45)); }
+
+/* Soru paketi çipleri: uzun paket adları çipi taşırmasın */
+.qt-pack-chip { max-width: 100%; min-width: 0; overflow: hidden; }
+.qt-pack-chip { white-space: nowrap; text-overflow: ellipsis; }

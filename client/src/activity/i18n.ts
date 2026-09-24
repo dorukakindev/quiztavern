@@ -205,6 +205,7 @@ const tr = {
   // Çember
   'circle.placeholder': 'Cevabını yaz',
   'circle.lock': 'Kilitle',
+  'circle.lockedShort': 'Kilitlendi',
   'circle.answerLocked': 'Cevabın kilitlendi — herkesin cevabı bekleniyor.',
   'circle.correctAnswer': 'Doğru cevap:',
 
@@ -588,6 +589,7 @@ const en: Record<StringKey, string> = {
 
   'circle.placeholder': 'Type your answer',
   'circle.lock': 'Lock in',
+  'circle.lockedShort': 'Locked',
   'circle.answerLocked': 'Your answer is locked — waiting for everyone else.',
   'circle.correctAnswer': 'Correct answer:',
 
