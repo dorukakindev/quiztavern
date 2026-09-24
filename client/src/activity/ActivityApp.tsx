@@ -1529,7 +1529,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
         : <>
           <div className="qt-bet-options" role="group" aria-label={t('bet.heading')}>
             {options.map((option, index) => <button key={option.key} type="button" className={`qt-bet-option ${locked && state.yourBet === option.amount ? 'is-selected' : ''}`} disabled={!canBet} onClick={() => { sfx.play('lock'); onBet(option.amount) }}>
-              <kbd aria-hidden="true">{index + 1}</kbd><b>{option.label}</b><span>{formatNumber(language, option.amount)}</span>
+              <kbd aria-hidden="true">{index + 1}</kbd><b>{option.label}</b><span>{formatNumber(language, option.amount)}</span>{option.key === 'all' && <em className="qt-bet-boost">{t('bet.allBoost')}</em>}
             </button>)}
           </div>
           <p className="qt-locked-note" data-empty={!locked}>{locked ? <><Icon name="lock" /> {t('bet.locked', { amount: formatNumber(language, state.yourBet ?? 0) })}</> : null}</p>
