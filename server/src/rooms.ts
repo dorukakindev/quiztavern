@@ -1189,7 +1189,9 @@ export class Room {
       connected: player.connected,
       ready: player.ready,
       isBot: player.isBot,
-      answered: this.hasAnswered(player),
+      // Bahis fazında "kilitledi" = bahsini yatırdı; aksi halde şeritte herkes
+      // bahis yatırsa da "Düşünüyor" görünüyordu.
+      answered: this.phase === "bet" ? player.bet !== null : this.hasAnswered(player),
       waiting: player.eligibleFrom > this.qIndex,
       streak: player.stats.currentStreak,
       team: player.team,

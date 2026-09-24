@@ -7,53 +7,15 @@ import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
 import { I18nContext, categoryLabel, formatNumber, formatPercent, translate, useI18n, type ActivityLanguage, type StringKey } from './i18n'
-import { GalaxyLoop, MusicToggle, TableBackdrop, TableLogo } from './TableScenery'
+import { MusicToggle, TableBackdrop, TableLogo } from './TableScenery'
 import { PodiumCharacter } from './PodiumCharacter'
-import { CATEGORY_ICON_PATHS } from './categoryIcons'
+import { CategoryIcon, Icon, type IconName } from './icons'
 import { betOptionSpecs, bothTeamsPresent, circleAnswerIsLocked, circleInputShouldFocus, nextMenuIndex, questionIsLocked, shortcutIndex } from './gameLogic'
 import { deletePack, getPack, listPacks, savePack, uploadPack, type PackAuth, type PackQuestion, type PackUploadResult, type QuestionPackMeta } from './packs'
 
-type IconName = 'chevron' | 'spark' | 'bolt' | 'circle' | 'lock' | 'check' | 'close' | 'arrow' | 'people' | 'crown' | 'exit' | 'globe' | 'mic' | 'eye' | 'coin' | 'more' | 'flag' | 'calendar'
-
-function Icon({ name }: { name: IconName }) {
-  const paths: Record<IconName, string> = {
-    chevron: 'm6 9 6 6 6-6',
-    spark: 'M12 2 14 9l7 3-7 3-2 7-3-7-7-3 7-3 3-7Z',
-    bolt: 'm13 2-9 12h7l-1 8 9-12h-7l1-8Z',
-    circle: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm4 10-4 3-4-3m4-7v10',
-    lock: 'M7 11V8a5 5 0 0 1 10 0v3m-11 0h12v9H6v-9Z',
-    check: 'm5 12 4 4L19 6',
-    close: 'M6 6l12 12M18 6 6 18',
-    eye: 'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Zm10 3a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z',
-    arrow: 'M5 12h14m-5-5 5 5-5 5',
-    people: 'M16 20v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1m14-8a4 4 0 1 0 0-8m5 16v-1a4 4 0 0 0-3-3.87',
-    crown: 'm3 7 4 3 5-6 5 6 4-3-2 10H5L3 7Z',
-    exit: 'M10 17l5-5-5-5m5 5H3m11-7V3h6v18h-6v-2',
-    globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM3.6 9h16.8M3.6 15h16.8M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z',
-    // Lider taç değil ALTIN MİKROFON taşır — gece yarısı yayın teması.
-    mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Zm-7 9a7 7 0 0 0 14 0M12 19v3m-4 0h8',
-    // Çifte Bahis jetonu: madeni para + içinde işaret.
-    coin: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm0 4v10m3-8h-4.5a1.5 1.5 0 0 0 0 3h3a1.5 1.5 0 0 1 0 3H9',
-    // Diğer modlar tetikleyicisi: üç kare (Fitil/Bahis/Takım'ı temsilen "daha fazla").
-    more: 'M4 5h6v6H4V5Zm10 0h6v6h-6V5ZM4 15h6v6H4v-6Zm10 0h6v6h-6v-6Z',
-    // Soru bildirimi bayrağı (reveal köşesinde küçük buton).
-    flag: 'M5 21V4m0 1h12l-3 4 3 4H5',
-    // Günlük meydan okuma: takvim.
-    calendar: 'M8 2v4m8-4v4M3 9h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z',
-  }
-  // Göz: izleyici kimliği sürdükçe nazik, seyrek göz kırpma (idle · loop seyrek).
-  return <svg className={`qt-icon ${name === 'eye' ? 'qt-icon--eye' : ''}`} viewBox="0 0 24 24" aria-hidden="true"><path d={paths[name]} /></svg>
-}
-
-let flameGradSeq = 0
-/** Seri alevi: emoji değil, turuncu→altın gradyanlı çizgi ikon (İkon Seti tasarımı).
- *  Gradient id her örnekte benzersiz olmalı (şeritte birden fazla oyuncu aynı anda alev taşıyabilir). */
+/** Seri alevi: ikon setindeki ateş, sıcak renkte (CSS .qt-flame). */
 function FlameIcon() {
-  const gradId = useMemo(() => `qt-flame-grad-${flameGradSeq++}`, [])
-  return <svg viewBox="0 0 32 32" aria-hidden="true" style={{ width: 13, height: 13 }}>
-    <defs><linearGradient id={gradId} x1="0" y1="1" x2="0" y2="0"><stop offset="0" stopColor="#ef8674" /><stop offset="1" stopColor="#f3c362" /></linearGradient></defs>
-    <path d="M16 4c2.3 4 6 6.2 6 11.2a6 6 0 0 1-12 0c0-1.8.5-3 1.5-4.4.3 1.5 1.2 2.3 2.5 2.6-1-4 .7-7.6 2-9.4Z" fill="none" stroke={`url(#${gradId})`} strokeWidth="2.2" strokeLinejoin="round" />
-  </svg>
+  return <Icon name="flame" weight="fill" className="qt-flame" />
 }
 
 /** Lig anahtarı → i18n anahtarı (tek tablo: sunucu lig adını değil anahtarı yollar,
@@ -92,8 +54,8 @@ function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | nu
         const label = t(`badge.${badge}` as StringKey)
         const hint = `${t(`badge.${badge}.hint` as StringKey)} · ${t(selected ? 'title.unset' : 'title.pick')}`
         return onTitle
-          ? <button key={badge} type="button" className={`qt-badge ${selected ? 'is-title' : ''}`} title={hint} aria-pressed={selected} onClick={() => onTitle(selected ? null : badge)}><Icon name="spark" /> {label}</button>
-          : <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {label}</span>
+          ? <button key={badge} type="button" className={`qt-badge ${selected ? 'is-title' : ''}`} title={hint} aria-pressed={selected} onClick={() => onTitle(selected ? null : badge)}><Icon name="medal" weight="fill" /> {label}</button>
+          : <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="medal" weight="fill" /> {label}</span>
       })}
     </div>}
   </div>
@@ -112,7 +74,7 @@ function NewBadgeChips({ gain }: { gain: XpGain }) {
   const { t } = useI18n()
   if (!gain.newBadges?.length) return null
   return <span className="qt-badge-new-row" role="status" aria-label={t('badge.new')}>
-    {gain.newBadges.map((badge) => <em key={badge} className="qt-badge-new" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="spark" /> {t(`badge.${badge}` as StringKey)}</em>)}
+    {gain.newBadges.map((badge) => <em key={badge} className="qt-badge-new" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="medal" weight="fill" /> {t(`badge.${badge}` as StringKey)}</em>)}
   </span>
 }
 
@@ -151,11 +113,11 @@ function LanguagePicker({ language, onChange }: { language: ActivityLanguage; on
 
 /** Mod adları ve etiketleri tek yerden; her fazda aynı sözlükten okunur. */
 const MODE_KEYS = {
-  classic: { name: 'mode.classic', meta: 'mode.classic.meta', tag: 'mode.classic.tag', icon: 'spark' },
-  lightning: { name: 'mode.lightning', meta: 'mode.lightning.meta', tag: 'mode.lightning.tag', icon: 'bolt' },
-  circle: { name: 'mode.circle', meta: 'mode.circle.meta', tag: 'mode.circle.tag', icon: 'circle' },
-  bet: { name: 'mode.bet', meta: 'mode.bet.meta', tag: 'mode.bet.tag', icon: 'coin' },
-  team: { name: 'mode.team', meta: 'mode.team.meta', tag: 'mode.team.tag', icon: 'people' },
+  classic: { name: 'mode.classic', meta: 'mode.classic.meta', tag: 'mode.classic.tag', icon: 'cards' },
+  lightning: { name: 'mode.lightning', meta: 'mode.lightning.meta', tag: 'mode.lightning.tag', icon: 'fuse' },
+  circle: { name: 'mode.circle', meta: 'mode.circle.meta', tag: 'mode.circle.tag', icon: 'letters' },
+  bet: { name: 'mode.bet', meta: 'mode.bet.meta', tag: 'mode.bet.tag', icon: 'coins' },
+  team: { name: 'mode.team', meta: 'mode.team.meta', tag: 'mode.team.tag', icon: 'teams' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
@@ -288,7 +250,7 @@ function StartCountdown({ state }: { state: GameState }) {
   return <main className="qt-activity qt-start-countdown" style={{ '--countdown-art': `url('/assets/discord-activity/${state.gameMode === 'circle' ? 'activity-circle-table.webp' : 'activity-classic-stage.webp'}')` } as CSSProperties}>
     <div className="qt-start-countdown__backdrop" />
     <section className="qt-start-countdown__stage" aria-live="polite">
-      <div className="qt-start-countdown__mode"><Icon name={mode.icon} /> {t(mode.tag)}</div>
+      <div className="qt-start-countdown__mode"><Icon name={mode.icon} weight="duotone" /> {t(mode.tag)}</div>
       <p>{t('countdown.tableReady')}</p>
       {/* Rozet tek haneli rakama göre ölçülü; "BAŞLA"/"GO" yazıya döndüğünde
           font küçülmezse çemberden taşar (madde: kutunun içinde kalmalı). */}
@@ -395,7 +357,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
               return <button type="button" key={category.name} className={`qt-category-card ${selected ? 'is-selected' : ''} ${soon ? 'is-soon' : ''}`} aria-pressed={selected} disabled={soon} title={soon ? t('category.soon') : undefined} onClick={() => onToggle(category.name)}>
                 {soon && <div className="qt-category-card__lock" aria-hidden="true"><Icon name="lock" /><span>{t('category.soonBadge')}</span></div>}
                 <div className="qt-category-card__top">
-                  <i className="qt-category-card__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d={CATEGORY_ICON_PATHS[category.name] ?? 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z'} /></svg></i>
+                  <i className="qt-category-card__icon" aria-hidden="true"><CategoryIcon name={category.name} /></i>
                   {selected && <span className="qt-category-card__check" aria-hidden="true"><Icon name="check" /></span>}
                 </div>
                 <b className="qt-category-card__name">{categoryLabel(language, category.name)}</b>
@@ -436,7 +398,7 @@ function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boole
   const triggerLabel = activeOther ? t(MODE_KEYS[activeOther].name) : t('mode.more')
   return <>
     <button type="button" className={`qt-mode-card qt-mode-card--other ${activeOther ? 'is-selected' : ''}`} disabled={!isHost} aria-haspopup="dialog" aria-expanded={open} title={activeOther ? t(MODE_KEYS[activeOther].meta) : t('mode.more')} onClick={() => setOpen(true)}>
-      <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={triggerIcon} /></i>
+      <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={triggerIcon} weight="duotone" /></i>
       <b>{triggerLabel}</b>
     </button>
     {open && createPortal(
@@ -446,8 +408,13 @@ function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boole
             <div><b>{t('mode.more')}</b><small>{t('mode.more.hint')}</small></div>
             <button type="button" className="qt-category-modal__close" aria-label={t('category.close')} onClick={() => setOpen(false)}><Icon name="close" /></button>
           </div>
-          <div className="qt-category-modal__grid">
-            {OTHER_MODES.map((item) => <button type="button" key={item} className={`qt-category-chip ${mode === item ? 'is-selected' : ''}`} aria-pressed={mode === item} onClick={() => { onSetMode(item); setOpen(false) }}>{t(MODE_KEYS[item].name)}</button>)}
+          <div className="qt-mode-options">
+            {OTHER_MODES.map((item) => <button type="button" key={item} className={`qt-mode-option is-${item} ${mode === item ? 'is-selected' : ''}`} aria-pressed={mode === item} onClick={() => { onSetMode(item); setOpen(false) }}>
+              <i className="qt-mode-option__icon" aria-hidden="true"><Icon name={MODE_KEYS[item].icon} weight="duotone" /></i>
+              <b>{t(MODE_KEYS[item].name)}</b>
+              <small>{t(MODE_KEYS[item].meta)}</small>
+              {mode === item && <span className="qt-mode-option__check" aria-hidden="true"><Icon name="check" /></span>}
+            </button>)}
           </div>
         </div>
       </div>,
@@ -484,7 +451,11 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
   const { t, language } = useI18n()
   // Taç: state.players zaten skora göre azalan sıralı; birinci puanı 0'dan büyükse
   // liderdir. Puan değişince liste yeniden sıralanır -> taç otomatik lidere geçer.
-  const leaderId = (state.players[0]?.score ?? 0) > 0 ? state.players[0].id : null
+  // Eşitlikte taç kimseye verilmez; Çifte Bahis'te herkes 1.000 ile başladığı
+  // için eskiden alfabetik ilk oyuncu "lider" görünüyordu.
+  const [top, runnerUp] = state.players
+  const baseline = state.gameMode === 'bet' ? BET_STARTING_BANKROLL : 0
+  const leaderId = top && top.score > baseline && (!runnerUp || top.score > runnerUp.score) ? top.id : null
   const isTeam = state.gameMode === 'team'
   const [teamA, teamB] = state.teamScores
   return <aside className="qt-table-strip" aria-label={t('game.tablePlayers')}>
@@ -577,6 +548,9 @@ function categoryAccent(name: string | undefined) {
 }
 
 /** Üç sütun bu genişliğin altında masanın ALTINA iner (CSS ile aynı eşik). */
+/** Sunucudaki GAME.BET_STARTING_BANKROLL ile aynı (lider tacı eşiği). */
+const BET_STARTING_BANKROLL = 1000
+
 const STACK_WIDTH = 1000
 
 /**
@@ -667,7 +641,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
     const transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius}px) rotate(-${angle}deg)`
     if (!player) {
       return <button key={seat} className="qt-seat qt-seat--empty" style={{ transform }} onClick={onInvite} title={t('table.emptySeat')}>
-        <i aria-hidden="true">+</i>
+        <i aria-hidden="true"><Icon name="seat" /></i>
         <span>{t('table.invite')}</span>
       </button>
     }
@@ -691,7 +665,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
     return <div key={seat} className={`qt-seat qt-seat--filled ${playerColorClass(player, state?.gameMode)} ${isHost ? 'is-host' : ''} ${player.ready ? 'is-ready' : ''} ${player.id === state?.youId ? 'is-you' : ''} ${manageable ? 'is-manageable' : ''} ${justJoined[seat] ? 'is-joining' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} style={{ transform, '--seat-delay': `${seat * 60}ms` } as CSSProperties} onClick={manage} onContextMenu={manage} onKeyDown={manageKey} {...(manageable ? { role: 'button', tabIndex: 0, title: t('host.hint'), 'aria-haspopup': 'menu' as const, 'aria-expanded': player.id === openManageId, 'aria-controls': player.id === openManageId ? `qt-host-menu-${player.id}` : undefined } : {})}>
       <div className={`qt-seat__token ${player.progress?.league ? `is-frame-${player.progress.league}` : ''}`}>
         {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
-        {isHost && <svg className="qt-seat__crown" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 8 3.5 2.5L12 5l4.5 5.5L20 8l-1.6 8H5.6L4 8Z" /></svg>}
+        {isHost && <Icon name="crown" weight="fill" className="qt-seat__crown" />}
         {player.ready
           ? <span className="qt-seat__check" aria-hidden="true"><Icon name="check" /></span>
           : <span className="qt-seat__prep" aria-hidden="true" />}
@@ -704,10 +678,12 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
-    {scene === 'classic' && <div className="qt-scene-deck"><i /><i /><i /><b>Q</b></div>}
-    {scene === 'lightning' && <div className="qt-scene-clock"><i className="qt-scene-clock__marks" /><i className="qt-scene-clock__hand" /><b><Icon name="bolt" /></b></div>}
+    {scene === 'bet' && <div className="qt-scene-emblem is-bet"><Icon name="coins" weight="duotone" /></div>}
+    {scene === 'team' && <div className="qt-scene-emblem is-team"><Icon name="teams" weight="duotone" /></div>}
+    {scene === 'classic' && <div className="qt-scene-deck"><i /><i /><i /><b><Icon name="question" weight="bold" /></b></div>}
+    {scene === 'lightning' && <div className="qt-scene-clock"><i className="qt-scene-clock__marks" /><i className="qt-scene-clock__hand" /><b><Icon name="fuse" weight="duotone" /></b></div>}
     {scene === 'circle' && <div className="qt-scene-letters">{['A', 'B', 'Ç', 'D', 'E', 'F', 'G', 'H'].map((letter, index) => <i key={letter} style={{ '--letter-angle': `${index * 45}deg`, '--letter-counter-angle': `${index * -45}deg` } as CSSProperties}>{letter}</i>)}<b>?</b></div>}
   </div>
 }
@@ -776,8 +752,7 @@ function SfxToggle() {
   const { t } = useI18n()
   const [on, setOn] = useState(() => sfx.isOn())
   return <button className={`qt-music-toggle ${on ? 'is-on' : ''}`} onClick={() => setOn(sfx.toggle())} title={t('sfx.toggle')} aria-label={t('sfx.toggle')} aria-pressed={on}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" /></svg>
-    {!on && <i className="qt-music-toggle__slash" aria-hidden="true" />}
+    <Icon name={on ? 'speaker' : 'speakerOff'} />
   </button>
 }
 
@@ -1031,7 +1006,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
       {/* Sol: masa ayarları — yalnızca masa sahibi değiştirir, diğerleri salt-okunur görür */}
       <aside className="qt-settings" aria-label={t('table.settings')}>
         <details className="qt-settings-panel" ref={settingsPanelRef}>
-        <summary className="qt-settings__head"><i aria-hidden="true"><Icon name="spark" /></i><div><span>{t('table.settings')}</span><b>{t(MODE_KEYS[modeKeyOf(mode)].name)} · {categorySummaryLabel}</b></div><span className="qt-settings__chevron" aria-hidden="true"><Icon name="chevron" /></span></summary>
+        <summary className="qt-settings__head"><i aria-hidden="true"><Icon name="sliders" /></i><div><span>{t('table.settings')}</span><b>{t(MODE_KEYS[modeKeyOf(mode)].name)} · {categorySummaryLabel}</b></div><span className="qt-settings__chevron" aria-hidden="true"><Icon name="chevron" /></span></summary>
         <div className="qt-settings__body">
 
         <div className="qt-settings__group"><span>{t('table.mode')}</span>
@@ -1040,7 +1015,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
               hep göstermek satır taşırıyor + gözü dağıtıyordu. */}
           <div className="qt-mode-list">
             {(['classic', 'circle'] as const).map((item) => <button className={`qt-mode-card qt-mode-card--${item} ${mode === item ? 'is-selected' : ''}`} key={item} disabled={!isHost} aria-pressed={mode === item} title={t(MODE_KEYS[item].meta)} onClick={() => onSetMode(item)}>
-              <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={MODE_KEYS[item].icon} /></i>
+              <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={MODE_KEYS[item].icon} weight="duotone" /></i>
               <b>{t(MODE_KEYS[item].name)}</b>
             </button>)}
             <ModePicker mode={mode} isHost={isHost} onSetMode={onSetMode} />
@@ -1112,7 +1087,6 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             altına taşındı — orada bir işe yarıyor, butonun neden pasif
             olduğunu söylüyor. */}
         <div className="qt-orbit__disc">
-          <GalaxyLoop />
           <ModeTableScene mode={mode} />
         </div>
         <OrbitSeats state={state} radius={orbitRadius} onInvite={async () => { if (!(await onInvite(t('invite.shareText')))) setPickerOpen(true) }} viewerIsHost={isHost} onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })} openManageId={hostMenu?.player.id ?? null} speakingIds={speakingIds} />
@@ -1172,6 +1146,13 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
  * (serverNow) türetilir, setTimeout değil: arka plan sekmesinde takılmaz.
  * Harflerin sırayla yükselmesi (tasarım notu) Adım 5 Motion'a bırakıldı.
  */
+/** Soru metni uzunluğuna göre başlık ölçeği: puntoyu yalnız ekran boyutu değil
+ *  metin de belirler — 200+ karakterlik soru 43px'te 6-7 satıra taşıp şıkları itiyordu. */
+function questionLengthClass(text: string) {
+  const len = text.length
+  return len > 170 ? 'is-xlong' : len > 120 ? 'is-long' : len > 80 ? 'is-mid' : ''
+}
+
 const FINAL_INTRO_MS = 1500
 function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; durationMs?: number; serverNow?: number }) {
   const { t } = useI18n()
@@ -1229,6 +1210,12 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   const selected = state.yourChoice
   const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting })
   const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
+  // Çember reveal: kutuda oyuncunun KENDİ cevabı kalır; bildiyse yeşil, bilemediyse
+  // kırmızı. Doğru cevap alttaki satırda yazar (eskiden kutu herkes için doğru
+  // cevapla dolup yeşile dönüyordu — yanlış yazan kendini doğru sanıyordu).
+  const circleVerdict: 'right' | 'wrong' | null = !beats.active || state.yourCircleAnswer === null
+    ? null
+    : state.circleReveal?.rankedPlayerIds.includes(state.youId) ? 'right' : 'wrong'
   useEffect(() => {
     if (!circleInputShouldFocus({ hasPrompt: !!circle, locked: circleLocked })) return
     const frame = window.requestAnimationFrame(() => circleInputRef.current?.focus())
@@ -1308,12 +1295,12 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
       {isCircle && shownCircle ? <>
         <div className="qt-question-head qt-question-head--circle"><span className="qt-category">{categoryLabel(language, shownCircle.category)}</span><span className="qt-circle-letter" aria-hidden="true" key={shownCircle.deadline}>{shownCircle.letter}</span><p>{shownCircle.clue}</p></div>
         <div className="qt-circle-entry">
-          <input ref={circleInputRef} value={beats.active ? (state.circleReveal?.answer ?? '') : circleAnswer} disabled={circleLocked} maxLength={48} onChange={(event) => setCircleAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && circleAnswer.trim() && !circleLocked) { event.preventDefault(); sfx.play('lock'); onCircleAnswer(circleAnswer) } }} placeholder={t('circle.placeholder')} aria-label={t('circle.placeholder')} className={beats.active ? 'is-correct' : ''} />
-          <button className="qt-button qt-button--primary" disabled={!circleAnswer.trim() || circleLocked} onClick={() => { sfx.play('lock'); onCircleAnswer(circleAnswer) }}><Icon name="lock" /> {t('circle.lock')}</button>
+          <input ref={circleInputRef} value={beats.active ? (state.yourCircleAnswer ?? '') : (state.yourCircleAnswer ?? circleAnswer)} disabled={circleLocked} maxLength={48} onChange={(event) => setCircleAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && circleAnswer.trim() && !circleLocked) { event.preventDefault(); sfx.play('lock'); onCircleAnswer(circleAnswer) } }} placeholder={beats.active ? t('review.noAnswer') : t('circle.placeholder')} aria-label={t('circle.placeholder')} className={circleVerdict === 'right' ? 'is-correct' : circleVerdict === 'wrong' ? 'is-wrong' : state.yourCircleAnswer !== null ? 'is-locked' : ''} />
+          <button className={`qt-button ${circleLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!circleAnswer.trim() || circleLocked} onClick={() => { sfx.play('lock'); onCircleAnswer(circleAnswer) }}>{circleLocked && state.yourCircleAnswer !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
         </div>
         <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
-        <div className="qt-question-head" key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span>{shown.image && <img className="qt-question-image" src={`/questions/${shown.image}`} alt="" />}<h1>{language === 'en' ? shown.textEn : shown.text}</h1></div>
+        <div className="qt-question-head" key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span>{shown.image && <img className="qt-question-image" src={`/questions/${shown.image}`} alt="" />}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div>
         <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
             const isCorrect = beats.cards && index === correctIndex
@@ -1416,13 +1403,13 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
     </div>
     <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className="qt-question-stage qt-bet-stage">
       <div className="qt-question-head"><span className="qt-category">{state.bet?.category ? categoryLabel(language, state.bet.category) : ''}</span><h1>{t('bet.heading')}</h1><p>{t('bet.subheading')}</p></div>
-      <div className="qt-bet-bank"><Icon name="coin" /><b>{formatNumber(language, bankroll)}</b><span>{t('bet.bankroll')}</span></div>
+      <div className="qt-bet-bank"><Icon name="coins" weight="duotone" /><b>{formatNumber(language, bankroll)}</b><span>{t('bet.bankroll')}</span></div>
       {youAreSpectator ? <p className="qt-locked-note"><Icon name="eye" /> {t('spectator.watching')}</p>
         : waiting ? <p className="qt-locked-note">{t('bet.waitingNextMatch')}</p>
         : <>
           <div className="qt-bet-options" role="group" aria-label={t('bet.heading')}>
             {options.map((option, index) => <button key={option.key} type="button" className={`qt-bet-option ${locked && state.yourBet === option.amount ? 'is-selected' : ''}`} disabled={!canBet} onClick={() => { sfx.play('lock'); onBet(option.amount) }}>
-              <kbd aria-hidden="true">{'ABCD'[index]}</kbd><b>{option.label}</b><span>{formatNumber(language, option.amount)}</span>
+              <kbd aria-hidden="true">{index + 1}</kbd><b>{option.label}</b><span>{formatNumber(language, option.amount)}</span>
             </button>)}
           </div>
           <p className="qt-locked-note" data-empty={!locked}>{locked ? <><Icon name="lock" /> {t('bet.locked', { amount: formatNumber(language, state.yourBet ?? 0) })}</> : null}</p>
@@ -1614,7 +1601,6 @@ function PodiumRanking({ state, winner, rest, onAgain, onLeave, speakingIds, isD
         </div>}
         {/* Lider altın mikrofonu taşır: taç değil — gece yarısı yayın teması.
             (Makette kupa var; mikrofon bilinçli bir tema kararıydı, duruyor.) */}
-        <i className="qt-podium-mic" aria-hidden="true"><Icon name="mic" /></i>
         {/* 3B taverna karakteri: kutlama dekoru; model-viewer yalnızca bu
             fazda dinamik yüklenir, yüklenmezse boş kalır (avatar yeter). */}
         <PodiumCharacter />
@@ -1678,12 +1664,12 @@ function MatchSummaryCard({ state, summary, onAgain, onLeave }: { state: GameSta
   const cats = summary.perCategory.filter((item) => item.total > 0)
   return <div className="qt-summary-card">
     <div className="qt-summary-head">
-      <div className="qt-summary-brand"><span>Q</span><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
+      <div className="qt-summary-brand"><img src="/table/quiztavern-logo.png" alt="" /><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
       {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
       <div className="qt-summary-tile is-accuracy"><small>{t('summary.accuracy')}</small><div><b>{summary.correct} / {summary.total}</b><span>{formatPercent(language, pct)}</span></div></div>
-      <div className="qt-summary-tile is-streak"><small>{t('summary.streak')}</small><div><b>{summary.bestStreak}</b><span>{t('summary.streakUnit')} 🔥</span></div></div>
+      <div className="qt-summary-tile is-streak"><small>{t('summary.streak')}</small><div><b>{summary.bestStreak}</b><span>{t('summary.streakUnit')}{summary.bestStreak >= 2 && <FlameIcon />}</span></div></div>
       {summary.fastest
         ? <div className="qt-summary-tile is-fast"><small>{t('summary.fastest')}</small><div><b>{summary.fastest.name}</b><span>{(summary.fastest.ms / 1000).toFixed(1)} {t('summary.sec')}</span></div></div>
         : <div className="qt-summary-tile"><small>{t('summary.fastest')}</small><div><b>—</b></div></div>}
@@ -1809,7 +1795,7 @@ function PipCard({ state }: { state: GameState | null }) {
   return <main className="qt-pip" aria-live="polite">
     {/* Tasarım 3c: baş bölünür — marka solda (yüzen pencere hangi uygulama?),
         durum sağda. Eskiden "Q + tur" tek blok soldaydı, wordmark yoktu. */}
-    <div className="qt-pip__head"><div className="qt-pip__brand"><span>Q</span><b>{t('brand.name')}</b></div><span className="qt-pip__tag">{tag}</span></div>
+    <div className="qt-pip__head"><div className="qt-pip__brand"><img src="/table/quiztavern-logo.png" alt="" /><b>{t('brand.name')}</b></div><span className="qt-pip__tag">{tag}</span></div>
     <div className="qt-pip__body">{body}</div>
     <small className="qt-pip__hint">{t('pip.tapToReturn')}</small>
   </main>
@@ -1817,7 +1803,7 @@ function PipCard({ state }: { state: GameState | null }) {
 
 function ActivityHome({ onRejoin }: { onRejoin: () => void }) {
   const { t } = useI18n()
-  return <main className="qt-activity qt-return-home" style={{ '--home-art': "url('/assets/discord-activity/activity-classic-stage.webp')" } as CSSProperties}><div className="qt-return-home__haze" /><header className="qt-activity-bar"><div className="qt-brand-mark"><span>Q</span><b>{t('brand.name')}</b></div></header><section className="qt-return-home__card"><span>{t('home.kicker')}</span><h1>{t('home.title')}</h1><p>{t('home.body')}</p><button className="qt-button qt-button--primary" onClick={onRejoin}><Icon name="people" /> {t('home.rejoin')}</button></section></main>
+  return <main className="qt-activity qt-return-home" style={{ '--home-art': "url('/assets/discord-activity/activity-classic-stage.webp')" } as CSSProperties}><div className="qt-return-home__haze" /><header className="qt-activity-bar"><div className="qt-brand-mark"><img src="/table/quiztavern-logo.png" alt="" /><b>{t('brand.name')}</b></div></header><section className="qt-return-home__card"><span>{t('home.kicker')}</span><h1>{t('home.title')}</h1><p>{t('home.body')}</p><button className="qt-button qt-button--primary" onClick={onRejoin}><Icon name="people" /> {t('home.rejoin')}</button></section></main>
 }
 
 /**
@@ -1855,7 +1841,7 @@ function ReconnectOverlay({ droppedAt, inMatch, onReconnect, onLeave }: { droppe
 /** Masaya kısa tepki. Gönderim hız sınırı SUNUCUDA; burası sadece arayüz. */
 function EmoteBar({ emotes, players, onSend }: { emotes: LiveEmote[]; players: PublicPlayer[]; onSend: (emote: EmoteKey) => void }) {
   const { t } = useI18n()
-  const glyphs: Record<EmoteKey, string> = { flame: '🔥', heart: '💖', star: '⭐' }
+  const glyphs: Record<EmoteKey, React.ReactNode> = { flame: <Icon name="flame" weight="fill" />, heart: <Icon name="heart" weight="fill" />, star: <Icon name="star" weight="fill" /> }
   const labels: Record<EmoteKey, StringKey> = { flame: 'emote.flame', heart: 'emote.heart', star: 'emote.star' }
   return <>
     <div className="qt-emote-bar" aria-label={t('emote.label')}>
@@ -1901,9 +1887,9 @@ function HowToPlayModal({ onClose }: { onClose: (dontShow: boolean) => void }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose, dontShow])
   const steps: { icon: IconName; color: string; title: StringKey; body: StringKey }[] = [
-    { icon: 'spark', color: '#f3c362', title: 'howto.step1Title', body: 'howto.step1Body' },
-    { icon: 'bolt', color: '#62e8df', title: 'howto.step2Title', body: 'howto.step2Body' },
-    { icon: 'crown', color: '#f3c362', title: 'howto.step3Title', body: 'howto.step3Body' },
+    { icon: 'cards', color: '#f3c362', title: 'howto.step1Title', body: 'howto.step1Body' },
+    { icon: 'lock', color: '#62e8df', title: 'howto.step2Title', body: 'howto.step2Body' },
+    { icon: 'trophy', color: '#f3c362', title: 'howto.step3Title', body: 'howto.step3Body' },
   ]
   return <div className="qt-howto-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(dontShow) }}>
     <section ref={trapRef} className="qt-howto-modal" role="dialog" aria-modal="true" aria-labelledby="howto-title">
@@ -1921,7 +1907,7 @@ function HowToPlayModal({ onClose }: { onClose: (dontShow: boolean) => void }) {
       </div>)}</div>
       <div className="qt-howto-modal__foot">
         <button type="button" className={`qt-howto-modal__dontshow ${dontShow ? 'is-checked' : ''}`} onClick={() => setDontShow((value) => !value)} aria-pressed={dontShow}>
-          <span className="qt-howto-modal__checkbox" aria-hidden="true">{dontShow ? '✓' : ''}</span>{t('howto.dontShow')}
+          <span className="qt-howto-modal__checkbox" aria-hidden="true">{dontShow ? <Icon name="check" /> : null}</span>{t('howto.dontShow')}
         </button>
         <button type="button" className="qt-button qt-button--gold" onClick={() => onClose(dontShow)}>{t('howto.close')}</button>
       </div>

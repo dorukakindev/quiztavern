@@ -1,15 +1,14 @@
 import { useEffect, useRef, useState } from 'react'
-import type { AnimationItem } from 'lottie-web/build/player/lottie_light'
 import { storageGet, storageSet } from '../lib/storage'
 import { useI18n } from './i18n'
+import { Icon } from './icons'
 
 /**
- * Masa sahnesinin dekoru: arkaplan videosu, marka logosu ve galaksi.
+ * Masa sahnesinin dekoru: arkaplan videosu, marka logosu, müzik.
  *
  * KURAL: Buradaki hiçbir kütüphane CDN'den gelmez. Discord Activity'nin CSP'si
  * yalnızca kendi proxy alan adımıza izin verir; unpkg/jsdelivr'den yüklenen bir
- * script ya da WASM `blocked:csp` ile ölür. Bu yüzden lottie npm'den kurulup
- * bundle'a giriyor, asset'ler de kendi origin'imizden servis ediliyor
+ * script ya da WASM `blocked:csp` ile ölür. Asset'ler kendi origin'imizden servis ediliyor
  * (client/public/table/).
  */
 
@@ -61,52 +60,6 @@ export function TableLogo() {
   </div>
 }
 
-/** Diskin içindeki galaksi. Saf JS lottie: WASM yok, CDN yok. */
-export function GalaxyLoop() {
-  const host = useRef<HTMLDivElement>(null)
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
-  useEffect(() => {
-    const query = window.matchMedia?.('(prefers-reduced-motion: reduce)')
-    if (!query) return
-    const onChange = () => setReducedMotion(query.matches)
-    if (typeof query.addEventListener === 'function') {
-      query.addEventListener('change', onChange)
-      return () => query.removeEventListener('change', onChange)
-    }
-    const legacyQuery = query as unknown as { addListener: (listener: () => void) => void; removeListener: (listener: () => void) => void }
-    legacyQuery.addListener(onChange)
-    return () => legacyQuery.removeListener(onChange)
-  }, [])
-  useEffect(() => {
-    if (!host.current) return
-    if (reducedMotion) return
-    let animation: AnimationItem | null = null
-    let cancelled = false
-    // lottie-web (~ağır) ve galaxy.json paralel yüklenir: dekor olduğu için
-    // ana bundle'ı büyütmesin, ilk boyanan ekranı geciktirmesin.
-    Promise.all([
-      import('lottie-web/build/player/lottie_light'),
-      fetch('/table/galaxy.json').then((response) => response.json()),
-    ])
-      .then(([{ default: lottie }, data]) => {
-        if (cancelled || !host.current) return
-        // loop:false + tamamlanınca yön ters çevir: başa sıçramadan, geriye
-        // doğru oynayarak biter — döngü noktası fark edilmez ("bounce" efekti).
-        animation = lottie.loadAnimation({ container: host.current, renderer: 'svg', loop: false, autoplay: true, animationData: data })
-        animation.setSpeed(0.5)
-        let direction: 1 | -1 = 1
-        animation.addEventListener('complete', () => {
-          direction = direction === 1 ? -1 : 1
-          animation?.setDirection(direction)
-          animation?.play()
-        })
-      })
-      .catch(() => { /* dekor: gelmezse disk boş kalır, oyun etkilenmez */ })
-    return () => { cancelled = true; animation?.destroy() }
-  }, [reducedMotion])
-  return <div className="qt-galaxy" ref={host} aria-hidden="true" />
-}
-
 /**
  * Arkaplan müziği. Varsayılan KAPALI — tasarımda da öyle, ve tarayıcılar sesli
  * otomatik oynatmayı zaten kullanıcı etkileşimine kadar engeller. Tercih
@@ -129,7 +82,6 @@ export function MusicToggle() {
   }, [on])
   useEffect(() => () => { audio.current?.pause(); audio.current = null }, [])
   return <button className={`qt-music-toggle ${on ? 'is-on' : ''}`} onClick={() => setOn((value) => !value)} title={t('music.toggle')} aria-label={t('music.toggle')} aria-pressed={on}>
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
-    {!on && <i className="qt-music-toggle__slash" aria-hidden="true" />}
+    <Icon name={on ? 'music' : 'musicOff'} className={on ? '' : 'is-muted'} />
   </button>
 }
