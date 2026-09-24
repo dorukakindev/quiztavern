@@ -1,0 +1,12 @@
+# QuizTavern — Caddy reverse proxy (otomatik HTTPS, Let's Encrypt)
+# <DOMAIN> yerine DuckDNS alt alanı (ör. quiztavern.duckdns.org) veya
+# <public-ip>.sslip.io yazılır. Caddy sertifikayı kendisi alır/yeniler.
+#
+# Kurulum (VM içinde):  apt install -y caddy
+# Bu dosyayı /etc/caddy/Caddyfile olarak yazıp `systemctl reload caddy`.
+
+<DOMAIN> {
+	reverse_proxy 127.0.0.1:8080
+	# Socket.IO WebSocket'leri reverse_proxy ile doğal geçer (Upgrade header).
+	# Activity iframe + /auth/callback + /health aynı porttan dışarı açılır.
+}
