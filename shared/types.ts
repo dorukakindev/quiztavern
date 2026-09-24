@@ -24,7 +24,8 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "duel"
   | "zil"
   | "numeric"
-  | "blitz";
+  | "blitz"
+  | "timeline";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -293,6 +294,34 @@ export interface BlitzSummaryPayload {
   durationMs: number;
 }
 
+/** Zaman Çizelgesi (§6.1): 4 olay kronolojik sıraya dizilir. `items` istemcinin
+ *  gördüğü karışık sıra (yıllar gizli); `orderIdx[i]` ekrandaki i. kutunun
+ *  events[] içindeki indeksidir — cevap bu dizilimin permütasyonu. */
+export interface TimelineQuestionPayload {
+  category: string;
+  text: string;
+  textEn?: string;
+  items: string[];
+  itemsEn?: string[];
+  /** Ekran sırası → orijinal events indeksi. */
+  orderIdx: number[];
+  deadline: number;
+  durationMs: number;
+}
+
+/** Zaman Çizelgesi reveal'ı: doğru sıra yıllarıyla açılır; herkesin dizimi
+ *  ve kaç pozisyonu doğru tutturduğu görünür. */
+export interface TimelineRevealPayload {
+  /** Kronolojik doğru sıradaki olaylar (yıl etiketi dahil). */
+  ordered: { label: string; labelEn?: string; when: string; whenEn?: string }[];
+  /** Oyuncu id → kendi dizimi (events indeksleri, en eskiden yeniye). */
+  orders: Record<string, number[]>;
+  /** Oyuncu id → doğru pozisyon sayısı (0-4). */
+  hits: Record<string, number>;
+  until: number;
+  durationMs: number;
+}
+
 /** Maç soru açılmadan önce, tüm istemcilerin aynı anda oynattığı geri sayım. */
 export interface CountdownPayload {
   deadline: number;
@@ -551,6 +580,12 @@ export interface GameState {
   blitz: BlitzLivePayload | null;
   /** D/Y Blitz özet tablosu; o modda reveal fazında dolu. */
   blitzSummary: BlitzSummaryPayload | null;
+  /** Zaman Çizelgesi turu; o modda question fazında dolu. */
+  timeline: TimelineQuestionPayload | null;
+  /** Zaman Çizelgesi çözümü; o modda reveal fazında dolu. */
+  timelineReveal: TimelineRevealPayload | null;
+  /** Sıralama modunda izleyenin kilitlediği dizim (question fazında). */
+  yourOrder: number[] | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;
@@ -650,6 +685,7 @@ export const EV = {
   WORD_LETTER: "word-letter",
   /** Yakın Tahmin: { value } — turun sayısal tahminini kilitler */
   NUMERIC_ANSWER: "numeric-answer",
+  ORDER_ANSWER: "order-answer",
   /** Çifte Bahis: { amount } — bahis fazında yatırılan tutar (0..bankroll) */
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */

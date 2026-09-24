@@ -149,10 +149,11 @@ const MODE_KEYS = {
   zil: { name: 'mode.zil', meta: 'mode.zil.meta', tag: 'mode.zil.tag', icon: 'bolt' },
   numeric: { name: 'mode.numeric', meta: 'mode.numeric.meta', tag: 'mode.numeric.tag', icon: 'target' },
   blitz: { name: 'mode.blitz', meta: 'mode.blitz.meta', tag: 'mode.blitz.tag', icon: 'scale' },
+  timeline: { name: 'mode.timeline', meta: 'mode.timeline.meta', tag: 'mode.timeline.tag', icon: 'clock' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : mode === 'blitz' ? 'blitz' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : mode === 'blitz' ? 'blitz' : mode === 'timeline' ? 'timeline' : 'classic'
 }
 
 /**
@@ -416,7 +417,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric', 'blitz'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric', 'blitz', 'timeline'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -1307,7 +1308,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onNumericAnswer, onUseCard, onLeave, onSpectate, onReport, onPredict, onBuzz, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onNumericAnswer?: (value: number) => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; onBuzz?: () => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onNumericAnswer, onOrderAnswer, onUseCard, onLeave, onSpectate, onReport, onPredict, onBuzz, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onNumericAnswer?: (value: number) => void; onOrderAnswer?: (order: number[]) => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; onBuzz?: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
@@ -1319,6 +1320,9 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const isNumeric = state.gameMode === 'numeric'
   const numeric = state.numeric
   const isBlitz = state.gameMode === 'blitz'
+  const isTimeline = state.gameMode === 'timeline'
+  const [orderPick, setOrderPick] = useState<number[]>([])
+  useEffect(() => { setOrderPick([]) }, [state.timeline?.deadline])
   const isZil = state.gameMode === 'zil'
   const zilWinner = state.zil?.winnerId ?? null
   const zilWinnerName = zilWinner ? state.players.find((p) => p.id === zilWinner)?.name : null
@@ -1563,6 +1567,54 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
                 </div>
               </>
             : <p className="qt-locked-note">{state.blitz ? t('blitz.done') : t('game.waitingNextRound')}</p>}
+      </> : isTimeline ? <>
+        {/* Zaman Çizelgesi (§6.1): 4 olayı en eskiden yeniye sırayla dokun.
+            Yıllar soru fazında gizli; her doğru pozisyon +100. Reveal'da doğru
+            sıra yıllarıyla açılır, herkesin dizimi ve isabeti listelenir. */}
+        {state.timelineReveal
+          ? <div className="qt-order-board">
+              <ol className="qt-order-sol" role="list">
+                {state.timelineReveal.ordered.map((e, i) => <li key={i} className="qt-order-solrow"><span className="qt-order-rank">{i + 1}</span><span className="qt-order-label">{language === 'en' && e.labelEn ? e.labelEn : e.label}</span><em className="qt-order-when">{language === 'en' && e.whenEn ? e.whenEn : e.when}</em></li>)}
+              </ol>
+              <div className="qt-order-results">
+                {state.players.filter((p) => !p.waiting).map((p) => {
+                  const order = state.timelineReveal!.orders[p.id]
+                  const seq = order && state.timeline
+                    ? order.map((ev) => {
+                        const disp = state.timeline!.orderIdx.indexOf(ev)
+                        const label = language === 'en' && state.timeline!.itemsEn ? state.timeline!.itemsEn[disp] : state.timeline!.items[disp]
+                        return label
+                      }).join(' → ')
+                    : '—'
+                  return <div key={p.id} className={`qt-order-row ${p.id === self?.id ? 'is-you' : ''}`}>
+                    <span className="qt-order-hit">{state.timelineReveal!.hits[p.id] ?? 0}/4</span>
+                    <span className="qt-blitz-label">{p.name}</span>
+                    <span className="qt-blitz-pickers">{seq}</span>
+                  </div>
+                })}
+              </div>
+            </div>
+          : state.timeline
+            ? <>
+                <div className="qt-question-head"><span className="qt-category">{categoryLabel(language, state.timeline.category)}</span><h1 className={questionLengthClass(language === 'en' && state.timeline.textEn ? state.timeline.textEn : state.timeline.text)}>{language === 'en' && state.timeline.textEn ? state.timeline.textEn : state.timeline.text}</h1></div>
+                <p className="qt-order-hint">{t('order.hint')}</p>
+                <ol className="qt-order-list" role="list">
+                  {state.timeline.items.map((label, i) => {
+                    const pos = orderPick.indexOf(state.timeline!.orderIdx[i])
+                    return <li key={i}><button type="button" disabled={state.yourOrder !== null || waiting} className={`qt-order-item ${pos >= 0 ? 'is-picked' : ''}`} onClick={() => {
+                      const ev = state.timeline!.orderIdx[i]
+                      let next: number[]
+                      if (pos >= 0) next = orderPick.slice(0, pos) // geri al: sonrasını sil
+                      else next = [...orderPick, ev]
+                      setOrderPick(next)
+                      sfx.play('lock')
+                      if (next.length === state.timeline!.items.length) onOrderAnswer?.(next)
+                    }}>{pos >= 0 && <span className="qt-order-badge">{pos + 1}</span>}{language === 'en' && state.timeline!.itemsEn ? state.timeline!.itemsEn[i] : label}</button></li>
+                  })}
+                </ol>
+                <p className="qt-locked-note" data-empty={state.yourOrder === null}>{state.yourOrder !== null ? <><Icon name="check" /> {t('circle.answerLocked')}</> : t('order.progress', { n: orderPick.length, total: state.timeline.items.length })}</p>
+              </>
+            : null}
       </> : shown ? <>
         <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         {cardsEnabled ? <div className="qt-card-bar">
@@ -2359,7 +2411,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} onNumericAnswer={game.answerNumeric} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} onNumericAnswer={game.answerNumeric} onOrderAnswer={game.answerOrder} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
     // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.

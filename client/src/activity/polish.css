@@ -704,3 +704,23 @@
 .qt-blitz-row.is-wrong .qt-blitz-mark { color: #f87171; }
 .qt-blitz-label { font-weight: 800; }
 .qt-blitz-pickers { font-size: 0.85em; color: rgba(255, 255, 255, 0.7); text-align: right; }
+
+/* ── Zaman Çizelgesi ────────────────────────────────────────────────── */
+.qt-order-hint { margin: .35rem 0 .5rem; font-size: .8rem; color: var(--ink-2); text-align: center; }
+.qt-order-list { list-style: none; margin: 0; padding: 0; display: grid; gap: .5rem; }
+.qt-order-item { width: 100%; display: flex; align-items: center; gap: .55rem; padding: .65rem .8rem; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-size: .92rem; text-align: left; cursor: pointer; transition: border-color .15s ease, transform .15s ease, background .15s ease; }
+.qt-order-item:hover:not(:disabled) { border-color: var(--gold); transform: translateY(-1px); }
+.qt-order-item:disabled { cursor: default; }
+.qt-order-item.is-picked { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 12%, var(--card)); }
+.qt-order-badge { flex: none; width: 1.5rem; height: 1.5rem; border-radius: 50%; display: grid; place-items: center; font-size: .78rem; font-weight: 700; background: var(--gold); color: var(--bg); }
+.qt-order-board { display: grid; gap: .8rem; }
+.qt-order-sol { list-style: none; margin: 0; padding: 0; display: grid; gap: .4rem; }
+.qt-order-solrow { display: grid; grid-template-columns: 1.5rem 1fr auto; align-items: center; gap: .55rem; padding: .5rem .7rem; border-radius: 10px; background: var(--card); border: 1px solid var(--line); }
+.qt-order-rank { width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center; font-size: .75rem; font-weight: 700; background: var(--line); color: var(--ink); }
+.qt-order-solrow .qt-order-label { font-size: .9rem; }
+.qt-order-when { font-style: normal; font-size: .75rem; color: var(--gold); font-weight: 600; white-space: nowrap; }
+.qt-order-results { display: grid; gap: .35rem; }
+.qt-order-row { display: grid; grid-template-columns: auto auto 1fr; gap: .55rem; align-items: center; padding: .4rem .7rem; border-radius: 10px; background: var(--card); border: 1px solid var(--line); font-size: .82rem; }
+.qt-order-row.is-you { border-color: var(--gold); }
+.qt-order-hit { font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+.qt-order-row .qt-blitz-pickers { font-size: .72rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
