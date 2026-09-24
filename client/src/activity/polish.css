@@ -226,3 +226,15 @@
 /* ---------- Bulanık Resim ---------- */
 .qt-scene-emblem.is-blur { border-color: rgba(126, 196, 255, .65); color: #7ec4ff; }
 .qt-question-image { will-change: filter, transform; }
+
+/* Tripo mod nesneleri: masa sahnesindeki fiziksel amblem (webp, şeffaf).
+   İkon ambleminden farklı olarak halka/gradient yok — render kendi
+   derinliğini taşıyor, sadece gölge eklenir. */
+.qt-scene-emblem.is-art { width: 96%; background: none; }
+.qt-scene-emblem.is-art img { width: 100%; filter: drop-shadow(0 14px 18px rgba(0, 0, 0, .5)); }
+.qt-mode-card__tile img { width: 100%; height: 100%; object-fit: contain; }
+.qt-mode-option__icon img { width: 34px; height: 34px; object-fit: contain; }
+
+/* Lobide barmen baykuş: köşede küçük maskot. */
+.qt-lobby-owl { position: absolute; right: 14px; bottom: 10px; width: clamp(58px, 8.5vw, 108px); opacity: .94; pointer-events: none; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .5)); z-index: 1; }
+@media (max-height: 430px) { .qt-lobby-owl { width: 54px; } }

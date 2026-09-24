@@ -385,6 +385,15 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
 const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur'] as const
+// Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
+// şeffaf). Bu listede olmayan modlar ikonla gösterilir.
+const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
+  classic: '/emblems/classic.webp',
+  circle: '/emblems/circle.webp',
+  lightning: '/emblems/lightning.webp',
+  bet: '/emblems/bet.webp',
+  team: '/emblems/team.webp',
+}
 function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boolean; onSetMode: (mode: GameMode) => void }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
@@ -401,7 +410,7 @@ function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boole
   const triggerLabel = activeOther ? t(MODE_KEYS[activeOther].name) : t('mode.more')
   return <>
     <button type="button" className={`qt-mode-card qt-mode-card--other ${activeOther ? 'is-selected' : ''}`} disabled={!isHost} aria-haspopup="dialog" aria-expanded={open} title={activeOther ? t(MODE_KEYS[activeOther].meta) : t('mode.more')} onClick={() => setOpen(true)}>
-      <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={triggerIcon} weight="duotone" /></i>
+      <i className="qt-mode-card__tile" aria-hidden="true">{activeOther && MODE_EMBLEMS[activeOther] ? <img src={MODE_EMBLEMS[activeOther]} alt="" /> : <Icon name={triggerIcon} weight="duotone" />}</i>
       <b>{triggerLabel}</b>
     </button>
     {open && createPortal(
@@ -413,7 +422,7 @@ function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boole
           </div>
           <div className="qt-mode-options">
             {OTHER_MODES.map((item) => <button type="button" key={item} className={`qt-mode-option is-${item} ${mode === item ? 'is-selected' : ''}`} aria-pressed={mode === item} onClick={() => { onSetMode(item); setOpen(false) }}>
-              <i className="qt-mode-option__icon" aria-hidden="true"><Icon name={MODE_KEYS[item].icon} weight="duotone" /></i>
+              <i className="qt-mode-option__icon" aria-hidden="true">{MODE_EMBLEMS[item] ? <img src={MODE_EMBLEMS[item]} alt="" /> : <Icon name={MODE_KEYS[item].icon} weight="duotone" />}</i>
               <b>{t(MODE_KEYS[item].name)}</b>
               <small>{t(MODE_KEYS[item].meta)}</small>
               {mode === item && <span className="qt-mode-option__check" aria-hidden="true"><Icon name="check" /></span>}
@@ -684,13 +693,9 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 function ModeTableScene({ mode }: { mode: GameMode }) {
   const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
-    {scene === 'bet' && <div className="qt-scene-emblem is-bet"><Icon name="coins" weight="duotone" /></div>}
-    {scene === 'team' && <div className="qt-scene-emblem is-team"><Icon name="teams" weight="duotone" /></div>}
+    {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
     {scene === 'elim' && <div className="qt-scene-emblem is-elim"><Icon name="heart" weight="duotone" /></div>}
     {scene === 'blur' && <div className="qt-scene-emblem is-blur"><Icon name="eye" weight="duotone" /></div>}
-    {scene === 'classic' && <div className="qt-scene-deck"><i /><i /><i /><b><Icon name="question" weight="bold" /></b></div>}
-    {scene === 'lightning' && <div className="qt-scene-clock"><i className="qt-scene-clock__marks" /><i className="qt-scene-clock__hand" /><b><Icon name="fuse" weight="duotone" /></b></div>}
-    {scene === 'circle' && <div className="qt-scene-letters">{['A', 'B', 'Ç', 'D', 'E', 'F', 'G', 'H'].map((letter, index) => <i key={letter} style={{ '--letter-angle': `${index * 45}deg`, '--letter-counter-angle': `${index * -45}deg` } as CSSProperties}>{letter}</i>)}<b>?</b></div>}
   </div>
 }
 
@@ -1005,6 +1010,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
 
   return <main className="qt-activity qt-lobby">
     <TableBackdrop />
+    <img className="qt-lobby-owl" src="/emblems/owl.webp" alt="" aria-hidden="true" />
     {/* Marka şeridi yok: Discord uygulamanın adını zaten kendi arayüzünde
         gösteriyor, içeride tekrarı alçak iframe'de masadan yer çalıyordu.
         İşlevsel olanlar (müzik, dil) köşede yüzer; bağlantı rozeti yalnızca
@@ -1029,7 +1035,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
               hep göstermek satır taşırıyor + gözü dağıtıyordu. */}
           <div className="qt-mode-list">
             {(['classic', 'circle'] as const).map((item) => <button className={`qt-mode-card qt-mode-card--${item} ${mode === item ? 'is-selected' : ''}`} key={item} disabled={!isHost} aria-pressed={mode === item} title={t(MODE_KEYS[item].meta)} onClick={() => onSetMode(item)}>
-              <i className="qt-mode-card__tile" aria-hidden="true"><Icon name={MODE_KEYS[item].icon} weight="duotone" /></i>
+              <i className="qt-mode-card__tile" aria-hidden="true"><img src={MODE_EMBLEMS[item]} alt="" /></i>
               <b>{t(MODE_KEYS[item].name)}</b>
             </button>)}
             <ModePicker mode={mode} isHost={isHost} onSetMode={onSetMode} />
