@@ -154,6 +154,9 @@ export interface XpStore {
   snapshot(userId: string, now?: Date): ProgressSnapshot | null;
   /** Maç sonuçlarını kalıcı yazar; oyuncu → kazanım haritası döner. */
   recordMatch(entries: MatchFinishedEntry[], now?: Date): Map<string, XpGain>;
+  /** Maç dışı küçük XP grantı (izleyici kazanan tahmini): sayaçlara yazmaz,
+   *  yalnız XP + sezon puanı verir ve kazanımı döner. */
+  bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
   /** Güncel sezonun ilk `limit` sırası. */
   seasonBoard(limit?: number, now?: Date): SeasonBoard;
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına
@@ -374,6 +377,30 @@ export function createXpStore(file: string): XpStore {
       });
       writeAll();
       return gains;
+    },
+    bonusXp({ userId, name, avatarUrl, amount }) {
+      // Maç dışı küçük XP (izleyici tahmini vb.): XP ve sezon puanı yazar ama
+      // maç/galibiyet/isabet sayaçlarına dokunmaz — izlemek oynamak değildir.
+      const row = getPlayer.get(userId) as PlayerRow | undefined;
+      const oldXp = row?.xp ?? 0;
+      const oldLevel = levelFor(oldXp);
+      const oldLeague = leagueFor(oldXp);
+      const xp = oldXp + amount;
+      const now = new Date();
+      upsertPlayer.run({
+        userId, name, avatarUrl, xp,
+        matches: row?.matches ?? 0,
+        wins: row?.wins ?? 0,
+        correctTotal: row?.correct_total ?? 0,
+        bestStreak: row?.best_streak ?? 0,
+        streakDays: row?.streak_days ?? 0,
+        lastDay: row?.last_day ?? null,
+        updatedAt: now.getTime(),
+      });
+      upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
+      const level = levelFor(xp);
+      const league = leagueFor(xp);
+      return { gained: amount, xp, level, league, leveledUp: level > oldLevel, leagueChanged: league !== oldLeague };
     },
     title(userId) {
       const row = getPlayer.get(userId) as PlayerRow | undefined;

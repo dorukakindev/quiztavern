@@ -475,10 +475,18 @@ function GameLeaveButton({ onLeave, floating = false }: { onLeave: () => void; f
 
 /** İzleyici çubuğu: oyun/podyum fazlarında izleyene "izliyorsun" der ve boş koltuk
  *  varsa "Oyna" ile oturtur (lobide bu iş you-panel'de). Sabit alt overlay. */
-function SpectatorBar({ canSit, onTakeSeat }: { canSit: boolean; onTakeSeat: () => void }) {
+function SpectatorBar({ state, canSit, onTakeSeat, onPredict }: { state: GameState; canSit: boolean; onTakeSeat: () => void; onPredict: (targetId: string) => void }) {
   const { t } = useI18n()
+  const pick = state.yourPrediction
+  const picked = pick ? state.players.find((p) => p.id === pick) : null
+  const ownGain = state.phase === 'podium' && pick ? state.xpGains?.[state.youId] : null
   return <div className="qt-spectator-bar" role="status">
     <span><Icon name="eye" /> {t('spectator.watching')}</span>
+    {/* Kazanan tahmini (§6.3): pencere maç başında açık, bilene podyumda +XP. */}
+    {state.predictOpen && (picked
+      ? <span className="qt-predict-yours"><Icon name="check" /> {t('predict.yours', { name: picked.name })}</span>
+      : <span className="qt-predict-bar"><small>{t('predict.title')}</small>{state.players.map((p) => <button key={p.id} type="button" className="qt-predict-chip" onClick={() => onPredict(p.id)}><Avatar player={p} compact />{p.name}</button>)}</span>)}
+    {ownGain && <span className="qt-predict-win"><Icon name="check" /> {t('predict.win', { xp: ownGain.gained })}</span>}
     <button type="button" className="qt-button qt-button--primary" disabled={!canSit} onClick={onTakeSeat}>
       {canSit ? <><Icon name="people" /> {t('spectator.play')}</> : t('spectator.full')}
     </button>
@@ -2229,7 +2237,7 @@ export function ActivityApp() {
     <div className={`qt-activity-root is-${activity.layoutMode} ${showSpectatorBar ? 'has-spectator-bar' : ''}`}>{!isPip && !onGameScene && !activity.lowPower && <AmbientShader />}{body}</div>
     {!isPip && inGame && !showDrop && <EmoteBar emotes={game.emotes} players={game.state!.players} onSend={game.sendEmote} />}
     {/* İzleyici çubuğu: oyun/podyum fazlarında (lobide you-panel hallediyor). */}
-    {showSpectatorBar && <SpectatorBar canSit={game.state!.players.length < 8} onTakeSeat={game.takeSeat} />}
+    {showSpectatorBar && <SpectatorBar state={game.state!} canSit={game.state!.players.length < 8} onTakeSeat={game.takeSeat} onPredict={game.predict} />}
     {showDrop && <ReconnectOverlay droppedAt={game.droppedAt!} inMatch={inMatch} onReconnect={game.reconnectNow} onLeave={confirmLeave} />}
     {!isPip && !showDrop && leaveConfirmOpen && <LeaveConfirm alone={aloneAtTable} onCancel={() => setLeaveConfirmOpen(false)} onConfirm={confirmLeave} />}
     {!isPip && showCurtain && <BootCurtain fading={booted} />}

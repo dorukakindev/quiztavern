@@ -127,6 +127,8 @@ export const GAME = {
   ELIM_LIVES: 3,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
+  /** İzleyici kazanan tahmini: doğru bilene verilen XP. */
+  PREDICT_XP: 25,
   /** Kategori ustalığı (§6.4): kategori başına bu kadar doğruyu geçen
    *  oyuncu o kategorinin ustası olur — rozeti + kategori ikonunda işaret. */
   MASTERY_CORRECT: 50,

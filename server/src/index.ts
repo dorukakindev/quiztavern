@@ -629,6 +629,14 @@ io.on("connection", (socket) => {
       const t = toToast(error, "err.rematchPhase"); toast(socket.id, t.key, t.params);
     }
   });
+  socket.on(EV.PREDICT, (payload: unknown) => {
+    const targetId = typeof payload === "object" && payload !== null ? (payload as { targetId?: unknown }).targetId : undefined;
+    try {
+      room.predict(user.id, targetId);
+    } catch (error) {
+      const t = toToast(error, "err.predictFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
   socket.on(EV.PLAY_AGAIN, () => {
     if (room.phase !== "podium") return;
     try {

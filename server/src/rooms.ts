@@ -104,6 +104,8 @@ export interface ProgressStore {
   snapshot(userId: string): ProgressSnapshot | null;
   seasonBoard(limit?: number): SeasonBoard;
   recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
+  /** Maç dışı küçük XP grantı — izleyici kazanan tahmini. Sayaçlara yazmaz. */
+  bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
   /** Ustalık kazanılan kategori adları — kategori ikonu işareti için. */
   categoryMastery(userId: string): string[];
   title(userId: string): BadgeKey | null;
@@ -173,6 +175,9 @@ export class Room {
   /** Podyumda rövanş isteyen oyuncular. Eşik: bağlı insan oyuncuların
    *  yarısından fazlası; aşılınca host'u beklemeden yeni maç başlar. */
   private rematchVotes = new Set<string>();
+  /** İzleyici tahminleri (§6.3): spectatorId → kazanan adayı playerId.
+   *  Yalnız maç başında (geri sayım + ilk tur) alınır; bilene finish'te XP. */
+  private predictions = new Map<string, string>();
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
@@ -455,6 +460,7 @@ export class Room {
     if (!this.spectators.has(user.id)) return;
     if (this.players.size >= GAME.MAX_PLAYERS) throw new GameError("err.tableFull");
     this.spectators.delete(user.id);
+    this.predictions.delete(user.id); // masaya oturdu — artık tahmin değil oyun
     this.addPlayer({ id: user.id, name: user.name, avatarUrl: user.avatarUrl, socketId: user.socketId, isBot: false });
   }
 
@@ -523,6 +529,24 @@ export class Room {
       player.eligibleFrom = 0;
     }
     this.rematchVotes.clear();
+    this.broadcast();
+  }
+
+  /** Tahmin penceresi: geri sayım ve ilk tur açıkken (soru/bahis fazı, qIndex 0)
+   *  izleyici kazananı seçebilir. İlk reveal'den sonra oynamış bilgiyle tahmin
+   *  hile olur — kapanır. */
+  private predictOpen(): boolean {
+    if (this.phase === "countdown") return true;
+    return (this.phase === "question" || this.phase === "bet") && this.qIndex === 0;
+  }
+
+  /** İzleyici kazanan tahmini (§6.3). Tek izleyici tek hedef; değiştirilebilir
+   *  (pencere açıkken). Doğru bilenler finish'te GAME.PREDICT_XP alır. */
+  predict(spectatorId: string, targetId: unknown): void {
+    if (!this.spectators.has(spectatorId)) return; // oyuncu/bot tahmin kullanamaz
+    if (!this.predictOpen()) throw new GameError("err.predictPhase");
+    if (typeof targetId !== "string" || !this.players.has(targetId)) throw new GameError("err.invalidTarget");
+    this.predictions.set(spectatorId, targetId);
     this.broadcast();
   }
 
@@ -802,6 +826,7 @@ export class Room {
     this.rescueRound = new Set();
     this.lightningBurn = 0;
     this.rematchVotes.clear();
+    this.predictions.clear();
     this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
     this.gameMode = normalizedMode;
     this.dailyMatch = daily;
@@ -1111,6 +1136,8 @@ export class Room {
       rematch: this.phase === "podium"
         ? { votes: this.rematchVotes.size, needed: this.rematchNeeded(), youVoted: this.rematchVotes.has(youId) }
         : null,
+      yourPrediction: this.predictions.get(youId) ?? null,
+      predictOpen: this.predictOpen(),
       minPlayers: this.minPlayers,
       questionCount: this.questionCount,
       difficulty: this.difficulty,
@@ -1536,6 +1563,19 @@ export class Room {
     }
     this.podiumSnapshot = this.snapshotPodium();
     this.fastestFingerSnapshot = this.fastestFinger();
+    // İzleyici tahmini: podyum birincisini bilenlere XP (sayaçlara yazmaz).
+    if (this.progress && this.predictions.size) {
+      const winnerId = this.podiumSnapshot?.[0]?.id;
+      for (const [spectatorId, target] of this.predictions) {
+        if (target !== winnerId) continue;
+        const spectator = this.spectators.get(spectatorId);
+        if (!spectator) continue;
+        try {
+          const gain = this.progress.bonusXp({ userId: spectator.id, name: spectator.name, avatarUrl: spectator.avatarUrl, amount: GAME.PREDICT_XP });
+          this.xpGains.set(spectatorId, gain);
+        } catch (error) { console.error("[xp] izleyici tahmin ödülü yazılamadı:", error); }
+      }
+    }
     const humans = [...this.players.values()].filter((player) => !player.isBot);
     this.lastMatchMeta = {
       id: ++this.matchSeq,
