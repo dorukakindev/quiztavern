@@ -85,6 +85,13 @@ function shuffle<T>(items: T[]): T[] {
 /** §6.3 zorluk kalibrasyonu: istatistiğe göre etiketi düzeltilen sorular.
  *  question_id → kalibre zorluk. Server açılışında ve her maç sonrası tazelenir. */
 const calibrated = new Map<string, Difficulty>();
+/** Rapor döngüsü: en az N farklı oyuncu bildirdiğinde soru servis dışı
+ *  kalır. index.ts her yeni rapor ve açılışta tazeler. */
+const suppressed = new Set<string>();
+export function setSuppressedQuestions(ids: Set<string>): void {
+  suppressed.clear();
+  ids.forEach((id) => suppressed.add(id));
+}
 const DIFF_ORDER: readonly Difficulty[] = ["kolay", "orta", "zor"];
 /** En az bu kadar sorulmuş soru kalibre edilir (az örnekle etiket değiştirme). */
 const CALIBRATION_MIN_ASKED = 20;
@@ -112,8 +119,12 @@ function difficultyOf(q: Question): Difficulty {
 }
 
 function effectiveQuestionPool(categories: string[], difficulty: Difficulty | null): Question[] {
-  const byCat = categories.length ? ALL_QUESTIONS.filter((q) => categories.includes(q.category)) : ALL_QUESTIONS;
-  const catPool = byCat.length ? byCat : ALL_QUESTIONS;
+  // Bildirilen sorular havuzdan düşer; havuz tamamen boşalarsa fallback olarak
+  // ham havuza döner (soru hatası maçı hiç kilitlemesin).
+  const visible = ALL_QUESTIONS.filter((q) => !suppressed.has(q.id));
+  const base = visible.length ? visible : ALL_QUESTIONS;
+  const byCat = categories.length ? base.filter((q) => categories.includes(q.category)) : base;
+  const catPool = byCat.length ? byCat : base;
   if (!difficulty) return catPool;
   const byDiff = catPool.filter((q) => difficultyOf(q) === difficulty);
   return byDiff.length ? byDiff : catPool;

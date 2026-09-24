@@ -72,6 +72,25 @@ try {
     mem.close();
   });
 
+  test("suppressedQuestionIds: ≥3 farklı oyuncu bildirince soru havuzdan düşer", () => {
+    const mem = createReportsStore(":memory:");
+    const q = { ...entry, questionId: "tarih-099" };
+    // 2 farklı oyuncu — henüz eşik altı.
+    mem.report({ ...q, userId: "a" });
+    mem.report({ ...q, userId: "b" });
+    assert.equal(mem.suppressedQuestionIds().has("tarih-099"), false);
+    // Aynı oyuncunun tekrarı (UNIQUE vurur) eşiği şişirmez.
+    mem.report({ ...q, userId: "a" });
+    assert.equal(mem.suppressedQuestionIds().has("tarih-099"), false);
+    // 3. farklı oyuncu → baskılanır.
+    mem.report({ ...q, userId: "c" });
+    assert.equal(mem.suppressedQuestionIds().has("tarih-099"), true);
+    // Daha yüksek eşik sorusuyla görünmez; 1'lik eşik tek raporu da yakalar.
+    assert.equal(mem.suppressedQuestionIds(4).has("tarih-099"), false);
+    assert.equal(mem.suppressedQuestionIds(1).has("tarih-099"), true);
+    mem.close();
+  });
+
   console.log(`\n[reports] sonuç: ${passed} geçti, 0 kaldı`);
 } finally {
   store.close();

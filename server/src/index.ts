@@ -24,7 +24,7 @@ import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
 import { createDailyStore, dailyBoard, dailyDayNumber } from "./daily";
-import { setQuestionCalibration } from "./questions";
+import { setQuestionCalibration, setSuppressedQuestions } from "./questions";
 import { createXpStore } from "./xp";
 import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
 
@@ -46,6 +46,9 @@ const xpStore = createXpStore(process.env.XP_DB_PATH ?? resolve(process.cwd(), "
 // §6.3 zorluk kalibrasyonu: soru istatistiklerinden kalibre etiket haritası
 // (her maç sonunda Room da tazeler — bkz. rooms.ts finish()).
 setQuestionCalibration(xpStore.questionStats());
+// Rapor döngüsü: ≥3 farklı oyuncunun bildirdiği sorular havuzdan düşer;
+// açılışta mevcut raporlar, her yeni raporda yeniden uygulanır.
+setSuppressedQuestions(reports.suppressedQuestionIds());
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
   // Bu yüzden origin standart Socket.IO yolunu dinlemeli; istemci Discord
@@ -713,6 +716,7 @@ io.on("connection", (socket) => {
         category: question.category,
         note,
       });
+      if (!duplicate) setSuppressedQuestions(reports.suppressedQuestionIds());
       toast(socket.id, duplicate ? "report.duplicate" : "report.sent");
     } catch (error) {
       log.error({ err: error }, "soru bildirimi yazılamadı");
