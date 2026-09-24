@@ -135,6 +135,8 @@ export const GAME = {
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,
+  /** Takım modunda doğru takım cevabı kazandırır (çoğunluk oyu, bağda kaptan). */
+  TEAM_VOTE_PTS: 100,
   BASE_POINTS: 700,
   SPEED_POINTS: 300,
   // Çember: yalnız en hızlı 3 doğru puanlanır — gerisi +0 (doğru bilen 4.+ puansız kalır).

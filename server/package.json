@@ -34,7 +34,8 @@
     "test:moments": "tsx scripts/moments-test.ts",
     "test:calib": "tsx scripts/calib-test.ts",
     "test:settings": "tsx scripts/settings-test.ts",
-    "test:weekly": "tsx scripts/weekly-test.ts"
+    "test:weekly": "tsx scripts/weekly-test.ts",
+    "test:teamvote": "tsx scripts/teamvote-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
