@@ -242,6 +242,7 @@ const tr = {
   'reveal.gainPoints': '+{points} puan',
   'reveal.speedIncluded': 'hız bonusu dahil',
   'reveal.noGain': 'Puan yok',
+  'reveal.factTitle': 'Biliyor muydun?',
 
   // PIP — küçük yüzen pencere. Tek işi: "geri dönmem gerekiyor mu?"
   'pip.lobby': 'LOBİ',
@@ -657,6 +658,7 @@ const en: Record<StringKey, string> = {
   'reveal.gainPoints': '+{points} points',
   'reveal.speedIncluded': 'speed bonus included',
   'reveal.noGain': 'No points',
+  'reveal.factTitle': 'Did you know?',
 
   'pip.lobby': 'LOBBY',
   'pip.ready': 'players ready',

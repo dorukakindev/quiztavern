@@ -5559,7 +5559,9 @@
       "Gray"
     ],
     "image": "visualq-animal-polarbear.webp",
-    "imageCredit": "Susanne Miller / US Fish & Wildlife — Wikimedia Commons (public domain)"
+    "imageCredit": "Susanne Miller / US Fish & Wildlife — Wikimedia Commons (public domain)",
+    "fact": "Kürkleri aslında pigment değil içi boş tüylerdir; tüyler ışığı yansıtarak beyaz görünür.",
+    "factEn": "Their fur isn't actually pigmented — hollow hairs scatter light to look white."
   },
   {
     "id": "animal-bonobo",
@@ -45067,7 +45069,9 @@
       "Black Death",
       "Smallpox",
       "Typhus"
-    ]
+    ],
+    "fact": "Salgın Avrupa'da o kadar işgücü kıtlığı yarattı ki serflik fiilen çözülmeye başladı.",
+    "factEn": "The plague caused such a labor shortage that serfdom effectively began to unravel."
   },
   {
     "id": "ortacag-guild",
@@ -45107,7 +45111,9 @@
       "1261",
       "1453",
       "1492"
-    ]
+    ],
+    "fact": "Fatih gemileri karadan Haliç'e indirmişti — tarihin en ünlü 'karadan denize' nakillerinden.",
+    "factEn": "Mehmed II hauled ships overland into the Golden Horn — one of history's famous portages."
   },
   {
     "id": "ortacag-hilal-ay",
@@ -45167,7 +45173,9 @@
       "Lombard League",
       "Swabian League",
       "Kalmar Union"
-    ]
+    ],
+    "fact": "Hansa'nın merkezi Lübeck'ti; birliğin ticaret gücü krallarla pazarlık edecek kadar büyüktü.",
+    "factEn": "Lübeck was the Hansa's center; its trade power rivaled kings at the bargaining table."
   },
   {
     "id": "ortacag-jost",
@@ -45367,7 +45375,9 @@
       "Spain-Portugal",
       "Austria-Hungary",
       "Sweden-Denmark"
-    ]
+    ],
+    "fact": "Savaş tam 116 yıl sürdü (1337–1453) ve arada uzun ateşkes dönemleri vardı.",
+    "factEn": "The war actually lasted 116 years (1337–1453) with long truce periods in between."
   },
   {
     "id": "ortacag-zamoyski",
@@ -45407,7 +45417,9 @@
       "Knights Templar",
       "Teutonic Knights",
       "Order of Calatrava"
-    ]
+    ],
+    "fact": "Tarikat baskını 13 Ekim 1307'ye denk geldi — 'uğursuz cuma 13' efsanesinin kökenlerinden sayılır.",
+    "factEn": "The dawn raids fell on Friday, 13 October 1307 — one proposed origin of Friday the 13th lore."
   },
   {
     "id": "ortacag-endulus",
@@ -45607,7 +45619,9 @@
       "Rosetta Stone",
       "Narmer Palette",
       "Amarna Letters"
-    ]
+    ],
+    "fact": "Aynı kararname üç yazıyla yazılmıştı: hiyeroglif, demotik ve antik Yunanca — sonuncusu anahtar oldu.",
+    "factEn": "The same decree was carved in hieroglyphic, demotic and ancient Greek — the last one was the key."
   },
   {
     "id": "antik-hitit-kadeş",
@@ -45627,7 +45641,9 @@
       "Assyria-Babylon",
       "Persia-Greece",
       "Urartu-Phrygia"
-    ]
+    ],
+    "fact": "Kadeş'ten sonra imzalanan antlaşma, bilinen en eski yazılı barış antlaşmasıdır; kopyası BM'de sergilenir.",
+    "factEn": "The treaty signed after Kadesh is the earliest known written peace treaty; a copy hangs at the UN."
   },
   {
     "id": "antik-minos",
@@ -45687,7 +45703,9 @@
       "Phoenicians",
       "Arameans",
       "Carthaginians"
-    ]
+    ],
+    "fact": "Fenike alfabesinden Yunan, Latin ve Arap alfabelerine giden hat bugünkü yazıların çoğuna uzanır.",
+    "factEn": "From Phoenician came the Greek, Latin and Arabic lines — most modern alphabets trace back to it."
   },
   {
     "id": "antik-lidya-para",
@@ -45947,7 +45965,9 @@
       "Turkey",
       "Iran",
       "Iraq"
-    ]
+    ],
+    "fact": "Göbekli Tepe, tekerlekten, çanak çömlekten ve hatta tarımdan bile eskidir (MÖ ~9600).",
+    "factEn": "Göbekli Tepe predates the wheel, pottery, and even farming (~9600 BC)."
   },
   {
     "id": "antik-catalhoyuk",
@@ -45967,7 +45987,9 @@
       "Konya",
       "Ankara",
       "Adana"
-    ]
+    ],
+    "fact": "Çatalhöyük'te sokak yoktu — evler bitişikti ve kapılar çatıdan merdivenle inilen deliklerdi.",
+    "factEn": "Çatalhöyük had no streets — houses adjoined and doors were rooftop holes with ladders."
   },
   {
     "id": "antik-pers-yol",
@@ -46147,7 +46169,9 @@
       "A ritual in Olympia",
       "Spartan training",
       "An Athens public race"
-    ]
+    ],
+    "fact": "42.195 km'lik garip mesafe, 1908 Londra'da kraliyet ailesi izlesin diye Windsor'a göre ayarlandı.",
+    "factEn": "The odd 42.195 km distance was fixed in 1908 London so the royal family could watch from Windsor."
   },
   {
     "id": "olimp-kis-ilk",
@@ -46267,7 +46291,9 @@
       "Wrestling",
       "Boxing",
       "Athletics"
-    ]
+    ],
+    "fact": "Yaşar Erkan 1936 Berlin'de güreşte kazandı — Türkiye'nin ilk Olimpiyat altını.",
+    "factEn": "Yaşar Erkan won wrestling gold at Berlin 1936 — Turkey's first Olympic gold."
   },
   {
     "id": "olimp-antik",
@@ -46307,7 +46333,9 @@
       "Jesse Owens",
       "Jim Thorpe",
       "Paavo Nurmi"
-    ]
+    ],
+    "fact": "Jesse Owens'ın rekorları Nazi 'üstün ırk' propagandasını yerle bir etti; Berlin'de en çok alkışlanan oydu.",
+    "factEn": "Owens' four golds demolished Nazi 'master race' propaganda — he was Berlin's most applauded athlete."
   },
   {
     "id": "olimp-alti-ulke",
@@ -46387,7 +46415,9 @@
       "Olga Korbut",
       "Simone Biles",
       "Nelli Kim"
-    ]
+    ],
+    "fact": "Skorbord 9.99'dan ötesini gösteremiyordu; Comaneci'nin 10.0'ı ekrana '1.00' olarak bastı.",
+    "factEn": "The scoreboard couldn't display 10.00 — Comaneci's perfect score appeared as '1.00'."
   },
   {
     "id": "olimp-gercek",
@@ -46467,7 +46497,9 @@
       "1928 Amsterdam",
       "1936 Berlin",
       "1952 Helsinki"
-    ]
+    ],
+    "fact": "Antik Olimpiyat'ta meşale koşusu yoktu; seremoni 1936 Berlin Oyunları'yla başladı.",
+    "factEn": "Ancient Olympics had no torch relay — the ceremony began at the 1936 Berlin Games."
   },
   {
     "id": "olimp-citius",
@@ -46747,7 +46779,9 @@
       "Baobab",
       "Papyrus",
       "Ebony"
-    ]
+    ],
+    "fact": "Bazı baobablar 2000+ yıl yaşar; içi boşalan gövdeleri ev, bar, hatta otobüs durağı olarak kullanıldı.",
+    "factEn": "Some baobabs live 2000+ years; hollowed trunks have served as homes, bars, even a bus shelter."
   },
   {
     "id": "bitki-kaktus",
@@ -46847,7 +46881,9 @@
       "Saffron crocus",
       "Colchicum",
       "Iris"
-    ]
+    ],
+    "fact": "1 kg safran için ~150.000 çiçekten tek tek tepecik toplamak gerekir — elle.",
+    "factEn": "1 kg of saffron takes ~150,000 flowers, each stigma picked by hand."
   },
   {
     "id": "bitki-aycicegi",
@@ -46867,7 +46903,9 @@
       "Heliotropism",
       "Gravitropism",
       "Thigmotropism"
-    ]
+    ],
+    "fact": "Ay çiçeği gündüz güneşi izler, gece doğuya döner — ama yalnızca olgunlaşmamış başlıklarda.",
+    "factEn": "Sunflowers track the sun by day and reset east at night — but only while immature."
   },
   {
     "id": "bitki-kok",
@@ -47267,7 +47305,9 @@
       "El Niño",
       "Monsoon",
       "Jet Stream"
-    ]
+    ],
+    "fact": "El Niño, Pasifik'in orta-doğusunda yüzey suyunun birkaç derece ısınmasıdır — küresel etkisi muazzamdır.",
+    "factEn": "El Niño is a few degrees of surface warming in the central-eastern Pacific — with huge global effects."
   },
   {
     "id": "iklim-eyef",
@@ -47327,7 +47367,9 @@
       "5000°C",
       "30000°C",
       "100000°C"
-    ]
+    ],
+    "fact": "Yıldırım çevresindeki havayı Güneş'in yüzeyinden 5 kat daha sıcak ısıtır (~30.000°C).",
+    "factEn": "A bolt heats the air around it to ~30,000°C — five times hotter than the Sun's surface."
   },
   {
     "id": "iklim-gokkusagi",
@@ -47527,7 +47569,9 @@
       "Ozone layer",
       "Mesosphere",
       "Ionosphere"
-    ]
+    ],
+    "fact": "Ozon tabakası olmasa yeryüzüne ulaşan zararlı UV-B/UV-C ölümcül seviyelere çıkardı.",
+    "factEn": "Without the ozone layer, lethal levels of UV-B/UV-C would reach the surface."
   },
   {
     "id": "iklim-cirrus",

@@ -1241,13 +1241,16 @@ export class Room {
     // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
     if (this.gameMode === "lightning" && picks[question.correctIndex].length > 0) this.lightningBurn++;
     this.phase = "reveal";
-    this.revealUntil = Date.now() + GAME.REVEAL_MS;
+    // Trivia notu taşıyan turda reveal 2 sn uzar — satırı okumaya vakit kalsın.
+    const revealMs = GAME.REVEAL_MS + (question.fact ? 2_000 : 0);
+    this.revealUntil = Date.now() + revealMs;
     this.lastReveal = {
-      correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS,
+      correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: revealMs,
       ...(this.gameMode === "bet" && this.rescueRound.size ? { rescued: [...this.rescueRound] } : {}),
+      ...(question.fact ? { fact: question.fact, factEn: question.factEn } : {}),
     };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.timer = setTimeout(() => this.advanceFromReveal(), revealMs);
   }
 
   private revealCircle() {
