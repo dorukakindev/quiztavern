@@ -841,6 +841,11 @@ textarea.qt-pack-input { resize: vertical; font-family: ui-monospace, monospace;
 .qt-emote-fly.is-flame { --drift: -34px; }
 .qt-emote-fly.is-heart { --drift: 8px; }
 .qt-emote-fly.is-star { --drift: 40px; }
+.qt-emote-fly.is-clap { --drift: -52px; }
+.qt-emote-fly.is-laugh { --drift: 55px; }
+.qt-emote-fly.is-crown { --drift: -18px; }
+.qt-emote-fly.is-sword { --drift: 24px; }
+.qt-emote-fly.is-skull { --drift: -40px; }
 @keyframes qtEmoteFly {
   0% { opacity: 0; transform: translate(0, 10px) scale(.5); }
   18% { opacity: 1; transform: translate(calc(var(--drift) * .3), -12px) scale(1.12); }

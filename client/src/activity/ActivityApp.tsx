@@ -2014,8 +2014,8 @@ function ReconnectOverlay({ droppedAt, inMatch, onReconnect, onLeave }: { droppe
 /** Masaya kısa tepki. Gönderim hız sınırı SUNUCUDA; burası sadece arayüz. */
 function EmoteBar({ emotes, players, onSend }: { emotes: LiveEmote[]; players: PublicPlayer[]; onSend: (emote: EmoteKey) => void }) {
   const { t } = useI18n()
-  const glyphs: Record<EmoteKey, React.ReactNode> = { flame: <Icon name="flame" weight="fill" />, heart: <Icon name="heart" weight="fill" />, star: <Icon name="star" weight="fill" /> }
-  const labels: Record<EmoteKey, StringKey> = { flame: 'emote.flame', heart: 'emote.heart', star: 'emote.star' }
+  const glyphs: Record<EmoteKey, React.ReactNode> = { flame: <Icon name="flame" weight="fill" />, heart: <Icon name="heart" weight="fill" />, star: <Icon name="star" weight="fill" />, clap: <Icon name="clap" weight="fill" />, laugh: <Icon name="laugh" weight="fill" />, crown: <Icon name="crown" weight="fill" />, sword: <Icon name="sword" weight="fill" />, skull: <Icon name="skull" weight="fill" /> }
+  const labels: Record<EmoteKey, StringKey> = { flame: 'emote.flame', heart: 'emote.heart', star: 'emote.star', clap: 'emote.clap', laugh: 'emote.laugh', crown: 'emote.crown', sword: 'emote.sword', skull: 'emote.skull' }
   return <>
     <div className="qt-emote-bar" aria-label={t('emote.label')}>
       {EMOTE_KEYS.map((key) => <button key={key} className={`qt-emote-btn is-${key}`} title={t(labels[key])} aria-label={t(labels[key])} onClick={() => onSend(key)}>{glyphs[key]}</button>)}

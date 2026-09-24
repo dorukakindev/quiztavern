@@ -62,6 +62,11 @@
 .qt-emote-btn.is-flame, .qt-emote-fly.is-flame { color: #ff8a3d; }
 .qt-emote-btn.is-heart, .qt-emote-fly.is-heart { color: #ff6b8b; }
 .qt-emote-btn.is-star, .qt-emote-fly.is-star { color: #ffc94d; }
+.qt-emote-btn.is-clap, .qt-emote-fly.is-clap { color: #ffd166; }
+.qt-emote-btn.is-laugh, .qt-emote-fly.is-laugh { color: #7ee2a8; }
+.qt-emote-btn.is-crown, .qt-emote-fly.is-crown { color: #f0b429; }
+.qt-emote-btn.is-sword, .qt-emote-fly.is-sword { color: #a9c1d9; }
+.qt-emote-btn.is-skull, .qt-emote-fly.is-skull { color: #d8dde6; }
 .qt-emote-fly .qt-icon { width: 28px; filter: drop-shadow(0 4px 10px rgba(0,0,0,.45)); }
 
 .qt-howto-modal__checkbox .qt-icon { width: 12px; }
