@@ -119,6 +119,8 @@ export const GAME = {
   // Bakiyesi 0'a düşen oyuncu elenmiş gibi kalmasın: bahis yapamaz ama o
   // soruyu doğru bilirse bu kadar kazanır (kurtarma turu).
   BET_BROKE_REWARD: 50,
+  /** "Hepsi" bahsi kazanırsa toplam iade çarpanı (bahis dahil): 1000 → +1500. */
+  BET_ALL_IN_MULTIPLIER: 2.5,
 
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */

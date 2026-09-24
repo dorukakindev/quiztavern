@@ -1312,9 +1312,12 @@ export class Room {
         // Çifte Bahis: doğru → yatırılan katlanır (+bahis), yanlış → yanar (−bahis).
         // Hız bonusu yok; mekanik bahsin kendisi. Bahis bankrolle sınırlı, skor <0 olmaz.
         const stake = player.bet ?? 0;
+        // "Hepsi": bakiyenin tamamı yatırıldıysa kazanç ×2.5 iade (bahis+1.5×).
+        // score hâlâ tur öncesi bakiye — bahis kilidinde düşülmediği için eşitlik güvenli.
+        const allIn = stake > 0 && stake === player.score;
         gain = this.rescueRound.has(player.id)
           ? (correct ? GAME.BET_BROKE_REWARD : 0)
-          : (correct ? stake : -stake);
+          : (correct ? (allIn ? Math.round(stake * (GAME.BET_ALL_IN_MULTIPLIER - 1)) : stake) : -stake);
         player.score = Math.max(0, player.score + gain);
       } else {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;

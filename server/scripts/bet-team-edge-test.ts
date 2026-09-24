@@ -162,6 +162,34 @@ test('ertesi turda kurtarılan bakiyeyle normal bahis (broke temizlenir)', () =>
 })
 stop(brokeRoom)
 
+test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
+  const allInRoom = new Room('edge-allin', () => {}, { minPlayers: 1, questionCount: 5 })
+  allInRoom.addPlayer(player('w', 'Wager'))
+  allInRoom.setGameMode('w', 'bet')
+  allInRoom.setReady('w', true)
+  allInRoom.start('w', 'bet')
+  stop(allInRoom)
+  ;(allInRoom as unknown as { beginBet: () => void }).beginBet()
+  allInRoom.placeBet('w', GAME.BET_STARTING_BANKROLL) // bakiyenin tamamı
+  ;(allInRoom as unknown as { beginQuestion: () => void }).beginQuestion()
+  allInRoom.answer('w', allInRoom.currentQuestion()!.correctIndex)
+  ;(allInRoom as unknown as { reveal: () => void }).reveal()
+  assert.equal(allInRoom.players.get('w')!.score, 2500) // 1000 bahis + 1500 kazanç
+
+  const halfRoom = new Room('edge-half', () => {}, { minPlayers: 1, questionCount: 5 })
+  halfRoom.addPlayer(player('h2', 'Half'))
+  halfRoom.setGameMode('h2', 'bet')
+  halfRoom.setReady('h2', true)
+  halfRoom.start('h2', 'bet')
+  stop(halfRoom)
+  ;(halfRoom as unknown as { beginBet: () => void }).beginBet()
+  halfRoom.placeBet('h2', 500)
+  ;(halfRoom as unknown as { beginQuestion: () => void }).beginQuestion()
+  halfRoom.answer('h2', halfRoom.currentQuestion()!.correctIndex)
+  ;(halfRoom as unknown as { reveal: () => void }).reveal()
+  assert.equal(halfRoom.players.get('h2')!.score, 1500) // 500 bahis + 500 kazanç
+})
+
 test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () => {
   const shuffleRoom = new Room('edge-shuffle', () => {}, { minPlayers: 1 })
   for (const id of ['s1', 's2', 's3', 's4', 's5']) shuffleRoom.addPlayer(player(id, id))
@@ -215,3 +243,4 @@ test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir',
 })
 
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`)
+
