@@ -69,6 +69,7 @@ export const CARD_TYPES: readonly CardType[] = ["fifty", "double", "shield", "fr
 /** Kalıcı ilerleme meta'sı: lig kademeleri. XP eşikleri sunucudaki
  *  sıralamayla aynıdır (server/src/xp.ts LEAGUE_THRESHOLDS). */
 export type LeagueKey = "acemi" | "cirak" | "kalfa" | "usta" | "efsane";
+export const LEAGUE_ORDER: readonly LeagueKey[] = ["acemi", "cirak", "kalfa", "usta", "efsane"];
 
 /** Oyuncu kartında görünen kompakt ilerleme rozeti. */
 export interface ProgressBadge {
@@ -311,6 +312,10 @@ export type ToastKey =
   | "err.countInvalid"
   | "err.difficultyHostOnly"
   | "err.difficultyInvalid"
+  | "err.themeHostOnly"
+  | "err.themeInvalid"
+  | "err.themeLocked"
+  | "err.themeFailed"
   | "err.modeHostOnly"
   | "err.modeInvalid"
   | "err.teamHostOnly"
@@ -430,6 +435,15 @@ export const QUESTION_COUNTS = [5, 10, 15] as const;
 /** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
 export const CIRCLE_COUNTS = [10, 15, 20] as const;
 export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
+/** §6.3 masa temaları: host'un ligi tema kapısını açar — tema tüm masaya uygulanır. */
+export const TABLE_THEMES = [
+  { key: "tavern", league: "acemi" },
+  { key: "forest", league: "cirak" },
+  { key: "ember", league: "kalfa" },
+  { key: "royal", league: "usta" },
+  { key: "void", league: "efsane" },
+] as const;
+export type TableTheme = (typeof TABLE_THEMES)[number]["key"];
 
 export interface GameState {
   phase: Phase;
@@ -438,6 +452,8 @@ export interface GameState {
   questionCount: QuestionCount;
   /** Masa ayarı: zorluk filtresi; null = karışık (tüm zorluklar). Tüm modlara uygulanır. */
   difficulty: Difficulty | null;
+  /** Masa teması (§6.3): host'un liginin açtığı görsel kimlik, tüm masada. */
+  tableTheme: TableTheme;
   roomId: string;
   hostId: string | null;
   youId: string;
@@ -558,6 +574,7 @@ export const EV = {
   SET_DIFFICULTY: "set-difficulty",
   /** Yalnızca masa sahibi: { packId } — klasik soru havuzunu özel paketle değiştirir; null temizler */
   SET_PACK: "set-pack",
+  SET_THEME: "set-theme",
   /**
    * Yalnızca masa sahibi: { mode } — masanın modu. Masa AYARIDIR ve yayınlanır:
    * mod her istemcinin yerel seçimi olsaydı, host Fitil'i seçtiğinde diğer

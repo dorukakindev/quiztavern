@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { io, type Socket } from 'socket.io-client'
-import { EV, type BadgeKey, type CardType, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type ToastPayload } from '../../../shared/types'
+import { EV, type BadgeKey, type CardType, type Difficulty, type EmoteKey, type EmotePayload, type GameMode, type GameState, type TableTheme, type ToastPayload } from '../../../shared/types'
 import { browserRandomId, storageGet, storageSet } from './storage'
 
 /** Ekranda gösterilen tepki; `uid` aynı oyuncunun arka arkaya attığı tepkileri ayırır. */
@@ -191,6 +191,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     setQuestionCount: (count: number) => socket.emit(EV.SET_QUESTION_COUNT, { count }),
     setDifficulty: (difficulty: Difficulty | null) => socket.emit(EV.SET_DIFFICULTY, { difficulty }),
     setPack: (packId: string | null) => socket.emit(EV.SET_PACK, { packId }),
+    setTableTheme: (theme: TableTheme) => socket.emit(EV.SET_THEME, { theme }),
     setMode: (mode: GameMode) => socket.emit(EV.SET_MODE, { mode }),
     setTeam: (targetId: string, team: number) => socket.emit(EV.SET_TEAM, { targetId, team }),
     shuffleTeams: () => socket.emit(EV.TEAM_SHUFFLE),

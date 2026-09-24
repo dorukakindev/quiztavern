@@ -521,3 +521,48 @@
 .qt-moment.is-streak { border-color: rgba(255, 190, 60, 0.45); }
 .qt-moment.is-bigBet { border-color: rgba(120, 220, 140, 0.4); }
 .qt-moment.is-flawless { border-color: rgba(190, 140, 255, 0.5); }
+
+/* §6.3 masa temaları — host'un ligi açar, tüm masada orbit renkleri değişir. */
+.qt-orbit[data-theme="forest"] .qt-orbit__disc {
+  border-color: rgba(94, 200, 120, .55);
+  background: radial-gradient(circle at 50% 32%, rgba(24, 84, 46, .88), rgba(6, 28, 18, .96) 72%);
+  box-shadow: 0 0 70px rgba(60, 200, 110, .22), inset 0 0 50px rgba(60, 200, 110, .1);
+}
+.qt-orbit[data-theme="forest"] .qt-orbit__ring { border-color: rgba(94, 200, 120, .3); }
+.qt-orbit[data-theme="forest"] .qt-orbit__ring-inner { border-color: rgba(94, 200, 120, .14); }
+.qt-orbit[data-theme="forest"] .qt-orbit__shadow { background: radial-gradient(ellipse, rgba(50, 190, 100, .18), transparent 68%); }
+.qt-orbit[data-theme="ember"] .qt-orbit__disc {
+  border-color: rgba(240, 150, 70, .6);
+  background: radial-gradient(circle at 50% 32%, rgba(110, 58, 20, .88), rgba(38, 14, 4, .96) 72%);
+  box-shadow: 0 0 70px rgba(240, 140, 60, .26), inset 0 0 50px rgba(240, 140, 60, .12);
+}
+.qt-orbit[data-theme="ember"] .qt-orbit__ring { border-color: rgba(240, 150, 70, .34); }
+.qt-orbit[data-theme="ember"] .qt-orbit__ring-inner { border-color: rgba(240, 150, 70, .16); }
+.qt-orbit[data-theme="ember"] .qt-orbit__shadow { background: radial-gradient(ellipse, rgba(235, 140, 60, .2), transparent 68%); }
+.qt-orbit[data-theme="royal"] .qt-orbit__disc {
+  border-color: rgba(176, 132, 240, .6);
+  background: radial-gradient(circle at 50% 32%, rgba(72, 40, 120, .88), rgba(18, 8, 36, .96) 72%);
+  box-shadow: 0 0 70px rgba(168, 120, 240, .26), inset 0 0 50px rgba(168, 120, 240, .12);
+}
+.qt-orbit[data-theme="royal"] .qt-orbit__ring { border-color: rgba(176, 132, 240, .34); }
+.qt-orbit[data-theme="royal"] .qt-orbit__ring-inner { border-color: rgba(176, 132, 240, .16); }
+.qt-orbit[data-theme="royal"] .qt-orbit__shadow { background: radial-gradient(ellipse, rgba(160, 110, 235, .2), transparent 68%); }
+.qt-orbit[data-theme="void"] .qt-orbit__disc {
+  border-color: rgba(240, 196, 90, .65);
+  background: radial-gradient(circle at 50% 32%, rgba(96, 76, 24, .9), rgba(10, 8, 2, .97) 72%);
+  box-shadow: 0 0 80px rgba(240, 196, 90, .3), inset 0 0 55px rgba(240, 196, 90, .14);
+}
+.qt-orbit[data-theme="void"] .qt-orbit__ring { border-color: rgba(240, 196, 90, .38); }
+.qt-orbit[data-theme="void"] .qt-orbit__ring-inner { border-color: rgba(240, 196, 90, .18); }
+.qt-orbit[data-theme="void"] .qt-orbit__shadow { background: radial-gradient(ellipse, rgba(240, 196, 90, .22), transparent 68%); }
+
+/* Tema çipleri: mini renk noktası + kilit ikonu. */
+.qt-theme-chip { display: inline-flex; align-items: center; gap: 6px; }
+.qt-theme-chip::before { content: ''; width: 10px; height: 10px; border-radius: 50%; }
+.qt-theme-chip.is-tavern::before { background: #46c8d6; }
+.qt-theme-chip.is-forest::before { background: #4ec878; }
+.qt-theme-chip.is-ember::before { background: #f0963c; }
+.qt-theme-chip.is-royal::before { background: #b084f0; }
+.qt-theme-chip.is-void::before { background: #f0c45a; }
+.qt-theme-chip:disabled { opacity: .55; }
+.qt-theme-chip .qt-icon { width: 12px; }

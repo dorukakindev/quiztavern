@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { CIRCLE_COUNTS, QUESTION_COUNTS } from "../../shared/types";
+import { CIRCLE_COUNTS, QUESTION_COUNTS , TABLE_THEMES, type TableTheme , LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
@@ -148,6 +148,8 @@ export class Room {
   // Zorluk masa ayarı: null = karışık (tüm zorluklar). Mod'dan bağımsız; hem
   // klasik hem çember örneklemesine filtre olarak geçer.
   difficulty: Difficulty | null = null;
+  /** Masa teması (§6.3): host'un liginin açtığı görsel kimlik. */
+  tableTheme: TableTheme = "tavern";
   /** Masa ayarı: özel soru paketi id'si; null = standart havuz. Paket seçiliyken
    *  klasik soru havuzu paketin listesiyle değişir (kategori/zorluk filtreleri
    *  atlanır); Çember kendi prompt havuzunu kullandığı için etkilenmez. */
@@ -739,6 +741,21 @@ export class Room {
     this.broadcast();
   }
 
+  /** Masa teması: host'un ligi tema kapısını açar; tema tüm masaya uygulanır. */
+  setTableTheme(playerId: string, theme: unknown): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== playerId) throw new GameError("err.themeHostOnly");
+    const def = TABLE_THEMES.find((t) => t.key === theme);
+    if (!def) throw new GameError("err.themeInvalid");
+    const league = this.progress?.badge(playerId)?.league ?? "acemi";
+    const order = LEAGUE_ORDER as readonly string[];
+    if (order.indexOf(league) < order.indexOf(def.league)) throw new GameError("err.themeLocked", { league: def.league });
+    if (this.tableTheme === def.key) return;
+    this.tableTheme = def.key;
+    for (const player of this.players.values()) if (!player.isBot) player.ready = false;
+    this.broadcast();
+  }
+
   /** Zorluk ayarı: "kolay"|"orta"|"zor" ya da null (karışık). Yalnız host, lobide. */
   setDifficulty(playerId: string, value: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
@@ -1155,6 +1172,7 @@ export class Room {
       minPlayers: this.minPlayers,
       questionCount: this.questionCount,
       difficulty: this.difficulty,
+      tableTheme: this.tableTheme,
       categorySelection: this.categorySelection,
       pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
       availableCategories: CATEGORY_CATALOG,
