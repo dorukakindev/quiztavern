@@ -10,7 +10,7 @@ type RateDecision = {
 
 /**
  * Bağımlılıksız, bellek sınırı olan sabit pencereli hız sınırlayıcı.
- * QuizTavern tek süreç olarak çalışırken auth uçlarını Discord API abuse'una
+ * Triviara tek süreç olarak çalışırken auth uçlarını Discord API abuse'una
  * karşı korur. Çok süreçli dağıtımda bu sınıfın paylaşımlı store'a taşınması gerekir.
  */
 export class FixedWindowRateLimiter {

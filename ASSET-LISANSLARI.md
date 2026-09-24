@@ -16,7 +16,7 @@ Oyunda kullanılan her görsel/ses/fontun kaynağı ve lisansı. Yeni varlık ek
 | `client/public/emblems/*.webp` (mod amblemleri: kart destesi, bomba, çark, jetonlar, bayraklar, baykuş) | Tripo Studio ile **Pro (ücretli) planda** metin/görselden üretilen modellerin yerel three.js render'ı | Pro planda üretilen modeller ticari kullanıma açık ve gizlidir; render'lar oyunun kendi varlığıdır. |
 | `client/public/models/tavern-host.glb` (podyum maskotu) | Proje sahibinin sağladığı model | Kullanıcı varlığı — kaynak kullanıcı tarafından doğrulanır. |
 | `client/public/table/*` (logo, hero görseli, bg-video, music.mp3) | Proje sahibinin sağladığı varlıklar | Kullanıcı varlığı. |
-| `client/public/assets/discord-activity/*.webp` (açılış/sahne arka planları) | Proje için üretilen görseller | `questions.json` içinde `imageCredit: "QuizTavern"` olarak işaretli. |
+| `client/public/assets/discord-activity/*.webp` (açılış/sahne arka planları) | Proje için üretilen görseller | `questions.json` içinde `imageCredit: "Triviara"` olarak işaretli. |
 | `client/public/questions/*.webp` (soru görselleri) | Proje için üretilen görseller | Her sorunun `imageCredit` alanı kaynağı gösterir; görsel üzerindeki ⓘ düğmesi krediyi gösterir. |
 
 ## Kurallar

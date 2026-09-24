@@ -1,9 +1,9 @@
 ---
 name: testing-quiztavern
-description: How to run and end-to-end test QuizTavern (client+server monorepo) locally with mock auth, auto-bots, and prod-mode checks.
+description: How to run and end-to-end test Triviara (client+server monorepo) locally with mock auth, auto-bots, and prod-mode checks.
 ---
 
-# Testing QuizTavern locally
+# Testing Triviara locally
 
 ## Dev stack
 

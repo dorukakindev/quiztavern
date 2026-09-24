@@ -45,7 +45,7 @@
 
 .answer.locked{opacity:.58;cursor:default}.answer:disabled{cursor:default}.selection-hint{min-height:22px}.player-status.waiting{color:#aab5c9}.feedback.success{border-color:#3bbd96;color:#dffaf0}.feedback.success b{color:#5ddab9}.feedback.success .bonus-stack strong{animation:score-pop .45s ease-out}@keyframes score-pop{0%{transform:scale(.7);opacity:.2}100%{transform:scale(1);opacity:1}}
 
-/* QuizTavern Cosmic Arena visual system */
+/* Triviara Cosmic Arena visual system */
 :root{font-family:Inter,Manrope,system-ui,sans-serif;color:#edf5ff;background:#050914}
 body{background:radial-gradient(circle at 52% -15%,rgba(35,116,156,.2),transparent 38%),radial-gradient(circle at 84% 80%,rgba(20,55,104,.18),transparent 32%),#050914}
 .accent{color:#f4bd55}.wave{color:#56d9e7}

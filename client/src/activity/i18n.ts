@@ -11,14 +11,14 @@
  */
 const tr = {
   // Genel
-  'brand.name': 'QuizTavern',
+  'brand.name': 'Triviara',
   'lang.label': 'Arayüz dili',
   'conn.discord': 'Discord oturumunda',
   'conn.local': 'Yerel test modu',
   'room.connecting': 'Bağlanılıyor',
 
   // Açılış
-  'boot.title': 'QuizTavern hazırlanıyor',
+  'boot.title': 'Triviara hazırlanıyor',
   'boot.subtitle': 'Masa kuruluyor…',
   'boot.unreachable': 'Oyun sunucusuna ulaşılamadı',
   'boot.retry': 'Tekrar dene',
@@ -205,7 +205,7 @@ const tr = {
   'table.readyCount': '{ready} / {total} oyuncu hazır',
   'table.start': 'Masayı Başlat',
   'table.invite': 'Davet et',
-  'invite.shareText': 'QuizTavern masama gel — soruları birlikte çözelim!',
+  'invite.shareText': 'Triviara masama gel — soruları birlikte çözelim!',
   'invite.failed': 'Davet penceresi açılamadı — arkadaşlarını bu kanaldan masaya çağırabilirsin.',
   'presence.lobby': 'Masada bekliyor',
   'presence.playing': 'Soru {current}/{total}',
@@ -382,7 +382,7 @@ const tr = {
   'podium.waitHost': 'Yeni maçı masa sahibi başlatır',
   'podium.home': 'Lobiye dön',
   'podium.share': 'Kanala paylaş',
-  'share.message': "🏆 {name} QuizTavern'da {mode} masasını {score} puanla kazandı! Masaya gel:",
+  'share.message': "🏆 {name} Triviara'da {mode} masasını {score} puanla kazandı! Masaya gel:",
   'podium.you': 'SEN',
   'podium.tabRank': 'Sıralama',
   'moment.title': 'Gecenin anları',
@@ -566,13 +566,13 @@ export type StringKey = keyof typeof tr
 export type ActivityLanguage = 'tr' | 'en'
 
 const en: Record<StringKey, string> = {
-  'brand.name': 'QuizTavern',
+  'brand.name': 'Triviara',
   'lang.label': 'Interface language',
   'conn.discord': 'Discord connected',
   'conn.local': 'Local test mode',
   'room.connecting': 'Connecting',
 
-  'boot.title': 'Getting QuizTavern ready',
+  'boot.title': 'Getting Triviara ready',
   'boot.subtitle': 'Setting up the table…',
   'boot.unreachable': 'Could not reach the game server',
   'boot.retry': 'Try again',
@@ -765,7 +765,7 @@ const en: Record<StringKey, string> = {
   'howto.close': "Got it, back to the table",
   'table.start': 'Start the table',
   'table.invite': 'Invite',
-  'invite.shareText': 'Join my QuizTavern table — trivia together!',
+  'invite.shareText': 'Join my Triviara table — trivia together!',
   'invite.failed': 'Could not open the invite sheet — invite friends to this channel to join the table.',
   'presence.lobby': 'Waiting in the lobby',
   'presence.playing': 'Question {current}/{total}',
@@ -924,7 +924,7 @@ const en: Record<StringKey, string> = {
   'podium.waitHost': 'The host starts the next match',
   'podium.home': 'Back to lobby',
   'podium.share': 'Share to channel',
-  'share.message': '🏆 {name} won the QuizTavern {mode} table with {score} points! Join the table:',
+  'share.message': '🏆 {name} won the Triviara {mode} table with {score} points! Join the table:',
   'podium.you': 'YOU',
   'podium.tabRank': 'Ranking',
   'moment.title': 'Moments of the night',

@@ -1,4 +1,4 @@
-# QuizTavern — Oracle Always Free VM kurulum betiği (cloud-init)
+# Triviara — Oracle Always Free VM kurulum betiği (cloud-init)
 # Kullanım: OCI Console → Compute → Create instance → Advanced options →
 # Management → "Paste cloud-init script" alanına bu dosyanın TAMAMINI yapıştır.
 # Sonuç: Ubuntu 22.04'te Docker + quiztavern kullanıcısı + UFW hazır gelir;

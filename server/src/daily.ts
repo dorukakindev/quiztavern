@@ -12,7 +12,7 @@ import type { DailyBoard, DailyBoardEntry } from "../../shared/types";
  * gün tekrar katılım engellenir (oyuncu izleyici kalır).
  */
 export const DAILY_QUESTION_COUNT = 5;
-/** 1 Ocak 2026 = QuizTavern #1 — paylaşım satırındaki gün numarası buradan sayılır. */
+/** 1 Ocak 2026 = Triviara #1 — paylaşım satırındaki gün numarası buradan sayılır. */
 const DAILY_EPOCH_MS = Date.UTC(2026, 0, 1);
 
 /** UTC tarih anahtarı — "günde bir kez" sınırı bu günle ölçülür. */
@@ -20,7 +20,7 @@ export function dailyDateKey(now: Date = new Date()): string {
   return now.toISOString().slice(0, 10);
 }
 
-/** Epoch'tan bu yana kaçıncı gün (1'den başlar): `QuizTavern #42` yazısında kullanılır. */
+/** Epoch'tan bu yana kaçıncı gün (1'den başlar): `Triviara #42` yazısında kullanılır. */
 export function dailyDayNumber(now: Date = new Date()): number {
   return Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - DAILY_EPOCH_MS) / 86_400_000) + 1;
 }
@@ -63,7 +63,7 @@ export function dailyPattern(answers: (number | null)[], questions: Question[]):
 }
 
 export function dailyShareText(day: number, pattern: string): string {
-  return `${pattern} QuizTavern #${day}`;
+  return `${pattern} Triviara #${day}`;
 }
 
 export interface DailyResultEntry {

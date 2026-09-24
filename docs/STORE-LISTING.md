@@ -1,4 +1,4 @@
-# QuizTavern — Discord App Directory listing + submission checklist
+# Triviara — Discord App Directory listing + submission checklist
 
 App Directory başvurusu (Developer Portal → Applications → <app> → App
 Directory / Store Listing) için metinler ve doğrulama listesi. Metinler
@@ -13,7 +13,7 @@ portalda TR + EN ayrı girilir; aşağıdakileri aynen kopyalayabilirsin.
 
 **TR:**
 ```
-QuizTavern, Discord ses kanalında oynanan takımlı bilgi yarışmasıdır. Aktiviteyi
+Triviara, Discord ses kanalında oynanan takımlı bilgi yarışmasıdır. Aktiviteyi
 aç, masana otur, soruları kapış — takım arkadaşlarınla aynı anda cevaplayın,
 en hızlı doğrular daha çok puan alır.
 
@@ -26,7 +26,7 @@ en hızlı doğrular daha çok puan alır.
 
 **EN:**
 ```
-QuizTavern is a team trivia game played inside a Discord voice channel. Open the
+Triviara is a team trivia game played inside a Discord voice channel. Open the
 activity, take a seat, race to answer — answer together with your teammates and
 the fastest correct answers earn the most points.
 

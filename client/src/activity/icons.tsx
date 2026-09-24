@@ -1,5 +1,5 @@
 /**
- * QuizTavern ikon seti — tek kaynak.
+ * Triviara ikon seti — tek kaynak.
  *
  * Eskiden her ikon ActivityApp içinde elle yazılmış tek bir <path> idi; çizgi
  * kalınlıkları/oranları tutarsızdı ve "✦ parıltı" gibi yapay zekâ ürünlerinin

@@ -1,4 +1,4 @@
-# QuizTavern — Bug Raporu (A'dan Z'ye Tarama)
+# Triviara — Bug Raporu (A'dan Z'ye Tarama)
 
 > **Kapsam:** `client/`, `server/`, `shared/`, `deploy/` klasörlerinde kod okuma yoluyla tespit edilen potansiyel buglar.
 > **Yöntem:** Statik analiz — kod çalıştırılmadı, davranışsal buglar yalnızca kaynak kodun dikkatli okunmasıyla tespit edildi.

@@ -47,7 +47,7 @@ const MOTES = [
 ]
 
 /**
- * Masanın marka işareti: QuizTavern kalkan logosu.
+ * Masanın marka işareti: Triviara kalkan logosu.
  *
  * Önce 3D baykuştu (@google/model-viewer + owl-idle.glb); Discord'da model
  * çizilmiyordu (WebGL/CSP) ve 2.3 MB hiç görünmeyen bir şey için iniyordu, o
