@@ -128,7 +128,8 @@ export const GAME = {
   MIN_PLAYERS: 1,
   BASE_POINTS: 700,
   SPEED_POINTS: 300,
-  CIRCLE_RANK_POINTS: [450, 320, 220, 150, 100] as const,
+  // Çember: yalnız en hızlı 3 doğru puanlanır — gerisi +0 (doğru bilen 4.+ puansız kalır).
+  CIRCLE_RANK_POINTS: [450, 320, 220] as const,
   // Tek kaynak: istemci de aynı sabitten sayar (bkz. shared/types.ts).
   RECONNECT_GRACE_MS,
   ROOM_TTL_MS: 5 * 60_000,

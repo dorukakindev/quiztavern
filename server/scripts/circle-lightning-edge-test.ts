@@ -103,4 +103,22 @@ test('Çember tur sayısı: host 10/15/20 seçebilir, klasik set reddedilir', ()
   assert.equal(room.stateFor('h', true).round.total, 15)
 })
 
+test('Çemberde yalnız en hızlı 3 puanlanır, 4. doğru +0 kalır', () => {
+  const top3 = new Room('edge-top3', () => {}, { minPlayers: 1 })
+  ;['a', 'b', 'c', 'd'].forEach((id) => top3.addPlayer(player(id, id.toUpperCase())))
+  top3.gameMode = 'circle'
+  top3.phase = 'question'
+  top3.qIndex = 0
+  top3.questionStartedAt = Date.now()
+  top3.questionDeadline = Date.now() + 10_000
+  internals(top3).circlePrompts = [iguanodon]
+  // a en hızlı, d en yavaş doğru — sıra elle atanır
+  ;['a', 'b', 'c', 'd'].forEach((id, i) => { top3.players.get(id)!.circleCorrectAt = top3.questionStartedAt + (i + 1) * 100 })
+  ;(top3 as unknown as { revealCircle: () => void }).revealCircle()
+  const reveal = top3.stateFor('a', true).circleReveal!
+  assert.deepEqual(reveal.rankedPlayerIds, ['a', 'b', 'c', 'd'])
+  assert.deepEqual(reveal.gains, { a: 450, b: 320, c: 220, d: 0 })
+  assert.equal(top3.players.get('d')!.score, 0)
+})
+
 console.log(`\n[circle-lightning-edge] sonuç: ${passed} geçti, 0 kaldı`)
