@@ -741,3 +741,14 @@
   .qt-board-col__head { font-size: .6rem; padding: .4rem .2rem; }
   .qt-board-cell { min-height: 2.3rem; font-size: .85rem; }
 }
+
+/* ── Mod yardım diyaloğu (oyun-içi "?") ── */
+.qt-howto-modal--mode { max-width: 360px; }
+.qt-mode-help__body {
+  margin: 0;
+  padding: 0 4px 4px;
+  color: var(--ink-2, #cfc2a6);
+  line-height: 1.55;
+  font-size: 0.95rem;
+}
+.qt-game-help { padding-inline: 8px; }
