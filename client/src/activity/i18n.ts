@@ -306,6 +306,11 @@ const tr = {
   // Emote
   'emote.label': 'Masaya tepki gönder',
   'emote.flame': 'Alev',
+  'emote.clap': 'Alkış',
+  'emote.laugh': 'Kahkaha',
+  'emote.crown': 'Taç',
+  'emote.sword': 'Kılıç',
+  'emote.skull': 'Elendin',
   'emote.heart': 'Kalp',
   'emote.star': 'Yıldız',
 
@@ -754,6 +759,11 @@ const en: Record<StringKey, string> = {
 
   'emote.label': 'Send a reaction to the table',
   'emote.flame': 'Fire',
+  'emote.clap': 'Clap',
+  'emote.laugh': 'Laugh',
+  'emote.crown': 'Crown',
+  'emote.sword': 'Sword',
+  'emote.skull': 'Out',
   'emote.heart': 'Heart',
   'emote.star': 'Star',
 

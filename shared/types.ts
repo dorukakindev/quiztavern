@@ -344,7 +344,7 @@ export interface ToastPayload {
 }
 
 /** Masadaki herkese yayınlanan kısa tepki. Sunucu anahtar listesini doğrular ve hız sınırlar. */
-export const EMOTE_KEYS = ["flame", "heart", "star"] as const;
+export const EMOTE_KEYS = ["flame", "heart", "star", "clap", "laugh", "crown", "sword", "skull"] as const;
 export type EmoteKey = (typeof EMOTE_KEYS)[number];
 
 export interface EmotePayload {
