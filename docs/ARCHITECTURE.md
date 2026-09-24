@@ -1,4 +1,4 @@
-# QuizTavern — Mimari Özet
+# Triviara — Mimari Özet
 
 Discord Embedded Activity içinde çalışan, sunucu-otoriter çok oyunculu bilgi yarışması.
 Tek instance = tek masa. İstemci yalnızca görüntü + input; tüm oyun kararı sunucudadır.

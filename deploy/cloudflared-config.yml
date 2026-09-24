@@ -1,4 +1,4 @@
-# QuizTavern — Named Cloudflare Tunnel yapılandırması
+# Triviara — Named Cloudflare Tunnel yapılandırması
 # Sabit adresli tünel: URL bir daha değişmez, Discord Portal'ı tekrar tekrar
 # güncellemezsin. Ephemeral (trycloudflare) tünelin yerine geçer.
 #

@@ -62,13 +62,13 @@ export function subscribeSpeaking(sdk: DiscordSDK, apply: (speakingIds: Set<stri
 }
 
 /**
- * Rich Presence: Discord durum çubuğunda "QuizTavern oynuyor — <state>".
+ * Rich Presence: Discord durum çubuğunda "Triviara oynuyor — <state>".
  * rpc.activities.write scope'u gerekir; yoksa INVALID_COMMAND ile reddeder —
  * presence kozmetiktir, akışı asla bozmamalı.
  */
 export function updatePresence(sdk: DiscordSDK, state: string): void {
   void sdk.commands.setActivity({
-    activity: { type: 0, details: 'QuizTavern', state },
+    activity: { type: 0, details: 'Triviara', state },
   }).catch(() => {})
 }
 

@@ -1,4 +1,4 @@
-# QuizTavern — Caddy reverse proxy (otomatik HTTPS, Let's Encrypt)
+# Triviara — Caddy reverse proxy (otomatik HTTPS, Let's Encrypt)
 # <DOMAIN> yerine DuckDNS alt alanı (ör. quiztavern.duckdns.org) veya
 # <public-ip>.sslip.io yazılır. Caddy sertifikayı kendisi alır/yeniler.
 #

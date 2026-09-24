@@ -2088,7 +2088,7 @@ function DailyShare({ day, pattern }: { day: number; pattern: string }) {
   const { t } = useI18n()
   const [copied, setCopied] = useState(false)
   const textRef = useRef<HTMLInputElement>(null)
-  const text = `${pattern} QuizTavern #${day}`
+  const text = `${pattern} Triviara #${day}`
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied(true) }
     catch { textRef.current?.select() }

@@ -1,4 +1,4 @@
-# QuizTavern — Render Blueprint (https://render.com/docs/blueprint-spec)
+# Triviara — Render Blueprint (https://render.com/docs/blueprint-spec)
 # Dashboard → New → Blueprint → repo'yu seç → Apply. Ayrıntılar: docs/DEPLOY.md §Render.
 services:
   - type: web

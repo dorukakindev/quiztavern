@@ -120,7 +120,7 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
     captureClientLog(sdk, `[activity] init failed: ${describeError(error)}`)
     // Constructor pencereye message listener ekler; timeout/hata sonrası bırakılırsa
     // her Retry yeni bir listener biriktirir.
-    closeSdk(sdk, 'QuizTavern activity initialization failed')
+    closeSdk(sdk, 'Triviara activity initialization failed')
     throw error
   }
 }
@@ -237,7 +237,7 @@ export function useDiscordActivity() {
   const [attempt, setAttempt] = useState(0)
   const sdkRef = useRef<DiscordSDK | null>(null)
   const retry = useCallback(() => {
-    if (sdkRef.current) closeSdk(sdkRef.current, 'QuizTavern activity session refresh')
+    if (sdkRef.current) closeSdk(sdkRef.current, 'Triviara activity session refresh')
     sdkRef.current = null
     sessionPromise = null
     setIdentity((current) => ({ ...current, sessionToken: undefined, user: null }))

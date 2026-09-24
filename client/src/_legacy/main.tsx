@@ -291,7 +291,7 @@ function App() {
 
   return <div className={`app-shell ${(['play','reveal','finish'] as Screen[]).includes(screen) ? 'game-shell' : ''}`}>
     <aside className="sidebar">
-      <div className="brand"><span className="brand-mark"><img src={appLogo} alt="QuizTavern logosu" /></span><span>Quiz<span>Tavern</span></span></div>
+      <div className="brand"><span className="brand-mark"><img src={appLogo} alt="Triviara logosu" /></span><span>Quiz<span>Tavern</span></span></div>
       <nav>
         {([['home','home','Ana Sayfa'],['lobbies','lobbies','Lobiler'],['modes','modes','Modlar'],['tasks','tasks','Görevler'],['tournament','tournament','Turnuva'],['howto','howto','Nasıl Oynanır'],['leaderboard','leaderboard','Sıralama'],['profile','profile','Profil'],['home','settings','Ayarlar']] as const).map(([id, icon, label]) => {
           const isSettings = label === 'Ayarlar'
@@ -332,7 +332,7 @@ function Modes({ onClassic, onFitil, onCircle, onLobbies }: { onClassic: (catego
   const [selectedMode, setSelectedMode] = useState<ModeKey>('classic')
   const [category, setCategory] = useState('Karışık')
   const modes: Record<ModeKey, { eyebrow: string; title: string; rule: string; description: string; meta: string[]; art: string; accent: string; mark: string }> = {
-    classic: { eyebrow: 'TEMEL MOD', title: 'Klasik', rule: 'Dört şık, tek doğru.', description: 'Bilgini, hızını ve rakiplerini aynı masada sınayan QuizTavern deneyimi.', meta: ['10 soru', '15 sn / soru', '2–6 oyuncu'], art: modeClassicBackground, accent: 'cyan', mark: '01' },
+    classic: { eyebrow: 'TEMEL MOD', title: 'Klasik', rule: 'Dört şık, tek doğru.', description: 'Bilgini, hızını ve rakiplerini aynı masada sınayan Triviara deneyimi.', meta: ['10 soru', '15 sn / soru', '2–6 oyuncu'], art: modeClassicBackground, accent: 'cyan', mark: '01' },
     fitil: { eyebrow: 'HIZLI MOD', title: 'Fitil', rule: 'Az süre, saf refleks.', description: 'Beş kısa soruda süre bitmeden seç, kilitle ve hız bonusunu yakala.', meta: ['5 soru', '8 sn / soru', 'Hız bonusu'], art: modeFitilBackground, accent: 'gold', mark: '8s' },
     circle: { eyebrow: 'KELİME & BİLGİ', title: 'Çember', rule: 'Her harf bir ipucu.', description: 'Cevabı doğru harfle başlat, takıldığında pas geç ve çemberi tamamla.', meta: ['20 harf', '3 dakika', 'Pas hakkı'], art: modeCircleBackground, accent: 'violet', mark: 'A–Z' },
   }
@@ -685,7 +685,7 @@ function Reveal({ onNext, selected, question, questionIndex, totalQuestions, mod
   const [motion, setMotion] = useState(true)
   return <div className="overlay" onClick={onClose}><section className="settings-panel card" onClick={event => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose} aria-label="Kapat">×</button>
-    <span className="pill amber-pill">KİŞİSELLEŞTİR</span><h2>Ayarlar</h2><p className="settings-subtitle">QuizTavern deneyimini kendine göre düzenle.</p>
+    <span className="pill amber-pill">KİŞİSELLEŞTİR</span><h2>Ayarlar</h2><p className="settings-subtitle">Triviara deneyimini kendine göre düzenle.</p>
     <div className="settings-account"><span className="avatar lavender">S</span><div><b>sen#1234</b><small>Discord bağlı</small></div><span className="connected-dot"></span></div>
     <div className="settings-list"><div><span><b>Bildirimler</b><small>Rövanş ve lig güncellemelerini al</small></span><button className={'toggle ' + (notifications ? 'on' : '')} onClick={() => setNotifications(value => !value)}><i></i></button></div><div><span><b>Oyun sesleri</b><small>Kilit, doğru cevap ve süre sesleri</small></span><button className={'toggle ' + (sound ? 'on' : '')} onClick={() => setSound(value => !value)}><i></i></button></div><div><span><b>Hareketli efektler</b><small>Meteor ve parçacık animasyonları</small></span><button className={'toggle ' + (motion ? 'on' : '')} onClick={() => setMotion(value => !value)}><i></i></button></div></div>
     <button className="settings-action">Discord hesabını yönet <span>›</span></button><button className="settings-close" onClick={onClose}>Kaydet ve Kapat</button>
@@ -742,7 +742,7 @@ function RoomModal({ onClose }: { onClose: () => void }) {
   const code = 'XYZ123'
   return <div className="overlay" onClick={onClose}><section className="room-modal card" onClick={event => event.stopPropagation()}>
     <button className="modal-close" onClick={onClose} aria-label="Kapat">×</button>
-    <h2><span className="accent">QuizTavern</span> Oda Yönetim Paneli</h2>
+    <h2><span className="accent">Triviara</span> Oda Yönetim Paneli</h2>
     <div className="modal-tabs"><button className={tab === 'create' ? 'active' : ''} onClick={() => setTab('create')}>Oda Oluştur</button><button className={tab === 'join' ? 'active' : ''} onClick={() => setTab('join')}>Odaya Katıl</button></div>
     {tab === 'create' ? <div className="room-form">
       <div className="room-form-left"><h3>Mod Seçimi</h3><div className="mode-switch"><button className={mode === 'lightning' ? 'selected' : ''} onClick={() => setMode('lightning')}>ϟ&nbsp; Yıldırım Turu</button><button className={mode === 'classic' ? 'selected' : ''} onClick={() => setMode('classic')}>☷&nbsp; Klasik</button></div><h3>Kategori Seçimi</h3><button className="select-like">Sinema, Bilim, etc. <span>⌄</span></button><h3>Oyuncu Sınırı</h3><input className="range" type="range" min="2" max="6" value={maxPlayers} onChange={event => setMaxPlayers(Number(event.target.value))} /><div className="range-labels"><span>2</span><span>3</span><b>{maxPlayers}</b><span>5</span><span>6</span></div><div className="private-row"><span>Gizli Oda <small>?</small></span><button className={'toggle ' + (privateRoom ? 'on' : '')} onClick={() => setPrivateRoom(value => !value)}><i></i></button></div><button className="create-room" onClick={() => setCreated(true)}>Odayı Oluştur</button></div>
@@ -833,7 +833,7 @@ function HowTo({ onPlay }: { onPlay:()=>void }) {
   ]
   return <section className="howto-page">
     <header className="howto-banner card" style={{backgroundImage:`url(${howToBanner})`}}>
-      <div><span className="pill cool-pill">QUIZTAVERN REHBERİ</span><h2>Birlikte oyna,<br/><span>birlikte keşfet.</span></h2><p>QuizTavern tek kişilik bir test değil: seç, kilitle ve masadaki herkesi aynı anda oku.</p></div>
+      <div><span className="pill cool-pill">QUIZTAVERN REHBERİ</span><h2>Birlikte oyna,<br/><span>birlikte keşfet.</span></h2><p>Triviara tek kişilik bir test değil: seç, kilitle ve masadaki herkesi aynı anda oku.</p></div>
       <div className="howto-banner-note"><b>01 — 04</b><span>Bir maçın akışı</span></div>
     </header>
     <section className="guide-journey card">
@@ -856,7 +856,7 @@ function Profile() {
   return <section className="profile-dashboard">
     <header className="profile-heading"><div><span className="eyebrow">OYUNCU MERKEZİ</span><h2>Oyuncu İstatistikleri</h2><p>Performansını analiz et ve zirveye tırman.</p></div><div className="profile-heading-chip"><span className="profile-chip-dot"></span> Discord bağlı</div></header>
     <div className="profile-dashboard-grid">
-      <aside className="profile-sidebar"><section className="profile-identity card"><div className="profile-emblem-wrap"><img src={profileEmblem} alt="QuizTavern profil amblemi" /></div><h3>sen#1234</h3><b>Usta Gözlemci</b><div className="profile-level"><div><span>Seviye 27</span><strong>2.450 / 3.000 XP</strong></div><i><em></em></i></div><div className="profile-stat-line"><span>Bu hafta</span><strong>+640 XP</strong></div></section><section className="performance-card card"><small>GENEL PERFORMANS</small><div className="performance-metrics"><div><span className="metric-mark">01</span><b>142</b><p>Toplam Oyun</p></div><div><span className="metric-mark">%</span><b>%78</b><p>Doğruluk Oranı</p></div><div><span className="metric-mark">↗</span><b>%62</b><p>Kazanma Oranı</p></div></div></section></aside>
+      <aside className="profile-sidebar"><section className="profile-identity card"><div className="profile-emblem-wrap"><img src={profileEmblem} alt="Triviara profil amblemi" /></div><h3>sen#1234</h3><b>Usta Gözlemci</b><div className="profile-level"><div><span>Seviye 27</span><strong>2.450 / 3.000 XP</strong></div><i><em></em></i></div><div className="profile-stat-line"><span>Bu hafta</span><strong>+640 XP</strong></div></section><section className="performance-card card"><small>GENEL PERFORMANS</small><div className="performance-metrics"><div><span className="metric-mark">01</span><b>142</b><p>Toplam Oyun</p></div><div><span className="metric-mark">%</span><b>%78</b><p>Doğruluk Oranı</p></div><div><span className="metric-mark">↗</span><b>%62</b><p>Kazanma Oranı</p></div></div></section></aside>
       <div className="profile-content"><section className="favorite-categories card"><div className="profile-panel-head"><div><span className="eyebrow">PERFORMANS HARİTASI</span><h3>Favori Kategoriler</h3></div><button>Tümünü Gör</button></div>{favorites.map(([mark,name,value,kind])=><div className={`favorite-row ${kind}`} key={name}><span className={`category-mark ${kind}`}>{mark}</span><div><b>{name}</b><i><em style={{width:`${value}%`}}></em></i></div><strong>%{value}</strong></div>)}</section><section className="achievement-card card"><div className="profile-panel-head"><div><span className="eyebrow">ROZET KOLEKSİYONU</span><h3>Başarıların</h3></div><button>12 rozet</button></div><div className="achievement-art" style={{backgroundImage:`url(${profileAchievements})`}}></div><div className="achievement-labels"><span>Bilim kaşifi</span><span>Sinema gecesi</span><span>Yıldırım ustası</span><span>Lig tacı</span><span>Zirve yönü</span></div></section><section className="tournament-history card"><div className="profile-panel-head"><div><span className="eyebrow">MAÇ KAYITLARI</span><h3>Turnuva Geçmişi</h3></div><button>Tüm geçmişi gör</button></div><div className="history-table-head"><span>TURNUVA</span><span>SIRALAMA</span><span>ÖDÜL</span></div>{history.map(([name,rank,reward])=><div className="tournament-history-row" key={name}><span>{name}</span><b>{rank}</b><strong>{reward} altın</strong></div>)}</section></div>
     </div>
   </section>
