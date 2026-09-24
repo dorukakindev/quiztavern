@@ -401,3 +401,55 @@
 .qt-answer.is-removed .qt-answer__text {
   visibility: hidden;
 }
+
+/* İzleyici kazanan tahmini (§6.3) — SpectatorBar içindeki çip sırası. */
+.qt-predict-bar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.qt-predict-bar small {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--qt-text-dim, #b9a98c);
+}
+.qt-predict-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 3px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 200, 255, 0.3);
+  background: rgba(40, 70, 110, 0.25);
+  color: #dce9f7;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 120ms ease, background 120ms ease;
+}
+.qt-predict-chip:hover { border-color: rgba(126, 200, 255, 0.75); background: rgba(60, 110, 160, 0.35); }
+.qt-predict-chip .qt-avatar, .qt-predict-chip .qt-avatar-compact { width: 18px; height: 18px; }
+.qt-predict-yours {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #8fd0ff;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.qt-predict-win {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #7ee2a8;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(126, 226, 168, 0.4);
+  background: rgba(40, 120, 70, 0.2);
+}

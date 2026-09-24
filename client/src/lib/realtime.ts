@@ -203,6 +203,8 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     spectate: () => socket.emit(EV.SPECTATE),
     takeSeat: () => socket.emit(EV.TAKE_SEAT),
     reportQuestion: (note?: string) => { if (socket.connected) socket.emit(EV.QUESTION_REPORT, { note }) },
+    /** İzleyici: maç başında kazananı tahmin et (pencere: geri sayım + ilk tur). */
+    predict: (targetId: string) => socket.emit(EV.PREDICT, { targetId }),
     // Unvan tak/kaldır (null = kaldır) — kazanılmış rozetlerden biri olmalı.
     setTitle: (title: BadgeKey | null) => socket.emit(EV.SET_TITLE, { title }),
     /**

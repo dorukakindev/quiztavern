@@ -322,6 +322,8 @@ export type ToastKey =
   | "err.cardUsed"
   | "err.cardEmpty"
   | "err.invalidInput"
+  | "err.predictPhase"
+  | "err.predictFailed"
   | "err.kicked"
   | "err.kickFailed"
   | "err.transferFailed"
@@ -475,6 +477,11 @@ export interface GameState {
   youAreSpectator: boolean;
   /** Masayı izleyen (oyuncu olmayan) kişi sayısı. */
   spectatorCount: number;
+  /** İzleyicinin kazanan tahmini (playerId) — oyuncularda her zaman null.
+   *  §6.3: maç başında yapılır, bilene +XP. */
+  yourPrediction: string | null;
+  /** Tahmin penceresi açık mı: geri sayım + ilk tur (ilk reveal'e kadar). */
+  predictOpen: boolean;
   minPlayers: number;
   /** Boş dizi, tüm kategorilerin karışık kullanılacağı anlamına gelir. */
   categorySelection: string[];
@@ -516,6 +523,8 @@ export const EV = {
   TEAM_SHUFFLE: "team-shuffle",
   /** Tavern kartı: { type: CardType, targetId? } — soru fazında, cevaptan önce, tur başına bir. */
   USE_CARD: "use-card",
+  /** İzleyici kazanan tahmini: { targetId } — maç başında, pencere kapanmadan. */
+  PREDICT: "predict",
   PLAY_AGAIN: "play-again",
   ADD_BOT: "add-bot",
   READY: "ready",

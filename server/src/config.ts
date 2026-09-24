@@ -127,6 +127,8 @@ export const GAME = {
   ELIM_LIVES: 3,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
+  /** İzleyici kazanan tahmini: doğru bilene verilen XP. */
+  PREDICT_XP: 25,
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,
