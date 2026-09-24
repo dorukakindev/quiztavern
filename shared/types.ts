@@ -71,6 +71,7 @@ export const CARD_TYPES: readonly CardType[] = ["fifty", "double", "shield", "fr
 /** Kalıcı ilerleme meta'sı: lig kademeleri. XP eşikleri sunucudaki
  *  sıralamayla aynıdır (server/src/xp.ts LEAGUE_THRESHOLDS). */
 export type LeagueKey = "acemi" | "cirak" | "kalfa" | "usta" | "efsane";
+export const LEAGUE_ORDER: readonly LeagueKey[] = ["acemi", "cirak", "kalfa", "usta", "efsane"];
 
 /** Oyuncu kartında görünen kompakt ilerleme rozeti. */
 export interface ProgressBadge {
@@ -314,6 +315,10 @@ export type ToastKey =
   | "err.countInvalid"
   | "err.difficultyHostOnly"
   | "err.difficultyInvalid"
+  | "err.themeHostOnly"
+  | "err.themeInvalid"
+  | "err.themeLocked"
+  | "err.themeFailed"
   | "err.timeHostOnly"
   | "err.timeInvalid"
   | "err.timeFailed"
@@ -439,6 +444,15 @@ export const QUESTION_COUNTS = [5, 10, 15] as const;
 /** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
 export const CIRCLE_COUNTS = [10, 15, 20] as const;
 export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
+/** §6.3 masa temaları: host'un ligi tema kapısını açar — tema tüm masaya uygulanır. */
+export const TABLE_THEMES = [
+  { key: "tavern", league: "acemi" },
+  { key: "forest", league: "cirak" },
+  { key: "ember", league: "kalfa" },
+  { key: "royal", league: "usta" },
+  { key: "void", league: "efsane" },
+] as const;
+export type TableTheme = (typeof TABLE_THEMES)[number]["key"];
 /** Klasik/Takım/Son Masa/Çifte Bahis'te seçilebilir soru süreleri (ms). Süreye
  *  bağlı modlar (Çember/Fitil/Bulanık/Kelime) kendi sabitini kullanır. */
 export const QUESTION_TIMES = [10_000, 15_000, 20_000] as const;
@@ -451,6 +465,8 @@ export interface GameState {
   questionCount: QuestionCount;
   /** Masa ayarı: zorluk filtresi; null = karışık (tüm zorluklar). Tüm modlara uygulanır. */
   difficulty: Difficulty | null;
+  /** Masa teması (§6.3): host'un liginin açtığı görsel kimlik, tüm masada. */
+  tableTheme: TableTheme;
   /** Masa ayarı: soru süresi (ms); null = mod varsayılanı. Yalnız klasik/takım/
    *  elim/bet'te geçerli. */
   questionTimeMs: number | null;
@@ -580,6 +596,7 @@ export const EV = {
   SET_DIFFICULTY: "set-difficulty",
   /** Yalnızca masa sahibi: { packId } — klasik soru havuzunu özel paketle değiştirir; null temizler */
   SET_PACK: "set-pack",
+  SET_THEME: "set-theme",
   SET_QUESTION_TIME: "set-question-time",
   SET_SPEED_BONUS: "set-speed-bonus",
   SET_IMAGE_ONLY: "set-image-only",

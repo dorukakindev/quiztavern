@@ -605,6 +605,13 @@ io.on("connection", (socket) => {
       const t = toToast(error, "err.difficultyFailed"); toast(socket.id, t.key, t.params);
     }
   });
+  socket.on(EV.SET_THEME, (payload: unknown) => {
+    try {
+      room.setTableTheme(user.id, (payload as { theme?: unknown } | undefined)?.theme);
+    } catch (error) {
+      const t = toToast(error, "err.themeFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
   socket.on(EV.SET_QUESTION_TIME, (payload: unknown) => {
     try {
       room.setQuestionTime(user.id, (payload as { ms?: unknown } | undefined)?.ms ?? null);
