@@ -18,7 +18,7 @@ import {
   ChartLineUp, Check, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
   Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
-  MusicNotesSimple, Palette, PawPrint, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldStar, SignOut,
+  MusicNotesSimple, Palette, PawPrint, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldStar, Shuffle, SignOut,
   SlidersHorizontal, Smiley, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Television,
   TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
 } from '@phosphor-icons/react'
@@ -64,6 +64,7 @@ const UI_ICONS = {
   speakerOff: SpeakerSlash,
   music: MusicNotes,
   musicOff: MusicNotesSimple,
+  shuffle: Shuffle,
 } satisfies Record<string, Glyph>
 
 export type IconName = keyof typeof UI_ICONS

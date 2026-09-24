@@ -609,6 +609,24 @@ export class Room {
   }
 
   /**
+   * Takım modu: host tek dokunuşla takımları yeniden karıştırır. Hazır onayını
+   * sıfırlamaz (setTeam ile aynı gerekçe). Rastgele ve dengeli: |A−B| ≤ 1 —
+   * dönüşümlü atama iki tarafın da güçsüz kalmasını önler.
+   */
+  shuffleTeams(byId: string): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== byId) throw new GameError("err.teamHostOnly");
+    if (this.gameMode !== "team") throw new GameError("err.teamInvalid");
+    const seated = [...this.players.values()];
+    for (let i = seated.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seated[i], seated[j]] = [seated[j], seated[i]];
+    }
+    seated.forEach((player, index) => { player.team = index % 2; });
+    this.broadcast();
+  }
+
+  /**
    * Masa ayarı: sonraki maçın soru sayısı. Süre moda sabittir; sayı değil.
    * Çember'de aynı alan tur sayısı olarak okunur (10/15/20).
    */
