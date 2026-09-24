@@ -10,8 +10,13 @@ export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "pod
  *  `bet` (Çifte Bahis): klasik sorular; her soru öncesi bahis fazı, doğru cevap
  *  yatırılanı katlar, yanlış yakar — skor = bankroll, aşağı da inebilir.
  *  `team` (Takım): klasik sorular + puanlama; oyuncular 2 takıma bölünür, puanlar
- *  takım havuzunda toplanır, yüksek toplamlı takım kazanır. */
-export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim";
+ *  takım havuzunda toplanır, yüksek toplamlı takım kazanır.
+ *  `elim` (Son Masa): 3 canla başlanır; yanlış/cevapsız tur 1 can götürür,
+ *  son kalan kazanır, elenenler izler.
+ *  `blur` (Bulanık Resim): yalnız resimli sorular; görsel süre boyunca
+ *  netleşir — erken cevap = çok puan (hız bonusu mekaniği). */
+export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim"
+  | "blur";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden

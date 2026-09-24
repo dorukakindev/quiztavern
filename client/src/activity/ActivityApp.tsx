@@ -119,10 +119,11 @@ const MODE_KEYS = {
   bet: { name: 'mode.bet', meta: 'mode.bet.meta', tag: 'mode.bet.tag', icon: 'coins' },
   team: { name: 'mode.team', meta: 'mode.team.meta', tag: 'mode.team.tag', icon: 'teams' },
   elim: { name: 'mode.elim', meta: 'mode.elim.meta', tag: 'mode.elim.tag', icon: 'heart' },
+  blur: { name: 'mode.blur', meta: 'mode.blur.meta', tag: 'mode.blur.tag', icon: 'eye' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : 'classic'
 }
 
 /**
@@ -383,7 +384,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur'] as const
 function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boolean; onSetMode: (mode: GameMode) => void }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
@@ -681,11 +682,12 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {scene === 'bet' && <div className="qt-scene-emblem is-bet"><Icon name="coins" weight="duotone" /></div>}
     {scene === 'team' && <div className="qt-scene-emblem is-team"><Icon name="teams" weight="duotone" /></div>}
     {scene === 'elim' && <div className="qt-scene-emblem is-elim"><Icon name="heart" weight="duotone" /></div>}
+    {scene === 'blur' && <div className="qt-scene-emblem is-blur"><Icon name="eye" weight="duotone" /></div>}
     {scene === 'classic' && <div className="qt-scene-deck"><i /><i /><i /><b><Icon name="question" weight="bold" /></b></div>}
     {scene === 'lightning' && <div className="qt-scene-clock"><i className="qt-scene-clock__marks" /><i className="qt-scene-clock__hand" /><b><Icon name="fuse" weight="duotone" /></b></div>}
     {scene === 'circle' && <div className="qt-scene-letters">{['A', 'B', 'Ç', 'D', 'E', 'F', 'G', 'H'].map((letter, index) => <i key={letter} style={{ '--letter-angle': `${index * 45}deg`, '--letter-counter-angle': `${index * -45}deg` } as CSSProperties}>{letter}</i>)}<b>?</b></div>}
@@ -1261,6 +1263,12 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
   // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
   const sfxNow = useServerNow(state.serverNow, 250)
+  // Bulanık Resim: görsel soru süresi boyunca netleşir. Oran sunucu saatinden
+  // türer (sfxNow), transform:scale kenar sızdırmazlığı için blur'le birlikte
+  // azalır. Reveal'da (faz=question değil) görsel tamamen net.
+  const blurRemain = state.gameMode === 'blur' && state.phase === 'question' && deadline && durationMs
+    ? Math.max(0, Math.min(1, (deadline - sfxNow) / durationMs)) : 0
+  const blurPx = Math.round(blurRemain * 18 * 10) / 10
   const secLeft = deadline ? Math.max(0, Math.ceil((deadline - sfxNow) / 1000)) : 99
   const sfxRef = useRef({ revealed: false, gained: false, tick: -1 })
   useEffect(() => {
@@ -1326,7 +1334,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
         </div>
         <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.circleReveal?.answerEn ? state.circleReveal.answerEn : state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
-        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
+
+        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
             const isCorrect = beats.cards && index === correctIndex

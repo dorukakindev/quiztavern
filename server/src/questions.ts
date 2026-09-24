@@ -99,9 +99,16 @@ function randomInt(min: number, max: number): number {
  *   ederken art arda maçların tekrar olmaması için TAZE sorular önce gelir;
  *   taze olanlar n'e yetmezse kullanılanlarla tamamlanır (maç hep dolu kalır).
  * @param difficulty null = karışık (tüm zorluklar).
+ * @param imageOnly Bulanık Resim: havuz yalnız resimli sorulardan kurulur ve
+ *   kota n'e çekilir (resimli soru resimsizle harmanlanmaz). Kategori/zorluk
+ *   filtresi resimli soru içermiyorsa tüm resimli havuza düşer.
  */
-export function sampleQuestions(n: number, categories: string[] = [], exclude: Set<string> = new Set(), difficulty: Difficulty | null = null): Question[] {
-  const source = effectiveQuestionPool(categories, difficulty);
+export function sampleQuestions(n: number, categories: string[] = [], exclude: Set<string> = new Set(), difficulty: Difficulty | null = null, imageOnly = false): Question[] {
+  let source = effectiveQuestionPool(categories, difficulty);
+  if (imageOnly) {
+    const pictured = source.filter((q) => q.image);
+    source = pictured.length ? pictured : ALL_QUESTIONS.filter((q) => q.image);
+  }
   // Resimli/resimsiz havuzları AYRI karıştır: her birinde taze-önce sırası
   // korunur, sonra hedef sayıda resimli soru diğerleriyle harmanlanır.
   // Kategori/zorluk filtresi resimli soru içermiyorsa hedef otomatik 0'a
@@ -114,7 +121,7 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   const textFresh = shuffle(texts.filter((q) => !exclude.has(q.id)));
   const textUsed = shuffle(texts.filter((q) => exclude.has(q.id)));
   const textPool = [...textFresh, ...textUsed];
-  const { min, max } = pictureQuota(n);
+  const { min, max } = imageOnly ? { min: n, max: n } : pictureQuota(n);
   const pictureTarget = Math.min(picturePool.length, n, randomInt(min, max));
   const selected = [...picturePool.slice(0, pictureTarget), ...textPool.slice(0, n - pictureTarget)];
   // Resimli sorular maçın sabit bir yerinde (ör. hep ilk sıralarda) kümelenmesin
