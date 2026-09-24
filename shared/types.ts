@@ -309,6 +309,12 @@ export type ToastKey =
   | "err.countInvalid"
   | "err.difficultyHostOnly"
   | "err.difficultyInvalid"
+  | "err.timeHostOnly"
+  | "err.timeInvalid"
+  | "err.timeFailed"
+  | "err.settingHostOnly"
+  | "err.settingInvalid"
+  | "err.settingFailed"
   | "err.modeHostOnly"
   | "err.modeInvalid"
   | "err.teamHostOnly"
@@ -419,6 +425,10 @@ export const QUESTION_COUNTS = [5, 10, 15] as const;
 /** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
 export const CIRCLE_COUNTS = [10, 15, 20] as const;
 export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
+/** Klasik/Takım/Son Masa/Çifte Bahis'te seçilebilir soru süreleri (ms). Süreye
+ *  bağlı modlar (Çember/Fitil/Bulanık/Kelime) kendi sabitini kullanır. */
+export const QUESTION_TIMES = [10_000, 15_000, 20_000] as const;
+export type QuestionTimeMs = (typeof QUESTION_TIMES)[number];
 
 export interface GameState {
   phase: Phase;
@@ -427,6 +437,13 @@ export interface GameState {
   questionCount: QuestionCount;
   /** Masa ayarı: zorluk filtresi; null = karışık (tüm zorluklar). Tüm modlara uygulanır. */
   difficulty: Difficulty | null;
+  /** Masa ayarı: soru süresi (ms); null = mod varsayılanı. Yalnız klasik/takım/
+   *  elim/bet'te geçerli. */
+  questionTimeMs: number | null;
+  /** Masa ayarı: hız bonusu açık mı. Kapalıyken doğru cevap yalnız taban puan. */
+  speedBonus: boolean;
+  /** Masa ayarı: yalnız resimli sorular. Havuz daralırsa resimli havuza düşer. */
+  imageOnly: boolean;
   roomId: string;
   hostId: string | null;
   youId: string;
@@ -545,6 +562,9 @@ export const EV = {
   SET_DIFFICULTY: "set-difficulty",
   /** Yalnızca masa sahibi: { packId } — klasik soru havuzunu özel paketle değiştirir; null temizler */
   SET_PACK: "set-pack",
+  SET_QUESTION_TIME: "set-question-time",
+  SET_SPEED_BONUS: "set-speed-bonus",
+  SET_IMAGE_ONLY: "set-image-only",
   /**
    * Yalnızca masa sahibi: { mode } — masanın modu. Masa AYARIDIR ve yayınlanır:
    * mod her istemcinin yerel seçimi olsaydı, host Fitil'i seçtiğinde diğer

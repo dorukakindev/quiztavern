@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { CIRCLE_COUNTS, QUESTION_COUNTS } from "../../shared/types";
+import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
@@ -141,6 +141,12 @@ export class Room {
   // Zorluk masa ayarı: null = karışık (tüm zorluklar). Mod'dan bağımsız; hem
   // klasik hem çember örneklemesine filtre olarak geçer.
   difficulty: Difficulty | null = null;
+  /** Masa ayarı: soru süresi (ms); null = mod varsayılanı. */
+  questionTimeMs: number | null = null;
+  /** Masa ayarı: doğru cevaba hız çarpanı verilsin mi. */
+  speedBonus = true;
+  /** Masa ayarı: soru havuzu yalnız resimli sorulardan seçilsin mi. */
+  imageOnly = false;
   /** Masa ayarı: özel soru paketi id'si; null = standart havuz. Paket seçiliyken
    *  klasik soru havuzu paketin listesiyle değişir (kategori/zorluk filtreleri
    *  atlanır); Çember kendi prompt havuzunu kullandığı için etkilenmez. */
@@ -742,6 +748,28 @@ export class Room {
     this.broadcast();
   }
 
+  /** Masa ayarı: soru süresi; null = mod varsayılanı. Yalnız host, lobide. */
+  setQuestionTime(playerId: string, ms: unknown): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== playerId) throw new GameError("err.timeHostOnly");
+    if (ms !== null && !(QUESTION_TIMES as readonly number[]).includes(ms as number)) throw new GameError("err.timeInvalid");
+    if (this.questionTimeMs === ms) return;
+    this.questionTimeMs = ms as number | null;
+    for (const player of this.players.values()) if (!player.isBot) player.ready = false;
+    this.broadcast();
+  }
+
+  /** Masa ayarı: hız bonusu ve yalnız-resimli bayrakları (aç/kapa). */
+  setTableFlag(playerId: string, flag: "speedBonus" | "imageOnly", value: unknown): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== playerId) throw new GameError("err.settingHostOnly");
+    if (typeof value !== "boolean") throw new GameError("err.settingInvalid");
+    if (this[flag] === value) return;
+    this[flag] = value;
+    for (const player of this.players.values()) if (!player.isBot) player.ready = false;
+    this.broadcast();
+  }
+
   /** Özel soru paketi ayarı: id ya da null (standart havuza dön). Yalnız host, lobide. */
   setPack(playerId: string, packId: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
@@ -870,7 +898,7 @@ export class Room {
         ? []
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
-          : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur");
+          : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
       this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
     }
@@ -1141,6 +1169,9 @@ export class Room {
       minPlayers: this.minPlayers,
       questionCount: this.questionCount,
       difficulty: this.difficulty,
+      questionTimeMs: this.questionTimeMs,
+      speedBonus: this.speedBonus,
+      imageOnly: this.imageOnly,
       categorySelection: this.categorySelection,
       pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
       availableCategories: CATEGORY_CATALOG,
@@ -1401,7 +1432,7 @@ export class Room {
         player.score = Math.max(0, player.score + gain);
       } else {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
-        const speed = this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
+        const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
@@ -1674,7 +1705,7 @@ export class Room {
       // Her doğrulu tur fitili 0,5 sn kısaltır; 4 sn'de durur.
       return Math.max(GAME.LIGHTNING_MIN_MS, GAME.LIGHTNING_START_MS - this.lightningBurn * GAME.LIGHTNING_STEP_MS);
     }
-    return GAME.QUESTION_MS;
+    return this.questionTimeMs ?? GAME.QUESTION_MS;
   }
 
   private publicPlayer(player: RoomPlayer): PublicPlayer {
