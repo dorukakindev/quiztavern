@@ -1225,6 +1225,8 @@ export class Room {
     if (!question) return this.finish();
     const picks = [[], [], [], []] as string[][];
     const gains: Record<string, number> = {};
+    // Çifte Bahis: reveal'de herkesin bahsi görünür (masadaki gerçek kumar hissi).
+    const bets: Record<string, number> = {};
     for (const player of this.eligiblePlayers()) {
       if (player.choice !== null) picks[player.choice].push(player.id);
       const correct = player.choice === question.correctIndex;
@@ -1233,6 +1235,7 @@ export class Room {
       const speedRatio = Math.max(0, 1 - elapsed / duration);
       let gain: number;
       if (this.gameMode === "bet") {
+        bets[player.id] = player.bet ?? 0;
         // Çifte Bahis: doğru → yatırılan katlanır (+bahis), yanlış → yanar (−bahis).
         // Hız bonusu yok; mekanik bahsin kendisi. Bahis bankrolle sınırlı, skor <0 olmaz.
         const stake = player.bet ?? 0;
@@ -1265,6 +1268,7 @@ export class Room {
     this.lastReveal = {
       correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: revealMs,
       ...(this.gameMode === "bet" && this.rescueRound.size ? { rescued: [...this.rescueRound] } : {}),
+      ...(this.gameMode === "bet" ? { bets } : {}),
       ...(question.fact ? { fact: question.fact, factEn: question.factEn } : {}),
     };
     this.broadcast();
