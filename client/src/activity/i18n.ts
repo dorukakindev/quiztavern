@@ -370,6 +370,10 @@ const tr = {
   'daily.share': 'Günlük sonucun',
   'daily.copy': 'Sonucu kopyala',
   'daily.copied': 'Kopyalandı',
+  'daily.board': 'Günlük #{day}',
+  'daily.streak': '{count} gün serisi',
+  'daily.streakTitle': 'Üst üste günlük oynama serisi',
+  'daily.empty': 'Bugünün tablosu boş — ilk bitiren sen ol',
   'err.dailyDone': 'Bugünkü meydan okumayı masadaki herkes tamamladı — yarın yeni sorular gelir.',
   'err.connection': 'Sunucu bağlantısı kurulamadı.',
 
@@ -773,6 +777,10 @@ const en: Record<StringKey, string> = {
   'daily.share': 'Your daily result',
   'daily.copy': 'Copy result',
   'daily.copied': 'Copied',
+  'daily.board': 'Daily #{day}',
+  'daily.streak': '{count}-day streak',
+  'daily.streakTitle': 'Consecutive days playing the daily',
+  'daily.empty': "Today's board is empty — be the first to finish",
   'err.dailyDone': 'Everyone at this table already finished today\'s challenge — new questions tomorrow.',
   'err.connection': 'Could not reach the game server.',
 

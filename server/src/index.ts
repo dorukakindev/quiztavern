@@ -23,7 +23,7 @@ import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, Fix
 import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
-import { createDailyStore, dailyDayNumber } from "./daily";
+import { createDailyStore, dailyBoard, dailyDayNumber } from "./daily";
 import { createXpStore } from "./xp";
 import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
 
@@ -319,6 +319,7 @@ function getRoom(roomId: string) {
     room = new Room(id, () => emitRoom(room!), {});
     room.setQuestionStartedHandler(scheduleBotAnswers);
     room.setProgressStore(xpStore);
+    room.setDailyBoardProvider((userId) => dailyBoard(dailyStore, dailyDayNumber(), userId));
     room.onDailyFinished = (entries) => {
       for (const entry of entries) {
         try { dailyStore.record(entry); }
