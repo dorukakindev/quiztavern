@@ -162,6 +162,11 @@ export interface XpStore {
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına
    *  GAME.MASTERY_CORRECT doğruyu geçenler. */
   categoryMastery(userId: string): string[];
+  /** Soru bazlı doğru-cevap istatistiği (§6.3 zorluk kalibrasyonu): her maç
+   *  sonunda odanın ilettiği {questionId, asked, correct} artışlarını yazar. */
+  recordQuestionStats(rows: { questionId: string; asked: number; correct: number }[]): void;
+  /** Kalibrasyon girişi: tüm soru istatistik satırları. */
+  questionStats(): { questionId: string; asked: number; correct: number }[];
   /** Seçili unvan (kazanılmış rozetlerden biri) veya null. */
   title(userId: string): BadgeKey | null;
   /** Unvan seç: yalnız kazanılmış rozet geçerli; null seçimi kaldırır.
@@ -216,6 +221,11 @@ export function createXpStore(file: string): XpStore {
     earned_at INTEGER NOT NULL,
     PRIMARY KEY (user_id, badge)
   )`);
+  db.exec(`CREATE TABLE IF NOT EXISTS question_stats (
+    question_id TEXT PRIMARY KEY,
+    asked INTEGER NOT NULL DEFAULT 0,
+    correct INTEGER NOT NULL DEFAULT 0
+  )`);
   db.exec(`CREATE TABLE IF NOT EXISTS category_correct (
     user_id TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -256,11 +266,28 @@ export function createXpStore(file: string): XpStore {
   const masteryRows = db.prepare(
     "SELECT category FROM category_correct WHERE user_id = ? AND correct >= ? ORDER BY category",
   );
+  const upsertQuestionStats = db.prepare(`INSERT INTO question_stats (question_id, asked, correct)
+    VALUES (@questionId, @asked, @correct)
+    ON CONFLICT(question_id) DO UPDATE SET asked = asked + @asked, correct = correct + @correct`);
+  const questionStatsAll = db.prepare(
+    "SELECT question_id AS questionId, asked, correct FROM question_stats",
+  );
 
   const knownBadges = new Set(BADGE_DEFS.map((def) => def.key));
   /** Kazanılmış rozetler — BADGE_DEFS sırasında, tanınmayan (eski/yanlış) key'ler atılır. */
   function categoryMastery(userId: string): string[] {
     return (masteryRows.all(userId, GAME.MASTERY_CORRECT) as { category: string }[]).map((row) => row.category);
+  }
+
+  function recordQuestionStats(rows: { questionId: string; asked: number; correct: number }[]): void {
+    const writeAll = db.transaction(() => {
+      for (const row of rows) if (row.asked > 0) upsertQuestionStats.run(row);
+    });
+    writeAll();
+  }
+
+  function questionStats(): { questionId: string; asked: number; correct: number }[] {
+    return questionStatsAll.all() as { questionId: string; asked: number; correct: number }[];
   }
 
   function badgesFor(userId: string): BadgeKey[] {
@@ -307,6 +334,8 @@ export function createXpStore(file: string): XpStore {
       return snapshotFor(userId, now);
     },
     categoryMastery,
+    recordQuestionStats,
+    questionStats,
     recordMatch(entries, now = new Date()) {
       const season = seasonKey(now);
       const today = dayKey(now);

@@ -24,6 +24,7 @@ import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
 import { createDailyStore, dailyBoard, dailyDayNumber } from "./daily";
+import { setQuestionCalibration } from "./questions";
 import { createXpStore } from "./xp";
 import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
 
@@ -42,6 +43,9 @@ const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(proces
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 // Kalıcı ilerleme (XP/seviye/lig/sezon/seri) tek dosyada; XP_DB_PATH ile ezilebilir.
 const xpStore = createXpStore(process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db"));
+// §6.3 zorluk kalibrasyonu: soru istatistiklerinden kalibre etiket haritası
+// (her maç sonunda Room da tazeler — bkz. rooms.ts finish()).
+setQuestionCalibration(xpStore.questionStats());
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
   // Bu yüzden origin standart Socket.IO yolunu dinlemeli; istemci Discord
