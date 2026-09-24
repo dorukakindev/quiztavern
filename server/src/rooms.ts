@@ -999,7 +999,7 @@ export class Room {
     // Çifte Bahis bahis fazı: yalnız kategori + oyuncunun bankrolü sızar; soru gizli.
     const self0 = this.players.get(youId);
     const bet: BetPayload | null = this.phase === "bet" && question
-      ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: this.rescueRound.has(youId), brokeReward: GAME.BET_BROKE_REWARD }
+      ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: this.rescueRound.has(youId), brokeReward: GAME.BET_BROKE_REWARD, ...(this.qIndex === this.roundLimit - 1 ? { final: true } : {}) }
       : null;
     const podium: PodiumEntry[] | null = this.phase === "podium"
       ? this.podiumSnapshot ?? this.snapshotPodium()

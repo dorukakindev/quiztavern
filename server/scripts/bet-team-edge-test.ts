@@ -213,6 +213,19 @@ test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () =
   assert.equal(shuffleRoom.players.get('s2')!.ready, true)
 })
 
+test('final bahsi: bayrak yalnız son soruda döner', () => {
+  const fin = new Room('edge-final', () => {}, { minPlayers: 1, questionCount: 5 })
+  fin.addPlayer(player('f', 'F'))
+  fin.setGameMode('f', 'bet')
+  fin.setReady('f', true)
+  fin.start('f', 'bet')
+  stop(fin)
+  ;(fin as unknown as { beginBet: () => void }).beginBet()
+  assert.equal(fin.stateFor('f', true).bet?.final, undefined)
+  ;(fin as unknown as { qIndex: number }).qIndex = 9 // bet modu 10 soruya sıfırlar → son soru
+  ;(fin as unknown as { beginBet: () => void }).beginBet()
+  assert.equal(fin.stateFor('f', true).bet?.final, true)
+})
 test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir', () => {
   const showRoom = new Room('edge-showbet', () => {}, { minPlayers: 1, questionCount: 5 })
   showRoom.addPlayer(player('p1', 'P1'))
