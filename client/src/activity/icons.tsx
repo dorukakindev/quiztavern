@@ -34,6 +34,7 @@ const UI_ICONS = {
   coins: Coins,          // Çifte Bahis: jetonlar
   teams: UsersThree,     // Takım
   more: DotsThreeOutline,
+  board: Columns,         // Tavern Panosu: 5x5 soru panosu
   // genel
   sliders: SlidersHorizontal,
   medal: Medal,

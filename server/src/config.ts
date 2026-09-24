@@ -153,6 +153,11 @@ export const GAME = {
   /** Zaman Çizelgesi (§6.1): 4 olayı sıralama süresi; her doğru pozisyon ayrı puan. */
   TIMELINE_MS: 20_000,
   TIMELINE_PER_POS: 100,
+  /** Tavern Panosu: hücre seçim süresi (sırası gelen oyuncu için). */
+  PICK_MS: 10_000,
+  /** Pano sütun sayısı ve satır değerleri (değer arttıkça soru zorlaşır). */
+  BOARD_COLS: 5,
+  BOARD_VALUES: [100, 200, 300, 400, 500] as const,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */

@@ -40,7 +40,8 @@
     "test:duel": "tsx scripts/duel-test.ts",
     "test:zil": "tsx scripts/zil-test.ts",
     "test:numeric": "tsx scripts/numeric-test.ts",
-    "test:blitz": "tsx scripts/blitz-test.ts"
+    "test:blitz": "tsx scripts/blitz-test.ts",
+    "test:board": "tsx scripts/board-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

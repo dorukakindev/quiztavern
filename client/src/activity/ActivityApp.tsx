@@ -150,10 +150,11 @@ const MODE_KEYS = {
   numeric: { name: 'mode.numeric', meta: 'mode.numeric.meta', tag: 'mode.numeric.tag', icon: 'target' },
   blitz: { name: 'mode.blitz', meta: 'mode.blitz.meta', tag: 'mode.blitz.tag', icon: 'scale' },
   timeline: { name: 'mode.timeline', meta: 'mode.timeline.meta', tag: 'mode.timeline.tag', icon: 'clock' },
+  board: { name: 'mode.board', meta: 'mode.board.meta', tag: 'mode.board.tag', icon: 'board' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : mode === 'blitz' ? 'blitz' : mode === 'timeline' ? 'timeline' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : mode === 'blitz' ? 'blitz' : mode === 'timeline' ? 'timeline' : mode === 'board' ? 'board' : 'classic'
 }
 
 /**
@@ -417,7 +418,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric', 'blitz', 'timeline'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric', 'blitz', 'timeline', 'board'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -1800,6 +1801,58 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
   </main>
 }
 
+/**
+ * Tavern Panosu (§6.1) pick fazı: 5 kategori sütunu × değer hücreleri.
+ * Sırası gelen oyuncu tıklayarak açar; herkes aynı panoyu görür ama yalnız
+ * picker'ın düğmeleri aktif. Hücre metni sunucudan gelmez — yalnız değer +
+ * kullanılmışlık; soru ancak hücre açılıp question fazına geçince düşer.
+ * Süre dolunca sunucu rastgele hücre açar (board.autoPick).
+ */
+function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { state: GameState; onPickCell?: (cell: number) => void; onLeave: () => void; onSpectate: () => void; speakingIds?: ReadonlySet<string> }) {
+  const { t, language } = useI18n()
+  const beats = useRevealBeats(state)
+  const youAreSpectator = state.youAreSpectator
+  const self = state.players.find((player) => player.id === state.youId)
+  const waiting = !!self?.waiting
+  const board = state.board
+  if (!board) return null
+  const cols = Math.max(1, board.categories.length)
+  const rows = Math.ceil(board.cells.length / cols)
+  const youPick = !youAreSpectator && !waiting && board.pickerId === state.youId
+  return <main className="qt-activity qt-game qt-game--board">
+    <div className="qt-game-background" />
+    <div className="qt-game-head">
+      <header className="qt-game-top">
+        <div><b>{t(MODE_KEYS.board.tag)}</b><span>{t('board.cellsLeft', { left: board.cells.filter((c) => !c.used).length, total: board.cells.length })}</span></div>
+        <RoundProgress index={state.round.index} total={state.round.total} />
+      </header>
+      <div className="qt-game-controls">
+        {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameLeaveButton onLeave={onLeave} />
+      </div>
+    </div>
+    <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className="qt-question-stage qt-board-stage">
+      <div className="qt-question-head"><h1>{t('board.heading')}</h1><p>{youPick ? t('board.youPick') : t('board.otherPick', { name: board.pickerName })}</p></div>
+      <div className="qt-board" role="grid" aria-label={t('board.heading')}>
+        {board.categories.map((category, ci) => <div className="qt-board-col" role="row" key={category}>
+          <div className="qt-board-col__head" role="columnheader">{categoryLabel(language, category)}</div>
+          {Array.from({ length: rows }, (_, ri) => {
+            const index = ci * rows + ri
+            const cell = board.cells[index]
+            if (!cell) return <div key={ri} className="qt-board-cell qt-board-cell--gap" role="gridcell" aria-hidden="true" />
+            return <button key={ri} type="button" role="gridcell" className={`qt-board-cell ${cell.used ? 'is-used' : ''} ${youPick && !cell.used ? 'is-pickable' : ''}`} disabled={cell.used || !youPick} aria-label={cell.used ? t('board.cellUsed') : t('board.cellAria', { value: cell.value })} onClick={() => { sfx.play('lock'); onPickCell?.(index) }}>{cell.used ? '·' : cell.value}</button>
+          })}
+        </div>)}
+      </div>
+      {youAreSpectator ? <p className="qt-locked-note"><Icon name="eye" /> {t('spectator.watching')}</p>
+        : youPick ? <p className="qt-locked-note">{t('board.youPickNote')}</p>
+        : <p className="qt-locked-note">{t('board.otherPickNote', { name: board.pickerName })}</p>}
+    </section><aside className="qt-game-side">
+      <Timer deadline={board.deadline} durationMs={board.durationMs} serverNow={state.serverNow} frozen={false} />
+    </aside></div>
+  </main>
+}
+
 /** Turun sana ne kazandırdığı. Tasarımda "Sonraki →" butonunun durduğu köşe:
  *  buton koymuyoruz — geçişi sunucu yapar ve masa hep birlikte ilerler. */
 function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
@@ -2410,6 +2463,8 @@ export function ActivityApp() {
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
+    // Tavern Panosu: hücre seçme fazı — sırası gelen panodan değer seçer.
+    if (game.state!.phase === 'pick') return <PickBoard state={game.state!} onPickCell={game.pickCell} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
     if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} onNumericAnswer={game.answerNumeric} onOrderAnswer={game.answerOrder} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).

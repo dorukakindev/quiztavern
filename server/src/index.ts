@@ -568,6 +568,7 @@ io.on("connection", (socket) => {
   socket.on(EV.WORD_ANSWER, (answer: unknown) => room.wordAnswer(user.id, typeof answer === "string" ? answer : ""));
   socket.on(EV.NUMERIC_ANSWER, (value: unknown) => room.numericAnswer(user.id, Number(value)));
   socket.on(EV.ORDER_ANSWER, (order: unknown) => room.orderAnswer(user.id, order));
+  socket.on(EV.PICK_CELL, (cell: unknown) => room.pickCell(user.id, Number(cell)));
   socket.on(EV.WORD_LETTER, () => room.wordLetter(user.id));
   socket.on(EV.BET, (amount: unknown) => room.placeBet(user.id, Number(amount)));
   socket.on(EV.USE_CARD, (payload: unknown) => {
