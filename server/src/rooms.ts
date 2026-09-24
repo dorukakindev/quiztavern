@@ -213,6 +213,12 @@ export class Room {
   /** İzleyici tahminleri (§6.3): spectatorId → kazanan adayı playerId.
    *  Yalnız maç başında (geri sayım + ilk tur) alınır; bilene finish'te XP. */
   private predictions = new Map<string, string>();
+  /** Zil (§6.1): bu turda zili kazanan (tek cevap hakkı), yanmış denemeler
+   *  ve kazananın cevap penceresi. */
+  private buzzWinnerId: string | null = null;
+  private buzzFailed = new Set<string>();
+  private buzzAttempts = 0;
+  private zilTimer: NodeJS.Timeout | null = null;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
@@ -351,6 +357,8 @@ export class Room {
     player.socketId = null;
     player.disconnectedAt = Date.now();
     if (this.hostId === playerId) this.reassignHost();
+    // Zil kazananı koptuysa denemesi yanmış sayılır — masa beklemesin.
+    if (this.buzzWinnerId === playerId) this.zilFailWinner();
     this.checkRematchTrigger();
     this.clearGrace(playerId);
     this.graceTimers.set(playerId, setTimeout(() => {
@@ -385,6 +393,8 @@ export class Room {
     this.inResults.delete(playerId);
     this.rematchVotes.delete(playerId);
     this.writtenQuestions.delete(playerId);
+    // Zil kazananı masadan çıktıysa denemesi yanmış sayılır.
+    if (this.buzzWinnerId === playerId) this.zilFailWinner();
     if (this.hostId === playerId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
     // Ayrılma eşiği düşürmüş olabilir — bekleyen çoğunluk artık yeterli olabilir.
@@ -572,6 +582,78 @@ export class Room {
     this.broadcast();
   }
 
+  /** Zil modu: ilk basan tek cevap hakkı kazanır. Pencere ZIL_ANSWER_MS ile
+   *  turun kalan süresinin min'idir; dolarsa deneme yanmış sayılır ve zil
+   *  yeniden açılır. İkinci basan kuyruğa girmez — sonrakiler yeniden basar. */
+  buzz(playerId: string): void {
+    if (this.gameMode !== "zil" || this.phase !== "question" || this.buzzWinnerId) return;
+    if (Date.now() >= this.questionDeadline) return this.reveal();
+    const player = this.players.get(playerId);
+    if (!player || player.eligibleFrom > this.qIndex || !player.connected || this.buzzFailed.has(playerId)) return;
+    this.buzzWinnerId = playerId;
+    this.buzzAttempts += 1;
+    const window = Math.min(GAME.ZIL_ANSWER_MS, Math.max(0, this.questionDeadline - Date.now()));
+    if (this.zilTimer) clearTimeout(this.zilTimer);
+    this.zilTimer = setTimeout(() => this.zilFailWinner(), window);
+    // Kazanan botsa cevabını planla (insanlarla aynı pencerede).
+    if (player.isBot) {
+      const q = this.currentQuestion();
+      if (q) {
+        const correct = Math.random() < 0.45;
+        const choice = correct
+          ? q.correctIndex
+          : [0, 1, 2, 3].filter((i) => i !== q.correctIndex)[Math.floor(Math.random() * 3)];
+        this.scheduleBotTask(() => this.answer(playerId, choice), 600 + Math.random() * 900);
+      }
+    }
+    this.broadcast();
+  }
+
+  /** Zil kazananının cevabı. Doğru → değeri deneme sayısına göre düşmüş
+   *  kazançla reveal; yanlış → deneme yanar, herkes denediyse reveal,
+   *  değilse zil yeniden açılır. */
+  private zilAnswer(playerId: string, choice: number, player: RoomPlayer) {
+    if (playerId !== this.buzzWinnerId) return;
+    player.choice = choice;
+    player.answeredAt = Date.now();
+    const correct = this.currentQuestion()?.correctIndex === choice;
+    this.buzzWinnerId = null;
+    if (this.zilTimer) { clearTimeout(this.zilTimer); this.zilTimer = null; }
+    if (correct) return this.reveal();
+    this.buzzFailed.add(playerId);
+    const remaining = this.eligiblePlayers().filter((p) => p.connected && !this.buzzFailed.has(p.id));
+    if (!remaining.length) return this.reveal();
+    this.broadcast();
+    this.scheduleZilBots();
+  }
+
+  /** Zil kazananı pencerede cevap vermedi ya da koptu: denemesi yanar,
+   *  uygun oyuncu kalmadıysa reveal, varsa zil yeniden açılır. */
+  private zilFailWinner() {
+    const winner = this.buzzWinnerId;
+    if (!winner || this.phase !== "question") return;
+    this.buzzWinnerId = null;
+    this.buzzFailed.add(winner);
+    const remaining = this.eligiblePlayers().filter((p) => p.connected && !this.buzzFailed.has(p.id));
+    if (!remaining.length) return this.reveal();
+    this.broadcast();
+    this.scheduleZilBots();
+  }
+
+  /** Zil'de botlar rastgele gecikmeyle basar; yalnız henüz yanmamış olanlar. */
+  private scheduleZilBots() {
+    if (this.gameMode !== "zil" || this.phase !== "question" || this.buzzWinnerId) return;
+    for (const p of this.players.values()) {
+      if (!p.isBot || p.eligibleFrom > this.qIndex || !p.connected || this.buzzFailed.has(p.id)) continue;
+      this.scheduleBotTask(() => this.buzz(p.id), 400 + Math.random() * Math.max(600, this.questionDuration() * 0.35));
+    }
+  }
+
+  /** Bu denemede doğru cevabın değeri: 1. deneme ZIL_BASE, sonra DECAY. */
+  private zilValue() {
+    return Math.max(GAME.ZIL_MIN, GAME.ZIL_BASE - GAME.ZIL_DECAY * Math.max(0, this.buzzAttempts - 1));
+  }
+
   /** Tahmin penceresi: geri sayım ve ilk tur açıkken (soru/bahis fazı, qIndex 0)
    *  izleyici kazananı seçebilir. İlk reveal'den sonra oynamış bilgiyle tahmin
    *  hile olur — kapanır. */
@@ -692,7 +774,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -705,6 +787,7 @@ export class Room {
     // Düello hep 7 soru — host'a sayı seçtirilmez (QUESTION_COUNTS dışı olduğu
     // için setQuestionCount zaten reddeder).
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
+    if (mode === "zil") this.questionCount = 10;
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -1075,6 +1158,7 @@ export class Room {
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
+    if (this.gameMode === "zil") return this.zilAnswer(playerId, choice, player);
     // Soru yazarı turu: yazar kendi sorusunda oynamaz.
     if (this.currentQuestion()?.id === `written-${playerId}`) return;
     // Dondur jokeri: yiyen oyuncunun süresi genel deadline'dan önce dolar.
@@ -1290,6 +1374,7 @@ export class Room {
       writers: [...this.writtenQuestions.keys()],
       yourPrediction: this.predictions.get(youId) ?? null,
       predictOpen: this.predictOpen(),
+      zil: this.gameMode === "zil" ? { winnerId: this.buzzWinnerId, failedIds: [...this.buzzFailed] } : null,
       minPlayers: this.minPlayers,
       questionCount: this.questionCount,
       difficulty: this.difficulty,
@@ -1334,6 +1419,9 @@ export class Room {
     }
     this.questionStartedAt = Date.now();
     this.firstAnswerId = null; // yeni tur: en hızlı parmak yeniden yarışır
+    this.buzzWinnerId = null; // yeni tur: zil yeniden açık
+    this.buzzFailed.clear();
+    this.buzzAttempts = 0;
     const duration = this.questionDuration();
     this.questionDeadline = this.questionStartedAt + duration;
     for (const player of this.players.values()) {
@@ -1348,6 +1436,7 @@ export class Room {
     }
     this.broadcast();
     this.onQuestionStarted?.(this);
+    if (this.gameMode === "zil") this.scheduleZilBots();
     this.timer = setTimeout(() => this.reveal(), duration);
   }
 
@@ -1585,6 +1674,8 @@ export class Room {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
+        // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre düşer.
+        if (this.gameMode === "zil") gain = correct ? this.zilValue() : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         if (gain) player.score += gain;
@@ -1832,6 +1923,8 @@ export class Room {
   private clearTimer() {
     if (this.timer) clearTimeout(this.timer);
     this.timer = null;
+    if (this.zilTimer) clearTimeout(this.zilTimer);
+    this.zilTimer = null;
   }
 
   private clearGrace(playerId: string) {

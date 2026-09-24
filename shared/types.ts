@@ -21,7 +21,8 @@ export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "pod
 export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim"
   | "blur"
   | "word"
-  | "duel";
+  | "duel"
+  | "zil";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -570,6 +571,9 @@ export interface GameState {
   weeklyBoard: SeasonBoard | null;
   /** Soru yazarı turu: lobide soru yazmış oyuncu id'leri. */
   writers: string[];
+  /** Zil modu: bu tur zili kazanan oyuncu + bu turda yanlış cevaplamışlar.
+   *  Diğer modlarda null. */
+  zil: { winnerId: string | null; failedIds: string[] } | null;
   /** Bugünün günlük lider tablosu (lobi); depo kapalıysa null. */
   dailyBoard: DailyBoard | null;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
@@ -583,6 +587,7 @@ export const EV = {
   /** Aktif socket oturumu doldu; istemci Discord SDK ile yeniden yetkilendirir. */
   AUTH_REQUIRED: "auth-required",
   START: "start",
+  BUZZ: "buzz",
   ANSWER: "answer",
   CIRCLE_ANSWER: "circle-answer",
   /** Kelime Oyunu: { answer } — turun kelime cevabını kilitler */
