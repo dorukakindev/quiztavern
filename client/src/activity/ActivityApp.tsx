@@ -1484,6 +1484,10 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
   const locked = state.yourBet !== null
   const waiting = !!self?.waiting
   const accent = categoryAccent(state.bet?.category)
+  // Final bahsi (son soru, Jeopardy usulü): çipler yerine serbest tutar slider'ı.
+  const isFinal = !!state.bet?.final
+  const [wager, setWager] = useState(0)
+  useEffect(() => { setWager(Math.round(bankroll / 2)) }, [isFinal, bankroll])
   const optionSpecs = useMemo(() => betOptionSpecs(bankroll), [bankroll])
   const options = optionSpecs.map((option) => ({ ...option, label: t(`bet.${option.key}` as StringKey) }))
   const canBet = !locked && !youAreSpectator && !waiting && state.phase === 'bet'
@@ -1492,6 +1496,13 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
     const onKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
       if (document.querySelector('[role="dialog"]')) return
+      if (isFinal) {
+        if (event.key !== 'Enter') return
+        event.preventDefault()
+        sfx.play('lock')
+        onBet(wager)
+        return
+      }
       const index = shortcutIndex(event.key, optionSpecs.length)
       if (index === null) return
       event.preventDefault()
@@ -1500,7 +1511,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [canBet, onBet, optionSpecs])
+  }, [canBet, onBet, optionSpecs, isFinal, wager])
   return <main className="qt-activity qt-game qt-game--bet" style={{ '--game-art': `url('/assets/discord-activity/activity-classic-stage.webp')`, '--cat-accent': accent } as CSSProperties}>
     <div className="qt-game-background" />
     <div className="qt-game-head">
@@ -1515,7 +1526,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
       </div>
     </div>
     <div className="qt-game-grid"><RoomStrip state={state} beats={beats} speakingIds={speakingIds} /><section className="qt-question-stage qt-bet-stage">
-      <div className="qt-question-head"><span className="qt-category">{state.bet?.category ? categoryLabel(language, state.bet.category) : ''}</span><h1>{t('bet.heading')}</h1><p>{t('bet.subheading')}</p></div>
+      <div className="qt-question-head"><span className="qt-category">{state.bet?.category ? categoryLabel(language, state.bet.category) : ''}</span>{isFinal && <em className="qt-bet-final-tag">{t('bet.finalTag')}</em>}<h1>{t('bet.heading')}</h1><p>{isFinal ? t('bet.finalHint') : t('bet.subheading')}</p></div>
       <div className="qt-bet-bank"><Icon name="coins" weight="duotone" /><b>{formatNumber(language, bankroll)}</b><span>{t('bet.bankroll')}</span></div>
       {youAreSpectator ? <p className="qt-locked-note"><Icon name="eye" /> {t('spectator.watching')}</p>
         : waiting ? <p className="qt-locked-note">{t('bet.waitingNextMatch')}</p>
@@ -1526,11 +1537,16 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
             <small><Icon name="lock" /> {t('bet.broke.locked')}</small>
           </div>
         : <>
-          <div className="qt-bet-options" role="group" aria-label={t('bet.heading')}>
+          {isFinal ? <div className="qt-bet-final" role="group" aria-label={t('bet.finalTag')}>
+            <input type="range" className="qt-bet-slider" min={0} max={bankroll} step={Math.max(10, Math.round(bankroll / 40 / 10) * 10)} value={wager} disabled={!canBet} aria-label={t('bet.wagerAria')} onChange={(event) => setWager(Number(event.target.value))} />
+            <div className="qt-bet-final__amount"><b>{formatNumber(language, wager)}</b>{wager === bankroll && bankroll > 0 && <em className="qt-bet-final__allin">{t('bet.all')}</em>}</div>
+            <button type="button" className="qt-bet-lock" disabled={!canBet} onClick={() => { sfx.play('lock'); onBet(wager) }}><Icon name="lock" /> {t('bet.lockWager')}</button>
+          </div>
+          : <div className="qt-bet-options" role="group" aria-label={t('bet.heading')}>
             {options.map((option, index) => <button key={option.key} type="button" className={`qt-bet-option ${locked && state.yourBet === option.amount ? 'is-selected' : ''}`} disabled={!canBet} onClick={() => { sfx.play('lock'); onBet(option.amount) }}>
               <kbd aria-hidden="true">{index + 1}</kbd><b>{option.label}</b><span>{formatNumber(language, option.amount)}</span>
             </button>)}
-          </div>
+          </div>}
           <p className="qt-locked-note" data-empty={!locked}>{locked ? <><Icon name="lock" /> {t('bet.locked', { amount: formatNumber(language, state.yourBet ?? 0) })}</> : null}</p>
         </>}
     </section><aside className="qt-game-side">
