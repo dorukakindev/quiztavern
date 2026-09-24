@@ -16,6 +16,8 @@ const activityCss = readFileSync(new URL('../src/activity/activity.css', import.
 const realtimeSource = readFileSync(new URL('../src/lib/realtime.ts', import.meta.url), 'utf8')
 const i18nSource = readFileSync(new URL('../src/activity/i18n.ts', import.meta.url), 'utf8')
 const bridgeSource = readFileSync(new URL('../src/activity/sdkBridge.ts', import.meta.url), 'utf8')
+const polishCss = readFileSync(new URL('../src/activity/polish.css', import.meta.url), 'utf8')
+const roomsSource = readFileSync(new URL('../../server/src/rooms.ts', import.meta.url), 'utf8')
 
 test('sıfır bakiyede yalnız Pas görünür', () => {
   assert.deepEqual(betOptionSpecs(0), [{ key: 'pass', amount: 0 }])
@@ -226,6 +228,19 @@ test('lig çerçevesi progress.league\'e bağlı: avatar, koltuk, podyum + reduc
   assert.match(activityCss, /prefers-reduced-motion: reduce[\s\S]*?\.qt-avatar\.is-frame-efsane[\s\S]*?animation: none !important/)
   // Kazanılmamış oyuncu çerçevesizdir — koşul `progress?.league` varlığına bağlı.
   assert.match(activitySource, /frame \? `is-frame-\$\{frame\}` : ''/)
+})
+
+test('reveal trivia notu: fact alanı doğru cevabın altında, dile göre gösterilir', () => {
+  // Sunucu reveal yüküne fact/factEn ekler; istemci reveal'da satırı basar.
+  assert.match(roomsSource, /fact: question\.fact, factEn: question\.factEn/)
+  assert.match(activitySource, /state\.reveal\?\.fact/)
+  assert.match(activitySource, /state\.reveal\.factEn \? state\.reveal\.factEn : state\.reveal\.fact/)
+  assert.match(activitySource, /qt-reveal-fact/)
+  assert.match(polishCss, /\.qt-reveal-fact \{/)
+  assert.match(i18nSource, /'reveal\.factTitle': 'Biliyor muydun\?'/)
+  assert.match(i18nSource, /'reveal\.factTitle': 'Did you know\?'/)
+  // fact yalnızca reveal'da görünür — soru fazında cevap sızıntısı olmaz.
+  assert.match(activitySource, /beats\.active && state\.reveal\?\.fact/)
 })
 
 console.log(`\n[activity] sonuç: ${passed} geçti, 0 kaldı`)

@@ -19,6 +19,10 @@ export interface Question {
   image?: string;
   /** Opsiyonel: görselin kredi/atıf satırı; `image` varken anlamlı, istemci ⓘ ile gösterir. */
   imageCredit?: string;
+  /** Opsiyonel: doğru cevapla ilgili kısa trivia notu — reveal'da "Biliyor muydun?" satırı olarak gösterilir. */
+  fact?: string;
+  /** fact'in İngilizce karşılığı. */
+  factEn?: string;
 }
 
 // Sorular başlangıçta bir kez yüklenir ve şema kontrolünden geçirilir.
@@ -55,6 +59,10 @@ function load(): Question[] {
       throw new Error(`${where}: image verilmişse boş olmayan bir dosya adı olmalı`);
     if (q.imageCredit !== undefined && (typeof q.imageCredit !== "string" || !q.imageCredit))
       throw new Error(`${where}: imageCredit verilmişse boş olmayan bir metin olmalı`);
+    if (q.fact !== undefined && (typeof q.fact !== "string" || !q.fact))
+      throw new Error(`${where}: fact verilmişse boş olmayan bir metin olmalı`);
+    if (q.factEn !== undefined && (typeof q.factEn !== "string" || !q.factEn))
+      throw new Error(`${where}: factEn verilmişse boş olmayan bir metin olmalı`);
   });
   return raw as Question[];
 }
