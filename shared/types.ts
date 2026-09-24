@@ -273,6 +273,8 @@ export interface LastMatch {
   teamScores: readonly [number, number];
   podium: PodiumEntry[];
   matchSummary: MatchSummary | null;
+  /** Anlar kartı (§6.3): podyumda masa geneli unutulmaz anlar; yoksa null. */
+  moments: MatchMoment[] | null;
   xpGains: Record<string, XpGain> | null;
   daily: { day: number; pattern: string | null } | null;
 }
@@ -378,6 +380,15 @@ export interface PodiumEntry {
 
 /** Maç özeti kartı (4d). İzleyen oyuncuya ÖZEL hesaplanır (isabet/seri/kategori
  *  senindir); "fastest" ise masa geneli en hızlı doğru cevaptır. Yalnız podyumda. */
+/** §6.3 anlar kartı: maçın unutulmaz anı — podyumda masa geneli gösterilir. */
+export interface MatchMoment {
+  key: "fastest" | "streak" | "bigBet" | "flawless";
+  playerId: string;
+  name: string;
+  /** ms (fastest), üst üste doğru (streak), tek tur kazanç (bigBet), maç uzunluğu (flawless). */
+  value: number;
+}
+
 export interface MatchSummary {
   correct: number;
   total: number;
@@ -483,6 +494,8 @@ export interface GameState {
   podium: PodiumEntry[] | null;
   /** Yalnız podyum fazında; izleyen oyuncuya özel maç özeti (4d). */
   matchSummary: MatchSummary | null;
+  /** Podyumda masa geneli anlar kartı (§6.3); başka fazda null. */
+  moments: MatchMoment[] | null;
   /** Lobide, sonuç ekranından henüz dönmemiş oyuncuya: son maçın sonucu. */
   lastMatch: LastMatch | null;
   /** Podyum fazında gösterilen maçın kimliği (istemci "sonucu gördüm" işareti). */
