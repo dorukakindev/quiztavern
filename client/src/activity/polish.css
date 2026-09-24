@@ -683,3 +683,24 @@
 .qt-numeric-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #e8a33d, #ffd98a); }
 .qt-numeric-dist { font-size: 0.82em; font-weight: 700; color: rgba(255, 255, 255, 0.75); text-align: right; }
 .qt-numeric-row.is-winner .qt-numeric-dist { color: #ffd98a; }
+
+/* ---- D/Y Blitz (§6.1): iddia kartı + iki büyük buton, reveal'da iki sütun ---- */
+.qt-blitz-claim { display: flex; align-items: baseline; justify-content: center; gap: 0.6em; margin: 0.4em auto; padding: 0.55em 1.1em; border-radius: 12px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); max-width: 34em; }
+.qt-blitz-claim span { font-size: 0.78em; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.5); }
+.qt-blitz-claim b { font-size: 1.15em; font-weight: 800; color: #ffd98a; }
+.qt-blitz-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7em; margin: 0.7em auto 0; max-width: 30em; }
+.qt-blitz-btn { display: flex; align-items: center; justify-content: center; gap: 0.5em; padding: 1em 0.5em; font-size: 1.15em; font-weight: 900; letter-spacing: 0.06em; border-radius: 14px; border: 2px solid transparent; cursor: pointer; transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.15s; font-family: inherit; }
+.qt-blitz-btn--true { background: linear-gradient(160deg, #1f6e43, #155236); color: #eafff3; border-color: #4ade80; }
+.qt-blitz-btn--false { background: linear-gradient(160deg, #8a2f3b, #6e2330); color: #ffecec; border-color: #f87171; }
+.qt-blitz-btn:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+.qt-blitz-btn.is-locked { outline: 3px solid #ffd98a; opacity: 0.95; }
+.qt-blitz-btn:disabled:not(.is-locked) { opacity: 0.55; cursor: default; }
+.qt-blitz-board { display: flex; flex-direction: column; gap: 0.5em; margin: 0.6em auto 0; max-width: 30em; }
+.qt-blitz-row { display: grid; grid-template-columns: 1.6em auto 1fr; align-items: center; gap: 0.6em; padding: 0.55em 0.8em; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.05); }
+.qt-blitz-row.is-correct { border-color: #4ade80; background: rgba(74, 222, 128, 0.12); }
+.qt-blitz-row.is-wrong { border-color: rgba(248, 113, 113, 0.5); opacity: 0.8; }
+.qt-blitz-row.is-you { outline: 2px solid #ffd98a; }
+.qt-blitz-mark { display: inline-flex; color: #4ade80; }
+.qt-blitz-row.is-wrong .qt-blitz-mark { color: #f87171; }
+.qt-blitz-label { font-weight: 800; }
+.qt-blitz-pickers { font-size: 0.85em; color: rgba(255, 255, 255, 0.7); text-align: right; }

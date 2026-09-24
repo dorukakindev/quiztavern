@@ -60,6 +60,22 @@ export function scheduleBotAnswers(room: Room): void {
   // Zil'de botlar basmayı Room.scheduleZilBots ile kendisi planlar — klasik
   // answer() zamanlayıcıları burada çalışmaz.
   if (room.gameMode === "zil") return;
+  if (room.gameMode === "blitz") {
+    // Botlar %65 doğru bilgiyle oynar — iddia doğruysa 0 (Doğru), yanlışsa 1.
+    for (const p of room.players.values()) {
+      if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+      const delay = botDelay(room.questionDuration());
+      const roundAtSchedule = room.qIndex;
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule) return;
+        const truth = room.blitzTruth();
+        if (truth === null) return;
+        const knows = Math.random() < 0.65;
+        room.answer(p.id, knows ? (truth ? 0 : 1) : (truth ? 1 : 0));
+      }, delay);
+    }
+    return;
+  }
   // Yakın Tahmin: botlar gerçek değerin çevresinde makul saçlılımla tahmin girer.
   if (room.gameMode === "numeric") {
     const n = room.currentNumeric();

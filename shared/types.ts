@@ -23,7 +23,8 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "word"
   | "duel"
   | "zil"
-  | "numeric";
+  | "numeric"
+  | "blitz";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -270,6 +271,19 @@ export interface NumericRevealPayload {
   /** Oyuncu id → girilen tahmin (yalnız tahmin edenler). */
   guesses: Record<string, number>;
   winnerIds: string[];
+}
+
+/** D/Y Blitz turu: klasik soru metni + iddia (bir şık). İstemci "iddia doğru mu?"
+ *  diye yarar — şıklar ve doğru cevap hiç gönderilmez; reveal'da `correctIndex`
+ *  0=Doğru / 1=Yanlış sütununu işaretler. Soru ve reveal fazında dolu. */
+export interface BlitzQuestionPayload {
+  category: string;
+  text: string;
+  textEn?: string;
+  claim: string;
+  claimEn?: string;
+  deadline: number;
+  durationMs: number;
 }
 
 /** Maç soru açılmadan önce, tüm istemcilerin aynı anda oynattığı geri sayım. */
@@ -526,6 +540,8 @@ export interface GameState {
   word: WordPayload | null;
   /** Yakın Tahmin turu; yalnız o modda ve question fazında dolu. */
   numeric: NumericQuestionPayload | null;
+  /** D/Y Blitz turu; o modda question+reveal fazında dolu. */
+  blitz: BlitzQuestionPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;
