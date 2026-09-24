@@ -136,6 +136,8 @@ export interface QuestionPayload {
   durationMs: number;
   /** Opsiyonel: verilmişse istemci /questions/<image>'ı soru metninin üstünde gösterir. */
   image?: string;
+  /** Opsiyonel: görselin kredi/atıf satırı — resimli soruda ⓘ ile gösterilir. */
+  imageCredit?: string;
 }
 
 export interface RevealPayload {

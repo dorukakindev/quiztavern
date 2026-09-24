@@ -828,6 +828,7 @@ export class Room {
           deadline: this.questionDeadline,
           durationMs: this.questionDuration(),
           ...(question.image ? { image: question.image } : {}),
+          ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle

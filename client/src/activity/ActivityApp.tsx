@@ -1203,7 +1203,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   useEffect(() => setCircleAnswer(''), [circle?.deadline])
 
   // Reveal'da soru/şık metinleri payload'dan düşer; son turu ekranda tutmak için saklarız.
-  const lastRound = useRef<{ category: string; text: string; choices: string[]; textEn: string; choicesEn: string[]; deadline: number; durationMs: number; image?: string } | null>(null)
+  const lastRound = useRef<{ category: string; text: string; choices: string[]; textEn: string; choicesEn: string[]; deadline: number; durationMs: number; image?: string; imageCredit?: string } | null>(null)
   if (question) lastRound.current = question
   const shown = question ?? lastRound.current
   const lastCircle = useRef<CirclePayload | null>(null)
@@ -1215,6 +1215,17 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   // tıklanabilir (sunucu tarafı da oyuncu+soru başına tek rapor tutar).
   const [reported, setReported] = useState(false)
   useEffect(() => setReported(false), [state.round.index])
+
+  // Resimli soru lightbox'ı: görsele tıkla → büyük önizle + kredi; ESC ya da
+  // arka plan tıklaması kapatır. Yanıt kısayollarıyla çakışmasın diye açıkken
+  // dialog rolü taşır (kısayol dinleyicisi dialog varsa erken çıkıyor).
+  const [lightbox, setLightbox] = useState<{ src: string; credit?: string } | null>(null)
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setLightbox(null) }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightbox])
 
   const correctIndex = state.reveal?.correctIndex
   const selected = state.yourChoice
@@ -1310,7 +1321,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
         </div>
         <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.circleReveal?.answerEn ? state.circleReveal.answerEn : state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
-        <div className="qt-question-head" key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span>{shown.image && <img className="qt-question-image" src={`/questions/${shown.image}`} alt="" />}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div>
+        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
             const isCorrect = beats.cards && index === correctIndex
@@ -1362,6 +1373,13 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
         : <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} frozen={false} />}
       <RevealProgress beats={beats} />
     </aside></div>
+    {lightbox && <div className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
+      <figure className="qt-lightbox-card" onClick={(event) => event.stopPropagation()}>
+        <button type="button" className="qt-lightbox-close" onClick={() => setLightbox(null)} aria-label={t('game.imageClose')}><Icon name="close" /></button>
+        <img src={lightbox.src} alt="" />
+        {lightbox.credit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{lightbox.credit}</span></figcaption>}
+      </figure>
+    </div>}
   </main>
 }
 

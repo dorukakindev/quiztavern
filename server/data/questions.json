@@ -37678,7 +37678,8 @@
       "Amphitheatre",
       "Basilica"
     ],
-    "image": "visual-roman-aqueduct.webp"
+    "image": "visual-roman-aqueduct.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visual-doga-baobab",
@@ -37699,7 +37700,8 @@
       "Baobab",
       "Joshua tree"
     ],
-    "image": "visual-baobab.webp"
+    "image": "visual-baobab.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visual-hayvanlar-okapi",
@@ -37720,7 +37722,8 @@
       "Okapi",
       "Gerenuk"
     ],
-    "image": "visual-okapi.webp"
+    "image": "visual-okapi.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visual-hayvanlar-shoebill",
@@ -37741,7 +37744,8 @@
       "Hamerkop",
       "Shoebill"
     ],
-    "image": "visual-shoebill.webp"
+    "image": "visual-shoebill.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visual-okyanuslar-giant-isopod",
@@ -37762,7 +37766,8 @@
       "Mantis shrimp",
       "Sea scorpion"
     ],
-    "image": "visual-giant-isopod.webp"
+    "image": "visual-giant-isopod.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visual-okyanuslar-horseshoe-crab",
@@ -37783,7 +37788,8 @@
       "Giant isopod",
       "Horseshoe crab"
     ],
-    "image": "visual-horseshoe-crab.webp"
+    "image": "visual-horseshoe-crab.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-atoll",
@@ -37804,7 +37810,8 @@
       "Yardang",
       "Kettle (landform)"
     ],
-    "image": "visualnew-cografya-atoll.webp"
+    "image": "visualnew-cografya-atoll.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-glacier",
@@ -37825,7 +37832,8 @@
       "Ria",
       "Glacier"
     ],
-    "image": "visualnew-cografya-glacier.webp"
+    "image": "visualnew-cografya-glacier.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-moraine",
@@ -37846,7 +37854,8 @@
       "Moraine",
       "Oxbow lake"
     ],
-    "image": "visualnew-cografya-moraine.webp"
+    "image": "visualnew-cografya-moraine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-drumlin",
@@ -37867,7 +37876,8 @@
       "Kettle (landform)",
       "Canyon"
     ],
-    "image": "visualnew-cografya-drumlin.webp"
+    "image": "visualnew-cografya-drumlin.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-geyser",
@@ -37888,7 +37898,8 @@
       "U-shaped valley",
       "Drumlin"
     ],
-    "image": "visualnew-cografya-geyser.webp"
+    "image": "visualnew-cografya-geyser.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-badlands",
@@ -37909,7 +37920,8 @@
       "Oxbow lake",
       "Badlands"
     ],
-    "image": "visualnew-cografya-badlands.webp"
+    "image": "visualnew-cografya-badlands.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-yardang",
@@ -37930,7 +37942,8 @@
       "Yardang",
       "Atoll"
     ],
-    "image": "visualnew-cografya-yardang.webp"
+    "image": "visualnew-cografya-yardang.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-oxbow-lake",
@@ -37951,7 +37964,8 @@
       "Drumlin",
       "River delta"
     ],
-    "image": "visualnew-cografya-oxbow-lake.webp"
+    "image": "visualnew-cografya-oxbow-lake.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-tombolo",
@@ -37972,7 +37986,8 @@
       "Butte",
       "Mesa"
     ],
-    "image": "visualnew-cografya-tombolo.webp"
+    "image": "visualnew-cografya-tombolo.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-river-delta",
@@ -37993,7 +38008,8 @@
       "Atoll",
       "River delta"
     ],
-    "image": "visualnew-cografya-river-delta.webp"
+    "image": "visualnew-cografya-river-delta.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-kettle-landform",
@@ -38014,7 +38030,8 @@
       "Kettle (landform)",
       "Ria"
     ],
-    "image": "visualnew-cografya-kettle-landform.webp"
+    "image": "visualnew-cografya-kettle-landform.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-escarpment",
@@ -38035,7 +38052,8 @@
       "Mesa",
       "Moraine"
     ],
-    "image": "visualnew-cografya-escarpment.webp"
+    "image": "visualnew-cografya-escarpment.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-butte",
@@ -38056,7 +38074,8 @@
       "Badlands",
       "River delta"
     ],
-    "image": "visualnew-cografya-butte.webp"
+    "image": "visualnew-cografya-butte.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-ria",
@@ -38077,7 +38096,8 @@
       "Butte",
       "Ria"
     ],
-    "image": "visualnew-cografya-ria.webp"
+    "image": "visualnew-cografya-ria.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-alluvial-fan",
@@ -38098,7 +38118,8 @@
       "Alluvial fan",
       "Yardang"
     ],
-    "image": "visualnew-cografya-alluvial-fan.webp"
+    "image": "visualnew-cografya-alluvial-fan.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-canyon",
@@ -38119,7 +38140,8 @@
       "River delta",
       "Alluvial fan"
     ],
-    "image": "visualnew-cografya-canyon.webp"
+    "image": "visualnew-cografya-canyon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-mesa",
@@ -38140,7 +38162,8 @@
       "U-shaped valley",
       "Drumlin"
     ],
-    "image": "visualnew-cografya-mesa.webp"
+    "image": "visualnew-cografya-mesa.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-loess",
@@ -38161,7 +38184,8 @@
       "Yardang",
       "Loess"
     ],
-    "image": "visualnew-cografya-loess.webp"
+    "image": "visualnew-cografya-loess.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-cografya-u-shaped-valley",
@@ -38182,7 +38206,8 @@
       "U-shaped valley",
       "Atoll"
     ],
-    "image": "visualnew-cografya-u-shaped-valley.webp"
+    "image": "visualnew-cografya-u-shaped-valley.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-albertosaurus",
@@ -38203,7 +38228,8 @@
       "Edmontosaurus",
       "Ceratosaurus"
     ],
-    "image": "visualnew-dinozorlar-albertosaurus.webp"
+    "image": "visualnew-dinozorlar-albertosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-protoceratops",
@@ -38224,7 +38250,8 @@
       "Styracosaurus",
       "Protoceratops"
     ],
-    "image": "visualnew-dinozorlar-protoceratops.webp"
+    "image": "visualnew-dinozorlar-protoceratops.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-plateosaurus",
@@ -38245,7 +38272,8 @@
       "Plateosaurus",
       "Camarasaurus"
     ],
-    "image": "visualnew-dinozorlar-plateosaurus.webp"
+    "image": "visualnew-dinozorlar-plateosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-kentrosaurus",
@@ -38266,7 +38294,8 @@
       "Ceratosaurus",
       "Lambeosaurus"
     ],
-    "image": "visualnew-dinozorlar-kentrosaurus.webp"
+    "image": "visualnew-dinozorlar-kentrosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-ornithomimus",
@@ -38287,7 +38316,8 @@
       "Torvosaurus",
       "Plateosaurus"
     ],
-    "image": "visualnew-dinozorlar-ornithomimus.webp"
+    "image": "visualnew-dinozorlar-ornithomimus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-euoplocephalus",
@@ -38308,7 +38338,8 @@
       "Edmontosaurus",
       "Euoplocephalus"
     ],
-    "image": "visualnew-dinozorlar-euoplocephalus.webp"
+    "image": "visualnew-dinozorlar-euoplocephalus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-edmontosaurus",
@@ -38329,7 +38360,8 @@
       "Edmontosaurus",
       "Pachyrhinosaurus"
     ],
-    "image": "visualnew-dinozorlar-edmontosaurus.webp"
+    "image": "visualnew-dinozorlar-edmontosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-camarasaurus",
@@ -38350,7 +38382,8 @@
       "Plateosaurus",
       "Oviraptor"
     ],
-    "image": "visualnew-dinozorlar-camarasaurus.webp"
+    "image": "visualnew-dinozorlar-camarasaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-oviraptor",
@@ -38371,7 +38404,8 @@
       "Suchomimus",
       "Lambeosaurus"
     ],
-    "image": "visualnew-dinozorlar-oviraptor.webp"
+    "image": "visualnew-dinozorlar-oviraptor.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-corythosaurus",
@@ -38392,7 +38426,8 @@
       "Torvosaurus",
       "Corythosaurus"
     ],
-    "image": "visualnew-dinozorlar-corythosaurus.webp"
+    "image": "visualnew-dinozorlar-corythosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-ceratosaurus",
@@ -38413,7 +38448,8 @@
       "Ceratosaurus",
       "Baryonyx"
     ],
-    "image": "visualnew-dinozorlar-ceratosaurus.webp"
+    "image": "visualnew-dinozorlar-ceratosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-suchomimus",
@@ -38434,7 +38470,8 @@
       "Lambeosaurus",
       "Albertosaurus"
     ],
-    "image": "visualnew-dinozorlar-suchomimus.webp"
+    "image": "visualnew-dinozorlar-suchomimus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-baryonyx",
@@ -38455,7 +38492,8 @@
       "Kentrosaurus",
       "Camarasaurus"
     ],
-    "image": "visualnew-dinozorlar-baryonyx.webp"
+    "image": "visualnew-dinozorlar-baryonyx.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-styracosaurus",
@@ -38476,7 +38514,8 @@
       "Ceratosaurus",
       "Styracosaurus"
     ],
-    "image": "visualnew-dinozorlar-styracosaurus.webp"
+    "image": "visualnew-dinozorlar-styracosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-mononykus",
@@ -38497,7 +38536,8 @@
       "Mononykus",
       "Ornithomimus"
     ],
-    "image": "visualnew-dinozorlar-mononykus.webp"
+    "image": "visualnew-dinozorlar-mononykus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-lambeosaurus",
@@ -38518,7 +38558,8 @@
       "Camarasaurus",
       "Baryonyx"
     ],
-    "image": "visualnew-dinozorlar-lambeosaurus.webp"
+    "image": "visualnew-dinozorlar-lambeosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-amargasaurus",
@@ -38539,7 +38580,8 @@
       "Lambeosaurus",
       "Albertosaurus"
     ],
-    "image": "visualnew-dinozorlar-amargasaurus.webp"
+    "image": "visualnew-dinozorlar-amargasaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-acrocanthosaurus",
@@ -38560,7 +38602,8 @@
       "Kentrosaurus",
       "Acrocanthosaurus"
     ],
-    "image": "visualnew-dinozorlar-acrocanthosaurus.webp"
+    "image": "visualnew-dinozorlar-acrocanthosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-torvosaurus",
@@ -38581,7 +38624,8 @@
       "Torvosaurus",
       "Amargasaurus"
     ],
-    "image": "visualnew-dinozorlar-torvosaurus.webp"
+    "image": "visualnew-dinozorlar-torvosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-dinozorlar-pachyrhinosaurus",
@@ -38602,7 +38646,8 @@
       "Albertosaurus",
       "Euoplocephalus"
     ],
-    "image": "visualnew-dinozorlar-pachyrhinosaurus.webp"
+    "image": "visualnew-dinozorlar-pachyrhinosaurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-venus-flytrap",
@@ -38623,7 +38668,8 @@
       "Welwitschia",
       "Protea"
     ],
-    "image": "visualnew-doga-venus-flytrap.webp"
+    "image": "visualnew-doga-venus-flytrap.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-nepenthes",
@@ -38644,7 +38690,8 @@
       "Banksia",
       "Nepenthes"
     ],
-    "image": "visualnew-doga-nepenthes.webp"
+    "image": "visualnew-doga-nepenthes.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-amorphophallus-titanum",
@@ -38665,7 +38712,8 @@
       "Amorphophallus titanum",
       "Drosera"
     ],
-    "image": "visualnew-doga-amorphophallus-titanum.webp"
+    "image": "visualnew-doga-amorphophallus-titanum.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-rafflesia-arnoldii",
@@ -38686,7 +38734,8 @@
       "Protea",
       "Ginkgo biloba"
     ],
-    "image": "visualnew-doga-rafflesia-arnoldii.webp"
+    "image": "visualnew-doga-rafflesia-arnoldii.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-dracaena-cinnabari",
@@ -38707,7 +38756,8 @@
       "Nepenthes",
       "Welwitschia"
     ],
-    "image": "visualnew-doga-dracaena-cinnabari.webp"
+    "image": "visualnew-doga-dracaena-cinnabari.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-pandanus",
@@ -38728,7 +38778,8 @@
       "Brachychiton rupestris",
       "Pandanus"
     ],
-    "image": "visualnew-doga-pandanus.webp"
+    "image": "visualnew-doga-pandanus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-welwitschia",
@@ -38749,7 +38800,8 @@
       "Welwitschia",
       "Amorphophallus titanum"
     ],
-    "image": "visualnew-doga-welwitschia.webp"
+    "image": "visualnew-doga-welwitschia.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-drosera",
@@ -38770,7 +38822,8 @@
       "Pandanus",
       "Hydnora africana"
     ],
-    "image": "visualnew-doga-drosera.webp"
+    "image": "visualnew-doga-drosera.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-sphaeropteris-cooperi",
@@ -38791,7 +38844,8 @@
       "Nelumbo nucifera",
       "Nepenthes"
     ],
-    "image": "visualnew-doga-sphaeropteris-cooperi.webp"
+    "image": "visualnew-doga-sphaeropteris-cooperi.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-brachychiton-rupestris",
@@ -38812,7 +38866,8 @@
       "Dracaena cinnabari",
       "Brachychiton rupestris"
     ],
-    "image": "visualnew-doga-brachychiton-rupestris.webp"
+    "image": "visualnew-doga-brachychiton-rupestris.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-protea",
@@ -38833,7 +38888,8 @@
       "Protea",
       "Ginkgo biloba"
     ],
-    "image": "visualnew-doga-protea.webp"
+    "image": "visualnew-doga-protea.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-hydnora-africana",
@@ -38854,7 +38910,8 @@
       "Nepenthes",
       "Welwitschia"
     ],
-    "image": "visualnew-doga-hydnora-africana.webp"
+    "image": "visualnew-doga-hydnora-africana.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-adansonia-grandidieri",
@@ -38875,7 +38932,8 @@
       "Brachychiton rupestris",
       "Nelumbo nucifera"
     ],
-    "image": "visualnew-doga-adansonia-grandidieri.webp"
+    "image": "visualnew-doga-adansonia-grandidieri.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-banksia",
@@ -38896,7 +38954,8 @@
       "Venus flytrap",
       "Banksia"
     ],
-    "image": "visualnew-doga-banksia.webp"
+    "image": "visualnew-doga-banksia.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-nelumbo-nucifera",
@@ -38917,7 +38976,8 @@
       "Nelumbo nucifera",
       "Protea"
     ],
-    "image": "visualnew-doga-nelumbo-nucifera.webp"
+    "image": "visualnew-doga-nelumbo-nucifera.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-ginkgo-biloba",
@@ -38938,7 +38998,8 @@
       "Banksia",
       "Amorphophallus titanum"
     ],
-    "image": "visualnew-doga-ginkgo-biloba.webp"
+    "image": "visualnew-doga-ginkgo-biloba.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-doga-puya-raimondii",
@@ -38959,7 +39020,8 @@
       "Pandanus",
       "Brachychiton rupestris"
     ],
-    "image": "visualnew-doga-puya-raimondii.webp"
+    "image": "visualnew-doga-puya-raimondii.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-binturong",
@@ -38980,7 +39042,8 @@
       "Markhor",
       "Margay"
     ],
-    "image": "visualnew-hayvanlar-binturong.webp"
+    "image": "visualnew-hayvanlar-binturong.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-pallas-s-cat",
@@ -39001,7 +39064,8 @@
       "Saiga antelope",
       "Pallas's cat"
     ],
-    "image": "visualnew-hayvanlar-pallas-s-cat.webp"
+    "image": "visualnew-hayvanlar-pallas-s-cat.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-proboscis-monkey",
@@ -39022,7 +39086,8 @@
       "Proboscis monkey",
       "Aye-aye"
     ],
-    "image": "visualnew-hayvanlar-proboscis-monkey.webp"
+    "image": "visualnew-hayvanlar-proboscis-monkey.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-fennec-fox",
@@ -39043,7 +39108,8 @@
       "Margay",
       "Ring-tailed lemur"
     ],
-    "image": "visualnew-hayvanlar-fennec-fox.webp"
+    "image": "visualnew-hayvanlar-fennec-fox.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-dik-dik",
@@ -39064,7 +39130,8 @@
       "Takin",
       "Fennec fox"
     ],
-    "image": "visualnew-hayvanlar-dik-dik.webp"
+    "image": "visualnew-hayvanlar-dik-dik.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-kinkajou",
@@ -39085,7 +39152,8 @@
       "Aye-aye",
       "Kinkajou"
     ],
-    "image": "visualnew-hayvanlar-kinkajou.webp"
+    "image": "visualnew-hayvanlar-kinkajou.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-markhor",
@@ -39106,7 +39174,8 @@
       "Markhor",
       "Binturong"
     ],
-    "image": "visualnew-hayvanlar-markhor.webp"
+    "image": "visualnew-hayvanlar-markhor.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-aye-aye",
@@ -39127,7 +39196,8 @@
       "Fennec fox",
       "Addax"
     ],
-    "image": "visualnew-hayvanlar-aye-aye.webp"
+    "image": "visualnew-hayvanlar-aye-aye.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-southern-cassowary",
@@ -39148,7 +39218,8 @@
       "Echidna",
       "Quokka"
     ],
-    "image": "visualnew-hayvanlar-southern-cassowary.webp"
+    "image": "visualnew-hayvanlar-southern-cassowary.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-addax",
@@ -39169,7 +39240,8 @@
       "Binturong",
       "Addax"
     ],
-    "image": "visualnew-hayvanlar-addax.webp"
+    "image": "visualnew-hayvanlar-addax.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-margay",
@@ -39190,7 +39262,8 @@
       "Margay",
       "Saiga antelope"
     ],
-    "image": "visualnew-hayvanlar-margay.webp"
+    "image": "visualnew-hayvanlar-margay.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-gharial",
@@ -39211,7 +39284,8 @@
       "Quokka",
       "Proboscis monkey"
     ],
-    "image": "visualnew-hayvanlar-gharial.webp"
+    "image": "visualnew-hayvanlar-gharial.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-echidna",
@@ -39232,7 +39306,8 @@
       "Kinkajou",
       "Addax"
     ],
-    "image": "visualnew-hayvanlar-echidna.webp"
+    "image": "visualnew-hayvanlar-echidna.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-saiga-antelope",
@@ -39253,7 +39328,8 @@
       "Echidna",
       "Saiga antelope"
     ],
-    "image": "visualnew-hayvanlar-saiga-antelope.webp"
+    "image": "visualnew-hayvanlar-saiga-antelope.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-maned-wolf",
@@ -39274,7 +39350,8 @@
       "Maned wolf",
       "Markhor"
     ],
-    "image": "visualnew-hayvanlar-maned-wolf.webp"
+    "image": "visualnew-hayvanlar-maned-wolf.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-ring-tailed-lemur",
@@ -39295,7 +39372,8 @@
       "Addax",
       "Maned wolf"
     ],
-    "image": "visualnew-hayvanlar-ring-tailed-lemur.webp"
+    "image": "visualnew-hayvanlar-ring-tailed-lemur.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-quokka",
@@ -39316,7 +39394,8 @@
       "Takin",
       "Fennec fox"
     ],
-    "image": "visualnew-hayvanlar-quokka.webp"
+    "image": "visualnew-hayvanlar-quokka.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-dhole",
@@ -39337,7 +39416,8 @@
       "Markhor",
       "Dhole"
     ],
-    "image": "visualnew-hayvanlar-dhole.webp"
+    "image": "visualnew-hayvanlar-dhole.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-hayvanlar-takin",
@@ -39358,7 +39438,8 @@
       "Takin",
       "Binturong"
     ],
-    "image": "visualnew-hayvanlar-takin.webp"
+    "image": "visualnew-hayvanlar-takin.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-dolmen",
@@ -39379,7 +39460,8 @@
       "Loggia",
       "Menhir"
     ],
-    "image": "visualnew-mimari-dolmen.webp"
+    "image": "visualnew-mimari-dolmen.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-lighthouse",
@@ -39400,7 +39482,8 @@
       "Clock tower",
       "Lighthouse"
     ],
-    "image": "visualnew-mimari-lighthouse.webp"
+    "image": "visualnew-mimari-lighthouse.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-windmill",
@@ -39421,7 +39504,8 @@
       "Windmill",
       "Pyramidion"
     ],
-    "image": "visualnew-mimari-windmill.webp"
+    "image": "visualnew-mimari-windmill.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-torii",
@@ -39442,7 +39526,8 @@
       "Menhir",
       "Gopuram"
     ],
-    "image": "visualnew-mimari-torii.webp"
+    "image": "visualnew-mimari-torii.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-shikhara",
@@ -39463,7 +39548,8 @@
       "Windmill",
       "Pyramidion"
     ],
-    "image": "visualnew-mimari-shikhara.webp"
+    "image": "visualnew-mimari-shikhara.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-pagoda",
@@ -39484,7 +39570,8 @@
       "Menhir",
       "Pagoda"
     ],
-    "image": "visualnew-mimari-pagoda.webp"
+    "image": "visualnew-mimari-pagoda.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-loggia",
@@ -39505,7 +39592,8 @@
       "Loggia",
       "Torii"
     ],
-    "image": "visualnew-mimari-loggia.webp"
+    "image": "visualnew-mimari-loggia.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-pyramidion",
@@ -39526,7 +39614,8 @@
       "Loggia",
       "Stupa"
     ],
-    "image": "visualnew-mimari-pyramidion.webp"
+    "image": "visualnew-mimari-pyramidion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-chhatri",
@@ -39547,7 +39636,8 @@
       "Gopuram",
       "Torii"
     ],
-    "image": "visualnew-mimari-chhatri.webp"
+    "image": "visualnew-mimari-chhatri.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-minaret",
@@ -39568,7 +39658,8 @@
       "Loggia",
       "Minaret"
     ],
-    "image": "visualnew-mimari-minaret.webp"
+    "image": "visualnew-mimari-minaret.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-menhir",
@@ -39589,7 +39680,8 @@
       "Menhir",
       "Dolmen"
     ],
-    "image": "visualnew-mimari-menhir.webp"
+    "image": "visualnew-mimari-menhir.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-stepwell",
@@ -39610,7 +39702,8 @@
       "Torii",
       "Chhatri"
     ],
-    "image": "visualnew-mimari-stepwell.webp"
+    "image": "visualnew-mimari-stepwell.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-stupa",
@@ -39631,7 +39724,8 @@
       "Stepwell",
       "Dolmen"
     ],
-    "image": "visualnew-mimari-stupa.webp"
+    "image": "visualnew-mimari-stupa.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-clock-tower",
@@ -39652,7 +39746,8 @@
       "Torii",
       "Clock tower"
     ],
-    "image": "visualnew-mimari-clock-tower.webp"
+    "image": "visualnew-mimari-clock-tower.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-triumphal-arch",
@@ -39673,7 +39768,8 @@
       "Triumphal arch",
       "Stupa"
     ],
-    "image": "visualnew-mimari-triumphal-arch.webp"
+    "image": "visualnew-mimari-triumphal-arch.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-mimari-gopuram",
@@ -39694,7 +39790,8 @@
       "Dolmen",
       "Pagoda"
     ],
-    "image": "visualnew-mimari-gopuram.webp"
+    "image": "visualnew-mimari-gopuram.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-cloche-hat",
@@ -39715,7 +39812,8 @@
       "Top hat",
       "Gaiters"
     ],
-    "image": "visualnew-moda-cloche-hat.webp"
+    "image": "visualnew-moda-cloche-hat.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-qipao",
@@ -39736,7 +39834,8 @@
       "Kaftan",
       "Qipao"
     ],
-    "image": "visualnew-moda-qipao.webp"
+    "image": "visualnew-moda-qipao.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-sombrero",
@@ -39757,7 +39856,8 @@
       "Sombrero",
       "Farthingale"
     ],
-    "image": "visualnew-moda-sombrero.webp"
+    "image": "visualnew-moda-sombrero.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-kilt",
@@ -39778,7 +39878,8 @@
       "Gaiters",
       "Dirndl"
     ],
-    "image": "visualnew-moda-kilt.webp"
+    "image": "visualnew-moda-kilt.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-bowler-hat",
@@ -39799,7 +39900,8 @@
       "Hanbok",
       "Kilt"
     ],
-    "image": "visualnew-moda-bowler-hat.webp"
+    "image": "visualnew-moda-bowler-hat.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-kimono",
@@ -39820,7 +39922,8 @@
       "Farthingale",
       "Kimono"
     ],
-    "image": "visualnew-moda-kimono.webp"
+    "image": "visualnew-moda-kimono.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-top-hat",
@@ -39841,7 +39944,8 @@
       "Top hat",
       "Cloche hat"
     ],
-    "image": "visualnew-moda-top-hat.webp"
+    "image": "visualnew-moda-top-hat.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-farthingale",
@@ -39862,7 +39966,8 @@
       "Kilt",
       "Homburg hat"
     ],
-    "image": "visualnew-moda-farthingale.webp"
+    "image": "visualnew-moda-farthingale.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-buskin",
@@ -39883,7 +39988,8 @@
       "Balmoral bonnet",
       "Moccasin"
     ],
-    "image": "visualnew-moda-buskin.webp"
+    "image": "visualnew-moda-buskin.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-homburg-hat",
@@ -39904,7 +40010,8 @@
       "Cloche hat",
       "Homburg hat"
     ],
-    "image": "visualnew-moda-homburg-hat.webp"
+    "image": "visualnew-moda-homburg-hat.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-gaiters",
@@ -39925,7 +40032,8 @@
       "Gaiters",
       "Kaftan"
     ],
-    "image": "visualnew-moda-gaiters.webp"
+    "image": "visualnew-moda-gaiters.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-sarong",
@@ -39946,7 +40054,8 @@
       "Moccasin",
       "Sombrero"
     ],
-    "image": "visualnew-moda-sarong.webp"
+    "image": "visualnew-moda-sarong.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-balmoral-bonnet",
@@ -39967,7 +40076,8 @@
       "Kimono",
       "Homburg hat"
     ],
-    "image": "visualnew-moda-balmoral-bonnet.webp"
+    "image": "visualnew-moda-balmoral-bonnet.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-kaftan",
@@ -39988,7 +40098,8 @@
       "Balmoral bonnet",
       "Kaftan"
     ],
-    "image": "visualnew-moda-kaftan.webp"
+    "image": "visualnew-moda-kaftan.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-breeches",
@@ -40009,7 +40120,8 @@
       "Breeches",
       "Top hat"
     ],
-    "image": "visualnew-moda-breeches.webp"
+    "image": "visualnew-moda-breeches.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-dirndl",
@@ -40030,7 +40142,8 @@
       "Homburg hat",
       "Breeches"
     ],
-    "image": "visualnew-moda-dirndl.webp"
+    "image": "visualnew-moda-dirndl.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-moccasin",
@@ -40051,7 +40164,8 @@
       "Hanbok",
       "Kilt"
     ],
-    "image": "visualnew-moda-moccasin.webp"
+    "image": "visualnew-moda-moccasin.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-espadrille",
@@ -40072,7 +40186,8 @@
       "Top hat",
       "Espadrille"
     ],
-    "image": "visualnew-moda-espadrille.webp"
+    "image": "visualnew-moda-espadrille.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-moda-hanbok",
@@ -40093,7 +40208,8 @@
       "Hanbok",
       "Cloche hat"
     ],
-    "image": "visualnew-moda-hanbok.webp"
+    "image": "visualnew-moda-hanbok.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-alphorn",
@@ -40114,7 +40230,8 @@
       "Dulcimer",
       "Zither"
     ],
-    "image": "visualnew-muzik-alphorn.webp"
+    "image": "visualnew-muzik-alphorn.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-hurdy-gurdy",
@@ -40135,7 +40252,8 @@
       "Lute",
       "Hurdy-gurdy"
     ],
-    "image": "visualnew-muzik-hurdy-gurdy.webp"
+    "image": "visualnew-muzik-hurdy-gurdy.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-theremin",
@@ -40156,7 +40274,8 @@
       "Theremin",
       "Shamisen"
     ],
-    "image": "visualnew-muzik-theremin.webp"
+    "image": "visualnew-muzik-theremin.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-harp",
@@ -40177,7 +40296,8 @@
       "Zither",
       "Ocarina"
     ],
-    "image": "visualnew-muzik-harp.webp"
+    "image": "visualnew-muzik-harp.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-mbira",
@@ -40198,7 +40318,8 @@
       "Hurdy-gurdy",
       "Dulcimer"
     ],
-    "image": "visualnew-muzik-mbira.webp"
+    "image": "visualnew-muzik-mbira.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-concertina",
@@ -40219,7 +40340,8 @@
       "Djembe",
       "Concertina"
     ],
-    "image": "visualnew-muzik-concertina.webp"
+    "image": "visualnew-muzik-concertina.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-dulcimer",
@@ -40240,7 +40362,8 @@
       "Dulcimer",
       "Theremin"
     ],
-    "image": "visualnew-muzik-dulcimer.webp"
+    "image": "visualnew-muzik-dulcimer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-shamisen",
@@ -40261,7 +40384,8 @@
       "Concertina",
       "Didgeridoo"
     ],
-    "image": "visualnew-muzik-shamisen.webp"
+    "image": "visualnew-muzik-shamisen.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-marimba",
@@ -40282,7 +40406,8 @@
       "Pan flute",
       "Hurdy-gurdy"
     ],
-    "image": "visualnew-muzik-marimba.webp"
+    "image": "visualnew-muzik-marimba.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-djembe",
@@ -40303,7 +40428,8 @@
       "Mbira",
       "Djembe"
     ],
-    "image": "visualnew-muzik-djembe.webp"
+    "image": "visualnew-muzik-djembe.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-zither",
@@ -40324,7 +40450,8 @@
       "Zither",
       "Ocarina"
     ],
-    "image": "visualnew-muzik-zither.webp"
+    "image": "visualnew-muzik-zither.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-didgeridoo",
@@ -40345,7 +40472,8 @@
       "Hurdy-gurdy",
       "Dulcimer"
     ],
-    "image": "visualnew-muzik-didgeridoo.webp"
+    "image": "visualnew-muzik-didgeridoo.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-bandoneon",
@@ -40366,7 +40494,8 @@
       "Djembe",
       "Pan flute"
     ],
-    "image": "visualnew-muzik-bandoneon.webp"
+    "image": "visualnew-muzik-bandoneon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-lute",
@@ -40387,7 +40516,8 @@
       "Alphorn",
       "Lute"
     ],
-    "image": "visualnew-muzik-lute.webp"
+    "image": "visualnew-muzik-lute.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-pan-flute",
@@ -40408,7 +40538,8 @@
       "Pan flute",
       "Zither"
     ],
-    "image": "visualnew-muzik-pan-flute.webp"
+    "image": "visualnew-muzik-pan-flute.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-ocarina",
@@ -40429,7 +40560,8 @@
       "Lute",
       "Theremin"
     ],
-    "image": "visualnew-muzik-ocarina.webp"
+    "image": "visualnew-muzik-ocarina.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-muzik-steelpan",
@@ -40450,7 +40582,8 @@
       "Concertina",
       "Djembe"
     ],
-    "image": "visualnew-muzik-steelpan.webp"
+    "image": "visualnew-muzik-steelpan.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-portuguese-man-o-war",
@@ -40471,7 +40604,8 @@
       "Leafy seadragon",
       "Sea cucumber"
     ],
-    "image": "visualnew-okyanuslar-portuguese-man-o-war.webp"
+    "image": "visualnew-okyanuslar-portuguese-man-o-war.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-blue-ringed-octopus",
@@ -40492,7 +40626,8 @@
       "Sea pen",
       "Blue-ringed octopus"
     ],
-    "image": "visualnew-okyanuslar-blue-ringed-octopus.webp"
+    "image": "visualnew-okyanuslar-blue-ringed-octopus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-glaucus-atlanticus",
@@ -40513,7 +40648,8 @@
       "Glaucus atlanticus",
       "Coelacanth"
     ],
-    "image": "visualnew-okyanuslar-glaucus-atlanticus.webp"
+    "image": "visualnew-okyanuslar-glaucus-atlanticus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-crinoid",
@@ -40534,7 +40670,8 @@
       "Sea cucumber",
       "Goose barnacle"
     ],
-    "image": "visualnew-okyanuslar-crinoid.webp"
+    "image": "visualnew-okyanuslar-crinoid.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-basket-star",
@@ -40555,7 +40692,8 @@
       "Portuguese man o' war",
       "Dugong"
     ],
-    "image": "visualnew-okyanuslar-basket-star.webp"
+    "image": "visualnew-okyanuslar-basket-star.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-dugong",
@@ -40576,7 +40714,8 @@
       "Giant clam",
       "Dugong"
     ],
-    "image": "visualnew-okyanuslar-dugong.webp"
+    "image": "visualnew-okyanuslar-dugong.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-leafy-seadragon",
@@ -40597,7 +40736,8 @@
       "Leafy seadragon",
       "Blue-ringed octopus"
     ],
-    "image": "visualnew-okyanuslar-leafy-seadragon.webp"
+    "image": "visualnew-okyanuslar-leafy-seadragon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-coelacanth",
@@ -40618,7 +40758,8 @@
       "Basket star",
       "Sea cucumber"
     ],
-    "image": "visualnew-okyanuslar-coelacanth.webp"
+    "image": "visualnew-okyanuslar-coelacanth.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-giant-clam",
@@ -40639,7 +40780,8 @@
       "Sea pen",
       "Sea angel"
     ],
-    "image": "visualnew-okyanuslar-giant-clam.webp"
+    "image": "visualnew-okyanuslar-giant-clam.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-sea-spider",
@@ -40660,7 +40802,8 @@
       "Glaucus atlanticus",
       "Sea spider"
     ],
-    "image": "visualnew-okyanuslar-sea-spider.webp"
+    "image": "visualnew-okyanuslar-sea-spider.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-sea-cucumber",
@@ -40681,7 +40824,8 @@
       "Sea cucumber",
       "Barreleye"
     ],
-    "image": "visualnew-okyanuslar-sea-cucumber.webp"
+    "image": "visualnew-okyanuslar-sea-cucumber.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-vampire-squid",
@@ -40702,7 +40846,8 @@
       "Sea angel",
       "Basket star"
     ],
-    "image": "visualnew-okyanuslar-vampire-squid.webp"
+    "image": "visualnew-okyanuslar-vampire-squid.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-common-seadragon",
@@ -40723,7 +40868,8 @@
       "Coelacanth",
       "Vampire squid"
     ],
-    "image": "visualnew-okyanuslar-common-seadragon.webp"
+    "image": "visualnew-okyanuslar-common-seadragon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-sea-pen",
@@ -40744,7 +40890,8 @@
       "Goose barnacle",
       "Sea pen"
     ],
-    "image": "visualnew-okyanuslar-sea-pen.webp"
+    "image": "visualnew-okyanuslar-sea-pen.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-barreleye",
@@ -40765,7 +40912,8 @@
       "Barreleye",
       "Giant clam"
     ],
-    "image": "visualnew-okyanuslar-barreleye.webp"
+    "image": "visualnew-okyanuslar-barreleye.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-goose-barnacle",
@@ -40786,7 +40934,8 @@
       "Vampire squid",
       "Sea angel"
     ],
-    "image": "visualnew-okyanuslar-goose-barnacle.webp"
+    "image": "visualnew-okyanuslar-goose-barnacle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-japanese-spider-crab",
@@ -40807,7 +40956,8 @@
       "Glaucus atlanticus",
       "Leafy seadragon"
     ],
-    "image": "visualnew-okyanuslar-japanese-spider-crab.webp"
+    "image": "visualnew-okyanuslar-japanese-spider-crab.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-okyanuslar-sea-angel",
@@ -40828,7 +40978,8 @@
       "Sea spider",
       "Sea angel"
     ],
-    "image": "visualnew-okyanuslar-sea-angel.webp"
+    "image": "visualnew-okyanuslar-sea-angel.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-bayeux-tapestry",
@@ -40849,7 +41000,8 @@
       "Lindisfarne Gospels",
       "Portland Vase"
     ],
-    "image": "visualnew-tarih-bayeux-tapestry.webp"
+    "image": "visualnew-tarih-bayeux-tapestry.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-nefertiti-bust",
@@ -40870,7 +41022,8 @@
       "Narmer Palette",
       "Nefertiti Bust"
     ],
-    "image": "visualnew-tarih-nefertiti-bust.webp"
+    "image": "visualnew-tarih-nefertiti-bust.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-code-of-hammurabi",
@@ -40891,7 +41044,8 @@
       "Code of Hammurabi",
       "Discobolus"
     ],
-    "image": "visualnew-tarih-code-of-hammurabi.webp"
+    "image": "visualnew-tarih-code-of-hammurabi.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-behistun-inscription",
@@ -40912,7 +41066,8 @@
       "Portland Vase",
       "Mask of Tutankhamun"
     ],
-    "image": "visualnew-tarih-behistun-inscription.webp"
+    "image": "visualnew-tarih-behistun-inscription.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-terracotta-army",
@@ -40933,7 +41088,8 @@
       "Laocoön and His Sons",
       "Behistun inscription"
     ],
-    "image": "visualnew-tarih-terracotta-army.webp"
+    "image": "visualnew-tarih-terracotta-army.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-antikythera-mechanism",
@@ -40954,7 +41110,8 @@
       "Discobolus",
       "Antikythera mechanism"
     ],
-    "image": "visualnew-tarih-antikythera-mechanism.webp"
+    "image": "visualnew-tarih-antikythera-mechanism.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-lindisfarne-gospels",
@@ -40975,7 +41132,8 @@
       "Lindisfarne Gospels",
       "Bayeux Tapestry"
     ],
-    "image": "visualnew-tarih-lindisfarne-gospels.webp"
+    "image": "visualnew-tarih-lindisfarne-gospels.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-discobolus",
@@ -40996,7 +41154,8 @@
       "Behistun inscription",
       "Venus of Willendorf"
     ],
-    "image": "visualnew-tarih-discobolus.webp"
+    "image": "visualnew-tarih-discobolus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-moai",
@@ -41017,7 +41176,8 @@
       "Olmec colossal heads",
       "Sutton Hoo helmet"
     ],
-    "image": "visualnew-tarih-moai.webp"
+    "image": "visualnew-tarih-moai.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-venus-of-willendorf",
@@ -41038,7 +41198,8 @@
       "Bayeux Tapestry",
       "Venus of Willendorf"
     ],
-    "image": "visualnew-tarih-venus-of-willendorf.webp"
+    "image": "visualnew-tarih-venus-of-willendorf.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-portland-vase",
@@ -41059,7 +41220,8 @@
       "Portland Vase",
       "Narmer Palette"
     ],
-    "image": "visualnew-tarih-portland-vase.webp"
+    "image": "visualnew-tarih-portland-vase.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-lascaux",
@@ -41080,7 +41242,8 @@
       "Sutton Hoo helmet",
       "Code of Hammurabi"
     ],
-    "image": "visualnew-tarih-lascaux.webp"
+    "image": "visualnew-tarih-lascaux.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-olmec-colossal-heads",
@@ -41101,7 +41264,8 @@
       "Antikythera mechanism",
       "Venus of Willendorf"
     ],
-    "image": "visualnew-tarih-olmec-colossal-heads.webp"
+    "image": "visualnew-tarih-olmec-colossal-heads.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-narmer-palette",
@@ -41122,7 +41286,8 @@
       "Olmec colossal heads",
       "Narmer Palette"
     ],
-    "image": "visualnew-tarih-narmer-palette.webp"
+    "image": "visualnew-tarih-narmer-palette.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-standard-of-ur",
@@ -41143,7 +41308,8 @@
       "Standard of Ur",
       "Lindisfarne Gospels"
     ],
-    "image": "visualnew-tarih-standard-of-ur.webp"
+    "image": "visualnew-tarih-standard-of-ur.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-mask-of-tutankhamun",
@@ -41164,7 +41330,8 @@
       "Venus of Willendorf",
       "Standard of Ur"
     ],
-    "image": "visualnew-tarih-mask-of-tutankhamun.webp"
+    "image": "visualnew-tarih-mask-of-tutankhamun.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-sutton-hoo-helmet",
@@ -41185,7 +41352,8 @@
       "Laocoön and His Sons",
       "Behistun inscription"
     ],
-    "image": "visualnew-tarih-sutton-hoo-helmet.webp"
+    "image": "visualnew-tarih-sutton-hoo-helmet.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-lewis-chessmen",
@@ -41206,7 +41374,8 @@
       "Lindisfarne Gospels",
       "Lewis chessmen"
     ],
-    "image": "visualnew-tarih-lewis-chessmen.webp"
+    "image": "visualnew-tarih-lewis-chessmen.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-tarih-laocoon-and-his-sons",
@@ -41227,7 +41396,8 @@
       "Laocoön and His Sons",
       "Bayeux Tapestry"
     ],
-    "image": "visualnew-tarih-laocoon-and-his-sons.webp"
+    "image": "visualnew-tarih-laocoon-and-his-sons.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-papaya",
@@ -41248,7 +41418,8 @@
       "Rambutan",
       "Durian"
     ],
-    "image": "visualnew-yemek-papaya.webp"
+    "image": "visualnew-yemek-papaya.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-carambola",
@@ -41269,7 +41440,8 @@
       "Guava",
       "Carambola"
     ],
-    "image": "visualnew-yemek-carambola.webp"
+    "image": "visualnew-yemek-carambola.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-tamarind",
@@ -41290,7 +41462,8 @@
       "Tamarind",
       "Dragon fruit"
     ],
-    "image": "visualnew-yemek-tamarind.webp"
+    "image": "visualnew-yemek-tamarind.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-passiflora-edulis",
@@ -41311,7 +41484,8 @@
       "Durian",
       "Cassava"
     ],
-    "image": "visualnew-yemek-passiflora-edulis.webp"
+    "image": "visualnew-yemek-passiflora-edulis.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-lychee",
@@ -41332,7 +41506,8 @@
       "Papaya",
       "Mangosteen"
     ],
-    "image": "visualnew-yemek-lychee.webp"
+    "image": "visualnew-yemek-lychee.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-mangosteen",
@@ -41353,7 +41528,8 @@
       "Fennel",
       "Mangosteen"
     ],
-    "image": "visualnew-yemek-mangosteen.webp"
+    "image": "visualnew-yemek-mangosteen.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-rambutan",
@@ -41374,7 +41550,8 @@
       "Rambutan",
       "Carambola"
     ],
-    "image": "visualnew-yemek-rambutan.webp"
+    "image": "visualnew-yemek-rambutan.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-dragon-fruit",
@@ -41395,7 +41572,8 @@
       "Lychee",
       "Durian"
     ],
-    "image": "visualnew-yemek-dragon-fruit.webp"
+    "image": "visualnew-yemek-dragon-fruit.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-fennel",
@@ -41416,7 +41594,8 @@
       "Guava",
       "Cherimoya"
     ],
-    "image": "visualnew-yemek-fennel.webp"
+    "image": "visualnew-yemek-fennel.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-artichoke",
@@ -41437,7 +41616,8 @@
       "Tamarind",
       "Artichoke"
     ],
-    "image": "visualnew-yemek-artichoke.webp"
+    "image": "visualnew-yemek-artichoke.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-durian",
@@ -41458,7 +41638,8 @@
       "Durian",
       "Jackfruit"
     ],
-    "image": "visualnew-yemek-durian.webp"
+    "image": "visualnew-yemek-durian.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-persimmon",
@@ -41479,7 +41660,8 @@
       "Cherimoya",
       "Lychee"
     ],
-    "image": "visualnew-yemek-persimmon.webp"
+    "image": "visualnew-yemek-persimmon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-pomelo",
@@ -41500,7 +41682,8 @@
       "Dragon fruit",
       "Persimmon"
     ],
-    "image": "visualnew-yemek-pomelo.webp"
+    "image": "visualnew-yemek-pomelo.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-guava",
@@ -41521,7 +41704,8 @@
       "Cassava",
       "Guava"
     ],
-    "image": "visualnew-yemek-guava.webp"
+    "image": "visualnew-yemek-guava.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-jackfruit",
@@ -41542,7 +41726,8 @@
       "Jackfruit",
       "Fennel"
     ],
-    "image": "visualnew-yemek-jackfruit.webp"
+    "image": "visualnew-yemek-jackfruit.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-cassava",
@@ -41563,7 +41748,8 @@
       "Persimmon",
       "Cherimoya"
     ],
-    "image": "visualnew-yemek-cassava.webp"
+    "image": "visualnew-yemek-cassava.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-pachyrhizus-erosus",
@@ -41584,7 +41770,8 @@
       "Tamarind",
       "Rambutan"
     ],
-    "image": "visualnew-yemek-pachyrhizus-erosus.webp"
+    "image": "visualnew-yemek-pachyrhizus-erosus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-yemek-cherimoya",
@@ -41605,7 +41792,8 @@
       "Artichoke",
       "Cherimoya"
     ],
-    "image": "visualnew-yemek-cherimoya.webp"
+    "image": "visualnew-yemek-cherimoya.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-abacus",
@@ -41626,7 +41814,8 @@
       "Wimshurst machine",
       "Zoetrope"
     ],
-    "image": "visualnew-i-catlar-abacus.webp"
+    "image": "visualnew-i-catlar-abacus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-difference-engine",
@@ -41647,7 +41836,8 @@
       "Phonograph",
       "Difference engine"
     ],
-    "image": "visualnew-i-catlar-difference-engine.webp"
+    "image": "visualnew-i-catlar-difference-engine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-bunsen-burner",
@@ -41668,7 +41858,8 @@
       "Bunsen burner",
       "Slide rule"
     ],
-    "image": "visualnew-i-catlar-bunsen-burner.webp"
+    "image": "visualnew-i-catlar-bunsen-burner.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-barometer",
@@ -41689,7 +41880,8 @@
       "Zoetrope",
       "Calipers"
     ],
-    "image": "visualnew-i-catlar-barometer.webp"
+    "image": "visualnew-i-catlar-barometer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-sextant",
@@ -41710,7 +41902,8 @@
       "Abacus",
       "Tesla coil"
     ],
-    "image": "visualnew-i-catlar-sextant.webp"
+    "image": "visualnew-i-catlar-sextant.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-tesla-coil",
@@ -41731,7 +41924,8 @@
       "Seismometer",
       "Tesla coil"
     ],
-    "image": "visualnew-i-catlar-tesla-coil.webp"
+    "image": "visualnew-i-catlar-tesla-coil.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-wimshurst-machine",
@@ -41752,7 +41946,8 @@
       "Wimshurst machine",
       "Difference engine"
     ],
-    "image": "visualnew-i-catlar-wimshurst-machine.webp"
+    "image": "visualnew-i-catlar-wimshurst-machine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-slide-rule",
@@ -41773,7 +41968,8 @@
       "Sextant",
       "Zoetrope"
     ],
-    "image": "visualnew-i-catlar-slide-rule.webp"
+    "image": "visualnew-i-catlar-slide-rule.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-seismometer",
@@ -41794,7 +41990,8 @@
       "Phonograph",
       "Galvanometer"
     ],
-    "image": "visualnew-i-catlar-seismometer.webp"
+    "image": "visualnew-i-catlar-seismometer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-orrery",
@@ -41815,7 +42012,8 @@
       "Bunsen burner",
       "Orrery"
     ],
-    "image": "visualnew-i-catlar-orrery.webp"
+    "image": "visualnew-i-catlar-orrery.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-zoetrope",
@@ -41836,7 +42034,8 @@
       "Zoetrope",
       "Magic lantern"
     ],
-    "image": "visualnew-i-catlar-zoetrope.webp"
+    "image": "visualnew-i-catlar-zoetrope.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-gyroscope",
@@ -41857,7 +42056,8 @@
       "Galvanometer",
       "Sextant"
     ],
-    "image": "visualnew-i-catlar-gyroscope.webp"
+    "image": "visualnew-i-catlar-gyroscope.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-theodolite",
@@ -41878,7 +42078,8 @@
       "Slide rule",
       "Gyroscope"
     ],
-    "image": "visualnew-i-catlar-theodolite.webp"
+    "image": "visualnew-i-catlar-theodolite.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-phonograph",
@@ -41899,7 +42100,8 @@
       "Calipers",
       "Phonograph"
     ],
-    "image": "visualnew-i-catlar-phonograph.webp"
+    "image": "visualnew-i-catlar-phonograph.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-magic-lantern",
@@ -41920,7 +42122,8 @@
       "Magic lantern",
       "Seismometer"
     ],
-    "image": "visualnew-i-catlar-magic-lantern.webp"
+    "image": "visualnew-i-catlar-magic-lantern.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-calipers",
@@ -41941,7 +42144,8 @@
       "Gyroscope",
       "Galvanometer"
     ],
-    "image": "visualnew-i-catlar-calipers.webp"
+    "image": "visualnew-i-catlar-calipers.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-jacquard-machine",
@@ -41962,7 +42166,8 @@
       "Bunsen burner",
       "Wimshurst machine"
     ],
-    "image": "visualnew-i-catlar-jacquard-machine.webp"
+    "image": "visualnew-i-catlar-jacquard-machine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualnew-i-catlar-galvanometer",
@@ -41983,7 +42188,8 @@
       "Orrery",
       "Galvanometer"
     ],
-    "image": "visualnew-i-catlar-galvanometer.webp"
+    "image": "visualnew-i-catlar-galvanometer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-cardioid",
@@ -42004,7 +42210,8 @@
       "Venn diagram",
       "Pascal's triangle"
     ],
-    "image": "visualcat-math-cardioid.webp"
+    "image": "visualcat-math-cardioid.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-parabola",
@@ -42025,7 +42232,8 @@
       "Tessellation",
       "Cube net"
     ],
-    "image": "visualcat-math-parabola.webp"
+    "image": "visualcat-math-parabola.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-hyperbola",
@@ -42046,7 +42254,8 @@
       "Tangent line",
       "Hyperbola"
     ],
-    "image": "visualcat-math-hyperbola.webp"
+    "image": "visualcat-math-hyperbola.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-sine-wave",
@@ -42067,7 +42276,8 @@
       "Sine wave",
       "Rhombus"
     ],
-    "image": "visualcat-math-sine-wave.webp"
+    "image": "visualcat-math-sine-wave.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-mobius-strip",
@@ -42088,7 +42298,8 @@
       "Pascal's triangle",
       "Trapezoid"
     ],
-    "image": "visualcat-math-mobius-strip.webp"
+    "image": "visualcat-math-mobius-strip.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-venn-diagram",
@@ -42109,7 +42320,8 @@
       "Cube net",
       "Sierpiński triangle"
     ],
-    "image": "visualcat-math-venn-diagram.webp"
+    "image": "visualcat-math-venn-diagram.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-tessellation",
@@ -42130,7 +42342,8 @@
       "Voronoi diagram",
       "Tessellation"
     ],
-    "image": "visualcat-math-tessellation.webp"
+    "image": "visualcat-math-tessellation.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-logarithmic-spiral",
@@ -42151,7 +42364,8 @@
       "Logarithmic spiral",
       "Cartesian coordinate plane"
     ],
-    "image": "visualcat-math-logarithmic-spiral.webp"
+    "image": "visualcat-math-logarithmic-spiral.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-golden-rectangle",
@@ -42172,7 +42386,8 @@
       "Trapezoid",
       "Graph"
     ],
-    "image": "visualcat-math-golden-rectangle.webp"
+    "image": "visualcat-math-golden-rectangle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-pascal-s-triangle",
@@ -42193,7 +42408,8 @@
       "Sierpiński triangle",
       "Cardioid"
     ],
-    "image": "visualcat-math-pascal-s-triangle.webp"
+    "image": "visualcat-math-pascal-s-triangle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-cube-net",
@@ -42214,7 +42430,8 @@
       "Parabola",
       "Cube net"
     ],
-    "image": "visualcat-math-cube-net.webp"
+    "image": "visualcat-math-cube-net.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-tangent-line",
@@ -42235,7 +42452,8 @@
       "Tangent line",
       "Hyperbola"
     ],
-    "image": "visualcat-math-tangent-line.webp"
+    "image": "visualcat-math-tangent-line.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-rhombus",
@@ -42256,7 +42474,8 @@
       "Graph",
       "Sine wave"
     ],
-    "image": "visualcat-math-rhombus.webp"
+    "image": "visualcat-math-rhombus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-trapezoid",
@@ -42277,7 +42496,8 @@
       "Cardioid",
       "Möbius strip"
     ],
-    "image": "visualcat-math-trapezoid.webp"
+    "image": "visualcat-math-trapezoid.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-sierpi-ski-triangle",
@@ -42298,7 +42518,8 @@
       "Venn diagram",
       "Sierpiński triangle"
     ],
-    "image": "visualcat-math-sierpi-ski-triangle.webp"
+    "image": "visualcat-math-sierpi-ski-triangle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-voronoi-diagram",
@@ -42319,7 +42540,8 @@
       "Voronoi diagram",
       "Tessellation"
     ],
-    "image": "visualcat-math-voronoi-diagram.webp"
+    "image": "visualcat-math-voronoi-diagram.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-cartesian-coordinate-plane",
@@ -42340,7 +42562,8 @@
       "Sine wave",
       "Logarithmic spiral"
     ],
-    "image": "visualcat-math-cartesian-coordinate-plane.webp"
+    "image": "visualcat-math-cartesian-coordinate-plane.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-math-graph",
@@ -42361,7 +42584,8 @@
       "Möbius strip",
       "Golden rectangle"
     ],
-    "image": "visualcat-math-graph.webp"
+    "image": "visualcat-math-graph.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-grin-from-ear-to-ear",
@@ -42382,7 +42606,8 @@
       "Be tired of repeating oneself",
       "Split hairs"
     ],
-    "image": "visualcat-idiom-grin-from-ear-to-ear.webp"
+    "image": "visualcat-idiom-grin-from-ear-to-ear.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-prick-up-one-s-ears",
@@ -42403,7 +42628,8 @@
       "Make endless excuses",
       "Learn a lasting lesson"
     ],
-    "image": "visualcat-idiom-prick-up-one-s-ears.webp"
+    "image": "visualcat-idiom-prick-up-one-s-ears.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-fall-from-favor",
@@ -42424,7 +42650,8 @@
       "Keep one's eyes peeled",
       "Fall from favor"
     ],
-    "image": "visualcat-idiom-fall-from-favor.webp"
+    "image": "visualcat-idiom-fall-from-favor.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-be-furious",
@@ -42445,7 +42672,8 @@
       "Be furious",
       "Take responsibility"
     ],
-    "image": "visualcat-idiom-be-furious.webp"
+    "image": "visualcat-idiom-be-furious.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-be-cast-aside",
@@ -42466,7 +42694,8 @@
       "Split hairs",
       "Put one's foot in it"
     ],
-    "image": "visualcat-idiom-be-cast-aside.webp"
+    "image": "visualcat-idiom-be-cast-aside.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-be-tired-of-repeating-oneself",
@@ -42487,7 +42716,8 @@
       "Learn a lasting lesson",
       "In the blink of an eye"
     ],
-    "image": "visualcat-idiom-be-tired-of-repeating-oneself.webp"
+    "image": "visualcat-idiom-be-tired-of-repeating-oneself.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-make-endless-excuses",
@@ -42508,7 +42738,8 @@
       "Avoid controversy",
       "Make endless excuses"
     ],
-    "image": "visualcat-idiom-make-endless-excuses.webp"
+    "image": "visualcat-idiom-make-endless-excuses.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-spit-fire",
@@ -42529,7 +42760,8 @@
       "Spit fire",
       "Be over the moon"
     ],
-    "image": "visualcat-idiom-spit-fire.webp"
+    "image": "visualcat-idiom-spit-fire.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-act-secretly",
@@ -42550,7 +42782,8 @@
       "Put one's foot in it",
       "A sure thing"
     ],
-    "image": "visualcat-idiom-act-secretly.webp"
+    "image": "visualcat-idiom-act-secretly.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-split-hairs",
@@ -42571,7 +42804,8 @@
       "In the blink of an eye",
       "Grin from ear to ear"
     ],
-    "image": "visualcat-idiom-split-hairs.webp"
+    "image": "visualcat-idiom-split-hairs.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-learn-a-lasting-lesson",
@@ -42592,7 +42826,8 @@
       "Prick up one's ears",
       "Learn a lasting lesson"
     ],
-    "image": "visualcat-idiom-learn-a-lasting-lesson.webp"
+    "image": "visualcat-idiom-learn-a-lasting-lesson.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-keep-one-s-eyes-peeled",
@@ -42613,7 +42848,8 @@
       "Keep one's eyes peeled",
       "Fall from favor"
     ],
-    "image": "visualcat-idiom-keep-one-s-eyes-peeled.webp"
+    "image": "visualcat-idiom-keep-one-s-eyes-peeled.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-take-responsibility",
@@ -42634,7 +42870,8 @@
       "A sure thing",
       "Be furious"
     ],
-    "image": "visualcat-idiom-take-responsibility.webp"
+    "image": "visualcat-idiom-take-responsibility.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-put-one-s-foot-in-it",
@@ -42655,7 +42892,8 @@
       "Grin from ear to ear",
       "Be cast aside"
     ],
-    "image": "visualcat-idiom-put-one-s-foot-in-it.webp"
+    "image": "visualcat-idiom-put-one-s-foot-in-it.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-in-the-blink-of-an-eye",
@@ -42676,7 +42914,8 @@
       "Be tired of repeating oneself",
       "In the blink of an eye"
     ],
-    "image": "visualcat-idiom-in-the-blink-of-an-eye.webp"
+    "image": "visualcat-idiom-in-the-blink-of-an-eye.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-avoid-controversy",
@@ -42697,7 +42936,8 @@
       "Avoid controversy",
       "Make endless excuses"
     ],
-    "image": "visualcat-idiom-avoid-controversy.webp"
+    "image": "visualcat-idiom-avoid-controversy.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-be-over-the-moon",
@@ -42718,7 +42958,8 @@
       "Be furious",
       "Spit fire"
     ],
-    "image": "visualcat-idiom-be-over-the-moon.webp"
+    "image": "visualcat-idiom-be-over-the-moon.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-idiom-a-sure-thing",
@@ -42739,7 +42980,8 @@
       "Be cast aside",
       "Act secretly"
     ],
-    "image": "visualcat-idiom-a-sure-thing.webp"
+    "image": "visualcat-idiom-a-sure-thing.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-muller-lyer-illusion",
@@ -42760,7 +43002,8 @@
       "Kanizsa triangle",
       "Poggendorff illusion"
     ],
-    "image": "visualcat-psych-muller-lyer-illusion.webp"
+    "image": "visualcat-psych-muller-lyer-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-ponzo-illusion",
@@ -42781,7 +43024,8 @@
       "Hermann grid",
       "Duck-rabbit illusion"
     ],
-    "image": "visualcat-psych-ponzo-illusion.webp"
+    "image": "visualcat-psych-ponzo-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-ebbinghaus-illusion",
@@ -42802,7 +43046,8 @@
       "Ames room",
       "Ebbinghaus illusion"
     ],
-    "image": "visualcat-psych-ebbinghaus-illusion.webp"
+    "image": "visualcat-psych-ebbinghaus-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-rubin-vase",
@@ -42823,7 +43068,8 @@
       "Rubin vase",
       "Checker shadow illusion"
     ],
-    "image": "visualcat-psych-rubin-vase.webp"
+    "image": "visualcat-psych-rubin-vase.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-necker-cube",
@@ -42844,7 +43090,8 @@
       "Poggendorff illusion",
       "Impossible trident"
     ],
-    "image": "visualcat-psych-necker-cube.webp"
+    "image": "visualcat-psych-necker-cube.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-kanizsa-triangle",
@@ -42865,7 +43112,8 @@
       "Duck-rabbit illusion",
       "Penrose triangle"
     ],
-    "image": "visualcat-psych-kanizsa-triangle.webp"
+    "image": "visualcat-psych-kanizsa-triangle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-hermann-grid",
@@ -42886,7 +43134,8 @@
       "Fraser spiral illusion",
       "Hermann grid"
     ],
-    "image": "visualcat-psych-hermann-grid.webp"
+    "image": "visualcat-psych-hermann-grid.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-caf-wall-illusion",
@@ -42907,7 +43156,8 @@
       "Café wall illusion",
       "Lilac chaser"
     ],
-    "image": "visualcat-psych-caf-wall-illusion.webp"
+    "image": "visualcat-psych-caf-wall-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-zollner-illusion",
@@ -42928,7 +43178,8 @@
       "Impossible trident",
       "Mach bands"
     ],
-    "image": "visualcat-psych-zollner-illusion.webp"
+    "image": "visualcat-psych-zollner-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-poggendorff-illusion",
@@ -42949,7 +43200,8 @@
       "Penrose triangle",
       "Müller-Lyer illusion"
     ],
-    "image": "visualcat-psych-poggendorff-illusion.webp"
+    "image": "visualcat-psych-poggendorff-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-duck-rabbit-illusion",
@@ -42970,7 +43222,8 @@
       "Ponzo illusion",
       "Duck-rabbit illusion"
     ],
-    "image": "visualcat-psych-duck-rabbit-illusion.webp"
+    "image": "visualcat-psych-duck-rabbit-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-ames-room",
@@ -42991,7 +43244,8 @@
       "Ames room",
       "Ebbinghaus illusion"
     ],
-    "image": "visualcat-psych-ames-room.webp"
+    "image": "visualcat-psych-ames-room.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-checker-shadow-illusion",
@@ -43012,7 +43266,8 @@
       "Mach bands",
       "Rubin vase"
     ],
-    "image": "visualcat-psych-checker-shadow-illusion.webp"
+    "image": "visualcat-psych-checker-shadow-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-impossible-trident",
@@ -43033,7 +43288,8 @@
       "Müller-Lyer illusion",
       "Necker cube"
     ],
-    "image": "visualcat-psych-impossible-trident.webp"
+    "image": "visualcat-psych-impossible-trident.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-penrose-triangle",
@@ -43054,7 +43310,8 @@
       "Kanizsa triangle",
       "Penrose triangle"
     ],
-    "image": "visualcat-psych-penrose-triangle.webp"
+    "image": "visualcat-psych-penrose-triangle.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-fraser-spiral-illusion",
@@ -43075,7 +43332,8 @@
       "Fraser spiral illusion",
       "Hermann grid"
     ],
-    "image": "visualcat-psych-fraser-spiral-illusion.webp"
+    "image": "visualcat-psych-fraser-spiral-illusion.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-lilac-chaser",
@@ -43096,7 +43354,8 @@
       "Rubin vase",
       "Café wall illusion"
     ],
-    "image": "visualcat-psych-lilac-chaser.webp"
+    "image": "visualcat-psych-lilac-chaser.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-psych-mach-bands",
@@ -43117,7 +43376,8 @@
       "Necker cube",
       "Zöllner illusion"
     ],
-    "image": "visualcat-psych-mach-bands.webp"
+    "image": "visualcat-psych-mach-bands.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-decision-tree",
@@ -43138,7 +43398,8 @@
       "Diffusion model",
       "Embedding"
     ],
-    "image": "visualcat-ai-decision-tree.webp"
+    "image": "visualcat-ai-decision-tree.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-random-forest",
@@ -43159,7 +43420,8 @@
       "Federated learning",
       "Attention mechanism"
     ],
-    "image": "visualcat-ai-random-forest.webp"
+    "image": "visualcat-ai-random-forest.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-k-means-clustering",
@@ -43180,7 +43442,8 @@
       "Semantic segmentation",
       "K-means clustering"
     ],
-    "image": "visualcat-ai-k-means-clustering.webp"
+    "image": "visualcat-ai-k-means-clustering.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-support-vector-machine",
@@ -43201,7 +43464,8 @@
       "Support vector machine",
       "Object detection"
     ],
-    "image": "visualcat-ai-support-vector-machine.webp"
+    "image": "visualcat-ai-support-vector-machine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-autoencoder",
@@ -43222,7 +43486,8 @@
       "Embedding",
       "Speech synthesis"
     ],
-    "image": "visualcat-ai-autoencoder.webp"
+    "image": "visualcat-ai-autoencoder.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-diffusion-model",
@@ -43243,7 +43508,8 @@
       "Attention mechanism",
       "Optical character recognition"
     ],
-    "image": "visualcat-ai-diffusion-model.webp"
+    "image": "visualcat-ai-diffusion-model.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-federated-learning",
@@ -43264,7 +43530,8 @@
       "Recommendation system",
       "Federated learning"
     ],
-    "image": "visualcat-ai-federated-learning.webp"
+    "image": "visualcat-ai-federated-learning.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-retrieval-augmented-generation-rag",
@@ -43285,7 +43552,8 @@
       "Retrieval-augmented generation (RAG)",
       "Anomaly detection"
     ],
-    "image": "visualcat-ai-retrieval-augmented-generation-rag.webp"
+    "image": "visualcat-ai-retrieval-augmented-generation-rag.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-tokenization",
@@ -43306,7 +43574,8 @@
       "Speech synthesis",
       "Transfer learning"
     ],
-    "image": "visualcat-ai-tokenization.webp"
+    "image": "visualcat-ai-tokenization.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-embedding",
@@ -43327,7 +43596,8 @@
       "Optical character recognition",
       "Decision tree"
     ],
-    "image": "visualcat-ai-embedding.webp"
+    "image": "visualcat-ai-embedding.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-attention-mechanism",
@@ -43348,7 +43618,8 @@
       "Random forest",
       "Attention mechanism"
     ],
-    "image": "visualcat-ai-attention-mechanism.webp"
+    "image": "visualcat-ai-attention-mechanism.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-semantic-segmentation",
@@ -43369,7 +43640,8 @@
       "Semantic segmentation",
       "K-means clustering"
     ],
-    "image": "visualcat-ai-semantic-segmentation.webp"
+    "image": "visualcat-ai-semantic-segmentation.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-object-detection",
@@ -43390,7 +43662,8 @@
       "Transfer learning",
       "Support vector machine"
     ],
-    "image": "visualcat-ai-object-detection.webp"
+    "image": "visualcat-ai-object-detection.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-speech-synthesis",
@@ -43411,7 +43684,8 @@
       "Decision tree",
       "Autoencoder"
     ],
-    "image": "visualcat-ai-speech-synthesis.webp"
+    "image": "visualcat-ai-speech-synthesis.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-optical-character-recognition",
@@ -43432,7 +43706,8 @@
       "Diffusion model",
       "Optical character recognition"
     ],
-    "image": "visualcat-ai-optical-character-recognition.webp"
+    "image": "visualcat-ai-optical-character-recognition.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-recommendation-system",
@@ -43453,7 +43728,8 @@
       "Recommendation system",
       "Federated learning"
     ],
-    "image": "visualcat-ai-recommendation-system.webp"
+    "image": "visualcat-ai-recommendation-system.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-anomaly-detection",
@@ -43474,7 +43750,8 @@
       "Support vector machine",
       "Retrieval-augmented generation (RAG)"
     ],
-    "image": "visualcat-ai-anomaly-detection.webp"
+    "image": "visualcat-ai-anomaly-detection.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-ai-transfer-learning",
@@ -43495,7 +43772,8 @@
       "Autoencoder",
       "Tokenization"
     ],
-    "image": "visualcat-ai-transfer-learning.webp"
+    "image": "visualcat-ai-transfer-learning.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-hypatia",
@@ -43516,7 +43794,8 @@
       "Michel Foucault",
       "Arthur Schopenhauer"
     ],
-    "image": "visualcat-philosophy-hypatia.webp"
+    "image": "visualcat-philosophy-hypatia.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-baruch-spinoza",
@@ -43537,7 +43816,8 @@
       "Judith Butler",
       "John Stuart Mill"
     ],
-    "image": "visualcat-philosophy-baruch-spinoza.webp"
+    "image": "visualcat-philosophy-baruch-spinoza.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-mary-wollstonecraft",
@@ -43558,7 +43838,8 @@
       "Avicenna",
       "Mary Wollstonecraft"
     ],
-    "image": "visualcat-philosophy-mary-wollstonecraft.webp"
+    "image": "visualcat-philosophy-mary-wollstonecraft.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-hannah-arendt",
@@ -43579,7 +43860,8 @@
       "Hannah Arendt",
       "Averroes"
     ],
-    "image": "visualcat-philosophy-hannah-arendt.webp"
+    "image": "visualcat-philosophy-hannah-arendt.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-karl-popper",
@@ -43600,7 +43882,8 @@
       "Arthur Schopenhauer",
       "Maimonides"
     ],
-    "image": "visualcat-philosophy-karl-popper.webp"
+    "image": "visualcat-philosophy-karl-popper.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-michel-foucault",
@@ -43621,7 +43904,8 @@
       "John Stuart Mill",
       "Epicurus"
     ],
-    "image": "visualcat-philosophy-michel-foucault.webp"
+    "image": "visualcat-philosophy-michel-foucault.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-judith-butler",
@@ -43642,7 +43926,8 @@
       "Seneca the Younger",
       "Judith Butler"
     ],
-    "image": "visualcat-philosophy-judith-butler.webp"
+    "image": "visualcat-philosophy-judith-butler.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-peter-singer",
@@ -43663,7 +43948,8 @@
       "Peter Singer",
       "Marcus Aurelius"
     ],
-    "image": "visualcat-philosophy-peter-singer.webp"
+    "image": "visualcat-philosophy-peter-singer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-ayn-rand",
@@ -43684,7 +43970,8 @@
       "Maimonides",
       "Confucius"
     ],
-    "image": "visualcat-philosophy-ayn-rand.webp"
+    "image": "visualcat-philosophy-ayn-rand.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-arthur-schopenhauer",
@@ -43705,7 +43992,8 @@
       "Epicurus",
       "Hypatia"
     ],
-    "image": "visualcat-philosophy-arthur-schopenhauer.webp"
+    "image": "visualcat-philosophy-arthur-schopenhauer.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-john-stuart-mill",
@@ -43726,7 +44014,8 @@
       "Baruch Spinoza",
       "John Stuart Mill"
     ],
-    "image": "visualcat-philosophy-john-stuart-mill.webp"
+    "image": "visualcat-philosophy-john-stuart-mill.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-avicenna",
@@ -43747,7 +44036,8 @@
       "Avicenna",
       "Mary Wollstonecraft"
     ],
-    "image": "visualcat-philosophy-avicenna.webp"
+    "image": "visualcat-philosophy-avicenna.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-averroes",
@@ -43768,7 +44058,8 @@
       "Confucius",
       "Hannah Arendt"
     ],
-    "image": "visualcat-philosophy-averroes.webp"
+    "image": "visualcat-philosophy-averroes.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-maimonides",
@@ -43789,7 +44080,8 @@
       "Hypatia",
       "Karl Popper"
     ],
-    "image": "visualcat-philosophy-maimonides.webp"
+    "image": "visualcat-philosophy-maimonides.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-epicurus",
@@ -43810,7 +44102,8 @@
       "Michel Foucault",
       "Epicurus"
     ],
-    "image": "visualcat-philosophy-epicurus.webp"
+    "image": "visualcat-philosophy-epicurus.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-seneca-the-younger",
@@ -43831,7 +44124,8 @@
       "Seneca the Younger",
       "Judith Butler"
     ],
-    "image": "visualcat-philosophy-seneca-the-younger.webp"
+    "image": "visualcat-philosophy-seneca-the-younger.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-marcus-aurelius",
@@ -43852,7 +44146,8 @@
       "Hannah Arendt",
       "Peter Singer"
     ],
-    "image": "visualcat-philosophy-marcus-aurelius.webp"
+    "image": "visualcat-philosophy-marcus-aurelius.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-philosophy-confucius",
@@ -43873,7 +44168,8 @@
       "Karl Popper",
       "Ayn Rand"
     ],
-    "image": "visualcat-philosophy-confucius.webp"
+    "image": "visualcat-philosophy-confucius.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-mozilla-firefox",
@@ -43894,7 +44190,8 @@
       "Cloudflare",
       "WhatsApp"
     ],
-    "image": "visualcat-internet-mozilla-firefox.webp"
+    "image": "visualcat-internet-mozilla-firefox.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-microsoft-edge",
@@ -43915,7 +44212,8 @@
       "Stack Overflow",
       "Telegram"
     ],
-    "image": "visualcat-internet-microsoft-edge.webp"
+    "image": "visualcat-internet-microsoft-edge.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-opera",
@@ -43936,7 +44234,8 @@
       "Signal",
       "Opera"
     ],
-    "image": "visualcat-internet-opera-web-browser.webp"
+    "image": "visualcat-internet-opera-web-browser.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-chromium",
@@ -43957,7 +44256,8 @@
       "Chromium",
       "Mozilla Thunderbird"
     ],
-    "image": "visualcat-internet-chromium-web-browser.webp"
+    "image": "visualcat-internet-chromium-web-browser.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-brave",
@@ -43978,7 +44278,8 @@
       "WhatsApp",
       "RSS"
     ],
-    "image": "visualcat-internet-brave-web-browser.webp"
+    "image": "visualcat-internet-brave-web-browser.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-cloudflare",
@@ -43999,7 +44300,8 @@
       "Telegram",
       "QR code"
     ],
-    "image": "visualcat-internet-cloudflare.webp"
+    "image": "visualcat-internet-cloudflare.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-stack-overflow",
@@ -44020,7 +44322,8 @@
       "Tor",
       "Stack Overflow"
     ],
-    "image": "visualcat-internet-stack-overflow.webp"
+    "image": "visualcat-internet-stack-overflow.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-github",
@@ -44041,7 +44344,8 @@
       "GitHub",
       "Internet Archive"
     ],
-    "image": "visualcat-internet-github.webp"
+    "image": "visualcat-internet-github.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-mastodon",
@@ -44062,7 +44366,8 @@
       "RSS",
       "Wayback Machine"
     ],
-    "image": "visualcat-internet-mastodon-social-network.webp"
+    "image": "visualcat-internet-mastodon-social-network.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-whatsapp",
@@ -44083,7 +44388,8 @@
       "QR code",
       "Mozilla Firefox"
     ],
-    "image": "visualcat-internet-whatsapp.webp"
+    "image": "visualcat-internet-whatsapp.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-telegram",
@@ -44104,7 +44410,8 @@
       "Microsoft Edge",
       "Telegram"
     ],
-    "image": "visualcat-internet-telegram-software.webp"
+    "image": "visualcat-internet-telegram-software.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-signal",
@@ -44125,7 +44432,8 @@
       "Signal",
       "Opera"
     ],
-    "image": "visualcat-internet-signal-software.webp"
+    "image": "visualcat-internet-signal-software.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-mozilla-thunderbird",
@@ -44146,7 +44454,8 @@
       "Wayback Machine",
       "Chromium"
     ],
-    "image": "visualcat-internet-mozilla-thunderbird.webp"
+    "image": "visualcat-internet-mozilla-thunderbird.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-rss",
@@ -44167,7 +44476,8 @@
       "Mozilla Firefox",
       "Brave"
     ],
-    "image": "visualcat-internet-rss.webp"
+    "image": "visualcat-internet-rss.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-qr-code",
@@ -44188,7 +44498,8 @@
       "Cloudflare",
       "QR code"
     ],
-    "image": "visualcat-internet-qr-code.webp"
+    "image": "visualcat-internet-qr-code.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-tor",
@@ -44209,7 +44520,8 @@
       "Tor",
       "Stack Overflow"
     ],
-    "image": "visualcat-internet-tor-network.webp"
+    "image": "visualcat-internet-tor-network.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-internet-archive",
@@ -44230,7 +44542,8 @@
       "Chromium",
       "GitHub"
     ],
-    "image": "visualcat-internet-internet-archive.webp"
+    "image": "visualcat-internet-internet-archive.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "visualcat-internet-wayback-machine",
@@ -44251,7 +44564,8 @@
       "Brave",
       "Mastodon"
     ],
-    "image": "visualcat-internet-wayback-machine.webp"
+    "image": "visualcat-internet-wayback-machine.webp",
+    "imageCredit": "QuizTavern"
   },
   {
     "id": "sanat-guggenheim-wright",
