@@ -113,8 +113,9 @@ export function setQuestionCalibration(stats: readonly { questionId: string; ask
   }
 }
 
-/** Etiket yerine kalibre değer varsa onu döner. */
-function difficultyOf(q: Question): Difficulty {
+/** Etiket yerine kalibre değer varsa onu döner. Puanlama da aynı etkin
+ *  zorluğu kullanır (etiket yanlışsa ödül de düzelir). */
+export function effectiveDifficulty(q: Question): Difficulty {
   return calibrated.get(q.id) ?? q.difficulty;
 }
 
@@ -126,7 +127,7 @@ function effectiveQuestionPool(categories: string[], difficulty: Difficulty | nu
   const byCat = categories.length ? base.filter((q) => categories.includes(q.category)) : base;
   const catPool = byCat.length ? byCat : base;
   if (!difficulty) return catPool;
-  const byDiff = catPool.filter((q) => difficultyOf(q) === difficulty);
+  const byDiff = catPool.filter((q) => effectiveDifficulty(q) === difficulty);
   return byDiff.length ? byDiff : catPool;
 }
 
