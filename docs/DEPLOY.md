@@ -115,7 +115,9 @@ desteklemez (xp.db restart'ta sıfırlanır) — disk için starter plana çıkm
 2. **Variables** sekmesine ekle:
    `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`,
    `SESSION_SECRET` (bir kez üret: `openssl rand -hex 32`, sonra sabit tut),
-   `PUBLIC_BASE_URL` = servisin Railway URL'i (`https://<ad>.up.railway.app`).
+   `PUBLIC_BASE_URL` = servisin Railway URL'i (`https://<ad>.up.railway.app`),
+   `VITE_DISCORD_CLIENT_ID` = `DISCORD_CLIENT_ID` ile aynı (client ID imaja
+   build-arg olarak gömülür; değişkense Activity Discord'da SDK'ya bağlanamaz).
    `ALLOW_MOCK_AUTH` **asla** eklenmez.
 3. **Volume** ekle: servis → **Volumes → New Volume** → mount path
    `/app/server/data`. Bu, restart/deploy'da XP/rozet/günlük verisini korur.
@@ -127,8 +129,9 @@ desteklemez (xp.db restart'ta sıfırlanır) — disk için starter plana çıkm
 1. https://dashboard.render.com → **New → Blueprint** → repo'yu seç →
    `render.yaml` algılanır → **Apply**. İlk deploy'da `sync: false` değişkenleri
    sorulur: `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`,
-   `PUBLIC_BASE_URL` (`https://<servis>.onrender.com`). `SESSION_SECRET`
-   blueprint tarafından üretilir.
+   `PUBLIC_BASE_URL` (`https://<servis>.onrender.com`),
+   `VITE_DISCORD_CLIENT_ID` (`DISCORD_CLIENT_ID` ile aynı — build-arg olur).
+   `SESSION_SECRET` blueprint tarafından üretilir.
 2. Ücretsiz plan uyur — ilk istek ~30 sn'de uyanır ve `/health` ucu health
    check'i karşılar. SQLite dosyaları konteyner içi kalır: **yeniden
    deploy/restart'ta XP verisi sıfırlanır**.
@@ -171,8 +174,11 @@ uyku yok, disk kalıcı, sabit IP. Ücret yok ama hesap açılışında kart do�
 
 cloud-init VM'i hazır getirir (Docker + `quiztavern` kullanıcısı + UFW).
 Devin'e `ssh quiztavern@<public-ip>` erişimi verdiğinde gerisini o yapar:
-repo → `docker build` → konteyner (restart always, `/opt/quiztavern/data`
-volume'u `/app/server/data`'ya bağlı) → env secret'ları → Caddy ile HTTPS.
+repo → `docker build --build-arg VITE_DISCORD_CLIENT_ID=<app client id>` →
+konteyner (restart always, `/opt/quiztavern/data` volume'u
+`/app/server/data`'ya bağlı) → env secret'ları → Caddy ile HTTPS.
+Not: client ID imaja build anında gömülür (`import.meta.env`); build-arg
+atlanırsa Activity Discord'da SDK'ya bağlanamaz.
 
 ## 3. Alan adı + HTTPS
 

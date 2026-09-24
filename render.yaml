@@ -12,6 +12,8 @@ services:
       # PORT'u Render kendisi enjekte eder; sunucu process.env.PORT'u okur.
       - key: DISCORD_CLIENT_ID
         sync: false            # ilk deploy'da dashboard'da sorulur
+      - key: VITE_DISCORD_CLIENT_ID
+        sync: false            # DISCORD_CLIENT_ID ile aynı değer — imaja build-arg olarak gömülür
       - key: DISCORD_CLIENT_SECRET
         sync: false
       - key: DISCORD_BOT_TOKEN
