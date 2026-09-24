@@ -144,3 +144,60 @@ Developer Portal'da URL'leri sabitle:
 
 Doğrulama: `curl https://<servis-url>/health` → `{"ok":true}`; sonra Discord'da
 Activity'i açıp bir maç oynat (lobi → soru → podyum akışı + XP şeridi doluyor mu).
+
+---
+
+# Alternatif: Oracle Cloud Always Free (gerçek VM, süresiz ücretsiz)
+
+En ucuz-kalıcı yol: Oracle'ın süresiz ücretsiz VM'inde kendi Docker'ın çalışır —
+uyku yok, disk kalıcı, sabit IP. Ücret yok ama hesap açılışında kart doğrulaması ister.
+
+## 1. Hesap ve VM (sen yaparsın — kart doğrulaması gerekir)
+
+1. https://www.oracle.com/cloud/free/ → Sign up → **home region**'ı dikkatli
+   seç (Always Free kaynaklar yalnız home region'da; Frankfurt tercih et).
+2. Compute → **Create instance**:
+   - Image: **Ubuntu 22.04 aarch64** (Ampere ARM)
+   - Shape: **VM.Standard.A1.Flex** → 2 OCPU / 12 GB (Always Free içinde)
+   - SSH key: "no SSH key" seç (cloud-init betiği kendi anahtarını kurar)
+   - **Advanced options → Management → cloud-init script:** repodaki
+     `deploy/oracle/cloud-init.yaml` dosyasının tamamını yapıştır
+   - Networking: yeni VCN+subnet otomatik oluşsun, public IP verilsin
+3. **Security List aç** (OCI tarafı — ufw'a ek): oluşan subnet'in Security
+   List'ine ingress ekle: `0.0.0.0/0 TCP 80` ve `0.0.0.0/0 TCP 443` (22 zaten açık).
+4. Instance **public IP**'sini not et.
+
+## 2. Uygulama katmanı (Devin SSH'tan kurar)
+
+cloud-init VM'i hazır getirir (Docker + `quiztavern` kullanıcısı + UFW).
+Devin'e `ssh quiztavern@<public-ip>` erişimi verdiğinde gerisini o yapar:
+repo → `docker build` → konteyner (restart always, `/opt/quiztavern/data`
+volume'u `/app/server/data`'ya bağlı) → env secret'ları → Caddy ile HTTPS.
+
+## 3. Alan adı + HTTPS
+
+Activity iframe'i HTTPS ister; seçenekler:
+- **DuckDNS (önerilen):** https://www.duckdns.org → GitHub/Google ile giriş →
+  alt alan (ör. `quiztavern.duckdns.org`) → IP = public IP. Hesap bedava,
+  Let's Encrypt uyumlu. `token`'ı da Devin'e ver (IP değişirse güncellemek için).
+- **sslip.io (sıfır kayıt):** `<public-ip>.sslip.io` doğrudan IP'ye çözümlenir;
+  Caddy buna da sertifika alır — ek hesap gerekmez, nadir Let's Encrypt
+  rate-limit riski var.
+
+`deploy/oracle/Caddyfile` içine `<DOMAIN>` yerine seçtiğin alan yazılır.
+
+## 4. Discord Portal (Railway/Render'dakiyle aynı)
+
+- **Activities → URL Mappings:** kök `/` → `https://<alan-adın>`
+- **OAuth2 → Redirects:** `https://<alan-adın>/auth/discord/callback`
+- Eski cloudflared mapping'lerini kaldır.
+- Doğrulama: `curl https://<alan-adın>/health` → `{"ok":true}`.
+
+## Notlar
+
+- A1 ARM kapasitesi bazen dolu olur; "Out of capacity" alırsan başka
+  availability domain dene veya **VM.Standard.E2.1.Micro** (AMD x86, 1GB) seç
+  — Docker imajı iki mimaride de derlenir (better-sqlite3 kaynakdan derlenir).
+- Boot volume 47-200GB Always Free — `/opt/quiztavern/data` üzerindedir,
+  xp.db/daily.db burada kalıcıdır.
+- Ücretsiz hesap uyku yapmaz; VM kapatılmadıkça kaynaklar senindir.

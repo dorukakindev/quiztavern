@@ -1,0 +1,38 @@
+# QuizTavern — Oracle Always Free VM kurulum betiği (cloud-init)
+# Kullanım: OCI Console → Compute → Create instance → Advanced options →
+# Management → "Paste cloud-init script" alanına bu dosyanın TAMAMINI yapıştır.
+# Sonuç: Ubuntu 22.04'te Docker + quiztavern kullanıcısı + UFW hazır gelir;
+# uygulama katmanını Devin SSH üzerinden kurar (gizli anahtarlar gerektiği için).
+#cloud-config
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - docker.io
+  - ca-certificates
+  - curl
+  - ufw
+
+# Deploy kullanıcısı — Devin'in geçici SSH anahtarı içeride gömülü.
+# (Genel anahtar; gizli değildir. Kurulum bitince kaldırılabilir.)
+users:
+  - name: quiztavern
+    groups: [docker, sudo]
+    shell: /bin/bash
+    lock_passwd: true
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICsi2XhlV60xisViFWDKCTpJgBKsaU19o0+s/i15CwsO devin-quiztavern-deploy
+
+# UFW: yalnız SSH + HTTP + HTTPS. OCI Security List'te de 80/443 açmak gerekir
+# (console'dan — bu betik OCI katmanına dokunamaz).
+runcmd:
+  - systemctl enable --now docker
+  - ufw allow OpenSSH
+  - ufw allow 80/tcp
+  - ufw allow 443/tcp
+  - ufw --force enable
+  # SQLite verileri için kalıcı dizin (Always Free boot volume).
+  - mkdir -p /opt/quiztavern/data
+  - chown -R quiztavern:quiztavern /opt/quiztavern
