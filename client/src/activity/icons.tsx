@@ -14,13 +14,13 @@
 import type { ComponentType } from 'react'
 import type { IconProps as PhosphorProps, IconWeight } from '@phosphor-icons/react'
 import {
-  ArrowClockwise, ArrowRight, ArrowUUpLeft, Atom, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards, Clock,
-  CardsThree, ChartLineUp, Check, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
+  ArrowClockwise, ArrowRight, ArrowUUpLeft, Atom, Bank, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards, CastleTurret, Clock,
+  CardsThree, ChartLineUp, Check, CloudSun, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
   Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lightning, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
   MusicNotesSimple, NumberSquareTwo, Palette, PawPrint, Percent, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldCheck, ShieldStar, Shuffle, SignOut,
   SlidersHorizontal, Scales, Skull, Smiley, SmileyWink, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Target, Television,
-  TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
+  Leaf, TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
 } from '@phosphor-icons/react'
 
 type Glyph = ComponentType<PhosphorProps>
@@ -139,6 +139,11 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
   'İcatlar': Gear,
   'Yapay Zeka': Robot,
   'Okyanuslar': Waves,
+  'Antik Uygarlıklar': Bank,
+  'Bitkiler': Leaf,
+  'Olimpiyatlar': Medal,
+  'Orta Çağ': CastleTurret,
+  'İklim & Hava': CloudSun,
 }
 
 export function CategoryIcon({ name, weight = 'duotone' }: { name: string; weight?: IconWeight }) {

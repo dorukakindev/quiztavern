@@ -1160,6 +1160,11 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Video Oyunları': 'Video Games',
   'Yapay Zeka': 'Artificial Intelligence',
   'Yemek': 'Food',
+  'Antik Uygarlıklar': 'Ancient Civilizations',
+  'Bitkiler': 'Plants',
+  'Olimpiyatlar': 'Olympics',
+  'Orta Çağ': 'Middle Ages',
+  'İklim & Hava': 'Weather & Climate',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
