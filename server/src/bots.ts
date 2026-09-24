@@ -47,6 +47,8 @@ export function scheduleBotAnswers(room: Room): void {
   if (!q) return;
   for (const p of room.players.values()) {
     if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+    // Son Masa'da elenmiş bot artık cevap vermez.
+    if (room.gameMode === "elim" && p.lives <= 0) continue;
     const delay = botDelay(room.questionDuration());
     const roundAtSchedule = room.qIndex;
     room.scheduleBotTask(() => {

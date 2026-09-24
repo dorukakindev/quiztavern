@@ -11,7 +11,7 @@ export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "pod
  *  yatırılanı katlar, yanlış yakar — skor = bankroll, aşağı da inebilir.
  *  `team` (Takım): klasik sorular + puanlama; oyuncular 2 takıma bölünür, puanlar
  *  takım havuzunda toplanır, yüksek toplamlı takım kazanır. */
-export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team";
+export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -33,6 +33,9 @@ export interface PublicPlayer {
   answered: boolean;
   /** Maç ortasında katıldı, bir sonraki sorudan itibaren oynayacak */
   waiting: boolean;
+  /** Son Masa: kalan can (3'ten başlar). Yanlış/cevapsız tur 1 can götürür;
+   *  0'a düşen elenir. Yalnızca elim modunda yayınlanır. */
+  lives?: number;
   /** Lobi: oda lobiye döndü ama bu oyuncu hâlâ son maçın sonuç ekranında. */
   inResults?: boolean;
   /** Üst üste doğru sayısı (güncel seri); istemci eşik üstünde alev gösterir. */
