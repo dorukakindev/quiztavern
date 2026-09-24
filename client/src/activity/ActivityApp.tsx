@@ -118,10 +118,11 @@ const MODE_KEYS = {
   circle: { name: 'mode.circle', meta: 'mode.circle.meta', tag: 'mode.circle.tag', icon: 'letters' },
   bet: { name: 'mode.bet', meta: 'mode.bet.meta', tag: 'mode.bet.tag', icon: 'coins' },
   team: { name: 'mode.team', meta: 'mode.team.meta', tag: 'mode.team.tag', icon: 'teams' },
+  elim: { name: 'mode.elim', meta: 'mode.elim.meta', tag: 'mode.elim.tag', icon: 'heart' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : 'classic'
 }
 
 /**
@@ -382,7 +383,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim'] as const
 function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boolean; onSetMode: (mode: GameMode) => void }) {
   const { t } = useI18n()
   const [open, setOpen] = useState(false)
@@ -467,13 +468,14 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
         </div>
       : <div className="qt-strip-title"><span>{t('game.table')}</span><b>{state.players.length} / 8</b></div>}
     <div className="qt-player-stack">
-      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${(state.phase === 'question' || state.phase === 'bet') && !player.answered && !player.waiting && player.connected ? 'is-awaiting' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
+      {state.players.slice(0, 8).map((player) => <div className={`qt-player-card ${playerColorClass(player, state.gameMode)} ${player.id === state.youId ? 'is-you' : ''} ${player.answered ? 'is-locked' : ''} ${(state.phase === 'question' || state.phase === 'bet') && !player.answered && !player.waiting && player.connected && !(state.gameMode === 'elim' && (player.lives ?? 1) <= 0) ? 'is-awaiting' : ''} ${state.gameMode === 'elim' && !player.waiting && player.lives === 0 ? 'is-dead' : ''} ${player.id === state.firstAnswerId ? 'is-first' : ''} ${player.id === leaderId ? 'is-leader' : ''} ${speakingIds?.has(player.id) ? 'is-speaking' : ''}`} key={player.id}>
         <span className="qt-avatar-slot">
           {player.id === leaderId && <span className="qt-strip-crown" aria-hidden="true" title={t('game.leader')}><Icon name="crown" /></span>}
           <Avatar player={player} compact mode={state.gameMode} />
           {player.streak >= 3 && <span className="qt-streak-flame" aria-hidden="true" title={t('game.streak', { count: player.streak })}><FlameIcon /></span>}
         </span>
-        <div><b title={player.name}>{player.name}</b><TitleTag title={player.title} />{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        <div><b title={player.name}>{player.name}</b><TitleTag title={player.title} />{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : state.gameMode === 'elim' && player.lives === 0 ? t('elim.out') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
+        {state.gameMode === 'elim' && player.lives !== undefined && <span className="qt-player-lives" title={t('elim.lives')}>{Array.from({ length: 3 }, (_, i) => <i key={i} className={i < player.lives! ? 'is-full' : ''}><Icon name="heart" weight="fill" /></i>)}</span>}
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -679,10 +681,11 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {scene === 'bet' && <div className="qt-scene-emblem is-bet"><Icon name="coins" weight="duotone" /></div>}
     {scene === 'team' && <div className="qt-scene-emblem is-team"><Icon name="teams" weight="duotone" /></div>}
+    {scene === 'elim' && <div className="qt-scene-emblem is-elim"><Icon name="heart" weight="duotone" /></div>}
     {scene === 'classic' && <div className="qt-scene-deck"><i /><i /><i /><b><Icon name="question" weight="bold" /></b></div>}
     {scene === 'lightning' && <div className="qt-scene-clock"><i className="qt-scene-clock__marks" /><i className="qt-scene-clock__hand" /><b><Icon name="fuse" weight="duotone" /></b></div>}
     {scene === 'circle' && <div className="qt-scene-letters">{['A', 'B', 'Ç', 'D', 'E', 'F', 'G', 'H'].map((letter, index) => <i key={letter} style={{ '--letter-angle': `${index * 45}deg`, '--letter-counter-angle': `${index * -45}deg` } as CSSProperties}>{letter}</i>)}<b>?</b></div>}
@@ -1189,7 +1192,9 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
 function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onReport, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
-  const waiting = !!self?.waiting
+  // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
+  // kilit davranışını alır; metni 'Elendin' olarak ayrışır (aşağıda).
+  const waiting = !!self?.waiting || (state.gameMode === 'elim' && !!self && (self.lives ?? 0) <= 0)
   const { t, language } = useI18n()
   const isCircle = state.gameMode === 'circle'
   const question = state.question
@@ -1361,7 +1366,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
             </button>
           })}
         </div>
-        <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>
+        <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>
       </> : null}
       {beats.active && !isCircle
         ? <button type="button" className="qt-report-flag" title={t('report.flag')} aria-label={t('report.flag')} disabled={reported} onClick={() => { onReport(); setReported(true) }}><Icon name="flag" /></button>

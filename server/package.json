@@ -22,7 +22,8 @@
     "test:packs": "tsx scripts/packs-test.ts",
     "test:xp": "tsx scripts/xp-test.ts",
     "test:podium-lobby": "tsx scripts/podium-lobby-test.ts",
-    "test:admin-reports": "tsx scripts/admin-reports-test.ts"
+    "test:admin-reports": "tsx scripts/admin-reports-test.ts",
+    "test:elim": "tsx scripts/elim-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

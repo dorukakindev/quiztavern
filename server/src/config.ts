@@ -108,6 +108,10 @@ export const GAME = {
   // Bakiyesi 0'a düşen oyuncu elenmiş gibi kalmasın: bahis yapamaz ama o
   // soruyu doğru bilirse bu kadar kazanır (kurtarma turu).
   BET_BROKE_REWARD: 50,
+
+  /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
+   *  0'a düşen elenir, son kalan kazanır. */
+  ELIM_LIVES: 3,
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,

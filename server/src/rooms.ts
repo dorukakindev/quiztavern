@@ -55,6 +55,8 @@ export interface RoomPlayer {
   lastEmoteAt: number;
   /** Takılan unvan — kazanılmış rozetlerden biri; ProgressStore'dan yüklenir. */
   title: BadgeKey | null;
+  /** Son Masa: kalan can (start'ta GAME.ELIM_LIVES'a kurulur; 0 = elenmiş). */
+  lives: number;
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
@@ -182,7 +184,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -224,11 +226,14 @@ export class Room {
       // yere kaçırırdı.) Soru/reveal sırasında katılan ise sıradaki sorudan başlar.
       // A late Double Bet entrant cannot meaningfully play with zero bankroll. Keep
       // them out until the next match, which also prevents spectate/reseat refills.
+      // Son Masa'da da geç katılan bu maça alınmaz — canı olmayan bir
+      // oyuncunun ortadan girmesi eleme mantığını bozar.
       eligibleFrom: this.phase === "lobby" || this.phase === "countdown"
         ? 0
-        : this.gameMode === "bet"
+        : this.gameMode === "bet" || this.gameMode === "elim"
           ? this.roundLimit
           : this.qIndex + 1,
+      lives: 0,
       stats: emptyStats(),
       answers: [],
       typed: [],
@@ -535,13 +540,14 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
     if (mode === "lightning") this.questionCount = 5;
     if (mode === "bet") this.questionCount = 10;
     if (mode === "team") this.questionCount = 10;
+    if (mode === "elim") this.questionCount = 10;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
       .filter((name) => {
@@ -754,6 +760,7 @@ export class Room {
       player.circleAnswer = null;
       player.circleCorrectAt = null;
       player.bet = null;
+      player.lives = this.gameMode === "elim" ? GAME.ELIM_LIVES : 0;
       player.eligibleFrom = 0;
       player.stats = emptyStats();
       player.answers = [];
@@ -768,6 +775,7 @@ export class Room {
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
+    if (this.gameMode === "elim" && player.lives <= 0) return;
     player.choice = choice;
     player.answeredAt = Date.now();
     if (this.firstAnswerId === null) this.firstAnswerId = playerId;
@@ -924,7 +932,7 @@ export class Room {
     this.firstAnswerId = null; // yeni tur: en hızlı parmak yeniden yarışır
     const duration = this.questionDuration();
     this.questionDeadline = this.questionStartedAt + duration;
-    for (const player of this.eligiblePlayers()) {
+    for (const player of this.players.values()) {
       player.choice = null;
       player.answeredAt = null;
       player.circleAnswer = null;
@@ -1095,6 +1103,9 @@ export class Room {
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
         if (gain) player.score += gain;
         if (this.gameMode === "team" && gain) this.teamScores[player.team === 1 ? 1 : 0] += gain;
+        // Son Masa: yanlış ya da cevapsız tur 1 can götürür; doğruya puan yok
+        // sayılmaz — hayatta kalmak oyunun kendisi, puan klasik gibi işler.
+        if (this.gameMode === "elim" && !correct) player.lives = Math.max(0, player.lives - 1);
       }
       gains[player.id] = gain;
       // Maç özeti (4d): en hızlı yalnızca gerçekten cevaplanan doğrularda sayılır
@@ -1153,6 +1164,10 @@ export class Room {
       this.timer = setTimeout(() => this.advanceFromReveal(), this.revealUntil - Date.now());
       return;
     }
+    // Son Masa: ayakta 1'den az/1 kişi kaldıysa maç burada biter — elenenler
+    // izleyici kalır, son kalan kazanır. Soru havuzu biterse de beginQuestion
+    // currentQuestion null ile finish'e düşer.
+    if (this.gameMode === "elim" && this.eligiblePlayers().length <= 1) return this.finish();
     this.qIndex += 1;
     // Çifte Bahis'te her sorunun önünde yeniden bahis fazı vardır.
     this.gameMode === "bet" ? this.beginBet() : this.beginQuestion();
@@ -1268,11 +1283,16 @@ export class Room {
   }
 
   private eligiblePlayers() {
-    return [...this.players.values()].filter((player) => player.eligibleFrom <= this.qIndex);
+    return [...this.players.values()].filter((player) => player.eligibleFrom <= this.qIndex
+      && (this.gameMode !== "elim" || player.lives > 0));
   }
 
   private sortedPlayers() {
-    return [...this.players.values()].sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, "tr"));
+    // Son Masa'da sıralama önce hayatta kalmaya göredir: elenenler puanları ne
+    // olursa olsun ayakta kalanların altına düşer; can eşitse skor konuşur.
+    return [...this.players.values()].sort((a, b) => this.gameMode === "elim"
+      ? (b.lives - a.lives) || b.score - a.score || a.name.localeCompare(b.name, "tr")
+      : b.score - a.score || a.name.localeCompare(b.name, "tr"));
   }
 
   private snapshotPodium(): PodiumEntry[] {
@@ -1306,6 +1326,7 @@ export class Room {
       // bahis yatırsa da "Düşünüyor" görünüyordu.
       answered: this.phase === "bet" ? player.bet !== null : this.hasAnswered(player),
       waiting: player.eligibleFrom > this.qIndex,
+      ...(this.gameMode === "elim" ? { lives: player.lives } : {}),
       streak: player.stats.currentStreak,
       team: player.team,
       ...(this.phase === "lobby" && this.inResults.has(player.id) ? { inResults: true } : {}),

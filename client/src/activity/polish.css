@@ -212,3 +212,12 @@
   .qt-question-head.has-image .qt-question-body { flex-direction: column; text-align: center; }
   .qt-question-head.has-image .qt-question-body h1 { text-align: center; }
 }
+
+/* ---------- Son Masa: can göstergesi + elenen görünümü ---------- */
+.qt-player-lives { display: inline-flex; gap: 2px; margin-left: 6px; }
+.qt-player-lives i { display: inline-grid; place-items: center; }
+.qt-player-lives .qt-icon { width: 12px; color: #5a7186; opacity: .5; }
+.qt-player-lives i.is-full .qt-icon { color: #ef8674; opacity: 1; }
+.qt-player-card.is-dead { opacity: .45; filter: grayscale(.7); }
+.qt-player-card.is-dead .qt-avatar { box-shadow: none; }
+.qt-scene-emblem.is-elim { border-color: rgba(239, 134, 116, .65); color: #ef8674; }
