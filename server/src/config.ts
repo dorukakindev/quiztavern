@@ -129,6 +129,9 @@ export const GAME = {
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */
   PREDICT_XP: 25,
+  /** Kategori ustalığı (§6.4): kategori başına bu kadar doğruyu geçen
+   *  oyuncu o kategorinin ustası olur — rozeti + kategori ikonunda işaret. */
+  MASTERY_CORRECT: 50,
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,

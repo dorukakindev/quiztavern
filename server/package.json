@@ -28,7 +28,8 @@
     "test:word": "tsx scripts/word-test.ts",
     "test:cards": "tsx scripts/cards-test.ts",
     "test:rematch": "tsx scripts/rematch-test.ts",
-    "test:predict": "tsx scripts/predict-test.ts"
+    "test:predict": "tsx scripts/predict-test.ts",
+    "test:mastery": "tsx scripts/mastery-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

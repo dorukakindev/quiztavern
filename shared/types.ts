@@ -84,6 +84,7 @@ export interface ProgressBadge {
  * ToastKey sözleşmesi.
  */
 export const BADGE_KEYS = [
+  "kategoriUstasi",
   "ilkMac", "onMac", "elliMac",
   "ilkGalibiyet", "onGalibiyet",
   "keskin", "kartalGoz",
@@ -110,6 +111,8 @@ export interface ProgressSnapshot extends ProgressBadge {
   streakDays: number;
   /** Kazanılmış başarım rozetleri (BADGE_KEYS sırasında). */
   badges: BadgeKey[];
+  /** Ustalık kazanılan kategori adları (§6.4): kategori başına 50+ doğru. */
+  categoryMastery: string[];
 }
 
 /** Maç bitince bir oyuncuya yazılan kazanım — podyumda "+X XP" animasyonu. */
