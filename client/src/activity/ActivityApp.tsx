@@ -959,7 +959,7 @@ function PackEditor({ packs, myId, auth, categories, onSaved }: { packs: Questio
   </div>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetTitle, onSetMode, onSetTeam, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetTitle: (title: BadgeKey | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetTitle, onSetMode, onSetTeam, onShuffleTeams, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetTitle: (title: BadgeKey | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onShuffleTeams: () => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -1070,6 +1070,11 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
 
         {mode !== 'circle' && <div className="qt-settings__group"><span>{t('table.questionCount')}</span>
           <div className="qt-count-row">{QUESTION_COUNTS.map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
+        </div>}
+
+        {/* Takım modu: host tek dokunuşla takımları yeniden dağıtır. */}
+        {mode === 'team' && <div className="qt-settings__group"><span>{t('team.shuffleLabel')}</span>
+          <button className="qt-count-chip" disabled={!isHost} onClick={onShuffleTeams}><Icon name="shuffle" /> {t('team.shuffle')}</button>
         </div>}
 
         {/* Zorluk: mod'dan bağımsız, tüm modlara uygulanır. Karışık = tüm zorluklar. */}
@@ -2128,7 +2133,7 @@ export function ActivityApp() {
       const resultsState: GameState = { ...game.state!, phase: 'podium', gameMode: lm.gameMode, teamScores: lm.teamScores, podium: lm.podium, matchSummary: lm.matchSummary, xpGains: lm.xpGains, daily: lm.daily, round: { index: Math.max(0, lm.roundTotal - 1), total: lm.roundTotal } }
       return <Podium state={resultsState} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onBackToLobby={() => { setSeenMatchId(lm.id); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
     }
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetTitle={game.setTitle} onSetMode={game.setMode} onSetTeam={game.setTeam} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetTitle={game.setTitle} onSetMode={game.setMode} onSetTeam={game.setTeam} onShuffleTeams={game.shuffleTeams} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />

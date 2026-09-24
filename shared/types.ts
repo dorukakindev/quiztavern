@@ -479,6 +479,8 @@ export const EV = {
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */
   SET_TEAM: "set-team",
+  /** Takım modu, yalnız host, lobide: {} — koltukları rastgele ve dengeli yeniden dağıtır */
+  TEAM_SHUFFLE: "team-shuffle",
   PLAY_AGAIN: "play-again",
   ADD_BOT: "add-bot",
   READY: "ready",

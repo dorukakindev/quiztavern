@@ -193,6 +193,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     setPack: (packId: string | null) => socket.emit(EV.SET_PACK, { packId }),
     setMode: (mode: GameMode) => socket.emit(EV.SET_MODE, { mode }),
     setTeam: (targetId: string, team: number) => socket.emit(EV.SET_TEAM, { targetId, team }),
+    shuffleTeams: () => socket.emit(EV.TEAM_SHUFFLE),
     // Host araçları. Yetki ve ban süresi SUNUCUDA (rooms.ts kick/transferHost);
     // burası yalnızca hedefi bildirir. Reddedilirse sunucu toast döndürür.
     kick: (targetId: string) => socket.emit(EV.KICK, { targetId }),

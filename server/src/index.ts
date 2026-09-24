@@ -497,6 +497,14 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on(EV.TEAM_SHUFFLE, () => {
+    try {
+      room.shuffleTeams(user.id);
+    } catch (error) {
+      const t = toToast(error, "err.teamFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
+
   socket.on(EV.KICK, (payload: unknown) => {
     try {
       const kickedSocketId = room.kick(user.id, (payload as { targetId?: unknown } | undefined)?.targetId);
