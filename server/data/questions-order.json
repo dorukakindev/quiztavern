@@ -1,32 +1,1112 @@
 [
-  {"id":"ord-001","category":"tarih","text":"Bu olayları kronolojik sıraya diz:","textEn":"Put these events in chronological order:","events":[{"label":"Osmanlı İmparatorluğu'nun kuruluşu","labelEn":"Founding of the Ottoman Empire","year":1299,"when":"1299","whenEn":"1299"},{"label":"İstanbul'un fethi","labelEn":"Fall of Constantinople","year":1453,"when":"1453","whenEn":"1453"},{"label":"Kanuni'nin tahta çıkışı","labelEn":"Suleiman the Magnificent ascends","year":1520,"when":"1520","whenEn":"1520"},{"label":"Viyana Kuşatması","labelEn":"Siege of Vienna","year":1683,"when":"1683","whenEn":"1683"}],"difficulty":"orta"},
-  {"id":"ord-002","category":"tarih","text":"Bu dünya savaşı dönüm noktalarını kronolojik sıraya diz:","textEn":"Put these WWII turning points in chronological order:","events":[{"label":"Polonya'nın işgali","labelEn":"Invasion of Poland","year":1939,"when":"1939","whenEn":"1939"},{"label":"Pearl Harbor saldırısı","labelEn":"Pearl Harbor attack","year":1941,"when":"1941","whenEn":"1941"},{"label":"Stalingrad Muharebesi","labelEn":"Battle of Stalingrad","year":1943,"when":"1943","whenEn":"1943"},{"label":"Normandiya Çıkarması","labelEn":"D-Day landings","year":1944,"when":"1944","whenEn":"1944"}],"difficulty":"orta"},
-  {"id":"ord-003","category":"bilim","text":"Bu bilimsel gelişmeleri kronolojik sıraya diz:","textEn":"Put these scientific milestones in chronological order:","events":[{"label":"Yerçekimi yasası (Newton)","labelEn":"Law of gravity (Newton)","year":1687,"when":"1687","whenEn":"1687"},{"label":"Evrim teorisi (Darwin)","labelEn":"Theory of evolution (Darwin)","year":1859,"when":"1859","whenEn":"1859"},{"label":"İzafiyet teorisi (Einstein)","labelEn":"Theory of relativity (Einstein)","year":1905,"when":"1905","whenEn":"1905"},{"label":"DNA yapısının keşfi","labelEn":"Discovery of DNA structure","year":1953,"when":"1953","whenEn":"1953"}],"difficulty":"zor"},
-  {"id":"ord-004","category":"teknoloji","text":"Bu teknolojik icatları kronolojik sıraya diz:","textEn":"Put these inventions in chronological order:","events":[{"label":"Matbaa (Gutenberg)","labelEn":"Printing press (Gutenberg)","year":1440,"when":"1440","whenEn":"1440"},{"label":"Ampul (Edison)","labelEn":"Light bulb (Edison)","year":1879,"when":"1879","whenEn":"1879"},{"label":"Telefon (Bell)","labelEn":"Telephone (Bell)","year":1876,"when":"1876","whenEn":"1876"},{"label":"İlk iPhone","labelEn":"First iPhone","year":2007,"when":"2007","whenEn":"2007"}],"difficulty":"orta"},
-  {"id":"ord-005","category":"uzay","text":"Bu uzay tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these space milestones in chronological order:","events":[{"label":"Sputnik fırlatıldı","labelEn":"Sputnik launched","year":1957,"when":"1957","whenEn":"1957"},{"label":"Uzaya ilk insan (Gagarin)","labelEn":"First human in space (Gagarin)","year":1961,"when":"1961","whenEn":"1961"},{"label":"Ay'a ayak basılması","labelEn":"Moon landing","year":1969,"when":"1969","whenEn":"1969"},{"label":"James Webb Teleskobu","labelEn":"James Webb Telescope","year":2021,"when":"2021","whenEn":"2021"}],"difficulty":"orta"},
-  {"id":"ord-006","category":"turkiye","text":"Bu Cumhuriyet dönemi olaylarını kronolojik sıraya diz:","textEn":"Put these Republic-era events in order:","events":[{"label":"Cumhuriyet'in ilanı","labelEn":"Proclamation of the Republic","year":1923,"when":"1923","whenEn":"1923"},{"label":"Harf devrimi","labelEn":"Alphabet reform","year":1928,"when":"1928","whenEn":"1928"},{"label":"Kadınlara seçme hakkı","labelEn":"Women's suffrage","year":1934,"when":"1934","whenEn":"1934"},{"label":"Atatürk'ün vefatı","labelEn":"Atatürk's passing","year":1938,"when":"1938","whenEn":"1938"}],"difficulty":"kolay"},
-  {"id":"ord-007","category":"sinema","text":"Bu film dönüm noktalarını kronolojik sıraya diz:","textEn":"Put these film milestones in order:","events":[{"label":"İlk sesli film (The Jazz Singer)","labelEn":"First talkie (The Jazz Singer)","year":1927,"when":"1927","whenEn":"1927"},{"label":"İlk renkli uzun film","labelEn":"First color feature film","year":1939,"when":"1939 (Oz/Rüzgar Gibi Geçti)","whenEn":"1939 (Oz/Gone with the Wind)"},{"label":"Jaws — ilk gişe devi","labelEn":"Jaws — first blockbuster","year":1975,"when":"1975","whenEn":"1975"},{"label":"Avatar (3D çılgınlığı)","labelEn":"Avatar (3D boom)","year":2009,"when":"2009","whenEn":"2009"}],"difficulty":"orta"},
-  {"id":"ord-008","category":"spor","text":"Bu spor tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these sports milestones in order:","events":[{"label":"İlk modern Olimpiyat","labelEn":"First modern Olympics","year":1896,"when":"1896 (Atina)","whenEn":"1896 (Athens)"},{"label":"İlk FIFA Dünya Kupası","labelEn":"First FIFA World Cup","year":1930,"when":"1930 (Uruguay)","whenEn":"1930 (Uruguay)"},{"label":"Usain Bolt 100m rekoru","labelEn":"Usain Bolt 100m record","year":2009,"when":"2009","whenEn":"2009"},{"label":"Ronaldo'nun ilk Ballon d'Or'u","labelEn":"Ronaldo's first Ballon d'Or","year":2008,"when":"2008","whenEn":"2008"}],"difficulty":"orta"},
-  {"id":"ord-009","category":"tarih","text":"Bu antik olayları kronolojik sıraya diz:","textEn":"Put these ancient events in order:","events":[{"label":"Giza Piramitleri'nin inşası","labelEn":"Pyramids of Giza built","year":-2560,"when":"MÖ ~2560","whenEn":"~2560 BC"},{"label":"Roma'nın kuruluşu","labelEn":"Founding of Rome","year":-753,"when":"MÖ 753","whenEn":"753 BC"},{"label":"Maraton Muharebesi","labelEn":"Battle of Marathon","year":-490,"when":"MÖ 490","whenEn":"490 BC"},{"label":"İskender'in Pers'i fethi","labelEn":"Alexander conquers Persia","year":-331,"when":"MÖ 331","whenEn":"331 BC"}],"difficulty":"zor"},
-  {"id":"ord-010","category":"muzik","text":"Bu müzik tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these music milestones in order:","events":[{"label":"Beatles'ın kuruluşu","labelEn":"Beatles formed","year":1960,"when":"1960","whenEn":"1960"},{"label":"Woodstock festivali","labelEn":"Woodstock festival","year":1969,"when":"1969","whenEn":"1969"},{"label":"MTV'nin açılışı","labelEn":"MTV launches","year":1981,"when":"1981","whenEn":"1981"},{"label":"Spotify yayına girer","labelEn":"Spotify launches","year":2008,"when":"2008","whenEn":"2008"}],"difficulty":"kolay"},
-  {"id":"ord-011","category":"teknoloji","text":"Bu internet dönüm noktalarını kronolojik sıraya diz:","textEn":"Put these internet milestones in order:","events":[{"label":"World Wide Web'in icadı","labelEn":"WWW invented","year":1989,"when":"1989","whenEn":"1989"},{"label":"Google'ın kuruluşu","labelEn":"Google founded","year":1998,"when":"1998","whenEn":"1998"},{"label":"Facebook açılır","labelEn":"Facebook opens","year":2004,"when":"2004","whenEn":"2004"},{"label":"ChatGPT yayına girer","labelEn":"ChatGPT launches","year":2022,"when":"2022","whenEn":"2022"}],"difficulty":"kolay"},
-  {"id":"ord-012","category":"tarih","text":"Bu Fransız tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these French history events in order:","events":[{"label":"Bastille'in düşüşü","labelEn":"Fall of the Bastille","year":1789,"when":"1789","whenEn":"1789"},{"label":"Napolyon'un imparator oluşu","labelEn":"Napoleon crowned emperor","year":1804,"when":"1804","whenEn":"1804"},{"label":"Waterloo Muharebesi","labelEn":"Battle of Waterloo","year":1815,"when":"1815","whenEn":"1815"},{"label":"Eyfel Kulesi'nin açılışı","labelEn":"Eiffel Tower opens","year":1889,"when":"1889","whenEn":"1889"}],"difficulty":"orta"},
-  {"id":"ord-013","category":"bilim","text":"Bu tıp tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these medical milestones in order:","events":[{"label":"Çiçek aşısı (Jenner)","labelEn":"Smallpox vaccine (Jenner)","year":1796,"when":"1796","whenEn":"1796"},{"label":"X-ışınının keşfi (Röntgen)","labelEn":"X-ray discovery (Röntgen)","year":1895,"when":"1895","whenEn":"1895"},{"label":"Penisilinin keşfi (Fleming)","labelEn":"Penicillin discovery (Fleming)","year":1928,"when":"1928","whenEn":"1928"},{"label":"İlk kalp nakli","labelEn":"First heart transplant","year":1967,"when":"1967","whenEn":"1967"}],"difficulty":"orta"},
-  {"id":"ord-014","category":"turkiye","text":"Bu Kurtuluş Savaşı olaylarını kronolojik sıraya diz:","textEn":"Put these War of Independence events in order:","events":[{"label":"Atatürk'ün Samsun'a çıkışı","labelEn":"Atatürk lands in Samsun","year":1919,"when":"19 Mayıs 1919","whenEn":"May 19, 1919"},{"label":"TBMM'nin açılışı","labelEn":"Grand National Assembly opens","year":1920,"when":"23 Nisan 1920","whenEn":"April 23, 1920"},{"label":"Büyük Taarruz","labelEn":"Great Offensive","year":1922,"when":"26 Ağustos 1922","whenEn":"August 26, 1922"},{"label":"Lozan Antlaşması","labelEn":"Treaty of Lausanne","year":1923,"when":"24 Temmuz 1923","whenEn":"July 24, 1923"}],"difficulty":"orta"},
-  {"id":"ord-015","category":"edebiyat","text":"Bu edebiyat eserlerini yayın tarihine göre diz:","textEn":"Order these works by publication date:","events":[{"label":"İlyada (Homeros)","labelEn":"Iliad (Homer)","year":-750,"when":"MÖ ~750","whenEn":"~750 BC"},{"label":"Don Kişot (Cervantes)","labelEn":"Don Quixote (Cervantes)","year":1605,"when":"1605","whenEn":"1605"},{"label":"Savaş ve Barış (Tolstoy)","labelEn":"War and Peace (Tolstoy)","year":1869,"when":"1869","whenEn":"1869"},{"label":"1984 (Orwell)","labelEn":"1984 (Orwell)","year":1949,"when":"1949","whenEn":"1949"}],"difficulty":"orta"},
-  {"id":"ord-016","category":"kesif","text":"Bu keşifleri kronolojik sıraya diz:","textEn":"Put these explorations in order:","events":[{"label":"Kolomb'un Amerika'ya ulaşması","labelEn":"Columbus reaches America","year":1492,"when":"1492","whenEn":"1492"},{"label":"Magellan'ın dünya turu başlar","labelEn":"Magellan's circumnavigation begins","year":1519,"when":"1519","whenEn":"1519"},{"label":"Kutuplara ilk ulaşım (Amundsen)","labelEn":"South Pole reached (Amundsen)","year":1911,"when":"1911","whenEn":"1911"},{"label":"Everest'e ilk tırmanış","labelEn":"First Everest summit","year":1953,"when":"1953","whenEn":"1953"}],"difficulty":"orta"},
-  {"id":"ord-017","category":"teknoloji","text":"Bu oyun tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these gaming milestones in order:","events":[{"label":"Pong çıkar","labelEn":"Pong releases","year":1972,"when":"1972","whenEn":"1972"},{"label":"Tetris çıkar","labelEn":"Tetris releases","year":1984,"when":"1984","whenEn":"1984"},{"label":"World of Warcraft çıkar","labelEn":"World of Warcraft releases","year":2004,"when":"2004","whenEn":"2004"},{"label":"Minecraft resmi çıkış","labelEn":"Minecraft official release","year":2011,"when":"2011","whenEn":"2011"}],"difficulty":"kolay"},
-  {"id":"ord-018","category":"tarih","text":"Bu Türk tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these Turkish history events in order:","events":[{"label":"Malazgirt Zaferi","labelEn":"Battle of Manzikert","year":1071,"when":"1071","whenEn":"1071"},{"label":"İstanbul'un fethi","labelEn":"Conquest of Constantinople","year":1453,"when":"1453","whenEn":"1453"},{"label":"Çanakkale Zaferi","labelEn":"Gallipoli victory","year":1915,"when":"1915","whenEn":"1915"},{"label":"Cumhuriyet'in ilanı","labelEn":"Republic proclaimed","year":1923,"when":"1923","whenEn":"1923"}],"difficulty":"kolay"},
-  {"id":"ord-019","category":"bilim","text":"Bu uzay gözlem gelişmelerini kronolojik sıraya diz:","textEn":"Put these astronomy milestones in order:","events":[{"label":"Galileo teleskopu yapar","labelEn":"Galileo builds telescope","year":1609,"when":"1609","whenEn":"1609"},{"label":"Plüton'un keşfi","labelEn":"Pluto discovered","year":1930,"when":"1930","whenEn":"1930"},{"label":"Hubble fırlatılır","labelEn":"Hubble launched","year":1990,"when":"1990","whenEn":"1990"},{"label":"Kara deliğin ilk fotoğrafı","labelEn":"First black hole photo","year":2019,"when":"2019","whenEn":"2019"}],"difficulty":"orta"},
-  {"id":"ord-020","category":"tarih","text":"Bu medeniyetlerin kuruluşunu kronolojik sıraya diz:","textEn":"Order these civilizations by founding:","events":[{"label":"Antik Mısır birleşmesi","labelEn":"Unification of Egypt","year":-3100,"when":"MÖ ~3100","whenEn":"~3100 BC"},{"label":"Çin Han hanedanı","labelEn":"Han dynasty China","year":-206,"when":"MÖ 206","whenEn":"206 BC"},{"label":"İslamiyet'in doğuşu","labelEn":"Rise of Islam","year":622,"when":"622","whenEn":"622"},{"label":"İngiltere'nin birleşmesi (Saksonlar)","labelEn":"Kingdom of England unified","year":927,"when":"927","whenEn":"927"}],"difficulty":"zor"},
-  {"id":"ord-021","category":"sanat","text":"Bu sanat eserlerini yapım tarihine göre diz:","textEn":"Order these artworks by creation date:","events":[{"label":"Mona Lisa (Da Vinci)","labelEn":"Mona Lisa (Da Vinci)","year":1503,"when":"~1503","whenEn":"~1503"},{"label":"Yıldızlı Gece (Van Gogh)","labelEn":"Starry Night (Van Gogh)","year":1889,"when":"1889","whenEn":"1889"},{"label":"Guernica (Picasso)","labelEn":"Guernica (Picasso)","year":1937,"when":"1937","whenEn":"1937"},{"label":"Campbell Çorbası (Warhol)","labelEn":"Campbell's Soup Cans (Warhol)","year":1962,"when":"1962","whenEn":"1962"}],"difficulty":"orta"},
-  {"id":"ord-022","category":"teknoloji","text":"Bu iletişim araçlarını icat tarihine göre diz:","textEn":"Order these communication devices by invention:","events":[{"label":"Telgraf (Morse)","labelEn":"Telegraph (Morse)","year":1837,"when":"1837","whenEn":"1837"},{"label":"Telefon (Bell)","labelEn":"Telephone (Bell)","year":1876,"when":"1876","whenEn":"1876"},{"label":"Radyo yayını başlar","labelEn":"Radio broadcasts begin","year":1920,"when":"1920","whenEn":"1920"},{"label":"Cep telefonu (Motorola)","labelEn":"Mobile phone (Motorola)","year":1973,"when":"1973","whenEn":"1973"}],"difficulty":"orta"},
-  {"id":"ord-023","category":"spor","text":"Bu futbol tarihi olaylarını kronolojik sıraya diz:","textEn":"Put these football milestones in order:","events":[{"label":"FA Cup'ın kuruluşu","labelEn":"FA Cup founded","year":1871,"when":"1871","whenEn":"1871"},{"label":"İlk Dünya Kupası","labelEn":"First World Cup","year":1930,"when":"1930","whenEn":"1930"},{"label":"Türkiye'de ilk lig","labelEn":"First Turkish league","year":1959,"when":"1959 (Millî Lig)","whenEn":"1959 (Millî Lig)"},{"label":"Galatasaray UEFA Kupası","labelEn":"Galatasaray wins UEFA Cup","year":2000,"when":"2000","whenEn":"2000"}],"difficulty":"orta"},
-  {"id":"ord-024","category":"turkiye","text":"Bu Osmanlı padişahlarını hükümranlık sırasına göre diz:","textEn":"Order these Ottoman sultans by reign:","events":[{"label":"Yavuz Sultan Selim","labelEn":"Selim I (Yavuz)","year":1512,"when":"1512–1520","whenEn":"1512–1520"},{"label":"Kanuni Sultan Süleyman","labelEn":"Suleiman the Magnificent","year":1520,"when":"1520–1566","whenEn":"1520–1566"},{"label":"IV. Murat","labelEn":"Murad IV","year":1623,"when":"1623–1640","whenEn":"1623–1640"},{"label":"Abdülmecid","labelEn":"Abdülmecid","year":1839,"when":"1839–1861","whenEn":"1839–1861"}],"difficulty":"zor"},
-  {"id":"ord-025","category":"bilim","text":"Bu fizik keşiflerini kronolojik sıraya diz:","textEn":"Put these physics discoveries in order:","events":[{"label":"Elektroniğin keşfi (Thomson)","labelEn":"Electron discovered (Thomson)","year":1897,"when":"1897","whenEn":"1897"},{"label":"Atomun modeli (Rutherford)","labelEn":"Atomic model (Rutherford)","year":1911,"when":"1911","whenEn":"1911"},{"label":"Fisyon keşfi","labelEn":"Nuclear fission discovered","year":1938,"when":"1938","whenEn":"1938"},{"label":"Higgs bosonunun bulunması","labelEn":"Higgs boson confirmed","year":2012,"when":"2012","whenEn":"2012"}],"difficulty":"zor"},
-  {"id":"ord-026","category":"tarih","text":"Bu dünya olaylarını kronolojik sıraya diz:","textEn":"Put these world events in order:","events":[{"label":"İnsan Hakları Evrensel Bildirisi","labelEn":"Universal Declaration of Human Rights","year":1948,"when":"1948","whenEn":"1948"},{"label":"Berlin Duvarı'nın yapılışı","labelEn":"Berlin Wall built","year":1961,"when":"1961","whenEn":"1961"},{"label":"Berlin Duvarı'nın yıkılışı","labelEn":"Berlin Wall falls","year":1989,"when":"1989","whenEn":"1989"},{"label":"9/11 saldırıları","labelEn":"9/11 attacks","year":2001,"when":"2001","whenEn":"2001"}],"difficulty":"kolay"},
-  {"id":"ord-027","category":"muzik","text":"Bu klasik müzik bestecilerini doğum tarihine göre diz:","textEn":"Order these composers by birth year:","events":[{"label":"Bach","labelEn":"Bach","year":1685,"when":"1685","whenEn":"1685"},{"label":"Mozart","labelEn":"Mozart","year":1756,"when":"1756","whenEn":"1756"},{"label":"Beethoven","labelEn":"Beethoven","year":1770,"when":"1770","whenEn":"1770"},{"label":"Çaykovski","labelEn":"Tchaikovsky","year":1840,"when":"1840","whenEn":"1840"}],"difficulty":"orta"},
-  {"id":"ord-028","category":"teknoloji","text":"Bu bilgisayar gelişmelerini kronolojik sıraya diz:","textEn":"Put these computing milestones in order:","events":[{"label":"ENIAC (ilk elektronik bilgisayar)","labelEn":"ENIAC (first electronic computer)","year":1945,"when":"1945","whenEn":"1945"},{"label":"İlk kişisel bilgisayar (Apple II)","labelEn":"First PC (Apple II)","year":1977,"when":"1977","whenEn":"1977"},{"label":"İlk akıllı telefon (iPhone)","labelEn":"First smartphone (iPhone)","year":2007,"when":"2007","whenEn":"2007"},{"label":"Yapay zekâ sohbeti (ChatGPT)","labelEn":"AI chatbot (ChatGPT)","year":2022,"when":"2022","whenEn":"2022"}],"difficulty":"orta"},
-  {"id":"ord-029","category":"tarih","text":"Bu savaşları başlangıç tarihine göre diz:","textEn":"Order these wars by start date:","events":[{"label":"Akropole Savaşı (Yunan-Pers)","labelEn":"Greco-Persian Wars begin","year":-499,"when":"MÖ 499","whenEn":"499 BC"},{"label":"Punic Savaşları başlar","labelEn":"Punic Wars begin","year":-264,"when":"MÖ 264","whenEn":"264 BC"},{"label":"Yüzyıl Savaşları","labelEn":"Hundred Years' War","year":1337,"when":"1337","whenEn":"1337"},{"label":"I. Dünya Savaşı","labelEn":"World War I","year":1914,"when":"1914","whenEn":"1914"}],"difficulty":"orta"},
-  {"id":"ord-030","category":"turkiye","text":"Bu Türk edebiyatı eserlerini yayın sırasına göre diz:","textEn":"Order these Turkish works by publication:","events":[{"label":"Aşk-ı Memnu (Halit Ziya)","labelEn":"Aşk-ı Memnu","year":1900,"when":"1900","whenEn":"1900"},{"label":"Çalıkuşu (Reşat Nuri)","labelEn":"Çalıkuşu","year":1922,"when":"1922","whenEn":"1922"},{"label":"Saatleri Ayarlama Enstitüsü","labelEn":"Time Regulation Institute","year":1954,"when":"1954 (Tanpınar)","whenEn":"1954 (Tanpınar)"},{"label":"Kırmızı Saçlı Kadın (Pamuk)","labelEn":"The Red-Haired Woman","year":2016,"when":"2016","whenEn":"2016"}],"difficulty":"zor"}
+  {
+    "id": "ord-001",
+    "category": "Tarih",
+    "text": "Bu olayları kronolojik sıraya diz:",
+    "textEn": "Put these events in chronological order:",
+    "events": [
+      {
+        "label": "Osmanlı İmparatorluğu'nun kuruluşu",
+        "labelEn": "Founding of the Ottoman Empire",
+        "year": 1299,
+        "when": "1299",
+        "whenEn": "1299"
+      },
+      {
+        "label": "İstanbul'un fethi",
+        "labelEn": "Fall of Constantinople",
+        "year": 1453,
+        "when": "1453",
+        "whenEn": "1453"
+      },
+      {
+        "label": "Kanuni'nin tahta çıkışı",
+        "labelEn": "Suleiman the Magnificent ascends",
+        "year": 1520,
+        "when": "1520",
+        "whenEn": "1520"
+      },
+      {
+        "label": "Viyana Kuşatması",
+        "labelEn": "Siege of Vienna",
+        "year": 1683,
+        "when": "1683",
+        "whenEn": "1683"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-002",
+    "category": "Tarih",
+    "text": "Bu dünya savaşı dönüm noktalarını kronolojik sıraya diz:",
+    "textEn": "Put these WWII turning points in chronological order:",
+    "events": [
+      {
+        "label": "Polonya'nın işgali",
+        "labelEn": "Invasion of Poland",
+        "year": 1939,
+        "when": "1939",
+        "whenEn": "1939"
+      },
+      {
+        "label": "Pearl Harbor saldırısı",
+        "labelEn": "Pearl Harbor attack",
+        "year": 1941,
+        "when": "1941",
+        "whenEn": "1941"
+      },
+      {
+        "label": "Stalingrad Muharebesi",
+        "labelEn": "Battle of Stalingrad",
+        "year": 1943,
+        "when": "1943",
+        "whenEn": "1943"
+      },
+      {
+        "label": "Normandiya Çıkarması",
+        "labelEn": "D-Day landings",
+        "year": 1944,
+        "when": "1944",
+        "whenEn": "1944"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-003",
+    "category": "Bilim",
+    "text": "Bu bilimsel gelişmeleri kronolojik sıraya diz:",
+    "textEn": "Put these scientific milestones in chronological order:",
+    "events": [
+      {
+        "label": "Yerçekimi yasası (Newton)",
+        "labelEn": "Law of gravity (Newton)",
+        "year": 1687,
+        "when": "1687",
+        "whenEn": "1687"
+      },
+      {
+        "label": "Evrim teorisi (Darwin)",
+        "labelEn": "Theory of evolution (Darwin)",
+        "year": 1859,
+        "when": "1859",
+        "whenEn": "1859"
+      },
+      {
+        "label": "İzafiyet teorisi (Einstein)",
+        "labelEn": "Theory of relativity (Einstein)",
+        "year": 1905,
+        "when": "1905",
+        "whenEn": "1905"
+      },
+      {
+        "label": "DNA yapısının keşfi",
+        "labelEn": "Discovery of DNA structure",
+        "year": 1953,
+        "when": "1953",
+        "whenEn": "1953"
+      }
+    ],
+    "difficulty": "zor"
+  },
+  {
+    "id": "ord-004",
+    "category": "Teknoloji",
+    "text": "Bu teknolojik icatları kronolojik sıraya diz:",
+    "textEn": "Put these inventions in chronological order:",
+    "events": [
+      {
+        "label": "Matbaa (Gutenberg)",
+        "labelEn": "Printing press (Gutenberg)",
+        "year": 1440,
+        "when": "1440",
+        "whenEn": "1440"
+      },
+      {
+        "label": "Ampul (Edison)",
+        "labelEn": "Light bulb (Edison)",
+        "year": 1879,
+        "when": "1879",
+        "whenEn": "1879"
+      },
+      {
+        "label": "Telefon (Bell)",
+        "labelEn": "Telephone (Bell)",
+        "year": 1876,
+        "when": "1876",
+        "whenEn": "1876"
+      },
+      {
+        "label": "İlk iPhone",
+        "labelEn": "First iPhone",
+        "year": 2007,
+        "when": "2007",
+        "whenEn": "2007"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-005",
+    "category": "Uzay",
+    "text": "Bu uzay tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these space milestones in chronological order:",
+    "events": [
+      {
+        "label": "Sputnik fırlatıldı",
+        "labelEn": "Sputnik launched",
+        "year": 1957,
+        "when": "1957",
+        "whenEn": "1957"
+      },
+      {
+        "label": "Uzaya ilk insan (Gagarin)",
+        "labelEn": "First human in space (Gagarin)",
+        "year": 1961,
+        "when": "1961",
+        "whenEn": "1961"
+      },
+      {
+        "label": "Ay'a ayak basılması",
+        "labelEn": "Moon landing",
+        "year": 1969,
+        "when": "1969",
+        "whenEn": "1969"
+      },
+      {
+        "label": "James Webb Teleskobu",
+        "labelEn": "James Webb Telescope",
+        "year": 2021,
+        "when": "2021",
+        "whenEn": "2021"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-006",
+    "category": "Türkiye",
+    "text": "Bu Cumhuriyet dönemi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these Republic-era events in order:",
+    "events": [
+      {
+        "label": "Cumhuriyet'in ilanı",
+        "labelEn": "Proclamation of the Republic",
+        "year": 1923,
+        "when": "1923",
+        "whenEn": "1923"
+      },
+      {
+        "label": "Harf devrimi",
+        "labelEn": "Alphabet reform",
+        "year": 1928,
+        "when": "1928",
+        "whenEn": "1928"
+      },
+      {
+        "label": "Kadınlara seçme hakkı",
+        "labelEn": "Women's suffrage",
+        "year": 1934,
+        "when": "1934",
+        "whenEn": "1934"
+      },
+      {
+        "label": "Atatürk'ün vefatı",
+        "labelEn": "Atatürk's passing",
+        "year": 1938,
+        "when": "1938",
+        "whenEn": "1938"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-007",
+    "category": "Sinema",
+    "text": "Bu film dönüm noktalarını kronolojik sıraya diz:",
+    "textEn": "Put these film milestones in order:",
+    "events": [
+      {
+        "label": "İlk sesli film (The Jazz Singer)",
+        "labelEn": "First talkie (The Jazz Singer)",
+        "year": 1927,
+        "when": "1927",
+        "whenEn": "1927"
+      },
+      {
+        "label": "İlk renkli uzun film",
+        "labelEn": "First color feature film",
+        "year": 1939,
+        "when": "1939 (Oz/Rüzgar Gibi Geçti)",
+        "whenEn": "1939 (Oz/Gone with the Wind)"
+      },
+      {
+        "label": "Jaws — ilk gişe devi",
+        "labelEn": "Jaws — first blockbuster",
+        "year": 1975,
+        "when": "1975",
+        "whenEn": "1975"
+      },
+      {
+        "label": "Avatar (3D çılgınlığı)",
+        "labelEn": "Avatar (3D boom)",
+        "year": 2009,
+        "when": "2009",
+        "whenEn": "2009"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-008",
+    "category": "Spor",
+    "text": "Bu spor tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these sports milestones in order:",
+    "events": [
+      {
+        "label": "İlk modern Olimpiyat",
+        "labelEn": "First modern Olympics",
+        "year": 1896,
+        "when": "1896 (Atina)",
+        "whenEn": "1896 (Athens)"
+      },
+      {
+        "label": "İlk FIFA Dünya Kupası",
+        "labelEn": "First FIFA World Cup",
+        "year": 1930,
+        "when": "1930 (Uruguay)",
+        "whenEn": "1930 (Uruguay)"
+      },
+      {
+        "label": "Usain Bolt 100m rekoru",
+        "labelEn": "Usain Bolt 100m record",
+        "year": 2009,
+        "when": "2009",
+        "whenEn": "2009"
+      },
+      {
+        "label": "Ronaldo'nun ilk Ballon d'Or'u",
+        "labelEn": "Ronaldo's first Ballon d'Or",
+        "year": 2008,
+        "when": "2008",
+        "whenEn": "2008"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-009",
+    "category": "Tarih",
+    "text": "Bu antik olayları kronolojik sıraya diz:",
+    "textEn": "Put these ancient events in order:",
+    "events": [
+      {
+        "label": "Giza Piramitleri'nin inşası",
+        "labelEn": "Pyramids of Giza built",
+        "year": -2560,
+        "when": "MÖ ~2560",
+        "whenEn": "~2560 BC"
+      },
+      {
+        "label": "Roma'nın kuruluşu",
+        "labelEn": "Founding of Rome",
+        "year": -753,
+        "when": "MÖ 753",
+        "whenEn": "753 BC"
+      },
+      {
+        "label": "Maraton Muharebesi",
+        "labelEn": "Battle of Marathon",
+        "year": -490,
+        "when": "MÖ 490",
+        "whenEn": "490 BC"
+      },
+      {
+        "label": "İskender'in Pers'i fethi",
+        "labelEn": "Alexander conquers Persia",
+        "year": -331,
+        "when": "MÖ 331",
+        "whenEn": "331 BC"
+      }
+    ],
+    "difficulty": "zor"
+  },
+  {
+    "id": "ord-010",
+    "category": "Müzik",
+    "text": "Bu müzik tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these music milestones in order:",
+    "events": [
+      {
+        "label": "Beatles'ın kuruluşu",
+        "labelEn": "Beatles formed",
+        "year": 1960,
+        "when": "1960",
+        "whenEn": "1960"
+      },
+      {
+        "label": "Woodstock festivali",
+        "labelEn": "Woodstock festival",
+        "year": 1969,
+        "when": "1969",
+        "whenEn": "1969"
+      },
+      {
+        "label": "MTV'nin açılışı",
+        "labelEn": "MTV launches",
+        "year": 1981,
+        "when": "1981",
+        "whenEn": "1981"
+      },
+      {
+        "label": "Spotify yayına girer",
+        "labelEn": "Spotify launches",
+        "year": 2008,
+        "when": "2008",
+        "whenEn": "2008"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-011",
+    "category": "Teknoloji",
+    "text": "Bu internet dönüm noktalarını kronolojik sıraya diz:",
+    "textEn": "Put these internet milestones in order:",
+    "events": [
+      {
+        "label": "World Wide Web'in icadı",
+        "labelEn": "WWW invented",
+        "year": 1989,
+        "when": "1989",
+        "whenEn": "1989"
+      },
+      {
+        "label": "Google'ın kuruluşu",
+        "labelEn": "Google founded",
+        "year": 1998,
+        "when": "1998",
+        "whenEn": "1998"
+      },
+      {
+        "label": "Facebook açılır",
+        "labelEn": "Facebook opens",
+        "year": 2004,
+        "when": "2004",
+        "whenEn": "2004"
+      },
+      {
+        "label": "ChatGPT yayına girer",
+        "labelEn": "ChatGPT launches",
+        "year": 2022,
+        "when": "2022",
+        "whenEn": "2022"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-012",
+    "category": "Tarih",
+    "text": "Bu Fransız tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these French history events in order:",
+    "events": [
+      {
+        "label": "Bastille'in düşüşü",
+        "labelEn": "Fall of the Bastille",
+        "year": 1789,
+        "when": "1789",
+        "whenEn": "1789"
+      },
+      {
+        "label": "Napolyon'un imparator oluşu",
+        "labelEn": "Napoleon crowned emperor",
+        "year": 1804,
+        "when": "1804",
+        "whenEn": "1804"
+      },
+      {
+        "label": "Waterloo Muharebesi",
+        "labelEn": "Battle of Waterloo",
+        "year": 1815,
+        "when": "1815",
+        "whenEn": "1815"
+      },
+      {
+        "label": "Eyfel Kulesi'nin açılışı",
+        "labelEn": "Eiffel Tower opens",
+        "year": 1889,
+        "when": "1889",
+        "whenEn": "1889"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-013",
+    "category": "Bilim",
+    "text": "Bu tıp tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these medical milestones in order:",
+    "events": [
+      {
+        "label": "Çiçek aşısı (Jenner)",
+        "labelEn": "Smallpox vaccine (Jenner)",
+        "year": 1796,
+        "when": "1796",
+        "whenEn": "1796"
+      },
+      {
+        "label": "X-ışınının keşfi (Röntgen)",
+        "labelEn": "X-ray discovery (Röntgen)",
+        "year": 1895,
+        "when": "1895",
+        "whenEn": "1895"
+      },
+      {
+        "label": "Penisilinin keşfi (Fleming)",
+        "labelEn": "Penicillin discovery (Fleming)",
+        "year": 1928,
+        "when": "1928",
+        "whenEn": "1928"
+      },
+      {
+        "label": "İlk kalp nakli",
+        "labelEn": "First heart transplant",
+        "year": 1967,
+        "when": "1967",
+        "whenEn": "1967"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-014",
+    "category": "Türkiye",
+    "text": "Bu Kurtuluş Savaşı olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these War of Independence events in order:",
+    "events": [
+      {
+        "label": "Atatürk'ün Samsun'a çıkışı",
+        "labelEn": "Atatürk lands in Samsun",
+        "year": 1919,
+        "when": "19 Mayıs 1919",
+        "whenEn": "May 19, 1919"
+      },
+      {
+        "label": "TBMM'nin açılışı",
+        "labelEn": "Grand National Assembly opens",
+        "year": 1920,
+        "when": "23 Nisan 1920",
+        "whenEn": "April 23, 1920"
+      },
+      {
+        "label": "Büyük Taarruz",
+        "labelEn": "Great Offensive",
+        "year": 1922,
+        "when": "26 Ağustos 1922",
+        "whenEn": "August 26, 1922"
+      },
+      {
+        "label": "Lozan Antlaşması",
+        "labelEn": "Treaty of Lausanne",
+        "year": 1923,
+        "when": "24 Temmuz 1923",
+        "whenEn": "July 24, 1923"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-015",
+    "category": "Edebiyat",
+    "text": "Bu edebiyat eserlerini yayın tarihine göre diz:",
+    "textEn": "Order these works by publication date:",
+    "events": [
+      {
+        "label": "İlyada (Homeros)",
+        "labelEn": "Iliad (Homer)",
+        "year": -750,
+        "when": "MÖ ~750",
+        "whenEn": "~750 BC"
+      },
+      {
+        "label": "Don Kişot (Cervantes)",
+        "labelEn": "Don Quixote (Cervantes)",
+        "year": 1605,
+        "when": "1605",
+        "whenEn": "1605"
+      },
+      {
+        "label": "Savaş ve Barış (Tolstoy)",
+        "labelEn": "War and Peace (Tolstoy)",
+        "year": 1869,
+        "when": "1869",
+        "whenEn": "1869"
+      },
+      {
+        "label": "1984 (Orwell)",
+        "labelEn": "1984 (Orwell)",
+        "year": 1949,
+        "when": "1949",
+        "whenEn": "1949"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-016",
+    "category": "İcatlar",
+    "text": "Bu keşifleri kronolojik sıraya diz:",
+    "textEn": "Put these explorations in order:",
+    "events": [
+      {
+        "label": "Kolomb'un Amerika'ya ulaşması",
+        "labelEn": "Columbus reaches America",
+        "year": 1492,
+        "when": "1492",
+        "whenEn": "1492"
+      },
+      {
+        "label": "Magellan'ın dünya turu başlar",
+        "labelEn": "Magellan's circumnavigation begins",
+        "year": 1519,
+        "when": "1519",
+        "whenEn": "1519"
+      },
+      {
+        "label": "Kutuplara ilk ulaşım (Amundsen)",
+        "labelEn": "South Pole reached (Amundsen)",
+        "year": 1911,
+        "when": "1911",
+        "whenEn": "1911"
+      },
+      {
+        "label": "Everest'e ilk tırmanış",
+        "labelEn": "First Everest summit",
+        "year": 1953,
+        "when": "1953",
+        "whenEn": "1953"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-017",
+    "category": "Teknoloji",
+    "text": "Bu oyun tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these gaming milestones in order:",
+    "events": [
+      {
+        "label": "Pong çıkar",
+        "labelEn": "Pong releases",
+        "year": 1972,
+        "when": "1972",
+        "whenEn": "1972"
+      },
+      {
+        "label": "Tetris çıkar",
+        "labelEn": "Tetris releases",
+        "year": 1984,
+        "when": "1984",
+        "whenEn": "1984"
+      },
+      {
+        "label": "World of Warcraft çıkar",
+        "labelEn": "World of Warcraft releases",
+        "year": 2004,
+        "when": "2004",
+        "whenEn": "2004"
+      },
+      {
+        "label": "Minecraft resmi çıkış",
+        "labelEn": "Minecraft official release",
+        "year": 2011,
+        "when": "2011",
+        "whenEn": "2011"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-018",
+    "category": "Tarih",
+    "text": "Bu Türk tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these Turkish history events in order:",
+    "events": [
+      {
+        "label": "Malazgirt Zaferi",
+        "labelEn": "Battle of Manzikert",
+        "year": 1071,
+        "when": "1071",
+        "whenEn": "1071"
+      },
+      {
+        "label": "İstanbul'un fethi",
+        "labelEn": "Conquest of Constantinople",
+        "year": 1453,
+        "when": "1453",
+        "whenEn": "1453"
+      },
+      {
+        "label": "Çanakkale Zaferi",
+        "labelEn": "Gallipoli victory",
+        "year": 1915,
+        "when": "1915",
+        "whenEn": "1915"
+      },
+      {
+        "label": "Cumhuriyet'in ilanı",
+        "labelEn": "Republic proclaimed",
+        "year": 1923,
+        "when": "1923",
+        "whenEn": "1923"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-019",
+    "category": "Bilim",
+    "text": "Bu uzay gözlem gelişmelerini kronolojik sıraya diz:",
+    "textEn": "Put these astronomy milestones in order:",
+    "events": [
+      {
+        "label": "Galileo teleskopu yapar",
+        "labelEn": "Galileo builds telescope",
+        "year": 1609,
+        "when": "1609",
+        "whenEn": "1609"
+      },
+      {
+        "label": "Plüton'un keşfi",
+        "labelEn": "Pluto discovered",
+        "year": 1930,
+        "when": "1930",
+        "whenEn": "1930"
+      },
+      {
+        "label": "Hubble fırlatılır",
+        "labelEn": "Hubble launched",
+        "year": 1990,
+        "when": "1990",
+        "whenEn": "1990"
+      },
+      {
+        "label": "Kara deliğin ilk fotoğrafı",
+        "labelEn": "First black hole photo",
+        "year": 2019,
+        "when": "2019",
+        "whenEn": "2019"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-020",
+    "category": "Tarih",
+    "text": "Bu medeniyetlerin kuruluşunu kronolojik sıraya diz:",
+    "textEn": "Order these civilizations by founding:",
+    "events": [
+      {
+        "label": "Antik Mısır birleşmesi",
+        "labelEn": "Unification of Egypt",
+        "year": -3100,
+        "when": "MÖ ~3100",
+        "whenEn": "~3100 BC"
+      },
+      {
+        "label": "Çin Han hanedanı",
+        "labelEn": "Han dynasty China",
+        "year": -206,
+        "when": "MÖ 206",
+        "whenEn": "206 BC"
+      },
+      {
+        "label": "İslamiyet'in doğuşu",
+        "labelEn": "Rise of Islam",
+        "year": 622,
+        "when": "622",
+        "whenEn": "622"
+      },
+      {
+        "label": "İngiltere'nin birleşmesi (Saksonlar)",
+        "labelEn": "Kingdom of England unified",
+        "year": 927,
+        "when": "927",
+        "whenEn": "927"
+      }
+    ],
+    "difficulty": "zor"
+  },
+  {
+    "id": "ord-021",
+    "category": "Sanat",
+    "text": "Bu sanat eserlerini yapım tarihine göre diz:",
+    "textEn": "Order these artworks by creation date:",
+    "events": [
+      {
+        "label": "Mona Lisa (Da Vinci)",
+        "labelEn": "Mona Lisa (Da Vinci)",
+        "year": 1503,
+        "when": "~1503",
+        "whenEn": "~1503"
+      },
+      {
+        "label": "Yıldızlı Gece (Van Gogh)",
+        "labelEn": "Starry Night (Van Gogh)",
+        "year": 1889,
+        "when": "1889",
+        "whenEn": "1889"
+      },
+      {
+        "label": "Guernica (Picasso)",
+        "labelEn": "Guernica (Picasso)",
+        "year": 1937,
+        "when": "1937",
+        "whenEn": "1937"
+      },
+      {
+        "label": "Campbell Çorbası (Warhol)",
+        "labelEn": "Campbell's Soup Cans (Warhol)",
+        "year": 1962,
+        "when": "1962",
+        "whenEn": "1962"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-022",
+    "category": "Teknoloji",
+    "text": "Bu iletişim araçlarını icat tarihine göre diz:",
+    "textEn": "Order these communication devices by invention:",
+    "events": [
+      {
+        "label": "Telgraf (Morse)",
+        "labelEn": "Telegraph (Morse)",
+        "year": 1837,
+        "when": "1837",
+        "whenEn": "1837"
+      },
+      {
+        "label": "Telefon (Bell)",
+        "labelEn": "Telephone (Bell)",
+        "year": 1876,
+        "when": "1876",
+        "whenEn": "1876"
+      },
+      {
+        "label": "Radyo yayını başlar",
+        "labelEn": "Radio broadcasts begin",
+        "year": 1920,
+        "when": "1920",
+        "whenEn": "1920"
+      },
+      {
+        "label": "Cep telefonu (Motorola)",
+        "labelEn": "Mobile phone (Motorola)",
+        "year": 1973,
+        "when": "1973",
+        "whenEn": "1973"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-023",
+    "category": "Spor",
+    "text": "Bu futbol tarihi olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these football milestones in order:",
+    "events": [
+      {
+        "label": "FA Cup'ın kuruluşu",
+        "labelEn": "FA Cup founded",
+        "year": 1871,
+        "when": "1871",
+        "whenEn": "1871"
+      },
+      {
+        "label": "İlk Dünya Kupası",
+        "labelEn": "First World Cup",
+        "year": 1930,
+        "when": "1930",
+        "whenEn": "1930"
+      },
+      {
+        "label": "Türkiye'de ilk lig",
+        "labelEn": "First Turkish league",
+        "year": 1959,
+        "when": "1959 (Millî Lig)",
+        "whenEn": "1959 (Millî Lig)"
+      },
+      {
+        "label": "Galatasaray UEFA Kupası",
+        "labelEn": "Galatasaray wins UEFA Cup",
+        "year": 2000,
+        "when": "2000",
+        "whenEn": "2000"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-024",
+    "category": "Türkiye",
+    "text": "Bu Osmanlı padişahlarını hükümranlık sırasına göre diz:",
+    "textEn": "Order these Ottoman sultans by reign:",
+    "events": [
+      {
+        "label": "Yavuz Sultan Selim",
+        "labelEn": "Selim I (Yavuz)",
+        "year": 1512,
+        "when": "1512–1520",
+        "whenEn": "1512–1520"
+      },
+      {
+        "label": "Kanuni Sultan Süleyman",
+        "labelEn": "Suleiman the Magnificent",
+        "year": 1520,
+        "when": "1520–1566",
+        "whenEn": "1520–1566"
+      },
+      {
+        "label": "IV. Murat",
+        "labelEn": "Murad IV",
+        "year": 1623,
+        "when": "1623–1640",
+        "whenEn": "1623–1640"
+      },
+      {
+        "label": "Abdülmecid",
+        "labelEn": "Abdülmecid",
+        "year": 1839,
+        "when": "1839–1861",
+        "whenEn": "1839–1861"
+      }
+    ],
+    "difficulty": "zor"
+  },
+  {
+    "id": "ord-025",
+    "category": "Bilim",
+    "text": "Bu fizik keşiflerini kronolojik sıraya diz:",
+    "textEn": "Put these physics discoveries in order:",
+    "events": [
+      {
+        "label": "Elektroniğin keşfi (Thomson)",
+        "labelEn": "Electron discovered (Thomson)",
+        "year": 1897,
+        "when": "1897",
+        "whenEn": "1897"
+      },
+      {
+        "label": "Atomun modeli (Rutherford)",
+        "labelEn": "Atomic model (Rutherford)",
+        "year": 1911,
+        "when": "1911",
+        "whenEn": "1911"
+      },
+      {
+        "label": "Fisyon keşfi",
+        "labelEn": "Nuclear fission discovered",
+        "year": 1938,
+        "when": "1938",
+        "whenEn": "1938"
+      },
+      {
+        "label": "Higgs bosonunun bulunması",
+        "labelEn": "Higgs boson confirmed",
+        "year": 2012,
+        "when": "2012",
+        "whenEn": "2012"
+      }
+    ],
+    "difficulty": "zor"
+  },
+  {
+    "id": "ord-026",
+    "category": "Tarih",
+    "text": "Bu dünya olaylarını kronolojik sıraya diz:",
+    "textEn": "Put these world events in order:",
+    "events": [
+      {
+        "label": "İnsan Hakları Evrensel Bildirisi",
+        "labelEn": "Universal Declaration of Human Rights",
+        "year": 1948,
+        "when": "1948",
+        "whenEn": "1948"
+      },
+      {
+        "label": "Berlin Duvarı'nın yapılışı",
+        "labelEn": "Berlin Wall built",
+        "year": 1961,
+        "when": "1961",
+        "whenEn": "1961"
+      },
+      {
+        "label": "Berlin Duvarı'nın yıkılışı",
+        "labelEn": "Berlin Wall falls",
+        "year": 1989,
+        "when": "1989",
+        "whenEn": "1989"
+      },
+      {
+        "label": "9/11 saldırıları",
+        "labelEn": "9/11 attacks",
+        "year": 2001,
+        "when": "2001",
+        "whenEn": "2001"
+      }
+    ],
+    "difficulty": "kolay"
+  },
+  {
+    "id": "ord-027",
+    "category": "Müzik",
+    "text": "Bu klasik müzik bestecilerini doğum tarihine göre diz:",
+    "textEn": "Order these composers by birth year:",
+    "events": [
+      {
+        "label": "Bach",
+        "labelEn": "Bach",
+        "year": 1685,
+        "when": "1685",
+        "whenEn": "1685"
+      },
+      {
+        "label": "Mozart",
+        "labelEn": "Mozart",
+        "year": 1756,
+        "when": "1756",
+        "whenEn": "1756"
+      },
+      {
+        "label": "Beethoven",
+        "labelEn": "Beethoven",
+        "year": 1770,
+        "when": "1770",
+        "whenEn": "1770"
+      },
+      {
+        "label": "Çaykovski",
+        "labelEn": "Tchaikovsky",
+        "year": 1840,
+        "when": "1840",
+        "whenEn": "1840"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-028",
+    "category": "Teknoloji",
+    "text": "Bu bilgisayar gelişmelerini kronolojik sıraya diz:",
+    "textEn": "Put these computing milestones in order:",
+    "events": [
+      {
+        "label": "ENIAC (ilk elektronik bilgisayar)",
+        "labelEn": "ENIAC (first electronic computer)",
+        "year": 1945,
+        "when": "1945",
+        "whenEn": "1945"
+      },
+      {
+        "label": "İlk kişisel bilgisayar (Apple II)",
+        "labelEn": "First PC (Apple II)",
+        "year": 1977,
+        "when": "1977",
+        "whenEn": "1977"
+      },
+      {
+        "label": "İlk akıllı telefon (iPhone)",
+        "labelEn": "First smartphone (iPhone)",
+        "year": 2007,
+        "when": "2007",
+        "whenEn": "2007"
+      },
+      {
+        "label": "Yapay zekâ sohbeti (ChatGPT)",
+        "labelEn": "AI chatbot (ChatGPT)",
+        "year": 2022,
+        "when": "2022",
+        "whenEn": "2022"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-029",
+    "category": "Tarih",
+    "text": "Bu savaşları başlangıç tarihine göre diz:",
+    "textEn": "Order these wars by start date:",
+    "events": [
+      {
+        "label": "Akropole Savaşı (Yunan-Pers)",
+        "labelEn": "Greco-Persian Wars begin",
+        "year": -499,
+        "when": "MÖ 499",
+        "whenEn": "499 BC"
+      },
+      {
+        "label": "Punic Savaşları başlar",
+        "labelEn": "Punic Wars begin",
+        "year": -264,
+        "when": "MÖ 264",
+        "whenEn": "264 BC"
+      },
+      {
+        "label": "Yüzyıl Savaşları",
+        "labelEn": "Hundred Years' War",
+        "year": 1337,
+        "when": "1337",
+        "whenEn": "1337"
+      },
+      {
+        "label": "I. Dünya Savaşı",
+        "labelEn": "World War I",
+        "year": 1914,
+        "when": "1914",
+        "whenEn": "1914"
+      }
+    ],
+    "difficulty": "orta"
+  },
+  {
+    "id": "ord-030",
+    "category": "Türkiye",
+    "text": "Bu Türk edebiyatı eserlerini yayın sırasına göre diz:",
+    "textEn": "Order these Turkish works by publication:",
+    "events": [
+      {
+        "label": "Aşk-ı Memnu (Halit Ziya)",
+        "labelEn": "Aşk-ı Memnu",
+        "year": 1900,
+        "when": "1900",
+        "whenEn": "1900"
+      },
+      {
+        "label": "Çalıkuşu (Reşat Nuri)",
+        "labelEn": "Çalıkuşu",
+        "year": 1922,
+        "when": "1922",
+        "whenEn": "1922"
+      },
+      {
+        "label": "Saatleri Ayarlama Enstitüsü",
+        "labelEn": "Time Regulation Institute",
+        "year": 1954,
+        "when": "1954 (Tanpınar)",
+        "whenEn": "1954 (Tanpınar)"
+      },
+      {
+        "label": "Kırmızı Saçlı Kadın (Pamuk)",
+        "labelEn": "The Red-Haired Woman",
+        "year": 2016,
+        "when": "2016",
+        "whenEn": "2016"
+      }
+    ],
+    "difficulty": "zor"
+  }
 ]
