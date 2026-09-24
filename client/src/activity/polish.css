@@ -401,3 +401,20 @@
 .qt-answer.is-removed .qt-answer__text {
   visibility: hidden;
 }
+
+/* Podyum rövanş oylaması — oylandığında basılı görünür. */
+.qt-podium-rematch {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(126, 200, 255, 0.4);
+  color: #cfe8ff;
+  background: rgba(60, 110, 160, 0.18);
+}
+.qt-podium-rematch:hover:not(:disabled) { border-color: rgba(126, 200, 255, 0.8); }
+.qt-podium-rematch b { font-variant-numeric: tabular-nums; }
+.qt-podium-rematch.is-voted {
+  background: rgba(60, 110, 160, 0.45);
+  border-color: rgba(126, 200, 255, 0.85);
+  cursor: default;
+}
