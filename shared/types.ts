@@ -316,6 +316,12 @@ export type ToastKey =
   | "err.themeInvalid"
   | "err.themeLocked"
   | "err.themeFailed"
+  | "err.timeHostOnly"
+  | "err.timeInvalid"
+  | "err.timeFailed"
+  | "err.settingHostOnly"
+  | "err.settingInvalid"
+  | "err.settingFailed"
   | "err.modeHostOnly"
   | "err.modeInvalid"
   | "err.teamHostOnly"
@@ -444,6 +450,10 @@ export const TABLE_THEMES = [
   { key: "void", league: "efsane" },
 ] as const;
 export type TableTheme = (typeof TABLE_THEMES)[number]["key"];
+/** Klasik/Takım/Son Masa/Çifte Bahis'te seçilebilir soru süreleri (ms). Süreye
+ *  bağlı modlar (Çember/Fitil/Bulanık/Kelime) kendi sabitini kullanır. */
+export const QUESTION_TIMES = [10_000, 15_000, 20_000] as const;
+export type QuestionTimeMs = (typeof QUESTION_TIMES)[number];
 
 export interface GameState {
   phase: Phase;
@@ -454,6 +464,13 @@ export interface GameState {
   difficulty: Difficulty | null;
   /** Masa teması (§6.3): host'un liginin açtığı görsel kimlik, tüm masada. */
   tableTheme: TableTheme;
+  /** Masa ayarı: soru süresi (ms); null = mod varsayılanı. Yalnız klasik/takım/
+   *  elim/bet'te geçerli. */
+  questionTimeMs: number | null;
+  /** Masa ayarı: hız bonusu açık mı. Kapalıyken doğru cevap yalnız taban puan. */
+  speedBonus: boolean;
+  /** Masa ayarı: yalnız resimli sorular. Havuz daralırsa resimli havuza düşer. */
+  imageOnly: boolean;
   roomId: string;
   hostId: string | null;
   youId: string;
@@ -575,6 +592,9 @@ export const EV = {
   /** Yalnızca masa sahibi: { packId } — klasik soru havuzunu özel paketle değiştirir; null temizler */
   SET_PACK: "set-pack",
   SET_THEME: "set-theme",
+  SET_QUESTION_TIME: "set-question-time",
+  SET_SPEED_BONUS: "set-speed-bonus",
+  SET_IMAGE_ONLY: "set-image-only",
   /**
    * Yalnızca masa sahibi: { mode } — masanın modu. Masa AYARIDIR ve yayınlanır:
    * mod her istemcinin yerel seçimi olsaydı, host Fitil'i seçtiğinde diğer
