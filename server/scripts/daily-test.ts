@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import Database from "better-sqlite3";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Room } from "../src/rooms";
 import { createDailyStore, dailyDateKey, dailyDayNumber, dailyPattern, dailyQuestions, dailyShareText, DAILY_QUESTION_COUNT } from "../src/daily";
 
@@ -44,11 +48,11 @@ test("desen: doğru 🟩, yanlış 🟥, cevapsız ⬜", () => {
 test("depo: kullanıcı+gün tek kayıt; has() tekrar kapısını sürer", () => {
   const store = createDailyStore(":memory:");
   assert.equal(store.has("u1", 265), false);
-  store.record({ day: 265, userId: "u1", pattern: "🟩🟩🟥🟩🟩", score: 2100 });
+  store.record({ day: 265, userId: "u1", name: "u1", pattern: "🟩🟩🟥🟩🟩", score: 2100 });
   assert.equal(store.has("u1", 265), true);
   assert.equal(store.has("u1", 266), false);
   assert.equal(store.has("u2", 265), false);
-  store.record({ day: 265, userId: "u1", pattern: "🟥🟥🟥🟥🟥", score: 0 }); // UNIQUE ezer, ilk kayıt kalır
+  store.record({ day: 265, userId: "u1", name: "u1", pattern: "🟥🟥🟥🟥🟥", score: 0 }); // UNIQUE ezer, ilk kayıt kalır
   const rows = store.list();
   assert.equal(rows.length, 1);
   assert.equal(rows[0].pattern, "🟩🟩🟥🟩🟩");
@@ -115,6 +119,54 @@ test("maç sonu desenleri üretilir ve onDailyFinished kancası ateşlenir", () 
     const state = room.stateFor("solo", true);
     assert.equal(state.daily?.pattern, entries[0].pattern);
   } finally { stop(room); }
+});
+
+test("lider tablosu: skor sırası, kendi sırası ve seri", () => {
+  const store = createDailyStore(":memory:");
+  try {
+    const day = dailyDayNumber();
+    store.record({ day, userId: "a", name: "Ayşe", pattern: "🟩🟩🟩🟩🟩", score: 500 });
+    store.record({ day, userId: "b", name: "Bora", pattern: "🟩🟥🟩⬜🟩", score: 300 });
+    store.record({ day, userId: "c", name: "Cem", pattern: "🟥🟥⬜🟩🟥", score: 100 });
+    const leaders = store.leaders(day, 5);
+    assert.equal(leaders.length, 3);
+    assert.deepEqual(leaders.map((row) => row.userId), ["a", "b", "c"]);
+    assert.equal(leaders[0].rank, 1);
+    assert.equal(leaders[0].name, "Ayşe");
+    assert.equal(store.userRank("b", day), 2);
+    assert.equal(store.userRank("yok", day), null);
+    // Seri: bugün + önceki 2 gün art arda = 3; bir gün boşluk kırar.
+    store.record({ day: day - 1, userId: "a", name: "Ayşe", pattern: "🟩🟩🟩🟩🟩", score: 400 });
+    store.record({ day: day - 2, userId: "a", name: "Ayşe", pattern: "🟩🟩🟩🟩🟩", score: 400 });
+    store.record({ day: day - 4, userId: "a", name: "Ayşe", pattern: "🟩🟩🟩🟩🟩", score: 400 });
+    assert.equal(store.streak("a", day), 3);
+    // Bugün de oynamışsa seri bugün dahil sayılır.
+    store.record({ day: day - 1, userId: "b", name: "Bora", pattern: "🟩🟩🟩🟩🟩", score: 200 });
+    store.record({ day: day - 2, userId: "b", name: "Bora", pattern: "🟩🟩🟩🟩🟩", score: 200 });
+    assert.equal(store.streak("b", day), 3);
+    // Bugün oynamamış ama dün başlayan seri de sayılır.
+    store.record({ day: day - 1, userId: "d", name: "Derin", pattern: "🟩🟩🟩🟩🟩", score: 200 });
+    store.record({ day: day - 2, userId: "d", name: "Derin", pattern: "🟩🟩🟩🟩🟩", score: 200 });
+    assert.equal(store.streak("d", day), 2);
+    assert.equal(store.streak("yok", day), 0);
+  } finally { store.close(); }
+});
+
+test("eski şema: name sütunu olmayan veritabanı ALTER ile geçirilir", () => {
+  const tmp = join(mkdtempSync(join(tmpdir(), "qt-daily-")), "old.db");
+  const raw = new Database(tmp);
+  raw.exec(`CREATE TABLE daily_results (id INTEGER PRIMARY KEY AUTOINCREMENT, day INTEGER NOT NULL,
+    user_id TEXT NOT NULL, pattern TEXT NOT NULL, score INTEGER NOT NULL, completed_at INTEGER NOT NULL,
+    UNIQUE (user_id, day))`);
+  raw.prepare("INSERT INTO daily_results (day, user_id, pattern, score, completed_at) VALUES (1, 'x', '🟩', 10, 1)").run();
+  raw.close();
+  const store = createDailyStore(tmp);
+  try {
+    assert.equal(store.list().length, 1); // eski kayıt duruyor
+    store.record({ day: 2, userId: "x", name: "Yeni", pattern: "🟩", score: 5 });
+    assert.equal(store.leaders(2, 1)[0].name, "Yeni");
+    assert.equal(store.leaders(1, 1)[0].name, ""); // eski kayıtta boş ad
+  } finally { store.close(); }
 });
 
 console.log(`\n[daily] sonuç: ${passed} geçti, 0 kaldı`);

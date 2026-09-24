@@ -134,6 +134,26 @@ export interface SeasonBoard {
   entries: SeasonEntry[];
 }
 
+export interface DailyBoardEntry {
+  rank: number;
+  userId: string;
+  name: string;
+  /** Günlük maçın skoru. */
+  score: number;
+  /** 🟩🟥⬜ Wordle deseni — hangi turu doğru bildiğini gösterir. */
+  pattern: string;
+}
+
+/** Bugünün günlük lider tablosu; lobide gösterilir. */
+export interface DailyBoard {
+  day: number;
+  entries: DailyBoardEntry[];
+  /** İzleyenin bugünkü sırası; bugün oynamadıysa null. */
+  userRank: number | null;
+  /** Arka arkaya kaç gündür günlük oynadığı. */
+  streak: number;
+}
+
 export interface QuestionPayload {
   category: string;
   text: string;
@@ -436,6 +456,8 @@ export interface GameState {
   xpGains: Record<string, XpGain> | null;
   /** Güncel sezon lider tablosu (lobi + podyum); depo kapalıysa null. */
   seasonBoard: SeasonBoard | null;
+  /** Bugünün günlük lider tablosu (lobi); depo kapalıysa null. */
+  dailyBoard: DailyBoard | null;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
   serverNow: number;
 }

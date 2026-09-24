@@ -5,7 +5,7 @@ import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPro
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
-import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyResultEntry } from "./daily";
+import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
 import type { MatchFinishedEntry } from "./xp";
 import type {
   BadgeKey,
@@ -182,6 +182,9 @@ export class Room {
    *  ekranına hâlâ bakan oyuncular (inResults) onu görmeye devam eder. */
   private matchSeq = 0;
   private lastMatchMeta: { id: number; gameMode: GameMode; roundTotal: number; teamScores: [number, number]; podium: PodiumEntry[]; xpGains: Record<string, XpGain> | null; dailyDay: number | null } | null = null;
+  /** Lobi günlük lider tablosu — index.ts'den depo erişimiyle bağlanır. */
+  private dailyBoardProvider: ((userId: string) => DailyBoard | null) | null = null;
+  setDailyBoardProvider(fn: (userId: string) => DailyBoard | null) { this.dailyBoardProvider = fn; }
   private frozenSummaries = new Map<string, MatchSummary>();
   private frozenDaily = new Map<string, string>();
   private inResults = new Set<string>();
@@ -1015,6 +1018,7 @@ export class Room {
         ? Object.fromEntries(this.xpGains)
         : null,
       seasonBoard: this.progress?.seasonBoard(5) ?? null,
+      dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
       serverNow: Date.now(),
     };
   }
@@ -1329,7 +1333,7 @@ export class Room {
         if (player.isBot) continue;
         const pattern = dailyPattern(player.answers, questions);
         this.dailyResults.set(player.id, pattern);
-        entries.push({ day: this.dailyDay, userId: player.id, pattern, score: player.score });
+        entries.push({ day: this.dailyDay, userId: player.id, name: player.name, pattern, score: player.score });
       }
       if (entries.length) {
         try { this.onDailyFinished?.(entries); }

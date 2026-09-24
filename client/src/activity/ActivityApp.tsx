@@ -100,6 +100,30 @@ function SeasonStrip({ state }: { state: GameState }) {
   </div>
 }
 
+/** Bugünün günlük lider tablosu — skor sırası + Wordle deseni + seri rozeti. */
+function DailyStrip({ state }: { state: GameState }) {
+  const { t } = useI18n()
+  const board = state.dailyBoard
+  if (!board) return null
+  const youIn = board.entries.some((entry) => entry.userId === state.youId)
+  return <div className="qt-season qt-daily">
+    <div className="qt-season__head">
+      <span>{t('daily.board', { day: board.day })}</span>
+      {board.streak > 1 && <em className="qt-daily-streak" title={t('daily.streakTitle')}>{t('daily.streak', { count: board.streak })}</em>}
+    </div>
+    {board.entries.length
+      ? <ol className="qt-season__list">
+        {board.entries.map((entry) => <li key={entry.userId} className={entry.userId === state.youId ? 'is-you' : ''}>
+          <b>#{entry.rank}</b><span title={entry.name}>{entry.name}</span><i className="qt-daily-pattern" aria-hidden="true">{entry.pattern}</i><em>{entry.score}</em>
+        </li>)}
+        {!youIn && board.userRank !== null && <li className="is-you">
+          <b>#{board.userRank}</b><span>{t('podium.you')}</span><em></em>
+        </li>}
+      </ol>
+      : <small className="qt-season__empty">{t('daily.empty')}</small>}
+  </div>
+}
+
 function LanguagePicker({ language, onChange }: { language: ActivityLanguage; onChange: (language: ActivityLanguage) => void }) {
   const { t } = useI18n()
   return <label className="qt-language-picker" title={t('lang.label')}>
@@ -1144,6 +1168,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {(state?.spectatorCount ?? 0) > 0 && <small className="qt-spectator-count"><Icon name="eye" /> {t('spectator.count', { count: state!.spectatorCount })}</small>}
           </>}
         {state?.seasonBoard && <SeasonStrip state={state} />}
+        {state?.dailyBoard && <DailyStrip state={state} />}
         <div className="qt-howto"><span>{t('table.howTo')}</span><p>{t('table.howToBody')}</p></div>
       </aside>
     </section>
