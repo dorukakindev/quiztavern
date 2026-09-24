@@ -127,6 +127,9 @@ export const GAME = {
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */
   ELIM_LIVES: 3,
+  /** Düello (§6.1): 1'e 1, 7 soru — masadaki ilk iki oyuncu kapışır, gerisi
+   *  izleyici olarak kazananı tahmin eder. */
+  DUEL_QUESTIONS: 7,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */

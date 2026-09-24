@@ -145,10 +145,11 @@ const MODE_KEYS = {
   elim: { name: 'mode.elim', meta: 'mode.elim.meta', tag: 'mode.elim.tag', icon: 'heart' },
   blur: { name: 'mode.blur', meta: 'mode.blur.meta', tag: 'mode.blur.tag', icon: 'eye' },
   word: { name: 'mode.word', meta: 'mode.word.meta', tag: 'mode.word.tag', icon: 'scroll' },
+  duel: { name: 'mode.duel', meta: 'mode.duel.meta', tag: 'mode.duel.tag', icon: 'sword' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : 'classic'
 }
 
 /**
@@ -412,7 +413,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -485,7 +486,7 @@ function SpectatorBar({ state, canSit, onTakeSeat, onPredict }: { state: GameSta
     {/* Kazanan tahmini (§6.3): pencere maç başında açık, bilene podyumda +XP. */}
     {state.predictOpen && (picked
       ? <span className="qt-predict-yours"><Icon name="check" /> {t('predict.yours', { name: picked.name })}</span>
-      : <span className="qt-predict-bar"><small>{t('predict.title')}</small>{state.players.map((p) => <button key={p.id} type="button" className="qt-predict-chip" onClick={() => onPredict(p.id)}><Avatar player={p} compact />{p.name}</button>)}</span>)}
+      : <span className="qt-predict-bar"><small>{t('predict.title')}</small>{state.players.filter((p) => state.gameMode !== 'duel' || !p.waiting).map((p) => <button key={p.id} type="button" className="qt-predict-chip" onClick={() => onPredict(p.id)}><Avatar player={p} compact />{p.name}</button>)}</span>)}
     {ownGain && <span className="qt-predict-win"><Icon name="check" /> {t('predict.win', { xp: ownGain.gained })}</span>}
     <button type="button" className="qt-button qt-button--primary" disabled={!canSit} onClick={onTakeSeat}>
       {canSit ? <><Icon name="people" /> {t('spectator.play')}</> : t('spectator.full')}
@@ -732,7 +733,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
   </div>
@@ -1303,7 +1304,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onUseCard, onLeave, onSpectate, onReport, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onUseCard, onLeave, onSpectate, onReport, onPredict, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
@@ -1540,7 +1541,15 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
           })}
         </div>}
         {beats.active && state.reveal?.fact ? <p className="qt-locked-note qt-reveal-fact"><Icon name="info" /> <b>{t('reveal.factTitle')}</b> {language === 'en' && state.reveal.factEn ? state.reveal.factEn : state.reveal.fact}</p>
-        : <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>}
+        : <>
+          {/* Düello izleyicisi: cevap veremez ama kazanana tahmin koyabilir. */}
+          {state.gameMode === 'duel' && waiting && onPredict ? <div className="qt-duel-watch">
+            {state.yourPrediction
+              ? <span className="qt-predict-yours"><Icon name="check" /> {t('predict.yours', { name: state.players.find((p) => p.id === state.yourPrediction)?.name ?? '' })}</span>
+              : state.predictOpen ? <span className="qt-predict-bar"><small>{t('predict.title')}</small>{state.players.filter((p) => !p.waiting).map((p) => <button key={p.id} type="button" className="qt-predict-chip" onClick={() => onPredict(p.id)}><Avatar player={p} compact />{p.name}</button>)}</span> : null}
+          </div> : null}
+          <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : state.gameMode === 'duel' ? 'duel.watching' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>
+        </>}
       </> : null}
       {beats.active && !isCircle
         ? <button type="button" className="qt-report-flag" title={t('report.flag')} aria-label={t('report.flag')} disabled={reported} onClick={() => { onReport(); setReported(true) }}><Icon name="flag" /></button>
@@ -2260,7 +2269,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
     // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.
