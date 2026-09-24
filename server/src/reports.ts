@@ -27,6 +27,9 @@ export interface QuestionReportsStore {
   /** Ekler. Döndürülen `duplicate` true ise UNIQUE kısıtı vurdu — satır yazılmadı. */
   report(entry: QuestionReport): { ok: true; duplicate: boolean };
   list(): QuestionReportRow[];
+  /** En az `minReporters` FARKLI oyuncu tarafından bildirilen soru id'leri —
+   *  soru havuzu bunları servis dışı bırakır (bayrak → otomatik çekilme). */
+  suppressedQuestionIds(minReporters?: number): Set<string>;
   close(): void;
 }
 
@@ -55,6 +58,9 @@ export function createReportsStore(file: string): QuestionReportsStore {
     (room_id, user_id, user_name, question_id, question_text, category, note, reported_at)
     VALUES (@roomId, @userId, @userName, @questionId, @questionText, @category, @note, @reportedAt)`);
   const selectAll = db.prepare("SELECT id, room_id AS roomId, user_id AS userId, user_name AS userName, question_id AS questionId, question_text AS questionText, category, note, reported_at AS reportedAt FROM question_reports ORDER BY id");
+  const suppressed = db.prepare(
+    "SELECT question_id FROM question_reports GROUP BY question_id HAVING COUNT(DISTINCT user_id) >= ?",
+  );
   return {
     report(entry) {
       const result = insert.run({
@@ -70,6 +76,9 @@ export function createReportsStore(file: string): QuestionReportsStore {
       return { ok: true, duplicate: result.changes === 0 };
     },
     list() { return selectAll.all() as QuestionReportRow[]; },
+    suppressedQuestionIds(minReporters = 3) {
+      return new Set((suppressed.all(minReporters) as { question_id: string }[]).map((row) => row.question_id));
+    },
     close() { db.close(); },
   };
 }
