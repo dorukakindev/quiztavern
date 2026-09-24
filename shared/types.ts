@@ -5,7 +5,7 @@
 /** `bet` yalnızca Çifte Bahis modunda vardır: soru açılmadan önce oyuncular
  *  kategoriyi görüp bankrollerinden yatırır. Sıra: countdown → (bet → question →
  *  reveal)* → podium. Diğer modlar bet fazına hiç girmez. */
-export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "podium";
+export type Phase = "lobby" | "countdown" | "bet" | "pick" | "question" | "reveal" | "podium";
 /** `quiz` eski istemciler icin uyumluluk aliasidir; yeni Activity Klasik/Fitil kullanir.
  *  `bet` (Çifte Bahis): klasik sorular; her soru öncesi bahis fazı, doğru cevap
  *  yatırılanı katlar, yanlış yakar — skor = bankroll, aşağı da inebilir.
@@ -25,7 +25,8 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "zil"
   | "numeric"
   | "blitz"
-  | "timeline";
+  | "timeline"
+  | "board";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -322,6 +323,27 @@ export interface TimelineRevealPayload {
   durationMs: number;
 }
 
+/** Tavern Panosu (§6.1): pick fazında pano durumu. Hücre metni/şıkları
+ *  hiç sızıntı etmez — yalnız değer + kullanılmışlık gider; soru ancak hücre
+ *  açılıp question fazına geçince question payload'ıyla gelir. */
+export interface BoardCellState {
+  /** Hücre puan değeri (100..500). */
+  value: number;
+  used: boolean;
+}
+
+export interface BoardPayload {
+  /** Sütun başlıkları — kategori adları (istemcide categoryLabel'dan geçer). */
+  categories: string[];
+  /** Satır-major hücreler: cells[kategoriIdx * 5 + değerIdx]. */
+  cells: BoardCellState[];
+  /** Bu turda hücre seçecek oyuncu. */
+  pickerId: string | null;
+  pickerName: string;
+  deadline: number;
+  durationMs: number;
+}
+
 /** Maç soru açılmadan önce, tüm istemcilerin aynı anda oynattığı geri sayım. */
 export interface CountdownPayload {
   deadline: number;
@@ -586,6 +608,8 @@ export interface GameState {
   timelineReveal: TimelineRevealPayload | null;
   /** Sıralama modunda izleyenin kilitlediği dizim (question fazında). */
   yourOrder: number[] | null;
+  /** Tavern Panosu: pick fazında pano; question/reveal'da null. */
+  board: BoardPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;
@@ -686,6 +710,8 @@ export const EV = {
   /** Yakın Tahmin: { value } — turun sayısal tahminini kilitler */
   NUMERIC_ANSWER: "numeric-answer",
   ORDER_ANSWER: "order-answer",
+  /** Tavern Panosu: { cell } — sırası gelen oyuncunun seçtiği hücre (düz indeks). */
+  PICK_CELL: "pick-cell",
   /** Çifte Bahis: { amount } — bahis fazında yatırılan tutar (0..bankroll) */
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */

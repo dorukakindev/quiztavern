@@ -724,3 +724,20 @@
 .qt-order-row.is-you { border-color: var(--gold); }
 .qt-order-hit { font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
 .qt-order-row .qt-blitz-pickers { font-size: .72rem; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Tavern Panosu ──────────────────────────────────────────────────── */
+.qt-board { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: .6rem; width: 100%; }
+.qt-board-col { display: grid; gap: .5rem; align-content: start; min-width: 0; }
+.qt-board-col__head { padding: .55rem .4rem; border-radius: 10px; background: color-mix(in srgb, var(--gold) 14%, var(--card)); border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line)); color: var(--gold); font-weight: 800; font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qt-board-cell { display: grid; place-items: center; min-height: 3rem; padding: .5rem .3rem; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--gold); font: inherit; font-weight: 800; font-size: 1.05rem; font-variant-numeric: tabular-nums; cursor: pointer; transition: border-color .15s ease, transform .15s ease, background .15s ease, opacity .15s ease; }
+.qt-board-cell.is-pickable:hover { border-color: var(--gold); background: color-mix(in srgb, var(--gold) 16%, var(--card)); transform: translateY(-2px); }
+.qt-board-cell.is-pickable:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+.qt-board-cell:disabled { cursor: default; }
+.qt-board-cell.is-used { opacity: .28; color: var(--ink-2); text-decoration: line-through; }
+.qt-board-cell--gap { visibility: hidden; }
+@media (max-width: 700px) {
+  .qt-board { gap: .35rem; }
+  .qt-board-col { gap: .3rem; }
+  .qt-board-col__head { font-size: .6rem; padding: .4rem .2rem; }
+  .qt-board-cell { min-height: 2.3rem; font-size: .85rem; }
+}

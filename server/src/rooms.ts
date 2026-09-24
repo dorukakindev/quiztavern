@@ -5,6 +5,7 @@ import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPro
 import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
 import { sampleOrderQuestions, type OrderQuestion } from "./questions-order";
+import { sampleBoardCells, type BoardCellSpec } from "./questions-board";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
@@ -27,6 +28,7 @@ import type {
   BlitzSummaryPayload,
   TimelineQuestionPayload,
   TimelineRevealPayload,
+  BoardPayload,
   NumericRevealPayload,
   PodiumEntry,
   ProgressBadge,
@@ -228,6 +230,15 @@ export class Room {
   private orderGuesses = new Map<string, number[]>();
   /** Turun ekran dizilimi: görünen sıra → events indeksi. Herkes aynı karışımı görür. */
   private orderShuffle: number[] = [];
+  // Tavern Panosu (§6.1): 5 kategori x 5 değer panosu. Sorular soru fazına
+  // kadar sunucuda kalır — pick fazında yalnız değer+kullanılmışlık sızar.
+  private boardCells: (BoardCellSpec & { used: boolean })[] = [];
+  private boardCategories: string[] = [];
+  private boardAsked: Question[] = []; // açılan hücrelerin soruları, açılış sırasıyla
+  private boardPickerOrder: string[] = [];
+  private boardPickerPos = 0;
+  private currentCell = -1;
+  private pickDeadline = 0;
   // Kelime Oyunu durumu: prompt dizisi (≤14 tur, 4-10 harf), bu turda açılan
   // harf sayısı, açılış sırası (karışık pozisyonlar) ve maç-geneli ortak zaman
   // havuzu. Havuz her soru fazında tükenir; reveal sırasında saat durur.
@@ -824,7 +835,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric" && mode !== "blitz" && mode !== "timeline") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric" && mode !== "blitz" && mode !== "timeline" && mode !== "board") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -841,6 +852,7 @@ export class Room {
     if (mode === "numeric") this.questionCount = 10;
     if (mode === "blitz") this.questionCount = 10;
     if (mode === "timeline") this.questionCount = 10;
+    if (mode === "board") this.questionCount = 25 as QuestionCount; // 5x5 pano — fiili limit hücre sayısı
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -1122,12 +1134,24 @@ export class Room {
       // Özel paket seçiliyse (Çember ve Bulanık Resim hariç — çemberin kendi
       // prompt havuzu, bulanığın resimli-soru zorunluluğu var) sorular paketin
       // listesinden çekilir; kategori/zorluk filtreleri paket için uygulanmaz.
-      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" ? getPack(this.packId) : null;
-      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && !pack) throw new GameError("err.packUnknown");
+      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && this.gameMode !== "board" ? getPack(this.packId) : null;
+      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && this.gameMode !== "board" && !pack) throw new GameError("err.packUnknown");
       if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
       this.numericQuestions = this.gameMode === "numeric" ? sampleNumericQuestions(this.roundLimit, this.seenQuestionIds) : [];
       this.orderQuestions = this.gameMode === "timeline" ? sampleOrderQuestions(this.roundLimit, this.seenQuestionIds) : [];
-      this.questions = this.gameMode === "word" || this.gameMode === "numeric" || this.gameMode === "timeline"
+      // Tavern Panosu: sorular hücrelerde oturur; questions dizisi boş kalır —
+      // currentQuestion açık hücreden okur, buildReview açılış sırasını izler.
+      if (this.gameMode === "board") {
+        const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
+        this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
+        this.boardCategories = spec.categories;
+        this.boardAsked = [];
+        this.currentCell = -1;
+        this.boardPickerPos = 0;
+        this.boardPickerOrder = this.eligiblePlayers().map((player) => player.id);
+        if (!this.boardCells.length) throw new GameError("err.categoryEmpty");
+      }
+      this.questions = this.gameMode === "word" || this.gameMode === "numeric" || this.gameMode === "timeline" || this.gameMode === "board"
         ? []
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
@@ -1156,6 +1180,7 @@ export class Room {
     if (this.gameMode !== "circle" && this.gameMode !== "word") this.roundLimit =
       this.gameMode === "numeric" ? this.numericQuestions.length
       : this.gameMode === "timeline" ? this.orderQuestions.length
+      : this.gameMode === "board" ? this.boardCells.length
       : this.questions.length;
 
     if (this.gameMode === "circle") {
@@ -1291,6 +1316,7 @@ export class Room {
   }
 
   currentQuestion(): Question | null {
+    if (this.gameMode === "board") return this.currentCell >= 0 ? this.boardCells[this.currentCell]?.question ?? null : null;
     return this.gameMode !== "circle" && this.gameMode !== "word" && this.qIndex < this.roundLimit ? this.questions[this.qIndex] ?? null : null;
   }
 
@@ -1480,6 +1506,18 @@ export class Room {
     const bet: BetPayload | null = this.phase === "bet" && question
       ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: this.rescueRound.has(youId), brokeReward: GAME.BET_BROKE_REWARD, ...(this.qIndex === this.roundLimit - 1 ? { final: true } : {}) }
       : null;
+    // Tavern Panosu: pick fazında pano — yalnız değer+kullanılmışlık (soru sızıntısı yok).
+    const pickerId = this.boardPickerId();
+    const board: BoardPayload | null = this.gameMode === "board" && this.phase === "pick"
+      ? {
+          categories: this.boardCategories,
+          cells: this.boardCells.map((cell) => ({ value: cell.value, used: cell.used })),
+          pickerId,
+          pickerName: (pickerId && this.players.get(pickerId)?.name) || "",
+          deadline: this.pickDeadline,
+          durationMs: GAME.PICK_MS,
+        }
+      : null;
     const podium: PodiumEntry[] | null = this.phase === "podium"
       ? this.podiumSnapshot ?? this.snapshotPodium()
       : null;
@@ -1535,6 +1573,7 @@ export class Room {
       timelineReveal,
       yourNumericGuess: this.numericGuesses.get(youId) ?? null,
       yourOrder: this.orderGuesses.get(youId) ?? null,
+      board,
       podium,
       matchSummary,
       moments,
@@ -1656,7 +1695,7 @@ export class Room {
     this.timer = setTimeout(() => {
       if (this.phase !== "countdown") return;
       // Çifte Bahis: sorudan önce bahis fazı gelir; diğer modlar doğrudan soruya.
-      this.gameMode === "bet" ? this.beginBet() : this.beginQuestion();
+      this.gameMode === "bet" ? this.beginBet() : this.gameMode === "board" ? this.beginPick() : this.beginQuestion();
     }, GAME.COUNTDOWN_MS);
   }
 
@@ -1717,6 +1756,59 @@ export class Room {
     if (this.phase !== "bet") return;
     const waiting = this.eligiblePlayers().filter((player) => player.connected);
     if (waiting.length && waiting.every((player) => player.bet !== null)) this.beginQuestion();
+  }
+
+  /** Tavern Panosu: bu turda hücre seçecek oyuncu (dönüşümlü sıra). */
+  private boardPickerId(): string | null {
+    return this.boardPickerOrder.length ? this.boardPickerOrder[this.boardPickerPos % this.boardPickerOrder.length] : null;
+  }
+
+  /** Tavern Panosu pick fazı: sırası gelen hücre seçer; süre dolunca sunucu
+   *  rastgele kalan hücreyi açar (bot ya da pasif oyuncu maçı kilitlemesin). */
+  private beginPick() {
+    if (!this.boardCells.some((cell) => !cell.used)) return this.finish();
+    this.clearTimer();
+    this.phase = "pick";
+    this.lastReveal = null;
+    this.pickDeadline = Date.now() + GAME.PICK_MS;
+    this.broadcast();
+    // Sıradaki botsa kendi hücresini seçer (1–3 sn); pasif insan için süre
+    // sonunda sunucu rastgele açar — pick fazı maçı asla kilitlemez.
+    const picker = this.boardPickerId();
+    if (picker && this.players.get(picker)?.isBot) {
+      this.scheduleBotTask(() => {
+        if (this.phase !== "pick") return;
+        const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
+        if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
+      }, 1_000 + Math.random() * 2_000);
+    }
+    this.timer = setTimeout(() => {
+      if (this.phase !== "pick") return;
+      // Sıradaki pasif kalırsa masa beklemez: kalan hücrelerden biri rastgele açılır.
+      const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
+      if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
+    }, GAME.PICK_MS);
+  }
+
+  /** Tavern Panosu: yalnız sırası gelen oyuncu, açık bir hücreyi seçebilir. */
+  pickCell(playerId: string, cell: number): void {
+    if (this.gameMode !== "board" || this.phase !== "pick") return;
+    if (this.boardPickerId() !== playerId) return;
+    if (!Number.isInteger(cell) || cell < 0 || cell >= this.boardCells.length) return;
+    if (this.boardCells[cell].used) return;
+    this.openCell(cell);
+  }
+
+  /** Hücreyi açıp soruya geçer: açılan hücrenin sorusu currentQuestion üzerinden
+   *  question payload'ına düşer; seçim sırası bir sonraki oyuncuya geçer. */
+  private openCell(cell: number) {
+    const entry = this.boardCells[cell];
+    if (!entry || entry.used) return;
+    entry.used = true;
+    this.currentCell = cell;
+    this.boardAsked.push(entry.question);
+    this.boardPickerPos += 1;
+    this.beginQuestion();
   }
 
   /** Bir turun sonucunu oyuncunun maç istatistiğine işler (4d özet kartı). */
@@ -1820,6 +1912,21 @@ export class Room {
           correctAnswerEn: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.labelEn).join(" → "),
         });
       });
+    } else if (this.gameMode === "board") {
+      this.boardAsked.forEach((question, i) => {
+        if (player.eligibleFrom > i) return;
+        const choice = player.answers[i] ?? null;
+        items.push({
+          category: question.category,
+          prompt: question.text,
+          correct: choice === question.correctIndex,
+          yourAnswer: choice !== null ? question.choices[choice] : "",
+          correctAnswer: question.choices[question.correctIndex],
+          promptEn: question.textEn,
+          yourAnswerEn: choice !== null ? question.choicesEn[choice] : "",
+          correctAnswerEn: question.choicesEn[question.correctIndex],
+        });
+      });
     } else {
       this.questions.slice(0, this.roundLimit).forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -1915,6 +2022,8 @@ export class Room {
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
         // düşer; yanlış basan puan kaybeder (§6.1 "yanlışsa −puan").
         if (this.gameMode === "zil") gain = correct ? this.zilValue() : -GAME.ZIL_PENALTY;
+        // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
+        if (this.gameMode === "board") gain = correct ? this.boardCells[this.currentCell]?.value ?? 0 : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         if (gain) player.score += gain;
@@ -2173,6 +2282,10 @@ export class Room {
     // D/Y Blitz tek 60 sn'lik penceredir — özeti gösterdikten sonra maç biter.
     if (this.gameMode === "blitz") return this.finish();
     this.qIndex += 1;
+    // Tavern Panosu: hücre kaldıysa sıradaki oyuncu seçer, bittiyse podyum.
+    if (this.gameMode === "board") {
+      return this.boardCells.some((cell) => !cell.used) ? this.beginPick() : this.finish();
+    }
     // Çifte Bahis'te her sorunun önünde yeniden bahis fazı vardır.
     this.gameMode === "bet" ? this.beginBet() : this.beginQuestion();
   }
