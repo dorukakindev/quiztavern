@@ -44968,5 +44968,2805 @@
       "Garanti Bankası",
       "Yapı Kredi"
     ]
+  },
+  {
+    "id": "ortacag-1066",
+    "category": "Orta Çağ",
+    "text": "1066'daki Hastings Muharebesi hangi iki taraf arasında geçti?",
+    "choices": [
+      "Normanlar ve Saksonlar",
+      "Franklar ve Vikingler",
+      "Brezonyalılar ve Romalılar",
+      "Venedikliler ve Cenevizliler"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "The Battle of Hastings in 1066 was fought between which two sides?",
+    "choicesEn": [
+      "Normans and Saxons",
+      "Franks and Vikings",
+      "Bretons and Romans",
+      "Venetians and Genoese"
+    ]
+  },
+  {
+    "id": "ortacag-magna-carta",
+    "category": "Orta Çağ",
+    "text": "1215'te İngiltere'de krala yetki sınırı koyan belge hangisidir?",
+    "choices": [
+      "Domesday Book",
+      "Balfour Deklarasyonu",
+      "Magna Carta",
+      "Habeas Corpus"
+    ],
+    "correctIndex": 2,
+    "difficulty": "kolay",
+    "textEn": "Which 1215 document limited the English king's authority?",
+    "choicesEn": [
+      "Domesday Book",
+      "Balfour Declaration",
+      "Magna Carta",
+      "Habeas Corpus"
+    ]
+  },
+  {
+    "id": "ortacag-jacqueries",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ Avrupası'nda 'Jacquerie' neyi anlatır?",
+    "choices": [
+      "Köylü ayaklanmasını",
+      "Şövalye turnuvasını",
+      "Manastır yazmanlığını",
+      "Venedik ticaret yolunu"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "In medieval Europe, what did 'Jacquerie' refer to?",
+    "choicesEn": [
+      "A peasant revolt",
+      "A knightly tournament",
+      "Monastic manuscript work",
+      "The Venetian trade route"
+    ]
+  },
+  {
+    "id": "ortacag-muhteşem-suleyman-contemp",
+    "category": "Orta Çağ",
+    "text": "Kanuni Sultan Süleyman ile aynı yüzyılı paylaşan Orta Çağ sonu hükümdarı hangisidir?",
+    "choices": [
+      "III. Richard",
+      "V. Charles (Şarlken)",
+      "VIII. Edward",
+      "IX. Louis"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which late-medieval monarch shared a century with Suleiman the Magnificent?",
+    "choicesEn": [
+      "Richard III",
+      "Charles V",
+      "Edward VIII",
+      "Louis IX"
+    ]
+  },
+  {
+    "id": "ortacag-bubonik",
+    "category": "Orta Çağ",
+    "text": "1347-1351'de Avrupa'nın üçte birini öldüren salgının adı nedir?",
+    "choices": [
+      "İspanyol gribi",
+      "Kara Ölüm",
+      "Çiçek hastalığı",
+      "Tifüs"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What was the plague called that killed a third of Europe in 1347-1351?",
+    "choicesEn": [
+      "Spanish flu",
+      "Black Death",
+      "Smallpox",
+      "Typhus"
+    ]
+  },
+  {
+    "id": "ortacag-guild",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ kentlerinde aynı zanaatı yapanların kurduğu örgütün adı nedir?",
+    "choices": [
+      "Lonca",
+      "Fief",
+      "Senato",
+      "Dükan"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "What was the organization of craftsmen in medieval towns called?",
+    "choicesEn": [
+      "Guild",
+      "Fief",
+      "Senate",
+      "Shop"
+    ]
+  },
+  {
+    "id": "ortacag-istanbul",
+    "category": "Orta Çağ",
+    "text": "İstanbul'un fethi hangi yılda gerçekleşti?",
+    "choices": [
+      "1204",
+      "1261",
+      "1453",
+      "1492"
+    ],
+    "correctIndex": 2,
+    "difficulty": "kolay",
+    "textEn": "In which year did the conquest of Constantinople take place?",
+    "choicesEn": [
+      "1204",
+      "1261",
+      "1453",
+      "1492"
+    ]
+  },
+  {
+    "id": "ortacag-hilal-ay",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da Avrupa'da 'Sarazen' kelimesi kimi tanımlamak için kullanılırdı?",
+    "choices": [
+      "Saksonları",
+      "Müslümanları",
+      "Vikingleri",
+      "Moğolları"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "In medieval Europe, the word 'Saracen' was used to describe whom?",
+    "choicesEn": [
+      "The Saxons",
+      "Muslims",
+      "The Vikings",
+      "The Mongols"
+    ]
+  },
+  {
+    "id": "ortacag-serf",
+    "category": "Orta Çağ",
+    "text": "Feodal düzende toprağa bağlı, toprağı satanla birlikte devredilen köylüye ne denirdi?",
+    "choices": [
+      "Vassal",
+      "Serf",
+      "Yeoman",
+      "Baron"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What was a peasant bound to the land under feudalism called?",
+    "choicesEn": [
+      "Vassal",
+      "Serf",
+      "Yeoman",
+      "Baron"
+    ]
+  },
+  {
+    "id": "ortacag-hansa",
+    "category": "Orta Çağ",
+    "text": "Baltık ve Kuzey Denizi ticaretini kontrol eden Orta Çağ kentler birliği hangisidir?",
+    "choices": [
+      "Hansa Birliği",
+      "Lombardiya Birliği",
+      "Swabian Birliği",
+      "Kalmar Birliği"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Which medieval league controlled Baltic and North Sea trade?",
+    "choicesEn": [
+      "Hanseatic League",
+      "Lombard League",
+      "Swabian League",
+      "Kalmar Union"
+    ]
+  },
+  {
+    "id": "ortacag-jost",
+    "category": "Orta Çağ",
+    "text": "Şövalye turnuvalarında at üzerinde mızrakla yapılan karşılaşmaya ne denir?",
+    "choices": [
+      "Melee",
+      "Joust",
+      "Quintain",
+      "Pas d'armes"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the mounted lance combat in knightly tournaments called?",
+    "choicesEn": [
+      "Melee",
+      "Joust",
+      "Quintain",
+      "Pas d'armes"
+    ]
+  },
+  {
+    "id": "ortacag-doomsday",
+    "category": "Orta Çağ",
+    "text": "1086'da I. William'ın İngiltere'deki tüm toprak ve serveti yazdırdığı defter hangisidir?",
+    "choices": [
+      "Exeter Kitabı",
+      "Domesday Book",
+      "Kells Kitabı",
+      "Red Book"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which 1086 book surveyed all land and wealth in England for William I?",
+    "choicesEn": [
+      "Exeter Book",
+      "Domesday Book",
+      "Book of Kells",
+      "Red Book"
+    ]
+  },
+  {
+    "id": "ortacag-avignon",
+    "category": "Orta Çağ",
+    "text": "14. yüzyılda papaların yaklaşık 70 yıl Roma yerine oturduğu şehir hangisidir?",
+    "choices": [
+      "Venedik",
+      "Avignon",
+      "Lyon",
+      "Köln"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which city did the popes reside in for about 70 years instead of Rome in the 14th century?",
+    "choicesEn": [
+      "Venice",
+      "Avignon",
+      "Lyon",
+      "Cologne"
+    ]
+  },
+  {
+    "id": "ortacag-uzunyay",
+    "category": "Orta Çağ",
+    "text": "Azincourt (1415) gibi savaşlarda İngiliz zaferinin simgesi olan silah hangisidir?",
+    "choices": [
+      "Arbalet",
+      "Uzun yay",
+      "Balyoz",
+      "Mançınık"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which weapon symbolised English victory at Agincourt (1415)?",
+    "choicesEn": [
+      "Crossbow",
+      "Longbow",
+      "Mace",
+      "Trebuchet"
+    ]
+  },
+  {
+    "id": "ortacag-inquisition",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da sapkınlığı soruşturmak için kurulan kilise mahkemesinin adı nedir?",
+    "choices": [
+      "Engizisyon",
+      "Sinod",
+      "Konsistor",
+      "Diyez"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What was the church court investigating heresy in the Middle Ages called?",
+    "choicesEn": [
+      "Inquisition",
+      "Synod",
+      "Consistory",
+      "Diocese"
+    ]
+  },
+  {
+    "id": "ortacag-troyes",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da para birimi olarak kullanılan 'troy ons' adını hangi şehirden alır?",
+    "choices": [
+      "Troyes",
+      "Troy",
+      "Torino",
+      "Trier"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "The 'troy ounce' takes its name from which city?",
+    "choicesEn": [
+      "Troyes",
+      "Troy",
+      "Turin",
+      "Trier"
+    ]
+  },
+  {
+    "id": "ortacag-chanson",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ Fransa'sında kahramanlık destanlarına verilen ad nedir?",
+    "choices": [
+      "Lai",
+      "Chanson de geste",
+      "Fabliau",
+      "Rondeau"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "What were heroic epics called in medieval France?",
+    "choicesEn": [
+      "Lai",
+      "Chanson de geste",
+      "Fabliau",
+      "Rondeau"
+    ]
+  },
+  {
+    "id": "ortacag-minster",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da öğrenim görmeden manastırda yetişen ve saz çalıp şarkı söyleyen gezgin sanatçıya ne denirdi?",
+    "choices": [
+      "Troubadour",
+      "Minstrel",
+      "Goliard",
+      "Jongleur"
+    ],
+    "correctIndex": 3,
+    "difficulty": "orta",
+    "textEn": "What was a wandering medieval entertainer who sang and played instruments called?",
+    "choicesEn": [
+      "Troubadour",
+      "Minstrel",
+      "Goliard",
+      "Jongleur"
+    ]
+  },
+  {
+    "id": "ortacag-motte",
+    "category": "Orta Çağ",
+    "text": "Erken Orta Çağ kalelerinin en basit tipi olan tümsek+çukur kalesi hangisidir?",
+    "choices": [
+      "Concentric castle",
+      "Motte-and-bailey",
+      "Shell keep",
+      "Ringwork"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which is the simplest early medieval castle type with a mound and ditch?",
+    "choicesEn": [
+      "Concentric castle",
+      "Motte-and-bailey",
+      "Shell keep",
+      "Ringwork"
+    ]
+  },
+  {
+    "id": "ortacag-100yil",
+    "category": "Orta Çağ",
+    "text": "Yüz Yıl Savaşları hangi iki krallık arasında geçti?",
+    "choices": [
+      "İngiltere-Fransa",
+      "İspanya-Portekiz",
+      "Avusturya-Macaristan",
+      "İsveç-Danimarka"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "The Hundred Years' War was fought between which two kingdoms?",
+    "choicesEn": [
+      "England-France",
+      "Spain-Portugal",
+      "Austria-Hungary",
+      "Sweden-Denmark"
+    ]
+  },
+  {
+    "id": "ortacag-zamoyski",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da Polonya-Litvanya sınır şehri Kraków'un ünlü olduğu kurum hangisidir?",
+    "choices": [
+      "İlk matbaa",
+      "Jagiellon Üniversitesi",
+      "İlk borsa",
+      "Kraliyet darphanesi"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which institution is medieval Kraków famous for?",
+    "choicesEn": [
+      "First printing press",
+      "Jagiellonian University",
+      "First stock exchange",
+      "Royal mint"
+    ]
+  },
+  {
+    "id": "ortacag-templar",
+    "category": "Orta Çağ",
+    "text": "1307'de IV. Philip'in cuma günü baskınlarıyla dağıttığı askeri tarikat hangisidir?",
+    "choices": [
+      "Hospitaller",
+      "Tapınak Şövalyeleri",
+      "Töton Şövalyeleri",
+      "Calatrava Tarikatı"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which military order was disbanded by Philip IV's Friday raids in 1307?",
+    "choicesEn": [
+      "Hospitallers",
+      "Knights Templar",
+      "Teutonic Knights",
+      "Order of Calatrava"
+    ]
+  },
+  {
+    "id": "ortacag-endulus",
+    "category": "Orta Çağ",
+    "text": "İber Yarımadası'ndaki Orta Çağ Müslüman hakimiyetine verilen isim nedir?",
+    "choices": [
+      "Endülüs",
+      "Magrib",
+      "Levant",
+      "Al-Andalus"
+    ],
+    "correctIndex": 3,
+    "difficulty": "kolay",
+    "textEn": "What was Muslim rule in the Iberian Peninsula called in the Middle Ages?",
+    "choicesEn": [
+      "Endülüs",
+      "Maghreb",
+      "Levant",
+      "Al-Andalus"
+    ]
+  },
+  {
+    "id": "ortacag-vikings-gemi",
+    "category": "Orta Çağ",
+    "text": "Vikinglerin sığ sularda bile yüzebilen, hem kürekli hem yelkenli gemi tipi hangisidir?",
+    "choices": [
+      "Knarr",
+      "Longship",
+      "Cog",
+      "Karaka"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which Viking ship type could sail in shallow water with oars and sails?",
+    "choicesEn": [
+      "Knarr",
+      "Longship",
+      "Cog",
+      "Galley"
+    ]
+  },
+  {
+    "id": "ortacag-yedi",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ'da liberal sanatlar yedi bölümdür; quadrivium hangi dört dalı kapsar?",
+    "choices": [
+      "Gramer, mantık, hitabet, astronomi",
+      "Aritmetik, geometri, müzik, astronomi",
+      "Geometri, diyalektik, müzik, tıp",
+      "Hitabet, aritmetik, felsefe, teoloji"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "The medieval quadrivium covered which four subjects?",
+    "choicesEn": [
+      "Grammar, logic, rhetoric, astronomy",
+      "Arithmetic, geometry, music, astronomy",
+      "Geometry, dialectic, music, medicine",
+      "Rhetoric, arithmetic, philosophy, theology"
+    ]
+  },
+  {
+    "id": "ortacag-hansa-lubeck",
+    "category": "Orta Çağ",
+    "text": "Hansa Birliği'nin fiili başkenti sayılan Alman kenti hangisidir?",
+    "choices": [
+      "Hamburg",
+      "Lübeck",
+      "Bremen",
+      "Danzig"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which German city was the de facto capital of the Hanseatic League?",
+    "choicesEn": [
+      "Hamburg",
+      "Lübeck",
+      "Bremen",
+      "Danzig"
+    ]
+  },
+  {
+    "id": "ortacag-kulluk",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ İslam dünyasında 'mevali' terimi neyi anlatır?",
+    "choices": [
+      "Saray muhafızlarını",
+      "Arap olmayan Müslümanları",
+      "Vergi memurlarını",
+      "Sınır askerlerini"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "In the medieval Islamic world, what did the term 'mawali' mean?",
+    "choicesEn": [
+      "Palace guards",
+      "Non-Arab Muslims",
+      "Tax collectors",
+      "Border soldiers"
+    ]
+  },
+  {
+    "id": "ortacag-seyrisefain",
+    "category": "Orta Çağ",
+    "text": "Orta Çağ İslam dünyasında yükseköğrenim gören öğrencilerin okuduğu kuruma ne denirdi?",
+    "choices": [
+      "Lonca mektebi",
+      "Medrese",
+      "Rüştiye",
+      "Enderun"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What was the medieval Islamic institution of higher learning called?",
+    "choicesEn": [
+      "Guild school",
+      "Madrasa",
+      "Rüştiye",
+      "Enderun"
+    ]
+  },
+  {
+    "id": "antik-uruk",
+    "category": "Antik Uygarlıklar",
+    "text": "Tarihin bilinen ilk büyük şehri sayılan Uruk hangi uygarlığa aittir?",
+    "choices": [
+      "Asur",
+      "Sümer",
+      "Hitit",
+      "Babil"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Uruk, considered the first major city in history, belonged to which civilization?",
+    "choicesEn": [
+      "Assyria",
+      "Sumer",
+      "Hittites",
+      "Babylon"
+    ]
+  },
+  {
+    "id": "antik-çivi",
+    "category": "Antik Uygarlıklar",
+    "text": "Sümerlerin ıslak kile bastıkları kamışla oluşturdukları yazı tipi hangisidir?",
+    "choices": [
+      "Hiyeroglif",
+      "Çivi yazısı",
+      "Fenike alfabesi",
+      "Runik"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the wedge-shaped script the Sumerians pressed into wet clay?",
+    "choicesEn": [
+      "Hieroglyphs",
+      "Cuneiform",
+      "Phoenician alphabet",
+      "Runic"
+    ]
+  },
+  {
+    "id": "antik-hammurabi",
+    "category": "Antik Uygarlıklar",
+    "text": "Hammurabi Kanunları hangi antik kent devletinin kralı tarafından çıkarıldı?",
+    "choices": [
+      "Nineveh",
+      "Babil",
+      "Uruk",
+      "Susa"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Hammurabi's Code was issued by the king of which ancient city-state?",
+    "choicesEn": [
+      "Nineveh",
+      "Babylon",
+      "Uruk",
+      "Susa"
+    ]
+  },
+  {
+    "id": "antik-rosetta",
+    "category": "Antik Uygarlıklar",
+    "text": "Hiyerogliflerin çözülmesini sağlayan taşın adı nedir?",
+    "choices": [
+      "Behistun Taşı",
+      "Rosetta Taşı",
+      "Narmer Paleti",
+      "Amarna Tabletleri"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the name of the stone that enabled hieroglyphs to be deciphered?",
+    "choicesEn": [
+      "Behistun Stone",
+      "Rosetta Stone",
+      "Narmer Palette",
+      "Amarna Letters"
+    ]
+  },
+  {
+    "id": "antik-hitit-kadeş",
+    "category": "Antik Uygarlıklar",
+    "text": "MÖ 1274 Kadeş Savaşı hangi iki büyük güç arasında yapıldı?",
+    "choices": [
+      "Hitit-Mısır",
+      "Asur-Babil",
+      "Pers-Yunan",
+      "Urartu-Frigya"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "The Battle of Kadesh in 1274 BC was fought between which two powers?",
+    "choicesEn": [
+      "Hittites-Egypt",
+      "Assyria-Babylon",
+      "Persia-Greece",
+      "Urartu-Phrygia"
+    ]
+  },
+  {
+    "id": "antik-minos",
+    "category": "Antik Uygarlıklar",
+    "text": "Girit adasında Knossos Sarayı ile bilinen denizci uygarlık hangisidir?",
+    "choices": [
+      "Miken",
+      "Minos",
+      "Dor",
+      "İyon"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which seafaring civilization is known for the Palace of Knossos on Crete?",
+    "choicesEn": [
+      "Mycenaean",
+      "Minoan",
+      "Dorian",
+      "Ionian"
+    ]
+  },
+  {
+    "id": "antik-lineer-b",
+    "category": "Antik Uygarlıklar",
+    "text": "Miken tabletlerinde kullanılan ve 1952'de çözülen yazının adı nedir?",
+    "choices": [
+      "Linear A",
+      "Linear B",
+      "Kıbrıs yazısı",
+      "Eteocypriot"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "What is the name of the Mycenaean script deciphered in 1952?",
+    "choicesEn": [
+      "Linear A",
+      "Linear B",
+      "Cypriot script",
+      "Eteocypriot"
+    ]
+  },
+  {
+    "id": "antik-fenike",
+    "category": "Antik Uygarlıklar",
+    "text": "Bugünkü alfabelerin atası sayılan 22 harfli yazıyı yayan ticaret halkı kimdir?",
+    "choices": [
+      "Lidyalılar",
+      "Fenikeliler",
+      "Aramililer",
+      "Kartacalılar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which trading people spread the 22-letter script ancestral to modern alphabets?",
+    "choicesEn": [
+      "Lydians",
+      "Phoenicians",
+      "Arameans",
+      "Carthaginians"
+    ]
+  },
+  {
+    "id": "antik-lidya-para",
+    "category": "Antik Uygarlıklar",
+    "text": "Tarihte madeni parayı ilk kullanan uygarlık hangisidir?",
+    "choices": [
+      "İyonlar",
+      "Lidyalılar",
+      "Persler",
+      "Yunanlar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which civilization first used coined money?",
+    "choicesEn": [
+      "Ionians",
+      "Lydians",
+      "Persians",
+      "Greeks"
+    ]
+  },
+  {
+    "id": "antik-troy",
+    "category": "Antik Uygarlıklar",
+    "text": "Truva kazıları 1870'lerde hangi amatör arkeolog tarafından başlatıldı?",
+    "choices": [
+      "Arthur Evans",
+      "Heinrich Schliemann",
+      "Howard Carter",
+      "Max Mallowan"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Who began excavations at Troy in the 1870s?",
+    "choicesEn": [
+      "Arthur Evans",
+      "Heinrich Schliemann",
+      "Howard Carter",
+      "Max Mallowan"
+    ]
+  },
+  {
+    "id": "antik-urartu",
+    "category": "Antik Uygarlıklar",
+    "text": "Doğu Anadolu'da Van Gölü çevresinde kurulmuş, Tuşpa başkentli krallık hangisidir?",
+    "choices": [
+      "Frigya",
+      "Urartu",
+      "Kommagene",
+      "Pontus"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which kingdom around Lake Van had its capital at Tushpa?",
+    "choicesEn": [
+      "Phrygia",
+      "Urartu",
+      "Commagene",
+      "Pontus"
+    ]
+  },
+  {
+    "id": "antik-asmurbanipal",
+    "category": "Antik Uygarlıklar",
+    "text": "Bilinen ilk sistematik kütüphaneyi Nineveh'de kuran Asur kralı kimdir?",
+    "choices": [
+      "Sargon II",
+      "Asurbanipal",
+      "Tiglat-Pileser",
+      "Salmanassar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which Assyrian king founded the first systematic library at Nineveh?",
+    "choicesEn": [
+      "Sargon II",
+      "Ashurbanipal",
+      "Tiglath-Pileser",
+      "Shalmaneser"
+    ]
+  },
+  {
+    "id": "antik-iskenderiye",
+    "category": "Antik Uygarlıklar",
+    "text": "Antik İskenderiye Kütüphanesi hangi hükümdar hanedanı döneminde kuruldu?",
+    "choices": [
+      "Ptolemaioslar",
+      "Seleukoslar",
+      "Antigonidler",
+      "Pers Ahamenişler"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "The Library of Alexandria was founded under which dynasty?",
+    "choicesEn": [
+      "Ptolemies",
+      "Seleucids",
+      "Antigonids",
+      "Achaemenids"
+    ]
+  },
+  {
+    "id": "antik-etüden",
+    "category": "Antik Uygarlıklar",
+    "text": "Antik Mısır'da hükümdarların kendini gösterdiği iki taç hangi bölgeleri simgeler?",
+    "choices": [
+      "Yukarı ve Aşağı Mısır",
+      "Nil ve Çöl",
+      "Doğu ve Batı",
+      "Kuzey ve Güney"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "The two crowns of pharaohs symbolised which regions?",
+    "choicesEn": [
+      "Upper and Lower Egypt",
+      "Nile and Desert",
+      "East and West",
+      "North and South"
+    ]
+  },
+  {
+    "id": "antik-ushurti",
+    "category": "Antik Uygarlıklar",
+    "text": "Ölülerin ahirette işlerini yapması için mezarlara konulan küçük Mısır figürleri hangileridir?",
+    "choices": [
+      "Kanopik",
+      "Uşabti",
+      "Skarabe",
+      "Sfinks"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which small Egyptian figurines were placed in tombs to serve the dead?",
+    "choicesEn": [
+      "Canopic",
+      "Ushabti",
+      "Scarab",
+      "Sphinx"
+    ]
+  },
+  {
+    "id": "antik-olmek",
+    "category": "Antik Uygarlıklar",
+    "text": "Mezoamerika'nın 'ana kültürü' sayılan, dev taş başlarıyla bilinen uygarlık hangisidir?",
+    "choices": [
+      "Maya",
+      "Olmek",
+      "Aztek",
+      "Toltek"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which civilization, the 'mother culture' of Mesoamerica, is known for giant stone heads?",
+    "choicesEn": [
+      "Maya",
+      "Olmec",
+      "Aztec",
+      "Toltec"
+    ]
+  },
+  {
+    "id": "antik-maya-takvim",
+    "category": "Antik Uygarlıklar",
+    "text": "Maya 'Uzun Sayım' takviminin başlangıç noktası hangi tarihe denk gelir?",
+    "choices": [
+      "MÖ 3114",
+      "MÖ 2000",
+      "MS 3114",
+      "MÖ 753"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "The Mayan 'Long Count' calendar begins at which date?",
+    "choicesEn": [
+      "3114 BC",
+      "2000 BC",
+      "3114 AD",
+      "753 BC"
+    ]
+  },
+  {
+    "id": "antik-inkapuçu",
+    "category": "Antik Uygarlıklar",
+    "text": "İnkaların kayıt tutmak için kullandığı düğümlü ip sisteminin adı nedir?",
+    "choices": [
+      "Kipu",
+      "Cepu",
+      "Tumi",
+      "Chasqui"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is the knotted-string system the Incas used for record keeping?",
+    "choicesEn": [
+      "Quipu",
+      "Cepu",
+      "Tumi",
+      "Chasqui"
+    ]
+  },
+  {
+    "id": "antik-kartaca",
+    "category": "Antik Uygarlıklar",
+    "text": "Kartaca'nın Romalılarla yaptığı savaşlar hangi adla anılır?",
+    "choices": [
+      "Pön Savaşları",
+      "Makedonya Savaşları",
+      "İber Savaşları",
+      "Akdeniz Savaşları"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "The wars between Carthage and Rome are known by which name?",
+    "choicesEn": [
+      "Punic Wars",
+      "Macedonian Wars",
+      "Iberian Wars",
+      "Mediterranean Wars"
+    ]
+  },
+  {
+    "id": "antik-etrusk",
+    "category": "Antik Uygarlıklar",
+    "text": "Roma öncesi İtalya'da hüküm süren ve yazısı hâlâ tam çözülememiş uygarlık hangisidir?",
+    "choices": [
+      "Samnitler",
+      "Etrüskler",
+      "Umbriler",
+      "Liguryalılar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which pre-Roman Italian civilization's script is still not fully deciphered?",
+    "choicesEn": [
+      "Samnites",
+      "Etruscans",
+      "Umbrians",
+      "Ligurians"
+    ]
+  },
+  {
+    "id": "antik-gobekli",
+    "category": "Antik Uygarlıklar",
+    "text": "Dünyanın bilinen en eski tapınak kompleksi sayılan Göbekli Tepe hangi ülkededir?",
+    "choices": [
+      "Suriye",
+      "Türkiye",
+      "İran",
+      "Irak"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Göbekli Tepe, the world's oldest known temple complex, is in which country?",
+    "choicesEn": [
+      "Syria",
+      "Turkey",
+      "Iran",
+      "Iraq"
+    ]
+  },
+  {
+    "id": "antik-catalhoyuk",
+    "category": "Antik Uygarlıklar",
+    "text": "Neolitik dönemin en büyük yerleşimlerinden Çatalhöyük hangi il sınırındadır?",
+    "choices": [
+      "Şanlıurfa",
+      "Konya",
+      "Ankara",
+      "Adana"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Çatalhöyük, one of the largest Neolithic settlements, is in which province?",
+    "choicesEn": [
+      "Şanlıurfa",
+      "Konya",
+      "Ankara",
+      "Adana"
+    ]
+  },
+  {
+    "id": "antik-pers-yol",
+    "category": "Antik Uygarlıklar",
+    "text": "Ahameniş İmparatorluğu'nun Susa'dan Sardes'e uzanan ünlü yolu hangisidir?",
+    "choices": [
+      "İpek Yolu",
+      "Kral Yolu",
+      "Amber Yolu",
+      "Via Appia"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which famous Achaemenid road ran from Susa to Sardis?",
+    "choicesEn": [
+      "Silk Road",
+      "Royal Road",
+      "Amber Road",
+      "Via Appia"
+    ]
+  },
+  {
+    "id": "antik-saba",
+    "category": "Antik Uygarlıklar",
+    "text": "Güney Arabistan'da Marib Barajı ile ünlü, 'Seba' olarak da bilinen krallık hangisidir?",
+    "choices": [
+      "Himyar",
+      "Saba",
+      "Mein",
+      "Nebati"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which South Arabian kingdom, also called Sheba, had the Marib Dam?",
+    "choicesEn": [
+      "Himyar",
+      "Saba",
+      "Ma'in",
+      "Nabataea"
+    ]
+  },
+  {
+    "id": "antik-petra",
+    "category": "Antik Uygarlıklar",
+    "text": "Petra'nın kaya oyma mimarisi hangi uygarlığa aittir?",
+    "choices": [
+      "Nebatiler",
+      "Palmyralılar",
+      "Sabalılar",
+      "Moablılar"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Petra's rock-cut architecture belongs to which civilization?",
+    "choicesEn": [
+      "Nabataeans",
+      "Palmyrenes",
+      "Sabaeans",
+      "Moabites"
+    ]
+  },
+  {
+    "id": "antik-angevins",
+    "category": "Antik Uygarlıklar",
+    "text": "Antik Yunan'da 'poleis' terimi neyi anlatır?",
+    "choices": [
+      "Rahipleri",
+      "Kent devletlerini",
+      "Savaş arabalarını",
+      "Köleleri"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What did the term 'poleis' describe in ancient Greece?",
+    "choicesEn": [
+      "Priests",
+      "City-states",
+      "War chariots",
+      "Slaves"
+    ]
+  },
+  {
+    "id": "antik-tokyo",
+    "category": "Antik Uygarlıklar",
+    "text": "Antik Mısır'ın 'Duvarın Şehri' lakaplı başkenti hangisidir?",
+    "choices": [
+      "Teb",
+      "Memphis",
+      "İskenderiye",
+      "Heliopolis"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which city was the ancient Egyptian capital nicknamed 'White Walls'?",
+    "choicesEn": [
+      "Thebes",
+      "Memphis",
+      "Alexandria",
+      "Heliopolis"
+    ]
+  },
+  {
+    "id": "antik-scythian",
+    "category": "Antik Uygarlıklar",
+    "text": "Avrasya steplerinde atlı okçulukla ünlenen, altın işçiliğiyle bilinen halk hangisidir?",
+    "choices": [
+      "Kimmerler",
+      "İskitler",
+      "Alanlar",
+      "Sarmatlar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which people of the Eurasian steppes were famed for mounted archery and goldwork?",
+    "choicesEn": [
+      "Cimmerians",
+      "Scythians",
+      "Alans",
+      "Sarmatians"
+    ]
+  },
+  {
+    "id": "olimp-ilk-modern",
+    "category": "Olimpiyatlar",
+    "text": "İlk modern Olimpiyat Oyunları 1896'da hangi şehirde yapıldı?",
+    "choices": [
+      "Paris",
+      "Atina",
+      "Londra",
+      "Roma"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "The first modern Olympic Games were held in 1896 in which city?",
+    "choicesEn": [
+      "Paris",
+      "Athens",
+      "London",
+      "Rome"
+    ]
+  },
+  {
+    "id": "olimp-bes-halka",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat bayrağındaki beş halka neyi simgeler?",
+    "choices": [
+      "Beş spor dalını",
+      "Beş kıtayı",
+      "Beş ilk oyunu",
+      "Beş renkli değeri"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What do the five rings on the Olympic flag represent?",
+    "choicesEn": [
+      "Five sports",
+      "Five continents",
+      "The first five games",
+      "Five values"
+    ]
+  },
+  {
+    "id": "olimp-maraton-koken",
+    "category": "Olimpiyatlar",
+    "text": "Maraton koşusu adını hangi antik olaydan alır?",
+    "choices": [
+      "Maraton Savaşı habercisinden",
+      "Olympia'daki ritüelden",
+      "Spartalıların antrenmanından",
+      "Atina halk koşusundan"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "The marathon race takes its name from which ancient event?",
+    "choicesEn": [
+      "A messenger's run from Marathon",
+      "A ritual in Olympia",
+      "Spartan training",
+      "An Athens public race"
+    ]
+  },
+  {
+    "id": "olimp-kis-ilk",
+    "category": "Olimpiyatlar",
+    "text": "İlk Kış Olimpiyatları 1924'te hangi şehirde düzenlendi?",
+    "choices": [
+      "Oslo",
+      "Chamonix",
+      "Sankt Moritz",
+      "Grenoble"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "The first Winter Olympics were held in 1924 in which city?",
+    "choicesEn": [
+      "Oslo",
+      "Chamonix",
+      "St. Moritz",
+      "Grenoble"
+    ]
+  },
+  {
+    "id": "olimp-usain",
+    "category": "Olimpiyatlar",
+    "text": "100 metrede 9.58 saniyelik dünya rekoru kime aittir?",
+    "choices": [
+      "Yohan Blake",
+      "Usain Bolt",
+      "Tyson Gay",
+      "Asafa Powell"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Who holds the 100m world record of 9.58 seconds?",
+    "choicesEn": [
+      "Yohan Blake",
+      "Usain Bolt",
+      "Tyson Gay",
+      "Asafa Powell"
+    ]
+  },
+  {
+    "id": "olimp-kadinlar",
+    "category": "Olimpiyatlar",
+    "text": "Kadınların Olimpiyatlara ilk katılabildiği yıl hangisidir?",
+    "choices": [
+      "1896",
+      "1900",
+      "1920",
+      "1928"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "In which year could women first compete in the Olympics?",
+    "choicesEn": [
+      "1896",
+      "1900",
+      "1920",
+      "1928"
+    ]
+  },
+  {
+    "id": "olimp-michael",
+    "category": "Olimpiyatlar",
+    "text": "Tek Olimpiyat'ta 8 altın madalya kazanan yüzücü kimdir?",
+    "choices": [
+      "Ian Thorpe",
+      "Mark Spitz",
+      "Michael Phelps",
+      "Ryan Lochte"
+    ],
+    "correctIndex": 2,
+    "difficulty": "kolay",
+    "textEn": "Which swimmer won 8 gold medals at a single Olympics?",
+    "choicesEn": [
+      "Ian Thorpe",
+      "Mark Spitz",
+      "Michael Phelps",
+      "Ryan Lochte"
+    ]
+  },
+  {
+    "id": "olimp-iptal",
+    "category": "Olimpiyatlar",
+    "text": "Savaş nedeniyle hiç yapılmayan ilk modern Olimpiyat hangisidir?",
+    "choices": [
+      "1908 Londra",
+      "1916 Berlin",
+      "1940 Tokyo",
+      "1944 Londra"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which was the first modern Olympics cancelled due to war?",
+    "choicesEn": [
+      "1908 London",
+      "1916 Berlin",
+      "1940 Tokyo",
+      "1944 London"
+    ]
+  },
+  {
+    "id": "olimp-turkiye",
+    "category": "Olimpiyatlar",
+    "text": "Türkiye'nin Olimpiyat tarihindeki ilk altın madalyası hangi branştadır?",
+    "choices": [
+      "Halter",
+      "Güreş",
+      "Boks",
+      "Atletizm"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Turkey's first Olympic gold medal was in which sport?",
+    "choicesEn": [
+      "Weightlifting",
+      "Wrestling",
+      "Boxing",
+      "Athletics"
+    ]
+  },
+  {
+    "id": "olimp-antik",
+    "category": "Olimpiyatlar",
+    "text": "Antik Olimpiyatlar'da kazananlara verilen ödül neydi?",
+    "choices": [
+      "Altın madalya",
+      "Zeytin dalı tacı",
+      "Gümüş kupa",
+      "Para ödülü"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What prize did winners receive at the ancient Olympics?",
+    "choicesEn": [
+      "Gold medal",
+      "Olive wreath crown",
+      "Silver cup",
+      "Prize money"
+    ]
+  },
+  {
+    "id": "olimp-jesse",
+    "category": "Olimpiyatlar",
+    "text": "1936 Berlin Olimpiyatları'nda 4 altın kazanan Amerikalı atlet kimdir?",
+    "choices": [
+      "Carl Lewis",
+      "Jesse Owens",
+      "Jim Thorpe",
+      "Paavo Nurmi"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which American athlete won 4 gold medals at the 1936 Berlin Olympics?",
+    "choicesEn": [
+      "Carl Lewis",
+      "Jesse Owens",
+      "Jim Thorpe",
+      "Paavo Nurmi"
+    ]
+  },
+  {
+    "id": "olimp-alti-ulke",
+    "category": "Olimpiyatlar",
+    "text": "Modern Olimpiyatlar'ın kurucusu sayılan Fransız baron kimdir?",
+    "choices": [
+      "de Coubertin",
+      "de Gaillon",
+      "Richelieu",
+      "Dumas"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Which French baron is considered the founder of the modern Olympics?",
+    "choicesEn": [
+      "de Coubertin",
+      "de Gaillon",
+      "Richelieu",
+      "Dumas"
+    ]
+  },
+  {
+    "id": "olimp-curling",
+    "category": "Olimpiyatlar",
+    "text": "Buz üzerinde taş kaydırarak oynanan Kış Olimpiyatı sporu hangisidir?",
+    "choices": [
+      "Buz hokeyi",
+      "Körling",
+      "Sürat pateni",
+      "Skeleton"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which Winter Olympic sport involves sliding stones on ice?",
+    "choicesEn": [
+      "Ice hockey",
+      "Curling",
+      "Speed skating",
+      "Skeleton"
+    ]
+  },
+  {
+    "id": "olimp-tokyo2020",
+    "category": "Olimpiyatlar",
+    "text": "2020 Tokyo Olimpiyatları salgın nedeniyle hangi yıla ertelendi?",
+    "choices": [
+      "2020 sonbaharı",
+      "2021",
+      "2022",
+      "İptal edildi"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "The 2020 Tokyo Olympics were postponed to which year?",
+    "choicesEn": [
+      "Autumn 2020",
+      "2021",
+      "2022",
+      "Cancelled"
+    ]
+  },
+  {
+    "id": "olimp-nadia",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat tarihinde jimnastikte ilk mükemmel 10.0 puanı alan sporcu kimdir?",
+    "choices": [
+      "Nadia Comăneci",
+      "Olga Korbut",
+      "Simone Biles",
+      "Nelli Kim"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Who scored the first perfect 10.0 in Olympic gymnastics?",
+    "choicesEn": [
+      "Nadia Comăneci",
+      "Olga Korbut",
+      "Simone Biles",
+      "Nelli Kim"
+    ]
+  },
+  {
+    "id": "olimp-gercek",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat altın madalyaları günümüzde aslında neyden yapılır?",
+    "choices": [
+      "Saf altın",
+      "Altın kaplama gümüş",
+      "Altın-bronz alaşımı",
+      "Vermeil bronz"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What are modern Olympic gold medals actually made of?",
+    "choicesEn": [
+      "Solid gold",
+      "Gold-plated silver",
+      "Gold-bronze alloy",
+      "Vermeil bronze"
+    ]
+  },
+  {
+    "id": "olimp-uc-dalda",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat tarihinde su topunda en çok altın madalya kazanan ülke hangisidir?",
+    "choices": [
+      "ABD",
+      "Macaristan",
+      "İtalya",
+      "Sırbistan"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which country has won the most Olympic water polo gold medals?",
+    "choicesEn": [
+      "USA",
+      "Hungary",
+      "Italy",
+      "Serbia"
+    ]
+  },
+  {
+    "id": "olimp-paris",
+    "category": "Olimpiyatlar",
+    "text": "2024 Yaz Olimpiyatları'nın ev sahibi hangi şehirdir?",
+    "choices": [
+      "Londra",
+      "Paris",
+      "Los Angeles",
+      "Tokyo"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which city hosted the 2024 Summer Olympics?",
+    "choicesEn": [
+      "London",
+      "Paris",
+      "Los Angeles",
+      "Tokyo"
+    ]
+  },
+  {
+    "id": "olimp-torch",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat meşalesi geleneği hangi yıl ve oyunlarda başladı?",
+    "choices": [
+      "1896 Atina",
+      "1928 Amsterdam",
+      "1936 Berlin",
+      "1952 Helsinki"
+    ],
+    "correctIndex": 2,
+    "difficulty": "orta",
+    "textEn": "The Olympic torch relay tradition began at which games?",
+    "choicesEn": [
+      "1896 Athens",
+      "1928 Amsterdam",
+      "1936 Berlin",
+      "1952 Helsinki"
+    ]
+  },
+  {
+    "id": "olimp-citius",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat sloganının 'Citius, Altius, Fortius' Latincedeki anlamı nedir?",
+    "choices": [
+      "Güçlü, cesur, sadık",
+      "Daha hızlı, daha yüksek, daha güçlü",
+      "Kazanmak, savaşmak, dayanmak",
+      "Şeref, onur, zafer"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What does the Olympic motto 'Citius, Altius, Fortius' mean?",
+    "choicesEn": [
+      "Strong, brave, loyal",
+      "Faster, higher, stronger",
+      "Win, fight, endure",
+      "Honor, glory, victory"
+    ]
+  },
+  {
+    "id": "olimp-beden",
+    "category": "Olimpiyatlar",
+    "text": "Antik Olimpiyatlar'da sporcular hangi koşulda yarışırlardı?",
+    "choices": [
+      "Zırh giyerek",
+      "Çıplak",
+      "Tunikle",
+      "Kostümle"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "In what condition did ancient Olympic athletes compete?",
+    "choicesEn": [
+      "In armor",
+      "Naked",
+      "In tunics",
+      "In costumes"
+    ]
+  },
+  {
+    "id": "olimp-istanbul",
+    "category": "Olimpiyatlar",
+    "text": "Türkiye Olimpiyat tarihinde en çok madalya kazandığı branş hangisidir?",
+    "choices": [
+      "Halter",
+      "Güreş",
+      "Boks",
+      "Judo"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which sport has won Turkey the most Olympic medals?",
+    "choicesEn": [
+      "Weightlifting",
+      "Wrestling",
+      "Boxing",
+      "Judo"
+    ]
+  },
+  {
+    "id": "olimp-youth",
+    "category": "Olimpiyatlar",
+    "text": "İlk Gençlik Olimpiyatları hangi yıl düzenlendi?",
+    "choices": [
+      "2008",
+      "2010",
+      "2012",
+      "2014"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "The first Youth Olympic Games were held in which year?",
+    "choicesEn": [
+      "2008",
+      "2010",
+      "2012",
+      "2014"
+    ]
+  },
+  {
+    "id": "olimp-cakir",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat tarihinde çıplak ayakla maraton kazanan Etiyopyalı atlet kimdir?",
+    "choices": [
+      "Haile Gebrselassie",
+      "Abebe Bikila",
+      "Kenenisa Bekele",
+      "Mamo Wolde"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which Ethiopian runner won the Olympic marathon barefoot?",
+    "choicesEn": [
+      "Haile Gebrselassie",
+      "Abebe Bikila",
+      "Kenenisa Bekele",
+      "Mamo Wolde"
+    ]
+  },
+  {
+    "id": "olimp-winter-first",
+    "category": "Olimpiyatlar",
+    "text": "Serbest stil kayak ilk kez hangi Olimpiyat'ta yer aldı?",
+    "choices": [
+      "1988 Calgary",
+      "1992 Albertville",
+      "1998 Nagano",
+      "2002 Salt Lake"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Freestyle skiing first appeared at which Olympics?",
+    "choicesEn": [
+      "1988 Calgary",
+      "1992 Albertville",
+      "1998 Nagano",
+      "2002 Salt Lake"
+    ]
+  },
+  {
+    "id": "olimp-breakdance",
+    "category": "Olimpiyatlar",
+    "text": "2024 Paris Olimpiyatları'nda ilk kez yer alan dans sporu hangisidir?",
+    "choices": [
+      "Voltigieren",
+      "Breaking",
+      "Kinbasket",
+      "Floorball"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which dance sport debuted at the 2024 Paris Olympics?",
+    "choicesEn": [
+      "Voltigieren",
+      "Breaking",
+      "Kinbasket",
+      "Floorball"
+    ]
+  },
+  {
+    "id": "olimp-iceland",
+    "category": "Olimpiyatlar",
+    "text": "Olimpiyat bayrağı ilk kez hangi yıl taşındı?",
+    "choices": [
+      "1896",
+      "1908",
+      "1920",
+      "1928"
+    ],
+    "correctIndex": 2,
+    "difficulty": "zor",
+    "textEn": "The Olympic flag was first flown in which year?",
+    "choicesEn": [
+      "1896",
+      "1908",
+      "1920",
+      "1928"
+    ]
+  },
+  {
+    "id": "olimp-hostile",
+    "category": "Olimpiyatlar",
+    "text": "1980 Moskova Olimpiyatları'nı boykot eden ülke sayısı yaklaşık kaçtı?",
+    "choices": [
+      "10",
+      "30",
+      "66",
+      "120"
+    ],
+    "correctIndex": 2,
+    "difficulty": "zor",
+    "textEn": "Approximately how many countries boycotted the 1980 Moscow Olympics?",
+    "choicesEn": [
+      "10",
+      "30",
+      "66",
+      "120"
+    ]
+  },
+  {
+    "id": "bitki-fotosentez",
+    "category": "Bitkiler",
+    "text": "Fotosentezde bitkiler hangi gazı emer?",
+    "choices": [
+      "Oksijen",
+      "Karbondioksit",
+      "Azot",
+      "Hidrojen"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which gas do plants absorb during photosynthesis?",
+    "choicesEn": [
+      "Oxygen",
+      "Carbon dioxide",
+      "Nitrogen",
+      "Hydrogen"
+    ]
+  },
+  {
+    "id": "bitki-klorofil",
+    "category": "Bitkiler",
+    "text": "Yapraklara yeşil rengini veren pigment hangisidir?",
+    "choices": [
+      "Karoten",
+      "Klorofil",
+      "Antosiyanin",
+      "Ksantofil"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which pigment gives leaves their green color?",
+    "choicesEn": [
+      "Carotene",
+      "Chlorophyll",
+      "Anthocyanin",
+      "Xanthophyll"
+    ]
+  },
+  {
+    "id": "bitki-dev-amazon",
+    "category": "Bitkiler",
+    "text": "Dünyanın en büyük çiçeği sayılan Rafflesia hangi kıtada yetişir?",
+    "choices": [
+      "Afrika",
+      "Güney Amerika",
+      "Güneydoğu Asya",
+      "Avustralya"
+    ],
+    "correctIndex": 2,
+    "difficulty": "orta",
+    "textEn": "On which continent does Rafflesia, the world's largest flower, grow?",
+    "choicesEn": [
+      "Africa",
+      "South America",
+      "Southeast Asia",
+      "Australia"
+    ]
+  },
+  {
+    "id": "bitki-sekoya",
+    "category": "Bitkiler",
+    "text": "Dünyanın en uzun ağaçları hangi türe aittir?",
+    "choices": [
+      "Mamut ağacı",
+      "Kıyı sekoyası",
+      "Douglas göknarı",
+      "Baobab"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "The world's tallest trees belong to which species?",
+    "choicesEn": [
+      "Giant sequoia",
+      "Coast redwood",
+      "Douglas fir",
+      "Baobab"
+    ]
+  },
+  {
+    "id": "bitki-baobab",
+    "category": "Bitkiler",
+    "text": "Gövdesinde binlerce litre su depolayabilen Afrika ağacı hangisidir?",
+    "choices": [
+      "Akasya",
+      "Baobab",
+      "Papirüs",
+      "Eban"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which African tree can store thousands of litres of water in its trunk?",
+    "choicesEn": [
+      "Acacia",
+      "Baobab",
+      "Papyrus",
+      "Ebony"
+    ]
+  },
+  {
+    "id": "bitki-kaktus",
+    "category": "Bitkiler",
+    "text": "Kaktüslerin yaprakları evrimsel olarak neye dönüşmüştür?",
+    "choices": [
+      "Çiçek",
+      "Diken",
+      "Sülük",
+      "Meyve"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What have cactus leaves evolutionarily become?",
+    "choicesEn": [
+      "Flowers",
+      "Spines",
+      "Tendrils",
+      "Fruits"
+    ]
+  },
+  {
+    "id": "bitki-mimosa",
+    "category": "Bitkiler",
+    "text": "Dokunulunca yapraklarını kapatan hassas bitki hangisidir?",
+    "choices": [
+      "Venüs sinekkapanı",
+      "Mimoza pudica",
+      "Drosera",
+      "Yosun"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which sensitive plant closes its leaves when touched?",
+    "choicesEn": [
+      "Venus flytrap",
+      "Mimosa pudica",
+      "Sundew",
+      "Moss"
+    ]
+  },
+  {
+    "id": "bitki-venus",
+    "category": "Bitkiler",
+    "text": "Böcekleri kaparak beslenen etobur bitki hangisidir?",
+    "choices": [
+      "Zambak",
+      "Venüs sinekkapanı",
+      "Sarmaşık",
+      "Orman gülü"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which carnivorous plant feeds by trapping insects?",
+    "choicesEn": [
+      "Lily",
+      "Venus flytrap",
+      "Ivy",
+      "Azalea"
+    ]
+  },
+  {
+    "id": "bitki-tutun",
+    "category": "Bitkiler",
+    "text": "Tütün ve patlıcanın ait olduğu bitki familyası hangisidir?",
+    "choices": [
+      "Baklagiller",
+      "Patlıcangiller",
+      "Turpgiller",
+      "Buğdaygiller"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "Which plant family do tobacco and eggplant belong to?",
+    "choicesEn": [
+      "Legumes",
+      "Nightshades",
+      "Brassicas",
+      "Grasses"
+    ]
+  },
+  {
+    "id": "bitki-safran",
+    "category": "Bitkiler",
+    "text": "Gramı altından pahalı olabilen, safran üreten bitki hangi türdendir?",
+    "choices": [
+      "Lale",
+      "Safran krokusu",
+      "Çiğdem",
+      "Süsen"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which plant produces saffron, worth more than gold per gram?",
+    "choicesEn": [
+      "Tulip",
+      "Saffron crocus",
+      "Colchicum",
+      "Iris"
+    ]
+  },
+  {
+    "id": "bitki-aycicegi",
+    "category": "Bitkiler",
+    "text": "Ay çiçeği güneşi takip etme davranışının adı nedir?",
+    "choices": [
+      "Fototropizm",
+      "Heliotropizm",
+      "Gravitropizm",
+      "Tigmotropizm"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the name of the sunflower's sun-tracking behavior?",
+    "choicesEn": [
+      "Phototropism",
+      "Heliotropism",
+      "Gravitropism",
+      "Thigmotropism"
+    ]
+  },
+  {
+    "id": "bitki-kok",
+    "category": "Bitkiler",
+    "text": "Bitkilerin kök uçlarındaki bölünme bölgesine ne denir?",
+    "choices": [
+      "Kambiyum",
+      "Meristem",
+      "Floem",
+      "Ksilem"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "What is the dividing zone at plant root tips called?",
+    "choicesEn": [
+      "Cambium",
+      "Meristem",
+      "Phloem",
+      "Xylem"
+    ]
+  },
+  {
+    "id": "bitki-manolya",
+    "category": "Bitkiler",
+    "text": "Çiçekli bitkilerin iki büyük grubu hangisidir?",
+    "choices": [
+      "Tek ve çift çenekliler",
+      "Otsu ve odunsu",
+      "Tek ve çok yıllıklar",
+      "Gymno ve angio"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "What are the two great groups of flowering plants?",
+    "choicesEn": [
+      "Monocots and dicots",
+      "Herbaceous and woody",
+      "Annuals and perennials",
+      "Gymno and angio"
+    ]
+  },
+  {
+    "id": "bitki-bambu",
+    "category": "Bitkiler",
+    "text": "Günde 90 cm uzayabilen, teknik olarak bir ot olan bitki hangisidir?",
+    "choices": [
+      "Kamış",
+      "Bambu",
+      "Mısır",
+      "Şeker kamışı"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which plant, technically a grass, can grow 90 cm per day?",
+    "choicesEn": [
+      "Reed",
+      "Bamboo",
+      "Corn",
+      "Sugar cane"
+    ]
+  },
+  {
+    "id": "bitki-agac-yasi",
+    "category": "Bitkiler",
+    "text": "Bir ağacın yaşını kesitindeki halkalardan okuyan bilim dalı nedir?",
+    "choices": [
+      "Dendrokronoloji",
+      "Fitoloji",
+      "Pomoloji",
+      "Silvikültür"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is the science of reading a tree's age from its rings?",
+    "choicesEn": [
+      "Dendrochronology",
+      "Phytology",
+      "Pomology",
+      "Silviculture"
+    ]
+  },
+  {
+    "id": "bitki-eucalyptus",
+    "category": "Bitkiler",
+    "text": "Avustralya'ya özgü, koalaların besini olan yapraklı ağaç hangisidir?",
+    "choices": [
+      "Okaliptüs",
+      "Akaju",
+      "Baobab",
+      "Jarrah"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "Which Australian tree's leaves are the koala's food?",
+    "choicesEn": [
+      "Eucalyptus",
+      "Mahogany",
+      "Baobab",
+      "Jarrah"
+    ]
+  },
+  {
+    "id": "bitki-nitrogen",
+    "category": "Bitkiler",
+    "text": "Baklagillerin köklerindeki bakteriler atmosferden hangi elementi bağlar?",
+    "choices": [
+      "Fosfor",
+      "Azot",
+      "Potasyum",
+      "Kükürt"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which element do bacteria in legume roots fix from the atmosphere?",
+    "choicesEn": [
+      "Phosphorus",
+      "Nitrogen",
+      "Potassium",
+      "Sulfur"
+    ]
+  },
+  {
+    "id": "bitki-lichen",
+    "category": "Bitkiler",
+    "text": "Mantar ve alg'in birlikte yaşadığı ortak simbiyotik organizma hangisidir?",
+    "choices": [
+      "Liken",
+      "Küf",
+      "Maya",
+      "Mikoriza"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Which symbiotic organism is formed by a fungus and an alga living together?",
+    "choicesEn": [
+      "Lichen",
+      "Mold",
+      "Yeast",
+      "Mycorrhiza"
+    ]
+  },
+  {
+    "id": "bitki-iris",
+    "category": "Bitkiler",
+    "text": "Gözdeki iris tabakası adını hangi çiçekten alır?",
+    "choices": [
+      "İris (süsen)",
+      "Orkide",
+      "Lale",
+      "Menekşe"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "The iris of the eye takes its name from which flower?",
+    "choicesEn": [
+      "Iris",
+      "Orchid",
+      "Tulip",
+      "Violet"
+    ]
+  },
+  {
+    "id": "bitki-orman",
+    "category": "Bitkiler",
+    "text": "Kamuoyunda 'dünyanın ciğerleri' olarak anılan ekosistem hangisidir?",
+    "choices": [
+      "Mercan resifleri",
+      "Yağmur ormanları",
+      "Bozkırlar",
+      "Tundra"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which ecosystem is popularly called the 'lungs of the world'?",
+    "choicesEn": [
+      "Coral reefs",
+      "Rainforests",
+      "Steppes",
+      "Tundra"
+    ]
+  },
+  {
+    "id": "bitki-spore",
+    "category": "Bitkiler",
+    "text": "Eğreltiotu ve yosunlar tohum yerine neyle ürer?",
+    "choices": [
+      "Spor",
+      "Yumurta",
+      "Soğan",
+      "Rizom"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What do ferns and mosses reproduce with instead of seeds?",
+    "choicesEn": [
+      "Spores",
+      "Eggs",
+      "Bulbs",
+      "Rhizomes"
+    ]
+  },
+  {
+    "id": "bitki-mistletoe",
+    "category": "Bitkiler",
+    "text": "Ağaç dallarında yarı parazit olarak yaşayan ve Yılbaşı geleneğindeki bitki hangisidir?",
+    "choices": [
+      "Ökse otu",
+      "Dulavrat",
+      "Şahtere",
+      "Döşeme"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "Which hemiparasite growing on tree branches is part of the Christmas tradition?",
+    "choicesEn": [
+      "Mistletoe",
+      "Burdock",
+      "Foxglove",
+      "Yarrow"
+    ]
+  },
+  {
+    "id": "bitki-pinguicula",
+    "category": "Bitkiler",
+    "text": "Yapışkan yapraklı etobur bitki Pinguicula'nın halk adı nedir?",
+    "choices": [
+      "Sinekkapan",
+      "Yağ otu",
+      "Sundew",
+      "Sütleğen"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "What is the common name of the carnivorous plant Pinguicula?",
+    "choicesEn": [
+      "Flytrap",
+      "Butterwort",
+      "Sundew",
+      "Spurge"
+    ]
+  },
+  {
+    "id": "bitki-camphor",
+    "category": "Bitkiler",
+    "text": "Kafur ağacından elde edilen ve tarih boyunca ilaç/koku olarak kullanılan madde nedir?",
+    "choices": [
+      "Kamfor",
+      "Reçine",
+      "Güherçile",
+      "Amber"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "What is the substance obtained from camphor trees used as medicine/perfume?",
+    "choicesEn": [
+      "Camphor",
+      "Resin",
+      "Saltpeter",
+      "Amber"
+    ]
+  },
+  {
+    "id": "bitki-yukka",
+    "category": "Bitkiler",
+    "text": "Bitkilerin su taşıyan boru hücrelerinin oluşturduğu dokunun adı nedir?",
+    "choices": [
+      "Floem",
+      "Ksilem",
+      "Kambiyum",
+      "Epidermis"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the water-conducting tissue of plants called?",
+    "choicesEn": [
+      "Phloem",
+      "Xylem",
+      "Cambium",
+      "Epidermis"
+    ]
+  },
+  {
+    "id": "bitki-datura",
+    "category": "Bitkiler",
+    "text": "Güzel ama zehirli Datura'nın diğer adı nedir?",
+    "choices": [
+      "Şeytan borusu",
+      "Baldıran",
+      "Adam otu",
+      "Kuşburnu"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "What is the other name of poisonous Datura?",
+    "choicesEn": [
+      "Devil's trumpet",
+      "Hemlock",
+      "Mandrake",
+      "Rosehip"
+    ]
+  },
+  {
+    "id": "bitki-elma",
+    "category": "Bitkiler",
+    "text": "Elma ve gülün ortak familyası hangisidir?",
+    "choices": [
+      "Gülgiller",
+      "Asmagiller",
+      "Dutgiller",
+      "Narenciyeler"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is the shared family of apples and roses?",
+    "choicesEn": [
+      "Rosaceae",
+      "Vitaceae",
+      "Moraceae",
+      "Rutaceae"
+    ]
+  },
+  {
+    "id": "bitki-primus",
+    "category": "Bitkiler",
+    "text": "Çiçekli bitkilerin tozlaşmasında en yaygın hayvan taşıyıcı hangisidir?",
+    "choices": [
+      "Rüzgar",
+      "Böcekler",
+      "Kuşlar",
+      "Yarasalar"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the most common animal pollinator of flowering plants?",
+    "choicesEn": [
+      "Wind",
+      "Insects",
+      "Birds",
+      "Bats"
+    ]
+  },
+  {
+    "id": "iklim-fujita",
+    "category": "İklim & Hava",
+    "text": "Hortumların şiddetini ölçen ölçeğin adı nedir?",
+    "choices": [
+      "Saffir-Simpson",
+      "Fujita",
+      "Beaufort",
+      "Richter"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the scale measuring tornado intensity?",
+    "choicesEn": [
+      "Saffir-Simpson",
+      "Fujita",
+      "Beaufort",
+      "Richter"
+    ]
+  },
+  {
+    "id": "iklim-kumulonimbus",
+    "category": "İklim & Hava",
+    "text": "Gök gürültülü fırtına üreten, örs şekilli devasa bulut tipi hangisidir?",
+    "choices": [
+      "Sirüs",
+      "Kümülonimbus",
+      "Stratüs",
+      "Nimbostratus"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which anvil-shaped cloud type produces thunderstorms?",
+    "choicesEn": [
+      "Cirrus",
+      "Cumulonimbus",
+      "Stratus",
+      "Nimbostratus"
+    ]
+  },
+  {
+    "id": "iklim-el-nino",
+    "category": "İklim & Hava",
+    "text": "Pasifik'teki sıcak su anomalisinin küresel hava desenlerini bozduğu olayın adı nedir?",
+    "choices": [
+      "La Niña",
+      "El Niño",
+      "Muson",
+      "Jet Stream"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the Pacific warm-water anomaly disrupting global weather patterns?",
+    "choicesEn": [
+      "La Niña",
+      "El Niño",
+      "Monsoon",
+      "Jet Stream"
+    ]
+  },
+  {
+    "id": "iklim-eyef",
+    "category": "İklim & Hava",
+    "text": "Kasırganın ortasındaki sakin bölgeye ne denir?",
+    "choices": [
+      "Göz",
+      "Duvar",
+      "Trenyolu",
+      "Huni"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "What is the calm centre of a hurricane called?",
+    "choicesEn": [
+      "Eye",
+      "Wall",
+      "Train track",
+      "Funnel"
+    ]
+  },
+  {
+    "id": "iklim-saffir",
+    "category": "İklim & Hava",
+    "text": "Kasırga şiddetini 1'den 5'e ölçeklendiren ölçek hangisidir?",
+    "choices": [
+      "Fujita",
+      "Saffir-Simpson",
+      "Beaufort",
+      "Mercalli"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which scale rates hurricanes from 1 to 5?",
+    "choicesEn": [
+      "Fujita",
+      "Saffir-Simpson",
+      "Beaufort",
+      "Mercalli"
+    ]
+  },
+  {
+    "id": "iklim-yildirim",
+    "category": "İklim & Hava",
+    "text": "Yıldırım sırasında hava sıcaklığı yaklaşık kaç dereceye ulaşır?",
+    "choices": [
+      "1000°C",
+      "5000°C",
+      "30000°C",
+      "100000°C"
+    ],
+    "correctIndex": 2,
+    "difficulty": "zor",
+    "textEn": "How hot does air get during a lightning strike?",
+    "choicesEn": [
+      "1000°C",
+      "5000°C",
+      "30000°C",
+      "100000°C"
+    ]
+  },
+  {
+    "id": "iklim-gokkusagi",
+    "category": "İklim & Hava",
+    "text": "Gökkuşağında en dışta görünen renk hangisidir?",
+    "choices": [
+      "Mor",
+      "Kırmızı",
+      "Sarı",
+      "Yeşil"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which color appears outermost in a rainbow?",
+    "choicesEn": [
+      "Violet",
+      "Red",
+      "Yellow",
+      "Green"
+    ]
+  },
+  {
+    "id": "iklim-muson",
+    "category": "İklim & Hava",
+    "text": "Hindistan'da yaz aylarında yağmur geten mevsimsel rüzgarın adı nedir?",
+    "choices": [
+      "Sirocco",
+      "Muson",
+      "Mistral",
+      "Harmattan"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the seasonal rain-bearing wind of India called?",
+    "choicesEn": [
+      "Sirocco",
+      "Monsoon",
+      "Mistral",
+      "Harmattan"
+    ]
+  },
+  {
+    "id": "iklim-cift",
+    "category": "İklim & Hava",
+    "text": "Çift gökkuşağında ikinci kuşağın renk sırası nasıldır?",
+    "choices": [
+      "Aynı",
+      "Ters",
+      "Rastgele",
+      "Silik"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "How are colors ordered in the secondary rainbow of a double rainbow?",
+    "choicesEn": [
+      "Same",
+      "Reversed",
+      "Random",
+      "Faded"
+    ]
+  },
+  {
+    "id": "iklim-frosty",
+    "category": "İklim & Hava",
+    "text": "Hissedilen sıcaklığı hesaplamada rüzgarın etkisine ne denir?",
+    "choices": [
+      "Rüzgar soğutması",
+      "Isı endeksi",
+      "Sıcaklık terselmesi",
+      "Adyabatik"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is the wind's effect on perceived temperature called?",
+    "choicesEn": [
+      "Wind chill",
+      "Heat index",
+      "Temperature inversion",
+      "Adiabatic"
+    ]
+  },
+  {
+    "id": "iklim-albedo",
+    "category": "İklim & Hava",
+    "text": "Buz ve karın güneş ışığını geri yansıtma oranını anlatan ölçü hangisidir?",
+    "choices": [
+      "Işıma",
+      "Albedo",
+      "Konveksiyon",
+      "Ozon"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which measure describes how much sunlight ice and snow reflect?",
+    "choicesEn": [
+      "Emission",
+      "Albedo",
+      "Convection",
+      "Ozone"
+    ]
+  },
+  {
+    "id": "iklim-sis",
+    "category": "İklim & Hava",
+    "text": "Sis ile duman karışımından oluşan ve Londra'nın ünlü olduğu olgu nedir?",
+    "choices": [
+      "Smog",
+      "Haze",
+      "Mist",
+      "Pus"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is the fog-smoke mixture that made London famous?",
+    "choicesEn": [
+      "Smog",
+      "Haze",
+      "Mist",
+      "Vapor"
+    ]
+  },
+  {
+    "id": "iklim-yagmur",
+    "category": "İklim & Hava",
+    "text": "Yağmurun orman kanopisinden süzülüp toprağa damlamasına ne denir?",
+    "choices": [
+      "Terleme",
+      "Yaprak damlası",
+      "Yağış",
+      "Süzülme"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "What is rain filtering through forest canopy to the ground called?",
+    "choicesEn": [
+      "Throughfall",
+      "Leaf drip",
+      "Precipitation",
+      "Percolation"
+    ]
+  },
+  {
+    "id": "iklim-tornado-alley",
+    "category": "İklim & Hava",
+    "text": "ABD'de hortumların en sık görüldüğü 'Hortum Geçidi' hangi bölgededir?",
+    "choices": [
+      "Florida",
+      "Orta Batı",
+      "Kuzeydoğu",
+      "Pasifik kıyısı"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "In which US region is 'Tornado Alley' located?",
+    "choicesEn": [
+      "Florida",
+      "Midwest",
+      "Northeast",
+      "Pacific coast"
+    ]
+  },
+  {
+    "id": "iklim-beaufort",
+    "category": "İklim & Hava",
+    "text": "Rüzgar hızını 0-12 arasında ölçekleyen denizcilik ölçüsü hangisidir?",
+    "choices": [
+      "Knot",
+      "Beaufort",
+      "Kelp",
+      "Kategori"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "Which maritime scale measures wind speed from 0 to 12?",
+    "choicesEn": [
+      "Knot",
+      "Beaufort",
+      "Kelp",
+      "Category"
+    ]
+  },
+  {
+    "id": "iklim-ozon",
+    "category": "İklim & Hava",
+    "text": "Morötesi ışınları soğuran stratosfer katmanı hangisidir?",
+    "choices": [
+      "Troposfer",
+      "Ozon tabakası",
+      "Mezosfer",
+      "İyonosfer"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "Which stratospheric layer absorbs ultraviolet rays?",
+    "choicesEn": [
+      "Troposphere",
+      "Ozone layer",
+      "Mesosphere",
+      "Ionosphere"
+    ]
+  },
+  {
+    "id": "iklim-cirrus",
+    "category": "İklim & Hava",
+    "text": "Yüksek irtifadaki tüy gibi ince buz kristali bulutlarına ne denir?",
+    "choices": [
+      "Kümülüs",
+      "Sirüs",
+      "Stratüs",
+      "Nimbus"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What are the feathery high-altitude ice-crystal clouds called?",
+    "choicesEn": [
+      "Cumulus",
+      "Cirrus",
+      "Stratus",
+      "Nimbus"
+    ]
+  },
+  {
+    "id": "iklim-sicaklik",
+    "category": "İklim & Hava",
+    "text": "Troposferde her 100 metre yükselişte sıcaklık ortalama ne kadar düşer?",
+    "choices": [
+      "0.1°C",
+      "0.65°C",
+      "1.5°C",
+      "3°C"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "How much does temperature drop per 100m of altitude in the troposphere?",
+    "choicesEn": [
+      "0.1°C",
+      "0.65°C",
+      "1.5°C",
+      "3°C"
+    ]
+  },
+  {
+    "id": "iklim-ley",
+    "category": "İklim & Hava",
+    "text": "Yılın en uzun gecesi hangi astronomik olayla aynı gündür?",
+    "choices": [
+      "Ekinoks",
+      "Gündönümü",
+      "Ay tutulması",
+      "Güneş tutulması"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "The year's longest night falls on which astronomical event?",
+    "choicesEn": [
+      "Equinox",
+      "Solstice",
+      "Lunar eclipse",
+      "Solar eclipse"
+    ]
+  },
+  {
+    "id": "iklim-heatwave",
+    "category": "İklim & Hava",
+    "text": "Birkaç gün üst üste aşırı sıcak olarak tanımlanan olaya ne denir?",
+    "choices": [
+      "Sıcak hava dalgası",
+      "Fön rüzgarı",
+      "Yüksek basınç",
+      "Sıcak cephe"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "What is a multi-day period of extreme heat called?",
+    "choicesEn": [
+      "Heat wave",
+      "Foehn wind",
+      "High pressure",
+      "Warm front"
+    ]
+  },
+  {
+    "id": "iklim-barometre",
+    "category": "İklim & Hava",
+    "text": "Atmosfer basıncını ölçen aletin adı nedir?",
+    "choices": [
+      "Higrometre",
+      "Barometre",
+      "Anemometre",
+      "Termometre"
+    ],
+    "correctIndex": 1,
+    "difficulty": "kolay",
+    "textEn": "What is the instrument measuring atmospheric pressure?",
+    "choicesEn": [
+      "Hygrometer",
+      "Barometer",
+      "Anemometer",
+      "Thermometer"
+    ]
+  },
+  {
+    "id": "iklim-klima",
+    "category": "İklim & Hava",
+    "text": "Köppen iklim sınıflandırmasında 'C' harfi hangi iklimi gösterir?",
+    "choices": [
+      "Soğuk",
+      "Ilıman",
+      "Kuru",
+      "Kutup"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "In Köppen climate classification, what does 'C' indicate?",
+    "choicesEn": [
+      "Cold",
+      "Temperate",
+      "Dry",
+      "Polar"
+    ]
+  },
+  {
+    "id": "iklim-parhelion",
+    "category": "İklim & Hava",
+    "text": "Güneşin iki yanında görünen parlak sahte güneşlere ne denir?",
+    "choices": [
+      "Hale",
+      "Parhelion",
+      "Miraj",
+      "Antarktik"
+    ],
+    "correctIndex": 1,
+    "difficulty": "zor",
+    "textEn": "What are the bright 'false suns' beside the sun called?",
+    "choicesEn": [
+      "Halo",
+      "Parhelion (sundog)",
+      "Mirage",
+      "Antarctic"
+    ]
+  },
+  {
+    "id": "iklim-yildiz",
+    "category": "İklim & Hava",
+    "text": "Gök gürültüsü neden yıldırımdan sonra duyulur?",
+    "choices": [
+      "Sesin ışıktan yavaş olması",
+      "Yıldırımın uzaklığı",
+      "Yansıma gecikmesi",
+      "Atmosferik filtre"
+    ],
+    "correctIndex": 0,
+    "difficulty": "kolay",
+    "textEn": "Why is thunder heard after lightning?",
+    "choicesEn": [
+      "Sound is slower than light",
+      "Lightning is distant",
+      "Reflection delay",
+      "Atmospheric filter"
+    ]
+  },
+  {
+    "id": "iklim-dolu",
+    "category": "İklim & Hava",
+    "text": "Dolu tanelerinin katman katman oluşmasının sebebi nedir?",
+    "choices": [
+      "Bulut içinde yukarı-aşağı döngü",
+      "Sıcaklık ani değişimi",
+      "Toz çekirdeği",
+      "Rüzgar kesmesi"
+    ],
+    "correctIndex": 0,
+    "difficulty": "zor",
+    "textEn": "Why do hailstones form in layers?",
+    "choicesEn": [
+      "Up-down cycles inside the cloud",
+      "Sudden temperature change",
+      "Dust nucleus",
+      "Wind shear"
+    ]
+  },
+  {
+    "id": "iklim-antihaber",
+    "category": "İklim & Hava",
+    "text": "Yüksek basınç merkezlerinde hava genellikle nasıldır?",
+    "choices": [
+      "Yağışlı",
+      "Açık ve sakin",
+      "Fırtınalı",
+      "Sıcak"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the weather usually like at high-pressure centres?",
+    "choicesEn": [
+      "Rainy",
+      "Clear and calm",
+      "Stormy",
+      "Hot"
+    ]
+  },
+  {
+    "id": "iklim-meltemi",
+    "category": "İklim & Hava",
+    "text": "Ege Denizi'nde yazın kuzeyden esen serinleten rüzgara ne denir?",
+    "choices": [
+      "Lodos",
+      "Meltem (Etezyen)",
+      "Poyraz",
+      "Kıble"
+    ],
+    "correctIndex": 1,
+    "difficulty": "orta",
+    "textEn": "What is the cool northerly summer wind of the Aegean called?",
+    "choicesEn": [
+      "Lodos",
+      "Meltemi (Etesian)",
+      "Poyraz",
+      "Kıble"
+    ]
+  },
+  {
+    "id": "iklim-cekirdek",
+    "category": "İklim & Hava",
+    "text": "Yağmur bulutlarına gümüş iyodür serperek yağış tetikleme yöntemi nedir?",
+    "choices": [
+      "Bulut tohumlama",
+      "Suni yağmur",
+      "Hava mühendisliği",
+      "İyonizasyon"
+    ],
+    "correctIndex": 0,
+    "difficulty": "orta",
+    "textEn": "What is seeding rain clouds with silver iodide called?",
+    "choicesEn": [
+      "Cloud seeding",
+      "Artificial rain",
+      "Weather engineering",
+      "Ionization"
+    ]
   }
 ]
