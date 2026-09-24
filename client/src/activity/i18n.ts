@@ -167,6 +167,8 @@ const tr = {
   'category.soon': 'Yakında (soru bekleniyor)',
   'category.soonBadge': 'YAKINDA',
   'category.questionCount': '{count} soru',
+  'category.lowContent': 'az içerik',
+  'category.lowContentHint': 'Bu mod için önerilen en az soru sayısının altında — havuz erken tekrar edebilir',
 
   // Özel soru paketi (FAZ 4.4)
   'pack.label': 'SORU PAKETİ',
@@ -625,6 +627,8 @@ const en: Record<StringKey, string> = {
   'pack.deleteConfirm': 'Are you sure? Click again',
   'pack.deleted': 'Pack deleted.',
   'category.questionCount': '{count} questions',
+  'category.lowContent': 'low content',
+  'category.lowContentHint': 'Below the recommended minimum for this mode — the pool may repeat early',
   'category.allTopics': 'Questions from every category',
   'category.count': '{count} categories selected',
   'category.choose': 'Choose categories',

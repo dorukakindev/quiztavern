@@ -381,6 +381,8 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
             {ordered.map((category) => {
               const soon = category.classicCount === 0 && category.circleCount === 0
               const count = mode === 'circle' ? category.circleCount : category.classicCount
+              const minContent = mode === 'circle' ? 25 : 40
+              const low = !soon && count < minContent
               const selected = selection.includes(category.name)
               return <button type="button" key={category.name} className={`qt-category-card ${selected ? 'is-selected' : ''} ${soon ? 'is-soon' : ''}`} aria-pressed={selected} disabled={soon} title={soon ? t('category.soon') : undefined} onClick={() => onToggle(category.name)}>
                 {soon && <div className="qt-category-card__lock" aria-hidden="true"><Icon name="lock" /><span>{t('category.soonBadge')}</span></div>}
@@ -392,6 +394,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
                 <div className="qt-category-card__foot">
                   <DifficultySegments difficulty={category.difficulty} />
                   <span className="qt-category-card__count">{soon ? '—' : t('category.questionCount', { count })}</span>
+                  {low && <span className="qt-category-card__low" title={t('category.lowContentHint')}>{t('category.lowContent')}</span>}
                 </div>
               </button>
             })}
