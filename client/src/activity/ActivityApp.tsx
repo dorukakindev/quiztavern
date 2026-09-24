@@ -719,6 +719,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
       <div className={`qt-seat__token ${player.progress?.league ? `is-frame-${player.progress.league}` : ''}`}>
         {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
         {isHost && <Icon name="crown" weight="fill" className="qt-seat__crown" />}
+        {player.captain && <Icon name="star" weight="fill" className="qt-seat__captain" aria-label={t('team.captain')} />}
         {player.ready
           ? <span className="qt-seat__check" aria-hidden="true"><Icon name="check" /></span>
           : <span className="qt-seat__prep" aria-hidden="true" />}

@@ -1443,7 +1443,6 @@ export class Room {
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         if (gain) player.score += gain;
-        if (this.gameMode === "team" && gain) this.teamScores[player.team === 1 ? 1 : 0] += gain;
         // Son Masa: yanlış ya da cevapsız tur 1 can götürür; doğruya puan yok
         // sayılmaz — hayatta kalmak oyunun kendisi, puan klasik gibi işler.
         if (this.gameMode === "elim" && !correct) player.lives = Math.max(0, player.lives - 1);
@@ -1455,6 +1454,26 @@ export class Room {
       // sayılır ama currentStreak korunur).
       this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null, player.cardUsed === "shield");
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
+    }
+    // Takım modu (§6.2): takım puanı kişisel kazançların toplamı değil, takımın
+    // TEK cevabının doğruluğu — üyeler çoğunluk oyu verir, eşitlikte kaptanın
+    // (en düşük seat'li bağlı üye) seçimi geçerli. Böylece büyük takım doğuştan
+    // avantajlı olmaz; koordinasyon ödüllendirilir.
+    if (this.gameMode === "team") {
+      for (const team of [0, 1] as const) {
+        const members = [...this.players.values()].filter(
+          (p) => p.team === team && p.connected && p.eligibleFrom <= this.qIndex,
+        );
+        if (!members.length) continue;
+        const votes = [0, 0, 0, 0];
+        for (const m of members) if (m.choice !== null) votes[m.choice]++;
+        const max = Math.max(...votes);
+        if (max === 0) continue;
+        const tied = votes.filter((v) => v === max).length > 1;
+        const captain = members.find((m) => m.id === this.teamCaptainId(team)) ?? members.reduce((a, b) => (a.seat <= b.seat ? a : b));
+        const teamChoice = tied && captain.choice !== null ? captain.choice : votes.indexOf(max);
+        if (teamChoice === question.correctIndex) this.teamScores[team] += GAME.TEAM_VOTE_PTS;
+      }
     }
     // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
     if (this.gameMode === "lightning" && picks[question.correctIndex].length > 0) this.lightningBurn++;
@@ -1732,6 +1751,14 @@ export class Room {
     return this.questionTimeMs ?? GAME.QUESTION_MS;
   }
 
+  /** Takım kaptanı (§6.2): takımın bağlı üyeleri içinde en düşük seat'li;
+   *  kimse bağlı değilse null. Oy eşitliğinde kaptanın seçimi takım cevabıdır. */
+  private teamCaptainId(team: number): string | null {
+    const members = [...this.players.values()].filter((p) => p.team === team && p.connected);
+    if (!members.length) return null;
+    return members.reduce((a, b) => (a.seat <= b.seat ? a : b)).id;
+  }
+
   private publicPlayer(player: RoomPlayer): PublicPlayer {
     return {
       id: player.id,
@@ -1749,6 +1776,7 @@ export class Room {
       ...(this.gameMode === "elim" ? { lives: player.lives } : {}),
       streak: player.stats.currentStreak,
       team: player.team,
+      ...(this.gameMode === "team" ? { captain: this.teamCaptainId(player.team) === player.id } : {}),
       ...(this.phase === "lobby" && this.inResults.has(player.id) ? { inResults: true } : {}),
       cards: player.cards,
       ...(player.isBot ? {} : {
