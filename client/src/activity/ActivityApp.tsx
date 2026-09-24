@@ -337,7 +337,7 @@ function DifficultySegments({ difficulty }: { difficulty: Difficulty | null }) {
   </span>
 }
 
-function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, onToggle }: { categories: CategoryOption[]; selection: string[]; disabled: boolean; hint: string; mode: GameMode; onMixed: () => void; onToggle: (name: string) => void }) {
+function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, onMixed, onToggle }: { categories: CategoryOption[]; selection: string[]; disabled: boolean; hint: string; mode: GameMode; /** §6.4: oyuncunun ustalık kazandığı kategoriler (50+ doğru) — ikonda işaret. */ mastery?: string[]; onMixed: () => void; onToggle: (name: string) => void }) {
   const { t, language } = useI18n()
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -387,7 +387,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
               return <button type="button" key={category.name} className={`qt-category-card ${selected ? 'is-selected' : ''} ${soon ? 'is-soon' : ''}`} aria-pressed={selected} disabled={soon} title={soon ? t('category.soon') : undefined} onClick={() => onToggle(category.name)}>
                 {soon && <div className="qt-category-card__lock" aria-hidden="true"><Icon name="lock" /><span>{t('category.soonBadge')}</span></div>}
                 <div className="qt-category-card__top">
-                  <i className="qt-category-card__icon" aria-hidden="true"><CategoryIcon name={category.name} /></i>
+                  <i className="qt-category-card__icon" aria-hidden="true"><CategoryIcon name={category.name} />{mastery?.includes(category.name) && <span className="qt-category-card__mastery" title={t('category.mastered')}><Icon name="star" /></span>}</i>
                   {selected && <span className="qt-category-card__check" aria-hidden="true"><Icon name="check" /></span>}
                 </div>
                 <b className="qt-category-card__name">{categoryLabel(language, category.name)}</b>
@@ -1098,6 +1098,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             disabled={!isHost}
             hint={mode === 'circle' ? t('category.limit.two') : mode === 'lightning' ? t('category.limit.one') : t('category.limit.three')}
             mode={mode}
+            mastery={state?.progress?.categoryMastery}
             onMixed={() => onSetCategories([])}
             onToggle={toggleCategory}
           />

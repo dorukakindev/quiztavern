@@ -418,3 +418,22 @@
   border-color: rgba(126, 200, 255, 0.85);
   cursor: default;
 }
+
+/* Kategori ustalığı (§6.4): kategori ikonunun köşesinde küçük yıldız — 50+ doğru. */
+.qt-category-card__mastery {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe9a8, #d9a640);
+  color: #4a3206;
+  border: 1px solid rgba(74, 50, 6, 0.55);
+  font-size: 0.55rem;
+}
+.qt-category-card__mastery svg { width: 10px; height: 10px; }
+.qt-category-card__icon { position: relative; }

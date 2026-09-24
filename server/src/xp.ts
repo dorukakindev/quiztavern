@@ -1,6 +1,7 @@
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { GAME } from "./config.js";
 import type {
   BadgeKey,
   LeagueKey,
@@ -84,6 +85,9 @@ interface BadgeStats {
   correctTotal: number;
   bestStreak: number;
   streakDays: number;
+  /** Ustalık kazanılan kategori sayısı (§6.4): kategori başına
+   *  GAME.MASTERY_CORRECT doğruyu geçenler. */
+  masteryCount: number;
 }
 
 interface BadgeDef {
@@ -97,6 +101,7 @@ const leagueMinXp = (key: LeagueKey) =>
 /** shared/types.ts BADGE_KEYS ile birebir aynı anahtar kümesi — tip denetimi
  *  katar üstünden değil, eksik/fazla anahtar derlemede yakalanır. */
 export const BADGE_DEFS: readonly BadgeDef[] = [
+  { key: "kategoriUstasi", earned: (s) => s.masteryCount >= 1 },
   { key: "ilkMac", earned: (s) => s.matches >= 1 },
   { key: "onMac", earned: (s) => s.matches >= 10 },
   { key: "elliMac", earned: (s) => s.matches >= 50 },
@@ -127,6 +132,8 @@ export interface MatchFinishedEntry {
   placement: number;
   /** Tekli modda placement===1; takım modunda galip takımın üyesi. */
   won: boolean;
+  /** Maç içi kategori bazlı doğru sayıları — ustalık (§6.4) tablosuna yazar. */
+  perCategory?: { category: string; correct: number }[];
 }
 
 /** Tek maçın XP'si — saf fonksiyon, testlerde de doğrulanır. AFK (total=0) kazanamaz. */
@@ -149,6 +156,9 @@ export interface XpStore {
   recordMatch(entries: MatchFinishedEntry[], now?: Date): Map<string, XpGain>;
   /** Güncel sezonun ilk `limit` sırası. */
   seasonBoard(limit?: number, now?: Date): SeasonBoard;
+  /** Ustalık kazanılan kategori adları (§6.4): kategori başına
+   *  GAME.MASTERY_CORRECT doğruyu geçenler. */
+  categoryMastery(userId: string): string[];
   /** Seçili unvan (kazanılmış rozetlerden biri) veya null. */
   title(userId: string): BadgeKey | null;
   /** Unvan seç: yalnız kazanılmış rozet geçerli; null seçimi kaldırır.
@@ -203,6 +213,12 @@ export function createXpStore(file: string): XpStore {
     earned_at INTEGER NOT NULL,
     PRIMARY KEY (user_id, badge)
   )`);
+  db.exec(`CREATE TABLE IF NOT EXISTS category_correct (
+    user_id TEXT NOT NULL,
+    category TEXT NOT NULL,
+    correct INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, category)
+  )`);
   // Unvan kolonu sonradan eklendi — mevcut veritabanları için ALTER.
   if (!(db.prepare("PRAGMA table_info(players)").all() as { name: string }[]).some((col) => col.name === "title")) {
     db.exec("ALTER TABLE players ADD COLUMN title TEXT");
@@ -231,9 +247,19 @@ export function createXpStore(file: string): XpStore {
   const insertBadge = db.prepare(
     "INSERT OR IGNORE INTO achievements (user_id, badge, earned_at) VALUES (?, ?, ?)",
   );
+  const upsertCategoryCorrect = db.prepare(`INSERT INTO category_correct (user_id, category, correct)
+    VALUES (@userId, @category, @correct)
+    ON CONFLICT(user_id, category) DO UPDATE SET correct = correct + @correct`);
+  const masteryRows = db.prepare(
+    "SELECT category FROM category_correct WHERE user_id = ? AND correct >= ? ORDER BY category",
+  );
 
   const knownBadges = new Set(BADGE_DEFS.map((def) => def.key));
   /** Kazanılmış rozetler — BADGE_DEFS sırasında, tanınmayan (eski/yanlış) key'ler atılır. */
+  function categoryMastery(userId: string): string[] {
+    return (masteryRows.all(userId, GAME.MASTERY_CORRECT) as { category: string }[]).map((row) => row.category);
+  }
+
   function badgesFor(userId: string): BadgeKey[] {
     const owned = new Set(
       (earnedBadgeRows.all(userId) as { badge: string }[]).map((row) => row.badge as BadgeKey),
@@ -265,6 +291,7 @@ export function createXpStore(file: string): XpStore {
       seasonRank: rankRow,
       streakDays: row.streak_days,
       badges: badgesFor(userId),
+      categoryMastery: categoryMastery(userId),
     };
   }
 
@@ -276,6 +303,7 @@ export function createXpStore(file: string): XpStore {
     snapshot(userId, now = new Date()) {
       return snapshotFor(userId, now);
     },
+    categoryMastery,
     recordMatch(entries, now = new Date()) {
       const season = seasonKey(now);
       const today = dayKey(now);
@@ -308,6 +336,9 @@ export function createXpStore(file: string): XpStore {
             updatedAt: now.getTime(),
           });
           upsertSeason.run({ userId: entry.userId, season, xp: gained, name: entry.name });
+          for (const item of entry.perCategory ?? []) {
+            if (item.correct > 0) upsertCategoryCorrect.run({ userId: entry.userId, category: item.category, correct: item.correct });
+          }
           const level = levelFor(xp);
           const league = leagueFor(xp);
           // Başarım: maç sonrası sayaçlara + bu maçın özetine bak. Rozetler
@@ -319,6 +350,7 @@ export function createXpStore(file: string): XpStore {
             correctTotal: (row?.correct_total ?? 0) + entry.correct,
             bestStreak: Math.max(row?.best_streak ?? 0, entry.bestStreak),
             streakDays,
+            masteryCount: categoryMastery(entry.userId).length,
           };
           const owned = new Set(
             (earnedBadgeRows.all(entry.userId) as { badge: string }[]).map((r) => r.badge),

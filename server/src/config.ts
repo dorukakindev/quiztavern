@@ -127,6 +127,9 @@ export const GAME = {
   ELIM_LIVES: 3,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
+  /** Kategori ustalığı (§6.4): kategori başına bu kadar doğruyu geçen
+   *  oyuncu o kategorinin ustası olur — rozeti + kategori ikonunda işaret. */
+  MASTERY_CORRECT: 50,
   MAX_PLAYERS: 8,
   // Solo oynanabilir: masa arkadaş beklemek zorunda değil, tek kişi de oyuncudur.
   MIN_PLAYERS: 1,

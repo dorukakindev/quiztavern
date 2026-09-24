@@ -104,6 +104,8 @@ export interface ProgressStore {
   snapshot(userId: string): ProgressSnapshot | null;
   seasonBoard(limit?: number): SeasonBoard;
   recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
+  /** Ustalık kazanılan kategori adları — kategori ikonu işareti için. */
+  categoryMastery(userId: string): string[];
   title(userId: string): BadgeKey | null;
   setTitle(userId: string, title: BadgeKey | null): boolean;
 }
@@ -1524,6 +1526,8 @@ export class Room {
           bestStreak: player.stats.bestStreak,
           placement,
           won: this.gameMode === "team" ? player.team === winningTeam : placement === 1,
+          perCategory: [...player.stats.perCategory.entries()]
+            .map(([category, value]) => ({ category, correct: value.correct })),
         }));
       if (matchEntries.length) {
         try { this.xpGains = this.progress.recordMatch(matchEntries); }
