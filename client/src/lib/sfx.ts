@@ -11,7 +11,7 @@ import { storageGet, storageSet } from './storage'
  * edilir (tarayıcı otomatik-oynatma politikası). Tercih localStorage'da; müzik
  * gibi ama SFX varsayılan AÇIK (bir quiz oyununun hissinin yarısı ses).
  */
-export type SfxName = 'lock' | 'tick' | 'correct' | 'wrong' | 'reveal' | 'podium' | 'heart' | 'heart2' | 'heart3'
+export type SfxName = 'lock' | 'tick' | 'correct' | 'wrong' | 'reveal' | 'podium' | 'heart' | 'heart2' | 'heart3' | 'buzz' | 'flip' | 'elim' | 'pop'
 
 let ctx: AudioContext | null = null
 let enabled = storageGet('qt-sfx') !== 'off'
@@ -59,6 +59,15 @@ const SOUNDS: Record<SfxName, (c: AudioContext) => void> = {
   heart: (c) => { note(c, 90, 0, 0.09, 'sine', 0.13) },
   heart2: (c) => { note(c, 85, 0, 0.1, 'sine', 0.17) },
   heart3: (c) => { note(c, 80, 0, 0.05, 'sine', 0.22); note(c, 80, 0.09, 0.11, 'sine', 0.2) },
+  // Zil kazanıldı: sert çift vızıltı (yarışma buzzer'ı) — kimin bastığından
+  // bağımsız herkese çalar; kendi basışın üstüne 'lock' da katmanlanır.
+  buzz: (c) => { note(c, 185, 0, 0.11, 'sawtooth', 0.13); note(c, 148, 0.13, 0.16, 'sawtooth', 0.12) },
+  // Pano hücresi açıldı / soru perdesi: kısa tok "çevir" sesi.
+  flip: (c) => { note(c, 340, 0, 0.05, 'square', 0.1); note(c, 180, 0.035, 0.11, 'triangle', 0.11) },
+  // Eliminasyon: alçalan ikili — can bittiğinde bir kez.
+  elim: (c) => { note(c, 392, 0, 0.12, 'sine', 0.13); note(c, 262, 0.11, 0.24, 'sine', 0.14) },
+  // Emote baloncuğu: çok kısa, çok hafif — akışı kirletmez.
+  pop: (c) => { note(c, 1200, 0, 0.04, 'sine', 0.07) },
 }
 
 export const sfx = {
