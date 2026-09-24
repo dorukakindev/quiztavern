@@ -38,7 +38,8 @@ assert(mismatched.length === 0, `yer tutucular iki dilde aynı${mismatched.lengt
 const sameBoth = keys.filter((k) => STRINGS.tr[k] === STRINGS.en[k]);
 // reveal.betLost: değeri "−{points}" (sadece eksi + sayı) — dile bağımsız, kasıtlı aynı.
 // team.mvp: "MVP" evrensel kısaltma; reveal.betLost: "−{points}" dile bağımsız. Kasıtlı aynı.
-const allowedSame = new Set<string>(["brand.name", "category.mixed", "err.invalidTarget", "reveal.betLost", "team.mvp", "podium.xpGain"]);
+// bet.allBoost: "×2.5" çarpan işareti — dile bağımsız, kasıtlı aynı.
+const allowedSame = new Set<string>(["brand.name", "category.mixed", "err.invalidTarget", "reveal.betLost", "team.mvp", "podium.xpGain", "bet.allBoost"]);
 const suspicious = sameBoth.filter((k) => !allowedSame.has(k));
 assert(suspicious.length === 0, `çevrilmemiş kalıntı yok${suspicious.length ? ` (${suspicious})` : ""}`);
 
