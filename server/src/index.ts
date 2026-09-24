@@ -601,6 +601,27 @@ io.on("connection", (socket) => {
       const t = toToast(error, "err.difficultyFailed"); toast(socket.id, t.key, t.params);
     }
   });
+  socket.on(EV.SET_QUESTION_TIME, (payload: unknown) => {
+    try {
+      room.setQuestionTime(user.id, (payload as { ms?: unknown } | undefined)?.ms ?? null);
+    } catch (error) {
+      const t = toToast(error, "err.timeFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
+  socket.on(EV.SET_SPEED_BONUS, (payload: unknown) => {
+    try {
+      room.setTableFlag(user.id, "speedBonus", (payload as { value?: unknown } | undefined)?.value);
+    } catch (error) {
+      const t = toToast(error, "err.settingFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
+  socket.on(EV.SET_IMAGE_ONLY, (payload: unknown) => {
+    try {
+      room.setTableFlag(user.id, "imageOnly", (payload as { value?: unknown } | undefined)?.value);
+    } catch (error) {
+      const t = toToast(error, "err.settingFailed"); toast(socket.id, t.key, t.params);
+    }
+  });
   socket.on(EV.SET_CATEGORIES, (payload: unknown) => {
     try {
       room.setCategories(user.id, payload);
