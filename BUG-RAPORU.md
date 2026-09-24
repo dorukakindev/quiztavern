@@ -2,7 +2,7 @@
 
 > **Bu rapor v1'in (önceki `BUG-RAPORU.md`) yerini alır.** v1 statik bir ön taramaydı ve 40 bulgudan **çoğu kod okunarak doğrulanamadı** — bkz. [Eski raporun akıbeti](#eski-raporun-akıbeti). Bu rapor her bulgunun **kod satırıyla doğrulandığı** ve mümkün olan her yerde **çalıştırılarak yeniden üretildiği** tam bir analizdir.
 >
-> **Yöntem:** `client/`, `server/`, `shared/`, `tools/` altındaki ~11.000 satırın tamamı okundu; `npm ci` → `npm run build` → `npm test` zinciri gerçekten koşuldu (33 test paketi). Aşağıdaki her bulgu ya doğrudan kod kanıtıyla ya da test koşusuyla doğrulanmıştır. **Hiçbir kod değişikliği yapılmamıştır.**
+> **Yöntem:** `client/`, `server/`, `shared/`, `tools/` altındaki ~11.000 satırın tamamı okundu; `npm ci` → `npm run build` → `npm test` zinciri gerçekten koşuldu (33 test paketi); ayrıca **soru bankası verisinin tamamı** (`questions.json` 2357 soru, `questions-numeric.json` 16 soru, `questions-order.json` 30 soru, 465 görsel dosyası) betimsel analizle tarandı. Aşağıdaki her bulgu ya doğrudan kod kanıtıyla ya da test/veri koşusuyla doğrulanmıştır. **Hiçbir kod değişikliği yapılmamıştır.**
 >
 > **Önem:** 🔴 Kritik (yanlış oyun sonucu / çökme) · 🟠 Yüksek (bozuk işlevsellik) · 🟡 Orta (kenar durum / sağlamlık) · ⚪ Düşük (temizlik / kozmetik)
 
@@ -19,7 +19,7 @@
 - `npm test` boşluk içeren repo yolundan (ör. `…\quiz en yeni\quiztavern`) koşulduğunda `test:dod` aşamasında **ENOENT ile çöker** — nedeni B19.
 - Boşluksuz yoldan koşulduğunda **yalnızca** `test:admin-reports` son temizlikte **EPERM** ile çöker (B20); 9 assertion'ının tamamı geçer.
 - GitHub CI (Ubuntu, boşluksuz yol, dosya silme kilidi yok) her iki hatayı da görmez → **CI yeşil**; bu hatalar geliştirici makinesi (özellikle Windows) deneyimini bozar.
-- `test:validate-questions` sonucu: **hata yok, 669 uyarı** — uyarıların önemli kısmı B2'deki 5 kategori ve B3'teki veri tekrarlarıdır.
+- `test:validate-questions` sonucu: **hata yok, 669 uyarı** — uyarıların önemli kısmı B2'deki 5 kategori ve B3'teki veri tekrarlarıdır. Ayrıca 17 "aynı soru metni" uyarısının **tamamı** farklı görselli logo sorularıdır (bilinçli tasarım — bkz. 5.8).
 
 ---
 
@@ -161,6 +161,32 @@ useEffect(() => {
 - **Senaryo:** Ağ gecikmesi penceresinde (sayaç 0, reveal paketi henüz gelmedi) oyuncu şıkka basar; `sfx.play('lock')` çalar, "kilitlendi" görünür; sunucu cevabı reddeder ve turu cevapsız işler. Kullanıcı doğru bildiğine eminken puan almaz.
 - **Düzeltme:** İstemcide `locked` koşuluna `deadline && serverNow() >= deadline` ekle; sunucu tarafında deadline aşımı reddinde açık geri bildirim (örn. yeni `err.lateAnswer` toast anahtarı) döndürmeyi değerlendir.
 
+### B40. Şık karıştırma yalnızca ana havuzda uygulanıyor — Günlük Meydan Okuma, paket ve yazar sorularında uygulanmıyor; verideki şık konumu çarpıklığı (%49 ilk şık) bu yollardan sızıyor
+
+- **Dosya:** `server/src/daily.ts:47-54` (`dailyQuestions`), `server/src/packs.ts:214-221` (`samplePackQuestions`), `server/src/rooms.ts:1177-1186` (yazar soruları havuza karıştırma); karşıt: `server/src/questions.ts:185-193` (`sampleQuestions` şıkları **karıştırır**)
+- **KANIT** — ana havuz örneklemesi her soru için taze permütasyon uygular:
+
+```ts
+// questions.ts sampleQuestions — TR/EN şıkları aynı permütasyonla taşınır:
+return pool.slice(0, n).map((q) => {
+  const order = shuffle([0, 1, 2, 3]);
+  return { ...q, choices: order.map((k) => q.choices[k]), choicesEn: order.map((k) => q.choicesEn[k]), correctIndex: order.indexOf(q.correctIndex) };
+});
+```
+
+Buna karşılık `dailyQuestions()` yalnız **soru sırasını** gün-tohumlu karıştırıp 5'e böler — şıklara dokunmaz; `samplePackQuestions` ve yazar soruları da soruları olduğu gibi döndürür.
+
+Veri tarafında `correctIndex` dağılımı ağır çarpık (2357 soru, gerçek sayım):
+
+| Şık konumu | 0 | 1 | 2 | 3 |
+|---|---|---|---|---|
+| Soru sayısı | 1152 | 774 | 309 | 122 |
+| Oran | **%48,9** | %32,8 | %13,1 | %5,2 |
+
+- **Senaryo (a) Günlük:** Günlük maç skorlu, günde bir kez ve lider tablosuna işlenen bir mod; doğru cevap neredeyse yarısıyla 1. şıkta. Hiç bilmeyen bir oyuncu hep 1. şıkkı işaretleyerek beklenen ~2,45/5 doğruluğa ulaşır (rastgele seçim ~1,25). Aynı 5 soru gün boyunca herkese aynı düzende geldiği için avantaj tüm gün geçerlidir — skor adaleti bozulur.
+- **Senaryo (b) Paket/yazar:** Paket ve yazar soruları yazarın girdiği düzende sunulur; yazarın konum alışkanlığı ve aynı paketin tekrar oynanmasında konum hafızası (hangi soruda cevabın kaçıncı şıkta olduğu) sömürülebilir.
+- **Düzeltme:** `sampleQuestions`'daki remap'i paylaşılan bir `shuffleChoices(q, rnd?)` yardımcısına çıkar: (1) Günlük'te **gün-tohumlu deterministik** permütasyon uygula (herkese aynı düzen kalır, adalet korunur, bias sıfırlanır); (2) `samplePackQuestions`'a ve yazar soruları karıştırmasına aynı yardımcıyı uygula (rastgele permütasyon). Validator'a `correctIndex` dağılım dengesizliği uyarısı ekle (örn. herhangi bir konum %40'ı aşarsa).
+
 ---
 
 ## 3. 🟡 Orta Bulgu
@@ -287,6 +313,13 @@ cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
 - **KANIT:** `body: JSON.stringify({ type, message, stack, url: window.location.href })` — filtre yok. Token sızması yok (sessionToken URL'de taşınmıyor) ama URL'de dev kimlik adı (`?as=`) taşınabilir.
 - **Düzeltme:** `window.location.origin + pathname` gönder; stack'i sınırla.
 
+### B41. Yakın Tahmin havuzu 16, Zaman Çizelgesi havuzu 30 soru — hızlı tükenme + kategori adları küçük harf (EN etiket ve ustalık anahtarı ayrışması)
+
+- **Dosya:** `server/data/questions-numeric.json` (16 kayıt), `server/data/questions-order.json` (30 kayıt); `server/src/questions-numeric.ts:56-67`, `questions-order.ts:52-63` (seen tabanlı örnekleme)
+- **KANIT:** Numeric modda 10 soruluk bir maç havuzun %62'sini tek maçta tüketir; `sampleNumericQuestions` taze soru kalmayınca `seen`'i yok sayarak tamamlar → 2.-3. maçtan itibaren aynı sorular dönmeye başlar. Timeline'da 30 soruluk havuz, 5 soruluk dizilerle 6 maçta baştan sona dolar. Ayrıca iki dosyada da kategori adları **küçük harf** yazılmış (`"coğrafya"`, `"bilim"`, `"tarih"`), klasik havuzla (`"Coğrafya"`) eşleşmez.
+- **Senaryo:** (a) Numeric/timeline seven bir grup kısa sürede soru ezberler; (b) `categoryLabel` EN arayüzde `"coğrafya"` için `CATEGORY_LABELS_EN`'de karşılık bulamayıp küçük harf Türkçe adı gösterir; (c) kategori ustalığı (`MASTERY_CORRECT`) ve maç istatistikleri `"coğrafya"` anahtarını klasik `"Coğrafya"` kaydından **ayrı** sayar — aynı kavram iki ayrı ustalık satırı üretir.
+- **Düzeltme:** İki veri dosyasındaki kategori adlarını klasik katalogdaki Title Case adlarla aynı yaz (tek düzeltme, üç etkiyi kapatır); havuzları en az 50-60 kayeda büyüt (içerik işi). `tools/validate-questions.ts`'ı bu iki dosyayı da (kategori adı katalog eşleşmesi dahil) denetler hale getir.
+
 ---
 
 ## 4. ⚪ Düşük Bulgu
@@ -305,6 +338,9 @@ cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
 | B37 | `GameSkeleton` ekran okuyucu için tamamen sessiz (`aria-hidden`) | `client/src/activity/ActivityApp.tsx:2161` | `role="status"` + görsel olmayan "Yükleniyor" |
 | B38 | `model-viewer` chunk'u 1.02 MB (build uyarısı) | `client/vite.config.ts` | Lazy `import()` ile ilk yükleme küçültülür |
 | B39 | `handleNoPlayersLeft`/`closeIfEmpty` ~30 satır kopya | `server/src/rooms.ts:463-525` | B13 ile aynı düzeltme |
+| B42 | 149 görsel dosyası hiçbir soru tarafından referans edilmiyor — **7,5 MB / 25 MB (%30 ölü ağırlık)** | `client/public/questions/` (sayım: 315 referanslı, 465 dosya) | Paketlerde görsel alanı yok (istemsiz "asset paleti" değil); ya silin ya da paket görsel seçici olarak belgelendir |
+| B43 | `fact` (reveal trivia) alanı yalnız 22/2357 soruda (%0,9) | `server/data/questions.json` | Özellik neredeyse kullanılmıyor; içerik hedefi koy |
+| B44 | En uzun soru metni 263 karakter (`ai4-chineseroom`) | `server/data/questions.json` | Dar mobil ekranda taşma/okunabilirlik testi yap |
 
 ---
 
@@ -321,6 +357,30 @@ Gerçek veri bulguları:
 5. **Yanlış/uydurma TR cevaplar**: `akın` (658; "kuşların mevsimsel göçü"nün cevabı **göç** olmalı — A harfi için başka kavram seçilmeli), `fenix` (~1308; yaygın yazım `feniks`, alias yok), `enkavstik` (~1631; `enkaustik`), `ambasador` (~1412; TDK yazımı `elçi`/`büyükelçi`), `icracı` (732), `filmmetni` (734), `kötüadam` (737), `hayatta` (777), `rastgeleci` (787), `porya` (~1410).
 6. **Tahmin edilemez uzun bileşik cevaplar**: `uluslararasıfonetikalfabe` (~1548), `öznefiilnesne` (~1545), `streetfighteriii3rdstrike` (~1591), `aquavenyhrox` (~1587), `elektrikliyılanbalığı` — `aliases` alanı tüm dosyada yalnız 3 kayıtta kullanılmış (ayasofya, sultanahmet, ziraatbankası); yazım varyasyonu gerektiren cevaplarda alias eksik.
 7. **Validator boşlukları** (`tools/validate-questions.ts`): (a) I/İ ayrımı `normalizeCircleAnswer` ile kontrol edildiği için gerçek harf kuralı doğrulanamıyor — `letter:"I" + answer:"istanbul"` bile geçer; (b) `answerEn` duplicate kontrolü yok; (c) `clue` boşluk/uzunluk denetimi yok; (d) `questions-numeric`/`questions-order` verilerini hiç denetlemiyor; (e) resimli sorularda "aynı soru metni" uyarısı false positive üretiyor (`visualcat-*` soruları metin aynı, görsel farklı — bilinçli tasarım).
+
+### 5.8 Soru bankası verisi — betimsel analiz (2357 klasik + 16 numeric + 30 timeline kaydın tamamı tarandı)
+
+Kod okumasının yanı sıra üç veri dosyasının tamamı betimsel analizle tarandı (dağılımlar, tekrarlar, çeviri, varlık bütünlüğü). Sonuçlar:
+
+**Doğrulanan temizlikler (bulgu değil, güvence):**
+
+| Kontrol | Sonuç |
+|---|---|
+| Eksik görsel dosyası | **0** — 315 referanslı görselin tamamı `client/public/questions/` altında mevcut |
+| `textEn == text` (çevrilmemiş metin) | **0** / 2357 |
+| Aynı soru metni | 17 grup, **tamamı farklı görselli** (bilinçli logo sorusu deseni — validator gürültüsü, B40'taki uyarı dışında) |
+| `choicesEn == choices` (EN şık kopyası) | 1039 kayıt — **çeviri hatası değil:** neredeyse tamamı özel ad/sayı/yıl (`Martin Scorsese`, `1977`, `Pixar`); Türkçe karakter içeren yalnız 22 kayıt ve onlar da özel ad (`İsmet İnönü`, `Nevşehir`, `Jörmungandr` — EN'de aynı yazılır) |
+| Timeline çözümü | `orderSolution()` diziden değil **yıldan türetilir** (`rooms.ts:1342-1345`) — 2 soruda (`ord-004`, `ord-008`) events dizisi kronolojik sıralı değil ama çözüm doğru; `year` tekrarı yükleyicide engelli |
+| Determinizm | Günlük seed'i UTC gün anahtarından; Fisher-Yates deterministik — aynı gün herkese aynı 5 soru |
+| Zorluk dağılımı | kolay 817 / orta 948 / zor 592 — dengeli |
+
+**Veri bulguları (yukarıdaki bulgulara kanıt):**
+
+- `correctIndex` dağılımı %48,9 / %32,8 / %13,1 / %5,2 → **B40** (karıştırma yapılmayan yollarda sızar).
+- Numeric: 14/16 benzersiz cevap; cevap aralığı 15,7–42195; birimler tutarlı (`m`, `°C`, `yıl`…) — sayısal olarak sorun yok, sorun havuz boyutu (B41).
+- Timeline: yıl aralığı MÖ 3100–2022, 9 MÖ olayı; 4 soruda en az bir olayın `labelEn == label` (büyük olasılıkla özel ad — madde madde gözden geçirilmeli).
+- Kategori envanteri: 53 kategori; en küçük 5'i (28'er soru) B2'deki ikon/etiket eksik olan 5 yeni kategori; en büyükleri Bilim Kurgu 75, Coğrafya 67, Doğa 67.
+- `fact`/`factEn` yalnız 22 soruda (B43); en uzun metin 263 karakter (B44).
 
 ---
 
@@ -384,6 +444,15 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 10. **`server/data/question-reports.db`'yi repodan çıkar** (`git rm --cached`), `.gitignore` desenini `server/data/*.db` ile daralt (sorular `questions*.json` izli kalsın).
 11. **Instance doğrulama koşulu:** Handshake'teki instance doğrulaması `!ALLOW_MOCK_AUTH` bloğuna bağlı (`server/src/index.ts`, `io.use` handshake bloğu). `NODE_ENV=production` unutulmuş (ama mock auth kapalı, gerçek Discord kimlikleri tanımlı) bir dağıtımda oturum doğrulaması çalışır ancak `verifyInstanceMembership` hiç çağrılmaz ve kullanıcının beyan ettiği `roomId` kabul edilir — doğrulanmış kullanıcı başka instance'ın odasını izleyebilir. Koşulu `!ALLOW_MOCK_AUTH` yerine `IS_PRODUCTION || DISCORD_BOT_TOKEN mevcut` yaparak pencereyi kapat.
 12. **`translate()` geliştirme modunda eksik anahtar için `console.warn`** bassın — `undefined` sessiz kalmaz.
+13. **LICENSE ve CHANGELOG yok** — kamu GitHub deposu lisanssız "tüm hakları saklıdır" demektir; `ASSET-LISANSLARI.md` yalnız varlıkları kapsıyor. Bir OSI lisansı (MIT/Apache-2.0) ekleyip varlık lisanslarını ayrı tutun; sürüm geçmişini CHANGELOG'a yazın.
+14. **Test zinciri tek `&&` zinciri** — 33 paket ilk hatada durur ve kalan paketler koşmaz (bu analizde zincir `test:dod`'da kırılınca 24 paket hiç koşulamadı, her biri elle tetiklendi). Zinciri paralel/özet raporlayan küçük bir runner script'e (`node scripts/run-tests.mjs` — paket paket koş, özet tablo bas, hepsi bitince exit) alın.
+15. **Lint/format aracı yok** — ESLint (`typescript-eslint`) + Prettier ekleyin; B13/B39'daki kopya-kod ve B33'teki ölü kod gibi sürüklenmeler erken görünür.
+16. **CI'a `npm audit --audit-level=high`** ve `npm ci` çıktısındaki `prebuild-install artık bakımda değil` uyarısını takip eden bağımlılık güncelleme işi ekleyin (better-sqlite3 kanalı).
+17. **Hata izleme** — `clientErrors` sunucuda yalnız `log.warn`'a düşüyor; kimse bakmıyor. Periyodik özet (örn. günde bir en sık 10 istemci hatasını admin raporu gibi görüntüleme) veya Sentry benzeri bir toplayıcı bağlayın.
+18. **Kalıcı veri yedekleme** — `xp.db` tek dosya SQLite (seviye/lig/sezon/rozet hepsi içinde); Fly volume snapshot politikası ya da günlük `.backup()` kopyası tanımlayın. `PRAGMA wal_checkpoint(TRUNCATE)` + `VACUUM INTO` haftalık bakım iyi bir başlangıç.
+19. **`client/src/_legacy/` klasörünü silin** — `client/index.html` yalnız `activity-main.tsx`'i yükler, `tsconfig` dışlanmış; `_legacy/main.tsx`'in `./activity/ActivityApp` importu o klasör altında çözünmez, yani yeniden etkinleştirilemez durumda ölü koddur.
+20. **Üç dağıtım yapılandırması sürüklenme riski** (`fly.toml` + `railway.toml` + `render.yaml`) — port/start komutu/env listesi birbirinden bağımsız yaşlanır. Tek kaynak (örn. ortak `.env.example`'ten türeyen doğrulama testi ya da tek platformu destekleyip diğerlerini docs'a indirme) düşünün.
+21. **Görsel klasörü 25 MB / 465 webp** — B42'deki 149 kullanılmayan dosya dışında kalanlar için de ortalama ~54 KB/dosya; `sharp`/`cwebp -q 75` ile yeniden sıkıştırma turu ilk yükleme süresini düşürebilir (Discord Activity iframe'inde tümü statik servisten iner).
 
 ---
 
@@ -402,6 +471,7 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 | 1.7 | B3 answerEn dedup | `circle.ts` | dedup setine 1 satır; validatora uyarı | 15 dk |
 | 1.8 | B8 klavye kısayolu | `ActivityApp.tsx` | Guard genişlet + `removedChoices` deps'e | 15 dk |
 | 1.9 | B9 deadline kilidi | `gameLogic.ts`, `rooms.ts` | İstemciye deadline koşulu; sunucuya `err.lateAnswer` | 1 sa |
+| 1.10 | B40 şık karıştırma kapsamı | `daily.ts`, `packs.ts`, `rooms.ts` | `sampleQuestions`'taki remap'i `shuffleChoices(q, rnd?)` yardımcısına çıkar; günlükte gün-tohumlu deterministik, paket/yazarda rastgele uygula | 45 dk |
 
 ### Faz 2 — Sağlamlık ve geliştirici deneyimi
 
@@ -423,10 +493,13 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 ### Faz 3 — İçerik kalitesi ve cila
 
 - **Veri temizliği:** 6 anlamsız EN çifti (5.3), `akın`→göç harf kuralı yeniden seçimi, uydur kelimeler + alias'lar, uzun bileşikler, neredeyse-aynı ipucu kopyaları.
-- **Validator güçlendirme** (7.7) + resimli soru metin istisnası.
+- **Havuz büyütme:** numeric 16→50+, timeline 30→60 soru; iki dosyanın kategori adlarını Title Case'e düzelt (B41).
+- **Görsel envanteri:** 149 kullanılmayan dosyayı (7,5 MB) temizle ya da paket görsel paleti olarak belgelendir; kalanlarda yeniden sıkıştırma turu (B42, 7.21).
+- **Validator güçlendirme** (7.7) + resimli soru metin istisnası + `correctIndex` dağılım dengesizliği uyarısı (B40).
 - **İstemci cila:** SFX unlock jesti (B22), WebGL lost (B23), retry uçuş kilidi (B24), lightbox trap (B25), `clientErrors` sanitasyonu (B27), normalize noktalama (B26).
 - **Performans:** lider tablolarının faz-bazlı yayınlanması (7.1), `model-viewer` lazy import (B38), sourcemap (7.5).
-- **Temizlik:** B28-B33, B35-B37; `question-reports.db`'nin repodan çıkarılması.
+- **Temizlik:** B28-B33, B35-B37; `question-reports.db`'nin repodan çıkarılması; `_legacy/` klasörünün silinmesi (7.19).
+- **Proje altyapısı:** LICENSE + CHANGELOG (7.13), test runner script'i (7.14), ESLint+Prettier (7.15), CI'a `npm audit` + Windows matrisi (7.9/7.16), hata izleme (7.17), `xp.db` yedekleme (7.18).
 
 ---
 
