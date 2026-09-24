@@ -394,6 +394,9 @@ const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
   lightning: '/emblems/lightning.webp',
   bet: '/emblems/bet.webp',
   team: '/emblems/team.webp',
+  elim: '/emblems/elim.webp',
+  blur: '/emblems/blur.webp',
+  word: '/emblems/word.webp',
 }
 function ModePicker({ mode, isHost, onSetMode }: { mode: GameMode; isHost: boolean; onSetMode: (mode: GameMode) => void }) {
   const { t } = useI18n()
@@ -695,9 +698,6 @@ function ModeTableScene({ mode }: { mode: GameMode }) {
   const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
-    {scene === 'elim' && <div className="qt-scene-emblem is-elim"><Icon name="heart" weight="duotone" /></div>}
-    {scene === 'blur' && <div className="qt-scene-emblem is-blur"><Icon name="eye" weight="duotone" /></div>}
-    {scene === 'word' && <div className="qt-scene-emblem is-word"><Icon name="letters" weight="duotone" /></div>}
   </div>
 }
 
