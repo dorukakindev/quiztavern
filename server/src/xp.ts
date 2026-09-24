@@ -69,6 +69,22 @@ function dayKey(now: Date): string {
   return now.toISOString().slice(0, 10);
 }
 
+/** ISO-8601 hafta anahtarı (Pazartesi başlar) — haftalık turnuva sınırları. */
+export function weekKey(now: Date = new Date()): string {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const dow = (d.getUTCDay() + 6) % 7; // Pzt=0
+  d.setUTCDate(d.getUTCDate() - dow + 3); // haftanın Perşembesi ISO yılını verir
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const week = Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  return `${d.getUTCFullYear()}-W${String(week).padStart(2, "0")}`;
+}
+
+/** Bir önceki ISO haftanın anahtarı — geçen haftanın şampiyonu için. */
+export function prevWeekKey(now: Date = new Date()): string {
+  const d = new Date(now.getTime() - 7 * 86400000);
+  return weekKey(d);
+}
+
 function previousDayKey(now: Date): string {
   return new Date(now.getTime() - 86_400_000).toISOString().slice(0, 10);
 }
@@ -88,6 +104,8 @@ interface BadgeStats {
   /** Ustalık kazanılan kategori sayısı (§6.4): kategori başına
    *  GAME.MASTERY_CORRECT doğruyu geçenler. */
   masteryCount: number;
+  /** Geçen haftanın turnuva tablosunda 1. sıradaydı (§6.3 haftalık turnuva). */
+  lastWeekChamp: boolean;
 }
 
 interface BadgeDef {
@@ -101,6 +119,7 @@ const leagueMinXp = (key: LeagueKey) =>
 /** shared/types.ts BADGE_KEYS ile birebir aynı anahtar kümesi — tip denetimi
  *  katar üstünden değil, eksik/fazla anahtar derlemede yakalanır. */
 export const BADGE_DEFS: readonly BadgeDef[] = [
+  { key: "haftaSampiyonu", earned: (s) => s.lastWeekChamp },
   { key: "kategoriUstasi", earned: (s) => s.masteryCount >= 1 },
   { key: "ilkMac", earned: (s) => s.matches >= 1 },
   { key: "onMac", earned: (s) => s.matches >= 10 },
@@ -159,6 +178,8 @@ export interface XpStore {
   bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
   /** Güncel sezonun ilk `limit` sırası. */
   seasonBoard(limit?: number, now?: Date): SeasonBoard;
+  /** Haftalık turnuva: geçerli ISO haftanın ilk `limit` sırası (§6.3). */
+  weeklyBoard(limit?: number, now?: Date): SeasonBoard;
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına
    *  GAME.MASTERY_CORRECT doğruyu geçenler. */
   categoryMastery(userId: string): string[];
@@ -226,6 +247,13 @@ export function createXpStore(file: string): XpStore {
     asked INTEGER NOT NULL DEFAULT 0,
     correct INTEGER NOT NULL DEFAULT 0
   )`);
+  db.exec(`CREATE TABLE IF NOT EXISTS weekly_points (
+    user_id TEXT NOT NULL,
+    week TEXT NOT NULL,
+    xp INTEGER NOT NULL DEFAULT 0,
+    name TEXT NOT NULL DEFAULT '',
+    PRIMARY KEY (user_id, week)
+  )`);
   db.exec(`CREATE TABLE IF NOT EXISTS category_correct (
     user_id TEXT NOT NULL,
     category TEXT NOT NULL,
@@ -252,6 +280,15 @@ export function createXpStore(file: string): XpStore {
       COALESCE(p.xp, sp.xp) AS totalXp
     FROM season_points sp LEFT JOIN players p ON p.user_id = sp.user_id
     WHERE sp.season = ? ORDER BY sp.xp DESC, sp.user_id ASC LIMIT ?`);
+  const upsertWeekly = db.prepare(`INSERT INTO weekly_points (user_id, week, xp, name)
+    VALUES (@userId, @week, @xp, @name)
+    ON CONFLICT(user_id, week) DO UPDATE SET xp = xp + @xp, name = @name`);
+  const weeklyTop = db.prepare(`SELECT wp.user_id AS userId, wp.name AS name, wp.xp AS xp,
+      COALESCE(p.xp, wp.xp) AS totalXp
+    FROM weekly_points wp LEFT JOIN players p ON p.user_id = wp.user_id
+    WHERE wp.week = ? ORDER BY wp.xp DESC, wp.user_id ASC LIMIT ?`);
+  const weeklyWinner = db.prepare(`SELECT user_id AS userId FROM weekly_points
+    WHERE week = ? ORDER BY xp DESC, user_id ASC LIMIT 1`);
   const seasonRank = db.prepare(`SELECT COUNT(*) + 1 AS rank FROM season_points
     WHERE season = ? AND xp > (SELECT xp FROM season_points WHERE user_id = ? AND season = ?)`);
   const seasonRow = db.prepare("SELECT xp FROM season_points WHERE user_id = ? AND season = ?");
@@ -368,6 +405,7 @@ export function createXpStore(file: string): XpStore {
             updatedAt: now.getTime(),
           });
           upsertSeason.run({ userId: entry.userId, season, xp: gained, name: entry.name });
+          upsertWeekly.run({ userId: entry.userId, week: weekKey(now), xp: gained, name: entry.name });
           for (const item of entry.perCategory ?? []) {
             if (item.correct > 0) upsertCategoryCorrect.run({ userId: entry.userId, category: item.category, correct: item.correct });
           }
@@ -383,6 +421,7 @@ export function createXpStore(file: string): XpStore {
             bestStreak: Math.max(row?.best_streak ?? 0, entry.bestStreak),
             streakDays,
             masteryCount: categoryMastery(entry.userId).length,
+            lastWeekChamp: (weeklyWinner.get(prevWeekKey(now)) as { userId: string } | undefined)?.userId === entry.userId,
           };
           const owned = new Set(
             (earnedBadgeRows.all(entry.userId) as { badge: string }[]).map((r) => r.badge),
@@ -427,6 +466,7 @@ export function createXpStore(file: string): XpStore {
         updatedAt: now.getTime(),
       });
       upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
+      upsertWeekly.run({ userId, week: weekKey(now), xp: amount, name });
       const level = levelFor(xp);
       const league = leagueFor(xp);
       return { gained: amount, xp, level, league, leveledUp: level > oldLevel, leagueChanged: league !== oldLeague };
@@ -453,6 +493,20 @@ export function createXpStore(file: string): XpStore {
       const rows = seasonTop.all(season, limit) as { userId: string; name: string; xp: number; totalXp: number }[];
       return {
         season,
+        entries: rows.map((row, i) => ({
+          rank: i + 1,
+          userId: row.userId,
+          name: row.name,
+          xp: row.xp,
+          league: leagueFor(row.totalXp),
+        })),
+      };
+    },
+    weeklyBoard(limit = 5, now = new Date()) {
+      const week = weekKey(now);
+      const rows = weeklyTop.all(week, limit) as { userId: string; name: string; xp: number; totalXp: number }[];
+      return {
+        season: week,
         entries: rows.map((row, i) => ({
           rank: i + 1,
           userId: row.userId,
