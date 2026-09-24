@@ -60,6 +60,23 @@ export function scheduleBotAnswers(room: Room): void {
   // Zil'de botlar basmayı Room.scheduleZilBots ile kendisi planlar — klasik
   // answer() zamanlayıcıları burada çalışmaz.
   if (room.gameMode === "zil") return;
+  if (room.gameMode === "blitz") {
+    // Kendi hızında ilerleyen akış: bot zincirleme cevaplar (~1.2–3 sn arayla),
+    // %65 doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
+    for (const p of room.players.values()) {
+      if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+      const step = () => {
+        if (room.phase !== "question" || Date.now() >= room.questionDeadline) return;
+        const claim = (p as unknown as { blitzClaim: { truth: boolean } | null }).blitzClaim;
+        if (!claim) return;
+        const knows = Math.random() < 0.65;
+        room.answer(p.id, knows ? (claim.truth ? 0 : 1) : (claim.truth ? 1 : 0));
+        room.scheduleBotTask(step, 1_200 + Math.random() * 1_800);
+      };
+      room.scheduleBotTask(step, 500 + Math.random() * 900);
+    }
+    return;
+  }
   // Yakın Tahmin: botlar gerçek değerin çevresinde makul saçlılımla tahmin girer.
   if (room.gameMode === "numeric") {
     const n = room.currentNumeric();

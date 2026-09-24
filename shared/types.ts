@@ -23,7 +23,8 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "word"
   | "duel"
   | "zil"
-  | "numeric";
+  | "numeric"
+  | "blitz";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -270,6 +271,26 @@ export interface NumericRevealPayload {
   /** Oyuncu id → girilen tahmin (yalnız tahmin edenler). */
   guesses: Record<string, number>;
   winnerIds: string[];
+}
+
+/** D/Y Blitz canlı durumu (§6.1): herkes KENDİ ifade akışında bağımsız
+ *  ilerler — ortak 60 sn'lik pencere + seri çarpanı. `statement` izleyenin
+ *  kendi geçerli ifadesi; doğruluk (`truth`) istemciye hiç gönderilmez. */
+export interface BlitzLivePayload {
+  deadline: number;
+  durationMs: number;
+  /** null = oyuncu havuzu tüketti (nadir); pencerenin kalanını izler. */
+  statement: { text: string; textEn?: string; claim: string; claimEn?: string; category: string } | null;
+  index: number;
+  correct: number;
+  streak: number;
+}
+
+/** D/Y Blitz kapanış özeti — reveal fazında dolu; skor sıralı. */
+export interface BlitzSummaryPayload {
+  rows: { id: string; score: number; correct: number; answered: number }[];
+  until: number;
+  durationMs: number;
 }
 
 /** Maç soru açılmadan önce, tüm istemcilerin aynı anda oynattığı geri sayım. */
@@ -526,6 +547,10 @@ export interface GameState {
   word: WordPayload | null;
   /** Yakın Tahmin turu; yalnız o modda ve question fazında dolu. */
   numeric: NumericQuestionPayload | null;
+  /** D/Y Blitz canlı durumu; o modda question fazında dolu (kişisel). */
+  blitz: BlitzLivePayload | null;
+  /** D/Y Blitz özet tablosu; o modda reveal fazında dolu. */
+  blitzSummary: BlitzSummaryPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;

@@ -22,6 +22,8 @@ import type {
   MatchMoment,
   MatchSummary,
   NumericQuestionPayload,
+  BlitzLivePayload,
+  BlitzSummaryPayload,
   NumericRevealPayload,
   PodiumEntry,
   ProgressBadge,
@@ -80,6 +82,17 @@ export interface RoomPlayer {
    *  çember = yazılan metin. Yalnız reveal'de o turun gözü doldurulur. */
   answers: (number | null)[];
   typed: (string | null)[];
+  /** D/Y Blitz (§6.1): oyuncunun bağımsız ifade akışı — herkes kendi hızında
+   *  ilerler; pencere ortak 60 sn, seri çarpanıyla puanlanır. */
+  blitzIdx: number;
+  blitzStreak: number;
+  blitzCorrect: number;
+  blitzAnswered: number;
+  blitzScore: number;
+  /** Oyuncunun o anki ifadesi (truth yalnız sunucuda; istemciye sızmadan). */
+  blitzClaim: { truth: boolean; claim: string; claimEn?: string; text: string; textEn?: string; category: string } | null;
+  /** Maç-sonu incelemesi: oyuncunun bu maçta gördüğü ifadeler + kararı. */
+  blitzTrail: { text: string; textEn?: string; claim: string; claimEn?: string; truth: boolean; choice: number }[];
 }
 
 /** Bir oyuncunun tek maçtaki performansı. Maç özeti kartını (4d) besler. */
@@ -223,6 +236,8 @@ export class Room {
   /** Zil (§6.1): bu turda zili kazanan (tek cevap hakkı), yanmış denemeler
    *  ve kazananın cevap penceresi. */
   private buzzWinnerId: string | null = null;
+  // D/Y Blitz: pencere kapanınca son özet — reveal fazında istemciye gider.
+  private lastBlitzSummary: BlitzSummaryPayload | null = null;
   private buzzFailed = new Set<string>();
   private buzzAttempts = 0;
   private zilTimer: NodeJS.Timeout | null = null;
@@ -270,7 +285,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -328,6 +343,13 @@ export class Room {
       stats: emptyStats(),
       answers: [],
       typed: [],
+      blitzIdx: 0,
+      blitzStreak: 0,
+      blitzCorrect: 0,
+      blitzAnswered: 0,
+      blitzScore: 0,
+      blitzClaim: null,
+      blitzTrail: [],
       title: player.isBot ? null : (this.progress?.title(player.id) ?? null),
     };
     this.players.set(record.id, record);
@@ -429,6 +451,7 @@ export class Room {
     this.lastWordReveal = null;
     this.lastNumericReveal = null;
     this.numericGuesses.clear();
+    this.lastBlitzSummary = null;
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
@@ -457,6 +480,7 @@ export class Room {
     this.lastWordReveal = null;
     this.lastNumericReveal = null;
     this.numericGuesses.clear();
+    this.lastBlitzSummary = null;
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
@@ -785,7 +809,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric" && mode !== "blitz") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -800,6 +824,7 @@ export class Room {
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "zil") this.questionCount = 10;
     if (mode === "numeric") this.questionCount = 10;
+    if (mode === "blitz") this.questionCount = 10;
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -1089,7 +1114,7 @@ export class Room {
         ? []
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
-          : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
+          : sampleQuestions(this.gameMode === "blitz" ? GAME.BLITZ_POOL : this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
       this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
@@ -1166,12 +1191,13 @@ export class Room {
   }
 
   answer(playerId: string, choice: number): void {
-    if (this.gameMode === "circle" || this.gameMode === "word" || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > 3) return;
+    if (this.gameMode === "circle" || this.gameMode === "word" || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
     // Karar deadline'a göre: timer gecikmiş olsa bile süre dolduysa cevap yerine reveal işler.
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
     if (this.gameMode === "zil") return this.zilAnswer(playerId, choice, player);
+    if (this.gameMode === "blitz") return this.blitzAnswer(playerId, choice, player);
     // Soru yazarı turu: yazar kendi sorusunda oynamaz.
     if (this.currentQuestion()?.id === `written-${playerId}`) return;
     // Dondur jokeri: yiyen oyuncunun süresi genel deadline'dan önce dolar.
@@ -1260,6 +1286,64 @@ export class Room {
     return this.gameMode === "numeric" ? this.numericQuestions[this.qIndex] ?? null : null;
   }
 
+  /**
+   * D/Y Blitz: oyuncuya sıradaki ifadeyi atar. Havuz tükenirse null — oyuncu
+   * pencerenin kalanında yalnız izler (nadir: 30'luk havuz 60 sn'de biter).
+   */
+  private blitzAssign(player: RoomPlayer) {
+    const q = this.questions[player.blitzIdx];
+    if (!q) { player.blitzClaim = null; return; }
+    const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex);
+    const idx = Math.random() < 0.5 ? q.correctIndex : wrong[Math.floor(Math.random() * wrong.length)];
+    player.blitzClaim = { truth: idx === q.correctIndex, claim: q.choices[idx], ...(q.choicesEn ? { claimEn: q.choicesEn[idx] } : {}), text: q.text, textEn: q.textEn, category: q.category };
+  }
+
+  /**
+   * D/Y Blitz cevabı (§6.1): choice 0=Doğru 1=Yanlış. Doğru seriyi büyütür ve
+   * seri basamaklı kazanç yazar; yanlış seriyi sıfırlar. Ardından oyuncu kendi
+   * akışında bir sonraki ifadeye geçer — tur sonu herkes için aynı penceredir.
+   */
+  private blitzAnswer(playerId: string, choice: number, player: RoomPlayer) {
+    const claim = player.blitzClaim;
+    if (!claim) return;
+    const right = (choice === 0) === claim.truth;
+    player.blitzAnswered++;
+    if (right) {
+      player.blitzStreak++;
+      const gain = GAME.BLITZ_BASE + GAME.BLITZ_STREAK_STEP * Math.min(player.blitzStreak - 1, GAME.BLITZ_STREAK_CAP);
+      player.score += gain;
+      player.blitzScore += gain;
+      player.blitzCorrect++;
+      if (gain > player.stats.maxGain) player.stats.maxGain = gain;
+      if (this.firstAnswerId === null) this.firstAnswerId = playerId;
+    } else {
+      player.blitzStreak = 0;
+    }
+    player.blitzTrail.push({ text: claim.text, textEn: claim.textEn, claim: claim.claim, claimEn: claim.claimEn, truth: claim.truth, choice });
+    this.recordStat(player, right, claim.category, right ? Date.now() - this.questionStartedAt : null);
+    player.blitzIdx++;
+    this.blitzAssign(player);
+    this.broadcast();
+  }
+
+  /** D/Y Blitz kapanışı: canlı akışlar donar, skor sıralı özet taşınır. */
+  private revealBlitz() {
+    if (this.phase !== "question") return;
+    this.clearTimer();
+    this.clearBotTimers();
+    for (const player of this.players.values()) player.blitzClaim = null;
+    const rows = [...this.players.values()]
+      .filter((p) => p.eligibleFrom <= this.qIndex)
+      .map((p) => ({ id: p.id, score: p.blitzScore, correct: p.blitzCorrect, answered: p.blitzAnswered }))
+      .sort((a, b) => b.score - a.score || b.correct - a.correct);
+    this.phase = "reveal";
+    this.revealUntil = Date.now() + GAME.REVEAL_MS;
+    this.lastReveal = { correctIndex: -1, picks: [[], [], [], []], gains: Object.fromEntries(rows.map((r) => [r.id, r.score])), until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.lastBlitzSummary = { rows, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.broadcast();
+    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+  }
+
   setQuestionStartedHandler(handler: QuestionStarted) {
     this.onQuestionStarted = handler;
   }
@@ -1275,7 +1359,7 @@ export class Room {
     const circlePrompt = this.currentCirclePrompt();
     const wordPrompt = this.currentWordPrompt();
     const numericPrompt = this.currentNumeric();
-    const inQuestion = this.phase === "question" && question;
+    const inQuestion = this.phase === "question" && question && this.gameMode !== "blitz";
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
     const inNumeric = this.phase === "question" && numericPrompt;
@@ -1328,6 +1412,21 @@ export class Room {
           deadline: this.questionDeadline, durationMs: this.questionDuration(),
         }
       : null;
+    // D/Y Blitz: KİŞİSEL canlı durum — herkesin ifadesi farklıdır; truth
+    // istemciye hiç çıkmaz. Reveal'da akış donar, özet blitzSummary'de gider.
+    const selfBlitz = self ?? null;
+    const blitz: BlitzLivePayload | null = this.gameMode === "blitz" && this.phase === "question"
+      ? {
+          deadline: this.questionDeadline, durationMs: GAME.BLITZ_TOTAL_MS,
+          statement: selfBlitz?.blitzClaim
+            ? { text: selfBlitz.blitzClaim.text, textEn: selfBlitz.blitzClaim.textEn, claim: selfBlitz.blitzClaim.claim, claimEn: selfBlitz.blitzClaim.claimEn, category: selfBlitz.blitzClaim.category }
+            : null,
+          index: selfBlitz?.blitzIdx ?? 0,
+          correct: selfBlitz?.blitzCorrect ?? 0,
+          streak: selfBlitz?.blitzStreak ?? 0,
+        }
+      : null;
+    const blitzSummary: BlitzSummaryPayload | null = this.gameMode === "blitz" && this.phase === "reveal" ? this.lastBlitzSummary : null;
     const countdown: CountdownPayload | null = this.phase === "countdown"
       ? { deadline: this.countdownDeadline, durationMs: GAME.COUNTDOWN_MS }
       : null;
@@ -1385,6 +1484,8 @@ export class Room {
       wordReveal: this.phase === "reveal" ? this.lastWordReveal : null,
       word,
       numeric,
+      blitz,
+      blitzSummary,
       yourNumericGuess: this.numericGuesses.get(youId) ?? null,
       podium,
       matchSummary,
@@ -1439,6 +1540,7 @@ export class Room {
     this.lastNumericReveal = null;
     // Yakın Tahmin: yeni turda tahminler sıfırlanır.
     this.numericGuesses.clear();
+    this.lastBlitzSummary = null;
     // Kelime Oyunu: yeni tur kapalı kelimeyle başlar; harfler karışık sırada açılır.
     if (this.gameMode === "word" && round) {
       this.wordLettersRevealed = 0;
@@ -1455,6 +1557,20 @@ export class Room {
     this.buzzWinnerId = null; // yeni tur: zil yeniden açık
     this.buzzFailed.clear();
     this.buzzAttempts = 0;
+    // D/Y Blitz (§6.1): tek 60 sn'lik pencere; herkes kendi ifade akışında
+    // bağımsız ilerler — ortak tur sırası yok, seri çarpanıyla puanlanır.
+    if (this.gameMode === "blitz") {
+      for (const player of this.players.values()) {
+        player.blitzIdx = 0;
+        player.blitzStreak = 0;
+        player.blitzCorrect = 0;
+        player.blitzAnswered = 0;
+        player.blitzScore = 0;
+        player.blitzTrail = [];
+        player.blitzClaim = null;
+        if (player.eligibleFrom <= this.qIndex && player.connected) this.blitzAssign(player);
+      }
+    }
     const duration = this.questionDuration();
     this.questionDeadline = this.questionStartedAt + duration;
     for (const player of this.players.values()) {
@@ -1618,6 +1734,20 @@ export class Room {
         const correct = typed !== null && matchesCircleAnswer(prompt, typed);
         items.push({ category: prompt.category, prompt: prompt.clue, correct, yourAnswer: typed ?? "", correctAnswer: prompt.answer });
       });
+    } else if (this.gameMode === "blitz") {
+      // Herkes kendi akışını gördü — inceleme kişisel iz sürümü üzerinden.
+      player.blitzTrail.forEach((e) => {
+        items.push({
+          category: e.truth ? "blitz" : "blitz",
+          prompt: `${e.text} — “${e.claim}”`,
+          correct: (e.choice === 0) === e.truth,
+          yourAnswer: e.choice === 0 ? "Doğru" : "Yanlış",
+          correctAnswer: e.truth ? "Doğru" : "Yanlış",
+          promptEn: `${e.textEn ?? e.text} — “${e.claimEn ?? e.claim}”`,
+          yourAnswerEn: e.choice === 0 ? "True" : "False",
+          correctAnswerEn: e.truth ? "True" : "False",
+        });
+      });
     } else {
       this.questions.slice(0, this.roundLimit).forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -1675,6 +1805,7 @@ export class Room {
     if (this.gameMode === "circle") return this.revealCircle();
     if (this.gameMode === "word") return this.revealWord();
     if (this.gameMode === "numeric") return this.revealNumeric();
+    if (this.gameMode === "blitz") return this.revealBlitz();
     this.clearTimer();
     const question = this.currentQuestion();
     if (!question) return this.finish();
@@ -1904,6 +2035,8 @@ export class Room {
     if (this.gameMode === "elim" && this.eligiblePlayers().length <= 1) return this.finish();
     // Kelime Oyunu: ortak havuz bittiyse kalan turlar oynanmadan maç biter.
     if (this.gameMode === "word" && this.wordPoolMs <= 0) return this.finish();
+    // D/Y Blitz tek 60 sn'lik penceredir — özeti gösterdikten sonra maç biter.
+    if (this.gameMode === "blitz") return this.finish();
     this.qIndex += 1;
     // Çifte Bahis'te her sorunun önünde yeniden bahis fazı vardır.
     this.gameMode === "bet" ? this.beginBet() : this.beginQuestion();
@@ -2080,6 +2213,7 @@ export class Room {
 
   private hasAnswered(player: RoomPlayer) {
     if (this.gameMode === "numeric") return this.numericGuesses.has(player.id);
+    if (this.gameMode === "blitz") return player.blitzAnswered > 0;
     return this.gameMode === "circle" || this.gameMode === "word" ? player.circleAnswer !== null : player.choice !== null;
   }
 
@@ -2087,6 +2221,7 @@ export class Room {
   questionDuration() {
     if (this.gameMode === "circle") return GAME.CIRCLE_QUESTION_MS;
     if (this.gameMode === "blur") return GAME.BLUR_QUESTION_MS;
+    if (this.gameMode === "blitz") return GAME.BLITZ_TOTAL_MS;
     // Kelime Oyunu: tur tavanı 45 sn ama ortak havuzdan fazla yiyemez.
     if (this.gameMode === "word") return Math.min(GAME.WORD_ROUND_MS, Math.max(0, this.wordPoolMs));
     if (this.gameMode === "lightning") {

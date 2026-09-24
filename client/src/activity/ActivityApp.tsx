@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -148,10 +148,11 @@ const MODE_KEYS = {
   duel: { name: 'mode.duel', meta: 'mode.duel.meta', tag: 'mode.duel.tag', icon: 'sword' },
   zil: { name: 'mode.zil', meta: 'mode.zil.meta', tag: 'mode.zil.tag', icon: 'bolt' },
   numeric: { name: 'mode.numeric', meta: 'mode.numeric.meta', tag: 'mode.numeric.tag', icon: 'target' },
+  blitz: { name: 'mode.blitz', meta: 'mode.blitz.meta', tag: 'mode.blitz.tag', icon: 'scale' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : mode === 'blitz' ? 'blitz' : 'classic'
 }
 
 /**
@@ -415,7 +416,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric', 'blitz'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -1317,6 +1318,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const isWord = state.gameMode === 'word'
   const isNumeric = state.gameMode === 'numeric'
   const numeric = state.numeric
+  const isBlitz = state.gameMode === 'blitz'
   const isZil = state.gameMode === 'zil'
   const zilWinner = state.zil?.winnerId ?? null
   const zilWinnerName = zilWinner ? state.players.find((p) => p.id === zilWinner)?.name : null
@@ -1536,6 +1538,31 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
               <button className={`qt-button ${numericLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!numericReady || numericLocked} onClick={() => { sfx.play('lock'); onNumericAnswer?.(numericParsed) }}>{numericLocked && state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
             </div>}
         {!beats.active ? <p className="qt-locked-note" data-empty={state.yourNumericGuess === null}>{state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p> : null}
+      </> : isBlitz ? <>
+        {/* D/Y Blitz (§6.1): herkes kendi ifade akışında ilerler — ortak 60 sn
+            penceresi + seri çarpanı. `blitz.statement` izleyenin kişisel ifadesi;
+            truth istemciye hiç gelmez. Reveal'da skor-sıralı özet tablosu. */}
+        {state.blitzSummary
+          ? <div className="qt-blitz-board" role="list">
+              {state.blitzSummary.rows.map((row, rank) => {
+                const player = state.players.find((p) => p.id === row.id)
+                return <div key={row.id} role="listitem" className={`qt-blitz-row ${rank === 0 ? 'is-correct' : ''} ${row.id === self?.id ? 'is-you' : ''}`}>
+                  <span className="qt-blitz-mark">{rank === 0 ? <Icon name="crown" /> : rank + 1}</span>
+                  <span className="qt-blitz-label">{player ? player.name : row.id}</span>
+                  <span className="qt-blitz-pickers">{row.correct}/{row.answered} {t('blitz.correctShort')} · {formatNumber(language, row.score)}</span>
+                </div>
+              })}
+            </div>
+          : state.blitz?.statement
+            ? <>
+                <div className="qt-question-head"><span className="qt-category">{categoryLabel(language, state.blitz.statement.category)}</span><h1 className={questionLengthClass(language === 'en' && state.blitz.statement.textEn ? state.blitz.statement.textEn : state.blitz.statement.text)}>{language === 'en' && state.blitz.statement.textEn ? state.blitz.statement.textEn : state.blitz.statement.text}</h1></div>
+                <p className="qt-blitz-claim"><span>{t('blitz.claim')}</span><b>{language === 'en' && state.blitz.statement.claimEn ? state.blitz.statement.claimEn : state.blitz.statement.claim}</b></p>
+                <p className="qt-blitz-meta"><span title={t('blitz.streak')}><Icon name="flame" /> ×{state.blitz.streak}</span><span>{t('blitz.progress', { n: state.blitz.index + 1, c: state.blitz.correct })}</span></p>
+                <div className="qt-blitz-btns" role="group" aria-label={t('mode.blitz')}>
+                  {[0, 1].map((idx) => <button key={idx} type="button" className={`qt-blitz-btn ${idx === 0 ? 'qt-blitz-btn--true' : 'qt-blitz-btn--false'}`} disabled={waiting} onClick={() => { sfx.play('lock'); onAnswer(idx) }}>{idx === 0 ? <><Icon name="check" /> {t('blitz.true')}</> : <><Icon name="close" /> {t('blitz.false')}</>}</button>)}
+                </div>
+              </>
+            : <p className="qt-locked-note">{state.blitz ? t('blitz.done') : t('game.waitingNextRound')}</p>}
       </> : shown ? <>
         <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         {cardsEnabled ? <div className="qt-card-bar">
