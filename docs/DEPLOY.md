@@ -34,6 +34,10 @@ fly secrets set \
   PUBLIC_BASE_URL="https://quiztavern.fly.dev"
 ```
 
+- `QT_ADMIN_TOKEN` (opsiyonel): yönetici uçlarının belirteci — paket yükleme
+  (`POST /question-packs`) ve rapor paneli (`GET /admin/reports`). Tarayıcıda
+  `Authorization: Bearer <token>` ile HTML tablo, API'den JSON döner.
+  Ayarlanmazsa bu uçlar 503'te kalır.
 - `PUBLIC_BASE_URL` tarayıcı OAuth geri dönüşünü türetir — kendi alan adını
   kullanacaksan onu yaz.
 - `SESSION_SECRET`'ı bir kez üretip aynı değeri koru; değişirse açık oturumlar

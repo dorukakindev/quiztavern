@@ -71,13 +71,31 @@ function cookieValue(header: string | undefined, name: string) {
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
+// ── Yönetici: soru bildirimleri paneli ────────────────────────────────────
+// `Authorization: Bearer QT_ADMIN_TOKEN` ile açılır; tarayıcı HTML tablo,
+// diğer istekler JSON alır. Token ayarlanmadıysa uç 503 döner.
+const QT_ADMIN_TOKEN = process.env.QT_ADMIN_TOKEN ?? "";
+const esc = (v: string) => v.replace(/[&<>"']/g, (c) => `&#${c.codePointAt(0)};`);
+
+app.get(["/admin/reports", "/api/admin/reports"], (req, res) => {
+  if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "QT_ADMIN_TOKEN ayarlanmadı." });
+  const auth = req.headers.authorization ?? "";
+  if (auth !== `Bearer ${QT_ADMIN_TOKEN}`) return res.status(401).json({ error: "Yetkisiz." });
+  const rows = reports.list();
+  if (!req.accepts("html")) return res.json({ reports: rows });
+  const trs = rows.map((r) => `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`).join("");
+  res.type("html").send(`<!doctype html><meta charset="utf-8"><title>Soru bildirimleri</title>
+<style>body{font-family:system-ui;margin:24px;background:#0c1420;color:#dbe7f0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #335;padding:6px 10px;font-size:13px;text-align:left;vertical-align:top}th{background:#16283c}</style>
+<h1>Soru bildirimleri (${rows.length})</h1>
+<table><tr><th>#</th><th>Tarih</th><th>Kategori</th><th>Soru</th><th>Not</th><th>Bildiren</th></tr>${trs}</table>`);
+});
+
 // ── Özel soru paketleri (FAZ 4.4) ─────────────────────────────────────────
 // Discord proxy'si /api önekini soyduğu için her iki yol da kayıtlı.
 // Listeleme herkese açık; yükleme yalnızca QT_ADMIN_TOKEN ile (mock modda
 // yerel geliştirmede açık). Yüklenen içerik Faz 1.4 doğrulayıcı kurallarından
 // geçirilir; hata varsa 422 + sorun listesi döner.
 const PACK_PATHS = ["/question-packs", "/api/question-packs"];
-const QT_ADMIN_TOKEN = process.env.QT_ADMIN_TOKEN ?? "";
 
 app.get(PACK_PATHS, (_req, res) => {
   res.json({ packs: listPacks() });
