@@ -2430,6 +2430,27 @@ export function ActivityApp() {
     else if (phase === 'podium') activity.setPresence(i18n.t('presence.podium'))
     else activity.setPresence(i18n.t('presence.playing', { current: roundIndex ?? 0, total: roundTotal ?? 0 }))
   }, [activity.identity.isDiscord, activity.setPresence, phase, roundIndex, roundTotal, spectating, i18n])
+  // Reaktif SFX: rakip eylemleri de sesle duyulur — zil kazanımı, pano hücresi
+  // açılışı (pick→question), eliminasyon, gelen emote. Her olay BİR kez;
+  // son görülen değerler ref'te tutulur. Etkileşim sesleri ('lock') ayrıca var;
+  // bu katman yalnızca "görmeden duy" bildirimleri içindir.
+  const zilWinner = game.state?.zil?.winnerId ?? null
+  const emoteTopUid = game.emotes.length ? game.emotes[game.emotes.length - 1].uid : 0
+  const livesKey = game.state?.players.map((p) => `${p.id}:${p.lives ?? -1}`).join(',') ?? ''
+  const reactRef = useRef<{ buzz: string | null; prevPhase: string | undefined; dead: ReadonlySet<string>; emoteUid: number }>({ buzz: null, prevPhase: undefined, dead: new Set(), emoteUid: 0 })
+  useEffect(() => {
+    const r = reactRef.current
+    const st = game.state
+    if (!st) return
+    if (zilWinner && r.buzz !== zilWinner) { r.buzz = zilWinner; sfx.play('buzz') }
+    if (!zilWinner) r.buzz = null
+    if (st.gameMode === 'board' && r.prevPhase === 'pick' && st.phase === 'question') sfx.play('flip')
+    r.prevPhase = st.phase
+    const deadNow = new Set(st.players.filter((p) => p.lives === 0).map((p) => p.id))
+    deadNow.forEach((id) => { if (!r.dead.has(id)) sfx.play('elim') })
+    r.dead = deadNow
+    if (emoteTopUid > r.emoteUid) { r.emoteUid = emoteTopUid; sfx.play('pop') }
+  }, [zilWinner, phase, livesKey, emoteTopUid, game.state])
   const isLoading = activity.status === 'booting' || !game.state
   const body = useMemo(() => {
     // PIP tüm fazların önüne geçer: masa o pencereye sığmadığı için hiçbir
