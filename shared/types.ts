@@ -84,6 +84,7 @@ export interface ProgressBadge {
  * ToastKey sözleşmesi.
  */
 export const BADGE_KEYS = [
+  "haftaSampiyonu",
   "kategoriUstasi",
   "ilkMac", "onMac", "elliMac",
   "ilkGalibiyet", "onGalibiyet",
@@ -534,6 +535,8 @@ export interface GameState {
   xpGains: Record<string, XpGain> | null;
   /** Güncel sezon lider tablosu (lobi + podyum); depo kapalıysa null. */
   seasonBoard: SeasonBoard | null;
+  /** Haftalık turnuva tablosu (§6.3): geçerli ISO haftası; season alanı 'YYYY-Www'. */
+  weeklyBoard: SeasonBoard | null;
   /** Bugünün günlük lider tablosu (lobi); depo kapalıysa null. */
   dailyBoard: DailyBoard | null;
   /** İstemci saat farkını hesaplasın diye her pakette gönderilir */
