@@ -162,4 +162,24 @@ test('yeni turda kart etkileri sıfırlanır', () => {
   assert.equal(s.youFrozen, false)
 })
 
+test("3'lü seri kart kazanımı oyuncuya toast olarak gider", () => {
+  const r = new Room('cards-toast', () => {}, { minPlayers: 1, questionCount: 10 })
+  const seen: [string, string][] = []
+  r.setToastHandler((playerId, key) => seen.push([playerId, key]))
+  r.addPlayer(player('a', 'Ada'))
+  r.addPlayer(player('b', 'Bora'))
+  r.setReady('a', true)
+  r.setReady('b', true)
+  r.start('a')
+  stop(r)
+  for (let i = 0; i < 3; i++) {
+    begin(r)
+    r.answer('a', r.currentQuestion()!.correctIndex)
+    reveal(r)
+    internals(r).advanceFromReveal()
+    internals(r).qIndex += 1
+  }
+  assert.deepEqual(seen, [['a', 'info.cardEarned']])
+})
+
 console.log(`\n${passed} test geçti — Tavern kartları`)
