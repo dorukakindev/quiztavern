@@ -90,4 +90,17 @@ test('Fitil: doğru cevap çıkan tur fitili 0,5 sn kısaltır (4 sn tabanı)', 
   internals(burnRoom).lightningBurn = 1
 })
 
+test('Çember tur sayısı: host 10/15/20 seçebilir, klasik set reddedilir', () => {
+  const room = new Room('edge-ccount', () => {}, { minPlayers: 1 })
+  room.addPlayer(player('h', 'Host'))
+  room.setGameMode('h', 'circle')
+  assert.equal(room.stateFor('h', true).questionCount, 20) // moda özel varsayılan
+  room.setQuestionCount('h', 15)
+  assert.equal(room.stateFor('h', true).questionCount, 15)
+  assert.throws(() => room.setQuestionCount('h', 5), /countInvalid/)
+  room.setReady('h', true)
+  room.start('h', 'circle')
+  assert.equal(room.stateFor('h', true).round.total, 15)
+})
+
 console.log(`\n[circle-lightning-edge] sonuç: ${passed} geçti, 0 kaldı`)
