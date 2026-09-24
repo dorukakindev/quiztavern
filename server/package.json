@@ -24,7 +24,8 @@
     "test:podium-lobby": "tsx scripts/podium-lobby-test.ts",
     "test:admin-reports": "tsx scripts/admin-reports-test.ts",
     "test:elim": "tsx scripts/elim-test.ts",
-    "test:blur": "tsx scripts/blur-test.ts"
+    "test:blur": "tsx scripts/blur-test.ts",
+    "test:word": "tsx scripts/word-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

@@ -96,6 +96,11 @@ export const GAME = {
   QUESTION_MS: 15_000,
   CIRCLE_QUESTION_MS: 12_000,
   BLUR_QUESTION_MS: 12_000,
+  // Kelime Oyunu: 14 tur (4-10 harf × 2), tek ortak zaman havuzu, harf başına 100.
+  WORD_ROUNDS: 14,
+  WORD_LETTER_POINTS: 100,
+  WORD_POOL_MS: 360_000,
+  WORD_ROUND_MS: 45_000,
   // 3000: geri sayim cizgisi ilk karede "3 sn" gosterir. 3500 iken Math.ceil
   // yukari yuvarlayip "4 saniye" yaziyordu, spec "3 saniye" diyordu (belge).
   REVEAL_MS: 3_000,
