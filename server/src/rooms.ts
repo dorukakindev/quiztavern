@@ -2,7 +2,7 @@ import { GAME } from "./config";
 import { GameError } from "./errors";
 import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
-import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
+import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
@@ -108,6 +108,10 @@ export interface ProgressStore {
   bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
   /** Ustalık kazanılan kategori adları — kategori ikonu işareti için. */
   categoryMastery(userId: string): string[];
+  /** Soru istatistiği artışı (§6.3 kalibrasyon girişi). */
+  recordQuestionStats(rows: { questionId: string; asked: number; correct: number }[]): void;
+  /** Kalibrasyon için tüm soru istatistikleri. */
+  questionStats(): { questionId: string; asked: number; correct: number }[];
   title(userId: string): BadgeKey | null;
   setTitle(userId: string, title: BadgeKey | null): boolean;
 }
@@ -1590,6 +1594,24 @@ export class Room {
       if (matchEntries.length) {
         try { this.xpGains = this.progress.recordMatch(matchEntries); }
         catch (error) { console.error("[xp] maç sonucu yazılamadı:", error); }
+      }
+      // §6.3 zorluk kalibrasyonu: her soru için kimlere soruldu / kimler bildi.
+      // Bot cevapları istatistiği bozmasın diye yalnız gerçek oyuncular sayılır.
+      if (this.questions.length) {
+        try {
+          const rows = new Map<string, { questionId: string; asked: number; correct: number }>();
+          this.questions.forEach((question, index) => {
+            const row = rows.get(question.id) ?? { questionId: question.id, asked: 0, correct: 0 };
+            for (const player of this.players.values()) {
+              if (player.isBot || player.eligibleFrom > index) continue;
+              row.asked += 1;
+              if (player.answers[index] === question.correctIndex) row.correct += 1;
+            }
+            rows.set(question.id, row);
+          });
+          this.progress.recordQuestionStats([...rows.values()]);
+          setQuestionCalibration(this.progress.questionStats());
+        } catch (error) { console.error("[xp] soru istatistiği yazılamadı:", error); }
       }
     }
     this.podiumSnapshot = this.snapshotPodium();

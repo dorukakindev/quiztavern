@@ -30,6 +30,7 @@
     "test:rematch": "tsx scripts/rematch-test.ts",
     "test:predict": "tsx scripts/predict-test.ts",
     "test:mastery": "tsx scripts/mastery-test.ts",
+    "test:calib": "tsx scripts/calib-test.ts",
     "test:settings": "tsx scripts/settings-test.ts"
   },
   "dependencies": {

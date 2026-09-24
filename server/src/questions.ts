@@ -82,11 +82,40 @@ function shuffle<T>(items: T[]): T[] {
 
 /** Kategori + zorluk filtresini uygular. Zorluk seçili ama o havuz boşsa (dar
  *  kategori+zorluk kombinasyonu) kategori havuzuna düşer — maç boş kalmasın. */
+/** §6.3 zorluk kalibrasyonu: istatistiğe göre etiketi düzeltilen sorular.
+ *  question_id → kalibre zorluk. Server açılışında ve her maç sonrası tazelenir. */
+const calibrated = new Map<string, Difficulty>();
+const DIFF_ORDER: readonly Difficulty[] = ["kolay", "orta", "zor"];
+/** En az bu kadar sorulmuş soru kalibre edilir (az örnekle etiket değiştirme). */
+const CALIBRATION_MIN_ASKED = 20;
+const CALIBRATION_HARD_RATE = 0.25; // altı: etiketten daha zor
+const CALIBRATION_EASY_RATE = 0.85; // üstü: etiketten daha kolay
+
+/** Ham istatistik satırlarından kalibrasyon haritasını kurar (bir kademe kaydırır). */
+export function setQuestionCalibration(stats: readonly { questionId: string; asked: number; correct: number }[]): void {
+  calibrated.clear();
+  const labelOf = new Map(ALL_QUESTIONS.map((q) => [q.id, q.difficulty] as const));
+  for (const row of stats) {
+    if (row.asked < CALIBRATION_MIN_ASKED) continue;
+    const label = labelOf.get(row.questionId);
+    if (!label) continue;
+    const rate = row.correct / row.asked;
+    const i = DIFF_ORDER.indexOf(label);
+    if (rate < CALIBRATION_HARD_RATE && i < DIFF_ORDER.length - 1) calibrated.set(row.questionId, DIFF_ORDER[i + 1]);
+    else if (rate > CALIBRATION_EASY_RATE && i > 0) calibrated.set(row.questionId, DIFF_ORDER[i - 1]);
+  }
+}
+
+/** Etiket yerine kalibre değer varsa onu döner. */
+function difficultyOf(q: Question): Difficulty {
+  return calibrated.get(q.id) ?? q.difficulty;
+}
+
 function effectiveQuestionPool(categories: string[], difficulty: Difficulty | null): Question[] {
   const byCat = categories.length ? ALL_QUESTIONS.filter((q) => categories.includes(q.category)) : ALL_QUESTIONS;
   const catPool = byCat.length ? byCat : ALL_QUESTIONS;
   if (!difficulty) return catPool;
-  const byDiff = catPool.filter((q) => q.difficulty === difficulty);
+  const byDiff = catPool.filter((q) => difficultyOf(q) === difficulty);
   return byDiff.length ? byDiff : catPool;
 }
 
