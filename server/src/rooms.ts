@@ -3,6 +3,7 @@ import { GameError } from "./errors";
 import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
+import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
@@ -20,6 +21,8 @@ import type {
   LastMatch,
   MatchMoment,
   MatchSummary,
+  NumericQuestionPayload,
+  NumericRevealPayload,
   PodiumEntry,
   ProgressBadge,
   ProgressSnapshot,
@@ -197,6 +200,10 @@ export class Room {
   private lastReveal: RevealPayload | null = null;
   private lastCircleReveal: CircleRevealPayload | null = null;
   private lastWordReveal: CircleRevealPayload | null = null;
+  /** Yakın Tahmin: turun sayı havuzu + oyuncu tahminleri + son reveal. */
+  private numericQuestions: NumericQuestion[] = [];
+  private numericGuesses = new Map<string, number>();
+  private lastNumericReveal: NumericRevealPayload | null = null;
   // Kelime Oyunu durumu: prompt dizisi (≤14 tur, 4-10 harf), bu turda açılan
   // harf sayısı, açılış sırası (karışık pozisyonlar) ve maç-geneli ortak zaman
   // havuzu. Havuz her soru fazında tükenir; reveal sırasında saat durur.
@@ -420,6 +427,8 @@ export class Room {
     this.lastReveal = null;
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
+    this.lastNumericReveal = null;
+    this.numericGuesses.clear();
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
@@ -446,6 +455,8 @@ export class Room {
     this.lastReveal = null;
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
+    this.lastNumericReveal = null;
+    this.numericGuesses.clear();
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
@@ -774,7 +785,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -788,6 +799,7 @@ export class Room {
     // için setQuestionCount zaten reddeder).
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "zil") this.questionCount = 10;
+    if (mode === "numeric") this.questionCount = 10;
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -1072,7 +1084,8 @@ export class Room {
       const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" ? getPack(this.packId) : null;
       if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && !pack) throw new GameError("err.packUnknown");
       if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
-      this.questions = this.gameMode === "word"
+      this.numericQuestions = this.gameMode === "numeric" ? sampleNumericQuestions(this.roundLimit, this.seenQuestionIds) : [];
+      this.questions = this.gameMode === "word" || this.gameMode === "numeric"
         ? []
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
@@ -1242,6 +1255,11 @@ export class Room {
     return this.gameMode === "word" ? this.wordPrompts[this.qIndex] ?? null : null;
   }
 
+  /** Yakın Tahmin: turun sayı sorusu (mod dışında null). */
+  currentNumeric(): NumericQuestion | null {
+    return this.gameMode === "numeric" ? this.numericQuestions[this.qIndex] ?? null : null;
+  }
+
   setQuestionStartedHandler(handler: QuestionStarted) {
     this.onQuestionStarted = handler;
   }
@@ -1256,9 +1274,11 @@ export class Room {
     const question = this.currentQuestion();
     const circlePrompt = this.currentCirclePrompt();
     const wordPrompt = this.currentWordPrompt();
+    const numericPrompt = this.currentNumeric();
     const inQuestion = this.phase === "question" && question;
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
+    const inNumeric = this.phase === "question" && numericPrompt;
     const writerId = question && question.id.startsWith("written-") ? question.id.slice(8) : null;
     const questionPayload: QuestionPayload | null = inQuestion
       ? {
@@ -1298,6 +1318,14 @@ export class Room {
           poolMs: Math.max(0, this.wordPoolMs - (Date.now() - this.wordRoundStartedAt)),
           deadline: this.questionDeadline,
           durationMs: GAME.WORD_ROUND_MS,
+        }
+      : null;
+    // Yakın Tahmin: doğru sayı sunucuda kalır — payload yalnız birim + süre taşır.
+    const numeric: NumericQuestionPayload | null = inNumeric
+      ? {
+          category: numericPrompt.category, text: numericPrompt.text, textEn: numericPrompt.textEn,
+          unit: numericPrompt.unit, unitEn: numericPrompt.unitEn,
+          deadline: this.questionDeadline, durationMs: this.questionDuration(),
         }
       : null;
     const countdown: CountdownPayload | null = this.phase === "countdown"
@@ -1356,6 +1384,8 @@ export class Room {
       circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
       wordReveal: this.phase === "reveal" ? this.lastWordReveal : null,
       word,
+      numeric,
+      yourNumericGuess: this.numericGuesses.get(youId) ?? null,
       podium,
       matchSummary,
       moments,
@@ -1398,7 +1428,7 @@ export class Room {
   }
 
   private beginQuestion() {
-    const round = this.gameMode === "circle" ? this.currentCirclePrompt() : this.gameMode === "word" ? this.currentWordPrompt() : this.currentQuestion();
+    const round = this.gameMode === "circle" ? this.currentCirclePrompt() : this.gameMode === "word" ? this.currentWordPrompt() : this.gameMode === "numeric" ? this.currentNumeric() : this.currentQuestion();
     if (!round) return this.finish();
     this.clearTimer();
     this.clearBotTimers();
@@ -1406,6 +1436,9 @@ export class Room {
     this.lastReveal = null;
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
+    this.lastNumericReveal = null;
+    // Yakın Tahmin: yeni turda tahminler sıfırlanır.
+    this.numericGuesses.clear();
     // Kelime Oyunu: yeni tur kapalı kelimeyle başlar; harfler karışık sırada açılır.
     if (this.gameMode === "word" && round) {
       this.wordLettersRevealed = 0;
@@ -1641,6 +1674,7 @@ export class Room {
     this.clearBotTimers();
     if (this.gameMode === "circle") return this.revealCircle();
     if (this.gameMode === "word") return this.revealWord();
+    if (this.gameMode === "numeric") return this.revealNumeric();
     this.clearTimer();
     const question = this.currentQuestion();
     if (!question) return this.finish();
@@ -1766,6 +1800,61 @@ export class Room {
     this.phase = "reveal";
     this.revealUntil = Date.now() + GAME.REVEAL_MS;
     this.lastCircleReveal = { answer: prompt.answer, ...(prompt.answerEn && prompt.clueEn ? { answerEn: prompt.answerEn } : {}), rankedPlayerIds: correct.map((player) => player.id), gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.broadcast();
+    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+  }
+
+  /**
+   * Yakın Tahmin cevabı (§6.1): herkes sayı girer, en yakın kazanır. Kilitli
+   *  tahmin değiştirilemez; süre dolunca ya da herkes girince reveal olur.
+   */
+  numericAnswer(playerId: string, value: number): void {
+    if (this.gameMode !== "numeric" || this.phase !== "question") return;
+    if (Date.now() >= this.questionDeadline) return this.reveal();
+    const player = this.players.get(playerId);
+    const prompt = this.currentNumeric();
+    if (!player || !prompt || player.eligibleFrom > this.qIndex || !player.connected || this.numericGuesses.has(playerId)) return;
+    if (!Number.isFinite(value) || Math.abs(value) > 1e15) return; // saçma girişleri yut
+    this.numericGuesses.set(playerId, value);
+    player.answeredAt = Date.now();
+    if (this.firstAnswerId === null) this.firstAnswerId = playerId;
+    this.broadcast();
+    this.revealIfEveryoneAnswered();
+  }
+
+  private revealNumeric() {
+    if (this.phase !== "question") return;
+    this.clearTimer();
+    const prompt = this.currentNumeric();
+    if (!prompt) return this.finish();
+    // En yakın mesafe kazanır; aynı mesafede beraberlik — hepsi kazanan sayılır.
+    let best = Infinity;
+    for (const guess of this.numericGuesses.values()) best = Math.min(best, Math.abs(guess - prompt.answer));
+    const winnerIds = best < Infinity
+      ? [...this.numericGuesses.entries()].filter(([, guess]) => Math.abs(guess - prompt.answer) === best).map(([id]) => id)
+      : [];
+    const gains: Record<string, number> = {};
+    for (const player of this.eligiblePlayers()) {
+      const guessed = this.numericGuesses.get(player.id);
+      const isWinner = winnerIds.includes(player.id);
+      // Tam isabet bonusu yalnız kazanana — eşit mesafede ama tam tutturamayan bonus almaz.
+      const exact = isWinner && guessed === prompt.answer;
+      const gain = isWinner ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0) : 0;
+      player.score += gain;
+      gains[player.id] = gain;
+      const elapsed = guessed !== undefined && isWinner ? Math.max(0, (player.answeredAt ?? this.questionDeadline) - this.questionStartedAt) : null;
+      this.recordStat(player, isWinner, prompt.category, elapsed);
+    }
+    this.phase = "reveal";
+    this.revealUntil = Date.now() + GAME.REVEAL_MS;
+    const guesses: Record<string, number> = {};
+    for (const [id, guess] of this.numericGuesses) guesses[id] = guess;
+    this.lastReveal = {
+      correctIndex: -1, picks: [[], [], [], []], gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS,
+      numeric: { answer: prompt.answer, unit: prompt.unit, unitEn: prompt.unitEn, guesses, winnerIds },
+      ...(prompt.fact ? { fact: prompt.fact, factEn: prompt.factEn ?? "" } : {}),
+    };
+    this.lastNumericReveal = this.lastReveal.numeric ?? null;
     this.broadcast();
     this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
@@ -1990,6 +2079,7 @@ export class Room {
   }
 
   private hasAnswered(player: RoomPlayer) {
+    if (this.gameMode === "numeric") return this.numericGuesses.has(player.id);
     return this.gameMode === "circle" || this.gameMode === "word" ? player.circleAnswer !== null : player.choice !== null;
   }
 

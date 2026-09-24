@@ -19,7 +19,7 @@ import {
   Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lightning, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
   MusicNotesSimple, NumberSquareTwo, Palette, PawPrint, Percent, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldCheck, ShieldStar, Shuffle, SignOut,
-  SlidersHorizontal, Skull, Smiley, SmileyWink, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Television,
+  SlidersHorizontal, Skull, Smiley, SmileyWink, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Target, Television,
   TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
 } from '@phosphor-icons/react'
 
@@ -65,6 +65,7 @@ const UI_ICONS = {
   sword: Sword,
   skull: Skull,
   scroll: Scroll,        // Kelime Oyunu: parşömen
+  target: Target,        // Yakın Tahmin: en yakın sayı kazanır
   speaker: SpeakerHigh,
   speakerOff: SpeakerSlash,
   music: MusicNotes,
