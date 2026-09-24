@@ -494,3 +494,30 @@
 }
 .qt-category-card__mastery svg { width: 10px; height: 10px; }
 .qt-category-card__icon { position: relative; }
+
+/* §6.3 anlar kartı — podyumda masa geneli unutulmaz anlar. */
+.qt-moments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 auto 14px;
+  max-width: 560px;
+}
+.qt-moment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffe9c4;
+  background: linear-gradient(160deg, rgba(255, 202, 92, 0.14), rgba(118, 68, 20, 0.3));
+  border: 1px solid rgba(255, 202, 92, 0.35);
+}
+.qt-moment svg { width: 15px; height: 15px; }
+.qt-moment.is-fastest { border-color: rgba(255, 120, 80, 0.4); }
+.qt-moment.is-streak { border-color: rgba(255, 190, 60, 0.45); }
+.qt-moment.is-bigBet { border-color: rgba(120, 220, 140, 0.4); }
+.qt-moment.is-flawless { border-color: rgba(190, 140, 255, 0.5); }
