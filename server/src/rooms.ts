@@ -4,6 +4,7 @@ import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type Tabl
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
+import { sampleOrderQuestions, type OrderQuestion } from "./questions-order";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
@@ -24,6 +25,8 @@ import type {
   NumericQuestionPayload,
   BlitzLivePayload,
   BlitzSummaryPayload,
+  TimelineQuestionPayload,
+  TimelineRevealPayload,
   NumericRevealPayload,
   PodiumEntry,
   ProgressBadge,
@@ -93,6 +96,8 @@ export interface RoomPlayer {
   blitzClaim: { truth: boolean; claim: string; claimEn?: string; text: string; textEn?: string; category: string } | null;
   /** Maç-sonu incelemesi: oyuncunun bu maçta gördüğü ifadeler + kararı. */
   blitzTrail: { text: string; textEn?: string; claim: string; claimEn?: string; truth: boolean; choice: number }[];
+  /** Zaman Çizelgesi: tur başına oyuncunun dizimi (null = cevap vermedi). */
+  orderAnswers: (number[] | null)[];
 }
 
 /** Bir oyuncunun tek maçtaki performansı. Maç özeti kartını (4d) besler. */
@@ -215,8 +220,14 @@ export class Room {
   private lastWordReveal: CircleRevealPayload | null = null;
   /** Yakın Tahmin: turun sayı havuzu + oyuncu tahminleri + son reveal. */
   private numericQuestions: NumericQuestion[] = [];
+  private orderQuestions: OrderQuestion[] = [];
   private numericGuesses = new Map<string, number>();
   private lastNumericReveal: NumericRevealPayload | null = null;
+  /** Zaman Çizelgesi: reveal'da doğru sıra + herkesin dizimi + isabet sayısı. */
+  private lastTimelineReveal: TimelineRevealPayload | null = null;
+  private orderGuesses = new Map<string, number[]>();
+  /** Turun ekran dizilimi: görünen sıra → events indeksi. Herkes aynı karışımı görür. */
+  private orderShuffle: number[] = [];
   // Kelime Oyunu durumu: prompt dizisi (≤14 tur, 4-10 harf), bu turda açılan
   // harf sayısı, açılış sırası (karışık pozisyonlar) ve maç-geneli ortak zaman
   // havuzu. Havuz her soru fazında tükenir; reveal sırasında saat durur.
@@ -285,7 +296,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -350,6 +361,7 @@ export class Room {
       blitzScore: 0,
       blitzClaim: null,
       blitzTrail: [],
+      orderAnswers: [],
       title: player.isBot ? null : (this.progress?.title(player.id) ?? null),
     };
     this.players.set(record.id, record);
@@ -450,7 +462,9 @@ export class Room {
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
     this.lastNumericReveal = null;
+    this.lastTimelineReveal = null;
     this.numericGuesses.clear();
+    this.orderGuesses.clear();
     this.lastBlitzSummary = null;
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
@@ -479,6 +493,7 @@ export class Room {
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
     this.lastNumericReveal = null;
+    this.lastTimelineReveal = null;
     this.numericGuesses.clear();
     this.lastBlitzSummary = null;
     this.teamScores = [0, 0];
@@ -809,7 +824,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric" && mode !== "blitz") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel" && mode !== "zil" && mode !== "numeric" && mode !== "blitz" && mode !== "timeline") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -825,6 +840,7 @@ export class Room {
     if (mode === "zil") this.questionCount = 10;
     if (mode === "numeric") this.questionCount = 10;
     if (mode === "blitz") this.questionCount = 10;
+    if (mode === "timeline") this.questionCount = 10;
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -1106,11 +1122,12 @@ export class Room {
       // Özel paket seçiliyse (Çember ve Bulanık Resim hariç — çemberin kendi
       // prompt havuzu, bulanığın resimli-soru zorunluluğu var) sorular paketin
       // listesinden çekilir; kategori/zorluk filtreleri paket için uygulanmaz.
-      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" ? getPack(this.packId) : null;
-      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && !pack) throw new GameError("err.packUnknown");
+      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" ? getPack(this.packId) : null;
+      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && !pack) throw new GameError("err.packUnknown");
       if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
       this.numericQuestions = this.gameMode === "numeric" ? sampleNumericQuestions(this.roundLimit, this.seenQuestionIds) : [];
-      this.questions = this.gameMode === "word" || this.gameMode === "numeric"
+      this.orderQuestions = this.gameMode === "timeline" ? sampleOrderQuestions(this.roundLimit, this.seenQuestionIds) : [];
+      this.questions = this.gameMode === "word" || this.gameMode === "numeric" || this.gameMode === "timeline"
         ? []
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
@@ -1136,7 +1153,10 @@ export class Room {
 
     // Dar havuz benzersiz çekildi -> istenen sayıdan az olabilir. Klasik round.total
     // ve maç-sonu GERÇEK soru sayısını yansıtsın (çemberdeki circlePrompts.length gibi).
-    if (this.gameMode !== "circle" && this.gameMode !== "word") this.roundLimit = this.questions.length;
+    if (this.gameMode !== "circle" && this.gameMode !== "word") this.roundLimit =
+      this.gameMode === "numeric" ? this.numericQuestions.length
+      : this.gameMode === "timeline" ? this.orderQuestions.length
+      : this.questions.length;
 
     if (this.gameMode === "circle") {
       const unseenC = circlePoolKeys(compatibleCategories, this.difficulty).filter((k) => !this.seenCirclePromptKeys.has(k)).length;
@@ -1180,6 +1200,7 @@ export class Room {
       player.stats = emptyStats();
       player.answers = [];
       player.typed = [];
+      player.orderAnswers = [];
     }
     // Düello (§6.1): masadaki ilk iki oyuncu kapışır; fazlası izleyici olur —
     // oturma sırası karar verir, ayrılanların yerine yeni düellocu çekilmez.
@@ -1286,6 +1307,17 @@ export class Room {
     return this.gameMode === "numeric" ? this.numericQuestions[this.qIndex] ?? null : null;
   }
 
+  /** Zaman Çizelgesi: turun sıralama sorusu (mod dışında null). */
+  currentOrder(): OrderQuestion | null {
+    return this.gameMode === "timeline" ? this.orderQuestions[this.qIndex] ?? null : null;
+  }
+
+  /** Zaman Çizelgesi: doğru kronolojik dizim (events indeksleri, eski→yeni). */
+  orderSolution(): number[] | null {
+    const q = this.currentOrder();
+    return q ? q.events.map((_, i) => i).sort((a, b) => q.events[a].year - q.events[b].year) : null;
+  }
+
   /**
    * D/Y Blitz: oyuncuya sıradaki ifadeyi atar. Havuz tükenirse null — oyuncu
    * pencerenin kalanında yalnız izler (nadir: 30'luk havuz 60 sn'de biter).
@@ -1359,7 +1391,7 @@ export class Room {
     const circlePrompt = this.currentCirclePrompt();
     const wordPrompt = this.currentWordPrompt();
     const numericPrompt = this.currentNumeric();
-    const inQuestion = this.phase === "question" && question && this.gameMode !== "blitz";
+    const inQuestion = this.phase === "question" && question && this.gameMode !== "blitz" && this.gameMode !== "timeline";
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
     const inNumeric = this.phase === "question" && numericPrompt;
@@ -1427,6 +1459,19 @@ export class Room {
         }
       : null;
     const blitzSummary: BlitzSummaryPayload | null = this.gameMode === "blitz" && this.phase === "reveal" ? this.lastBlitzSummary : null;
+    // Zaman Çizelgesi: karışık dizilim (yıllar gizli) soru+reveal fazında;
+    // çözüm timelineReveal'da yıllarıyla açılır.
+    const orderPrompt = this.currentOrder();
+    const timeline: TimelineQuestionPayload | null = this.gameMode === "timeline" && (this.phase === "question" || this.phase === "reveal") && orderPrompt
+      ? {
+          category: orderPrompt.category, text: orderPrompt.text, textEn: orderPrompt.textEn,
+          items: this.orderShuffle.map((i) => orderPrompt.events[i].label),
+          itemsEn: orderPrompt.events.every((e) => e.labelEn) ? this.orderShuffle.map((i) => orderPrompt.events[i].labelEn) : undefined,
+          orderIdx: this.orderShuffle,
+          deadline: this.questionDeadline, durationMs: GAME.TIMELINE_MS,
+        }
+      : null;
+    const timelineReveal: TimelineRevealPayload | null = this.gameMode === "timeline" && this.phase === "reveal" ? this.lastTimelineReveal : null;
     const countdown: CountdownPayload | null = this.phase === "countdown"
       ? { deadline: this.countdownDeadline, durationMs: GAME.COUNTDOWN_MS }
       : null;
@@ -1486,7 +1531,10 @@ export class Room {
       numeric,
       blitz,
       blitzSummary,
+      timeline,
+      timelineReveal,
       yourNumericGuess: this.numericGuesses.get(youId) ?? null,
+      yourOrder: this.orderGuesses.get(youId) ?? null,
       podium,
       matchSummary,
       moments,
@@ -1529,7 +1577,7 @@ export class Room {
   }
 
   private beginQuestion() {
-    const round = this.gameMode === "circle" ? this.currentCirclePrompt() : this.gameMode === "word" ? this.currentWordPrompt() : this.gameMode === "numeric" ? this.currentNumeric() : this.currentQuestion();
+    const round = this.gameMode === "circle" ? this.currentCirclePrompt() : this.gameMode === "word" ? this.currentWordPrompt() : this.gameMode === "numeric" ? this.currentNumeric() : this.gameMode === "timeline" ? this.currentOrder() : this.currentQuestion();
     if (!round) return this.finish();
     this.clearTimer();
     this.clearBotTimers();
@@ -1538,6 +1586,7 @@ export class Room {
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
     this.lastNumericReveal = null;
+    this.lastTimelineReveal = null;
     // Yakın Tahmin: yeni turda tahminler sıfırlanır.
     this.numericGuesses.clear();
     this.lastBlitzSummary = null;
@@ -1551,6 +1600,12 @@ export class Room {
         [this.wordOrder[i], this.wordOrder[j]] = [this.wordOrder[j], this.wordOrder[i]];
       }
       this.wordRoundStartedAt = this.questionStartedAt = Date.now();
+    }
+    // Zaman Çizelgesi (§6.1): 4 olay karışık dizilir; yıllar istemciye sızmadan
+    // gizli kalır — doğru sıra reveal'da yıllarıyla açılır, her doğru pozisyon puan.
+    if (this.gameMode === "timeline") {
+      const q = round as OrderQuestion | null;
+      if (q) this.orderShuffle = shuffleIdx(q.events.length);
     }
     this.questionStartedAt = Date.now();
     this.firstAnswerId = null; // yeni tur: en hızlı parmak yeniden yarışır
@@ -1748,6 +1803,23 @@ export class Room {
           correctAnswerEn: e.truth ? "True" : "False",
         });
       });
+    } else if (this.gameMode === "timeline") {
+      this.orderQuestions.slice(0, this.roundLimit).forEach((prompt, i) => {
+        if (player.eligibleFrom > i) return;
+        const order = player.orderAnswers[i] ?? null;
+        const sol = prompt.events.map((_, k) => k).sort((a, b) => prompt.events[a].year - prompt.events[b].year);
+        const hits = order ? order.filter((ev, pos) => ev === sol[pos]).length : 0;
+        items.push({
+          category: prompt.category,
+          prompt: prompt.text,
+          correct: hits === prompt.events.length,
+          yourAnswer: `${hits}/${prompt.events.length}`,
+          correctAnswer: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.label).join(" → "),
+          promptEn: prompt.textEn,
+          yourAnswerEn: `${hits}/${prompt.events.length}`,
+          correctAnswerEn: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.labelEn).join(" → "),
+        });
+      });
     } else {
       this.questions.slice(0, this.roundLimit).forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -1806,6 +1878,7 @@ export class Room {
     if (this.gameMode === "word") return this.revealWord();
     if (this.gameMode === "numeric") return this.revealNumeric();
     if (this.gameMode === "blitz") return this.revealBlitz();
+    if (this.gameMode === "timeline") return this.revealTimeline();
     this.clearTimer();
     const question = this.currentQuestion();
     if (!question) return this.finish();
@@ -1986,6 +2059,68 @@ export class Room {
       ...(prompt.fact ? { fact: prompt.fact, factEn: prompt.factEn ?? "" } : {}),
     };
     this.lastNumericReveal = this.lastReveal.numeric ?? null;
+    this.broadcast();
+    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+  }
+
+  /**
+   * Zaman Çizelgesi cevabı (§6.1): `order` = oyuncunun dizdiği events
+   * indeksleri, en eskiden yeniye — [0,1,2,3]'ün permütasyonu olmalı.
+   * Kilitleme tek seferlik; süre dolunca ya da herkes dizince reveal olur.
+   */
+  orderAnswer(playerId: string, order: unknown): void {
+    if (this.gameMode !== "timeline" || this.phase !== "question") return;
+    if (Date.now() >= this.questionDeadline) return this.reveal();
+    const player = this.players.get(playerId);
+    const prompt = this.currentOrder();
+    if (!player || !prompt || player.eligibleFrom > this.qIndex || !player.connected || this.orderGuesses.has(playerId)) return;
+    const n = prompt.events.length;
+    if (!Array.isArray(order) || order.length !== n
+      || !order.every((v): v is number => Number.isInteger(v) && v >= 0 && v < n)
+      || new Set(order as number[]).size !== n) return; // permütasyon değilse yut
+    this.orderGuesses.set(playerId, order as number[]);
+    player.answeredAt = Date.now();
+    if (this.firstAnswerId === null) this.firstAnswerId = playerId;
+    this.broadcast();
+    this.revealIfEveryoneAnswered();
+  }
+
+  /** Zaman Çizelgesi reveal'ı: doğru sıra açılır, her doğru pozisyon
+   *  TIMELINE_PER_POS puan yazar (§6.1 — kısmi puan). */
+  private revealTimeline() {
+    if (this.phase !== "question") return;
+    this.clearTimer();
+    const prompt = this.currentOrder();
+    if (!prompt) return this.finish();
+    const correctOrder = this.orderSolution()!;
+    const orders: Record<string, number[]> = {};
+    const hits: Record<string, number> = {};
+    const gains: Record<string, number> = {};
+    for (const player of this.eligiblePlayers()) {
+      const order = this.orderGuesses.get(player.id);
+      let hit = 0;
+      if (order) {
+        orders[player.id] = order;
+        order.forEach((evIdx, pos) => { if (evIdx === correctOrder[pos]) hit++; });
+      }
+      player.orderAnswers[this.qIndex] = order ?? null;
+      hits[player.id] = hit;
+      const gain = hit * GAME.TIMELINE_PER_POS;
+      player.score += gain;
+      gains[player.id] = gain;
+      if (gain > player.stats.maxGain) player.stats.maxGain = gain;
+      const elapsed = order && hit === prompt.events.length
+        ? Math.max(0, (player.answeredAt ?? this.questionDeadline) - this.questionStartedAt) : null;
+      this.recordStat(player, hit === prompt.events.length, prompt.category, elapsed);
+    }
+    this.phase = "reveal";
+    this.revealUntil = Date.now() + GAME.REVEAL_MS;
+    const ordered = correctOrder.map((i) => {
+      const e = prompt.events[i];
+      return { label: e.label, labelEn: e.labelEn, when: e.when, whenEn: e.whenEn };
+    });
+    this.lastReveal = { correctIndex: -1, picks: [[], [], [], []], gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.lastTimelineReveal = { ordered, orders, hits, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
     this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
@@ -2214,6 +2349,7 @@ export class Room {
   private hasAnswered(player: RoomPlayer) {
     if (this.gameMode === "numeric") return this.numericGuesses.has(player.id);
     if (this.gameMode === "blitz") return player.blitzAnswered > 0;
+    if (this.gameMode === "timeline") return this.orderGuesses.has(player.id);
     return this.gameMode === "circle" || this.gameMode === "word" ? player.circleAnswer !== null : player.choice !== null;
   }
 
@@ -2222,6 +2358,7 @@ export class Room {
     if (this.gameMode === "circle") return GAME.CIRCLE_QUESTION_MS;
     if (this.gameMode === "blur") return GAME.BLUR_QUESTION_MS;
     if (this.gameMode === "blitz") return GAME.BLITZ_TOTAL_MS;
+    if (this.gameMode === "timeline") return GAME.TIMELINE_MS;
     // Kelime Oyunu: tur tavanı 45 sn ama ortak havuzdan fazla yiyemez.
     if (this.gameMode === "word") return Math.min(GAME.WORD_ROUND_MS, Math.max(0, this.wordPoolMs));
     if (this.gameMode === "lightning") {

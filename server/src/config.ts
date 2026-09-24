@@ -150,6 +150,9 @@ export const GAME = {
   BLITZ_STREAK_STEP: 25,
   BLITZ_STREAK_CAP: 4,
   BLITZ_POOL: 30,
+  /** Zaman Çizelgesi (§6.1): 4 olayı sıralama süresi; her doğru pozisyon ayrı puan. */
+  TIMELINE_MS: 20_000,
+  TIMELINE_PER_POS: 100,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */

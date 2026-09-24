@@ -184,6 +184,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     answerCircle: (answer: string) => { if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer) },
     answerWord: (answer: string) => { if (socket.connected) socket.emit(EV.WORD_ANSWER, answer) },
     answerNumeric: (value: number) => { if (socket.connected) socket.emit(EV.NUMERIC_ANSWER, value) },
+    answerOrder: (order: number[]) => { if (socket.connected) socket.emit(EV.ORDER_ANSWER, order) },
     wordLetter: () => { if (socket.connected) socket.emit(EV.WORD_LETTER) },
     placeBet: (amount: number) => { if (socket.connected) socket.emit(EV.BET, amount) },
     playAgain: () => socket.emit(EV.PLAY_AGAIN),

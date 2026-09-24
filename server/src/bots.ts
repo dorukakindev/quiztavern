@@ -77,6 +77,27 @@ export function scheduleBotAnswers(room: Room): void {
     }
     return;
   }
+  if (room.gameMode === "timeline") {
+    // Botlar doğru sıranın çevresinde saçar: tipik 2-3 pozisyonu doğru tutturur.
+    const sol = room.orderSolution();
+    if (!sol) return;
+    for (const p of room.players.values()) {
+      if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+      const delay = botDelay(room.questionDuration());
+      const roundAtSchedule = room.qIndex;
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule) return;
+        const order = sol.slice();
+        const swaps = Math.random() < 0.35 ? 2 : 1; // 1-2 çaprazlama = 0-2 yanlış pozisyon
+        for (let k = 0; k < swaps; k++) {
+          const a = Math.floor(Math.random() * order.length), b = Math.floor(Math.random() * order.length);
+          [order[a], order[b]] = [order[b], order[a]];
+        }
+        room.orderAnswer(p.id, order);
+      }, delay);
+    }
+    return;
+  }
   // Yakın Tahmin: botlar gerçek değerin çevresinde makul saçlılımla tahmin girer.
   if (room.gameMode === "numeric") {
     const n = room.currentNumeric();
