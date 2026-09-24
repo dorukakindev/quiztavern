@@ -1,4 +1,5 @@
 import { strict as assert } from 'node:assert'
+import { GAME } from '../src/config'
 import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
 
@@ -112,5 +113,53 @@ test('bekleyen bahis oyuncusu yeni maçta başlangıç bakiyesiyle etkinleşir',
   assert.equal(restarted.eligibleFrom, 0)
 })
 stop(betRoom)
+
+// §2 kurtarma turu: bakiyesi biten oyuncu masadan düşmez — bahsi otomatik
+// 0'a kilitlenir, doğru cevap BET_BROKE_REWARD kazandırır, ertesi turda
+// biriken bakiyeyle normal bahse döner.
+const brokeRoom = new Room('edge-broke', () => {}, { minPlayers: 2, questionCount: 5 })
+brokeRoom.addPlayer(player('br', 'Broke'))
+brokeRoom.addPlayer(player('ok', 'Okay'))
+brokeRoom.setGameMode('br', 'bet')
+brokeRoom.setReady('br', true)
+brokeRoom.setReady('ok', true)
+brokeRoom.start('br', 'bet')
+stop(brokeRoom)
+brokeRoom.players.get('br')!.score = 0
+;(brokeRoom as unknown as { beginBet: () => void }).beginBet()
+
+test("bakiyesi 0 olanın bahsi otomatik 0'a kilitlenir ve broke bayrağı döner", () => {
+  assert.equal(brokeRoom.players.get('br')!.bet, 0)
+  const payload = brokeRoom.stateFor('br', true).bet!
+  assert.equal(payload.broke, true)
+  assert.equal(payload.brokeReward, GAME.BET_BROKE_REWARD)
+  assert.equal(brokeRoom.stateFor('ok', true).bet!.broke, false)
+})
+
+test('broke oyuncu masayı bet fazında bekletmez (advanceIfEveryoneBet)', () => {
+  brokeRoom.placeBet('ok', 100) // br'nin bahsi zaten 0'a kilitli
+  assert.equal(brokeRoom.stateFor('br', true).phase, 'question')
+})
+
+const brokeCorrect = brokeRoom.currentQuestion()!.correctIndex
+brokeRoom.answer('br', brokeCorrect)
+brokeRoom.answer('ok', brokeCorrect)
+;(brokeRoom as unknown as { reveal: () => void }).reveal()
+
+test('broke turunda doğru cevap BET_BROKE_REWARD kazandırır', () => {
+  assert.equal(brokeRoom.players.get('br')!.score, GAME.BET_BROKE_REWARD)
+})
+
+;(brokeRoom as unknown as { beginBet: () => void }).beginBet()
+
+test('ertesi turda kurtarılan bakiyeyle normal bahis (broke temizlenir)', () => {
+  const payload = brokeRoom.stateFor('br', true).bet!
+  assert.equal(payload.broke, false)
+  assert.equal(payload.bankroll, GAME.BET_BROKE_REWARD)
+  assert.equal(brokeRoom.players.get('br')!.bet, null)
+  brokeRoom.placeBet('br', 50)
+  assert.equal(brokeRoom.players.get('br')!.bet, 50)
+})
+stop(brokeRoom)
 
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`)

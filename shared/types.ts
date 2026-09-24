@@ -33,6 +33,8 @@ export interface PublicPlayer {
   answered: boolean;
   /** Maç ortasında katıldı, bir sonraki sorudan itibaren oynayacak */
   waiting: boolean;
+  /** Lobi: oda lobiye döndü ama bu oyuncu hâlâ son maçın sonuç ekranında. */
+  inResults?: boolean;
   /** Üst üste doğru sayısı (güncel seri); istemci eşik üstünde alev gösterir. */
   streak: number;
   /** Takım modu: oyuncunun takımı (0 veya 1). Otomatik dengeli atanır, host
@@ -145,11 +147,16 @@ export interface RevealPayload {
   until: number;
   /** Reveal sahnesinin toplam süresi; istemci ilerleme çizgisini bundan hesaplar */
   durationMs: number;
+  /** Çifte Bahis: bu soruda kurtarma turunda olanlar (bakiye 0, doğru = sabit ödül). */
+  rescued?: string[];
 }
 
 export interface CirclePayload {
   letter: string;
   clue: string;
+  /** İngilizce arayüz için (veride varsa). İstemci dile göre seçer. */
+  letterEn?: string;
+  clueEn?: string;
   category: string;
   deadline: number;
   durationMs: number;
@@ -169,16 +176,34 @@ export interface BetPayload {
   bankroll: number;
   deadline: number;
   durationMs: number;
+  /** Bakiye 0: bahis yok (otomatik 0'a kilitli), doğru cevap brokeReward kazandırır. */
+  broke: boolean;
+  brokeReward: number;
 }
 
 export interface CircleRevealPayload {
   answer: string;
+  /** EN ipucu gösterildiyse onun cevabı. */
+  answerEn?: string;
   /** Doğru cevap verenler, sunucunun doğruladığı hız sırasıyla */
   rankedPlayerIds: string[];
   gains: Record<string, number>;
   until: number;
   /** Reveal sahnesinin toplam süresi; istemci ilerleme çizgisini bundan hesaplar */
   durationMs: number;
+}
+
+/** Son biten maçın dondurulmuş sonucu. Oda lobiye döndükten sonra, sonuç
+ *  ekranından henüz çıkmamış oyuncuya gönderilir (podyumu çizmeye devam eder). */
+export interface LastMatch {
+  id: number;
+  gameMode: GameMode;
+  roundTotal: number;
+  teamScores: readonly [number, number];
+  podium: PodiumEntry[];
+  matchSummary: MatchSummary | null;
+  xpGains: Record<string, XpGain> | null;
+  daily: { day: number; pattern: string | null } | null;
 }
 
 /**
@@ -343,6 +368,10 @@ export interface GameState {
   podium: PodiumEntry[] | null;
   /** Yalnız podyum fazında; izleyen oyuncuya özel maç özeti (4d). */
   matchSummary: MatchSummary | null;
+  /** Lobide, sonuç ekranından henüz dönmemiş oyuncuya: son maçın sonucu. */
+  lastMatch: LastMatch | null;
+  /** Podyum fazında gösterilen maçın kimliği (istemci "sonucu gördüm" işareti). */
+  lastMatchId: number | null;
   /** Günlük Meydan Okuma maçıysa: gün numarası + podyumdan sonra bu oyuncunun
    *  Wordle-tarzı deseni. Normal maçta null; oynarken pattern null'dır. */
   daily: { day: number; pattern: string | null } | null;
@@ -403,6 +432,8 @@ export const EV = {
    */
   SET_MODE: "set-mode",
   LEAVE_GAME: "leave-game",
+  /** Podyumdan lobiye dön: odada kalınır, host değişmez. */
+  RETURN_TO_LOBBY: "return-to-lobby",
   /** İstemci { emote } yollar; sunucu EmotePayload olarak odaya yayınlar */
   EMOTE: "emote",
   /** Yalnızca masa sahibi: { targetId } — oyuncuyu masadan atar */

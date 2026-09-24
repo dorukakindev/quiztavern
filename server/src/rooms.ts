@@ -16,6 +16,7 @@ import type {
   Difficulty,
   GameMode,
   GameState,
+  LastMatch,
   MatchSummary,
   PodiumEntry,
   ProgressBadge,
@@ -131,6 +132,8 @@ export class Room {
   countdownDeadline = 0;
   /** Çifte Bahis: bahis fazının bitiş zamanı (epoch ms). */
   betDeadline = 0;
+  /** Çifte Bahis: bu turun bahis fazı başladığında bakiyesi 0 olanlar (kurtarma turu). */
+  private rescueRound = new Set<string>();
   revealUntil = 0;
   private timer: NodeJS.Timeout | null = null;
   private graceTimers = new Map<string, NodeJS.Timeout>();
@@ -146,6 +149,9 @@ export class Room {
   /** Günlük Meydan Okuma maçı mı — klasik kurallar, tarih tohumlu sabit soru
    *  seti. Maç sonunda her oyuncu için Wordle deseni üretilir. */
   private dailyMatch = false;
+  /** Günlük maç masanın modunu geçici olarak Klasik'e çevirir; masa ayarı burada
+   *  saklanır ve günlük bitip lobiye/yeni maça geçilince geri yüklenir. */
+  private modeBeforeDaily: GameMode | null = null;
   private dailyDay = 0;
   /** Maç sonunda hesaplanan desenler (userId → "🟩🟥⬜🟩🟩"); podyumda paylaşılır. */
   private dailyResults = new Map<string, string>();
@@ -157,6 +163,13 @@ export class Room {
   private xpGains = new Map<string, XpGain>();
   /** `undefined` = no finished match yet; `null` = the finished match had no correct answer. */
   private fastestFingerSnapshot: { name: string; ms: number } | null | undefined = undefined;
+  /** Son biten maçın dondurulmuş sonucu. Podyumdan lobiye dönülse de sonuç
+   *  ekranına hâlâ bakan oyuncular (inResults) onu görmeye devam eder. */
+  private matchSeq = 0;
+  private lastMatchMeta: { id: number; gameMode: GameMode; roundTotal: number; teamScores: [number, number]; podium: PodiumEntry[]; xpGains: Record<string, XpGain> | null; dailyDay: number | null } | null = null;
+  private frozenSummaries = new Map<string, MatchSummary>();
+  private frozenDaily = new Map<string, string>();
+  private inResults = new Set<string>();
   private onQuestionStarted: QuestionStarted | null = null;
   private onEmptied: (() => void) | null = null;
 
@@ -285,6 +298,7 @@ export class Room {
     if (!player) return;
     this.clearGrace(playerId);
     this.players.delete(playerId);
+    this.inResults.delete(playerId);
     if (this.hostId === playerId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
     this.broadcast();
@@ -313,6 +327,7 @@ export class Room {
     this.dailyMatch = false;
     this.dailyResults = new Map();
     this.xpGains = new Map();
+    this.clearLastMatch();
     if (this.spectators.size === 0) this.onEmptied?.();
     else this.broadcast();
     return true;
@@ -336,6 +351,7 @@ export class Room {
     this.dailyMatch = false;
     this.dailyResults = new Map();
     this.xpGains = new Map();
+    this.clearLastMatch();
     this.onEmptied?.();
     return true;
   }
@@ -432,6 +448,49 @@ export class Room {
     if (!target || target.isBot || !target.connected) throw new GameError("err.transferConnectedOnly");
     this.hostId = targetId;
     this.broadcast();
+  }
+
+  /**
+   * Podyumdan lobiye dönüş. Oyuncu odadan ÇIKMAZ ve host değişmez (eskiden
+   * "Ana menüye dön" LEAVE_GAME yapıyordu: oyuncu silinir, sahiplik devredilir,
+   * geri gelen yine podyuma düşerdi). İlk dönen odayı lobiye alır; sonuç
+   * ekranına hâlâ bakanlar (inResults) istemcide sonucu görmeye devam eder.
+   */
+  returnToLobby(playerId: string): void {
+    if (!this.players.has(playerId)) return;
+    this.inResults.delete(playerId);
+    if (this.phase !== "podium") { this.broadcast(); return; }
+    this.clearTimer();
+    this.clearBotTimers();
+    this.phase = "lobby";
+    this.qIndex = 0;
+    this.lastReveal = null;
+    this.lastCircleReveal = null;
+    if (this.modeBeforeDaily) { this.gameMode = this.modeBeforeDaily; this.modeBeforeDaily = null; }
+    for (const player of this.players.values()) {
+      if (!player.isBot) player.ready = false;
+      player.eligibleFrom = 0;
+    }
+    this.broadcast();
+  }
+
+  private clearLastMatch() {
+    this.lastMatchMeta = null;
+    this.frozenSummaries = new Map();
+    this.frozenDaily = new Map();
+    this.inResults = new Set();
+  }
+
+  /** İzleyene özel maç özeti (canlı istatistikten). */
+  private summaryFor(player: RoomPlayer): MatchSummary {
+    return {
+      correct: player.stats.correct,
+      total: player.stats.total,
+      bestStreak: player.stats.bestStreak,
+      perCategory: [...player.stats.perCategory.entries()].map(([category, value]) => ({ category, correct: value.correct, total: value.total })),
+      fastest: this.fastestFingerSnapshot !== undefined ? this.fastestFingerSnapshot : this.fastestFinger(),
+      review: this.buildReview(player),
+    };
   }
 
   setEmptiedHandler(handler: () => void) {
@@ -599,6 +658,8 @@ export class Room {
       if (participants.length < this.minPlayers) throw new GameError("err.needPlayers", { count: this.minPlayers });
       for (const player of done) this.becomeSpectator(player.id);
     }
+    // Günlükten sonra "Aynı masayla devam" masanın KENDİ moduna dönmeli.
+    if (!daily && this.modeBeforeDaily) gameMode = this.modeBeforeDaily;
     const normalizedMode = daily ? "classic" : gameMode === "quiz" ? "classic" : gameMode;
     if (normalizedMode === "team") {
       let hasTeamA = connectedPlayers.some((player) => player.team === 0);
@@ -616,9 +677,17 @@ export class Room {
     // sahibinin kararıdır: aksi halde maç sırasında bağlantısı kopan (ready'si
     // sıfırlanan) bir oyuncu yüzünden masa kilitlenirdi — podyumda hazır
     // düğmesi olmadığı için o durumdan çıkış da yoktu.
-    if (this.phase === "lobby" && [...this.players.values()].filter((player) => player.connected).some((player) => !player.ready)) {
+    // Host başlatma düğmesine basarak zaten hazır olduğunu söylüyor; ondan ayrıca
+    // "Hazırım" beklemek anlamsız bir ikinci tıktı. Sonuç ekranına hâlâ bakanlar
+    // (inResults) da masayı kilitlemesin — "Aynı masayla devam" gibi maça alınırlar.
+    if (this.phase === "lobby" && [...this.players.values()]
+      .filter((player) => player.connected && player.id !== requestedBy && !this.inResults.has(player.id))
+      .some((player) => !player.ready)) {
       throw new GameError("err.everyoneReady");
     }
+    this.clearLastMatch();
+    this.rescueRound = new Set();
+    this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
     this.gameMode = normalizedMode;
     this.dailyMatch = daily;
     this.dailyDay = daily ? dailyDayNumber() : 0;
@@ -762,7 +831,10 @@ export class Room {
         }
       : null;
     const circle: CirclePayload | null = inCircle
-      ? { letter: circlePrompt.letter, clue: circlePrompt.clue, category: circlePrompt.category, deadline: this.questionDeadline, durationMs: GAME.CIRCLE_QUESTION_MS }
+      ? {
+          letter: circlePrompt.letter, clue: circlePrompt.clue, category: circlePrompt.category, deadline: this.questionDeadline, durationMs: GAME.CIRCLE_QUESTION_MS,
+          ...(circlePrompt.clueEn && circlePrompt.letterEn ? { letterEn: circlePrompt.letterEn, clueEn: circlePrompt.clueEn } : {}),
+        }
       : null;
     const countdown: CountdownPayload | null = this.phase === "countdown"
       ? { deadline: this.countdownDeadline, durationMs: GAME.COUNTDOWN_MS }
@@ -770,20 +842,28 @@ export class Room {
     // Çifte Bahis bahis fazı: yalnız kategori + oyuncunun bankrolü sızar; soru gizli.
     const self0 = this.players.get(youId);
     const bet: BetPayload | null = this.phase === "bet" && question
-      ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS }
+      ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: this.rescueRound.has(youId), brokeReward: GAME.BET_BROKE_REWARD }
       : null;
     const podium: PodiumEntry[] | null = this.phase === "podium"
       ? this.podiumSnapshot ?? this.snapshotPodium()
       : null;
     const self = this.players.get(youId);
-    const matchSummary: MatchSummary | null = this.phase === "podium" && self
+    // Maç bitince dondurulan özet önceliklidir: podyumda masadan çıkıp geri
+    // dönen oyuncunun kaydı yenilense de kendi sonucunu görmeye devam eder.
+    const matchSummary: MatchSummary | null = this.phase === "podium"
+      ? this.frozenSummaries.get(youId) ?? (self ? this.summaryFor(self) : null)
+      : null;
+    const meta = this.lastMatchMeta;
+    const lastMatch: LastMatch | null = this.phase === "lobby" && meta && this.inResults.has(youId)
       ? {
-          correct: self.stats.correct,
-          total: self.stats.total,
-          bestStreak: self.stats.bestStreak,
-          perCategory: [...self.stats.perCategory.entries()].map(([category, value]) => ({ category, correct: value.correct, total: value.total })),
-          fastest: this.fastestFingerSnapshot !== undefined ? this.fastestFingerSnapshot : this.fastestFinger(),
-          review: this.buildReview(self),
+          id: meta.id,
+          gameMode: meta.gameMode,
+          roundTotal: meta.roundTotal,
+          teamScores: meta.teamScores,
+          podium: meta.podium,
+          matchSummary: this.frozenSummaries.get(youId) ?? null,
+          xpGains: meta.xpGains,
+          daily: meta.dailyDay !== null ? { day: meta.dailyDay, pattern: this.frozenDaily.get(youId) ?? null } : null,
         }
       : null;
     return {
@@ -806,6 +886,8 @@ export class Room {
       circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
       podium,
       matchSummary,
+      lastMatch,
+      lastMatchId: this.phase === "podium" && meta ? meta.id : null,
       daily: this.dailyMatch ? { day: this.dailyDay, pattern: this.dailyResults.get(youId) ?? null } : null,
       // Bahis fazında "kilitleyen" = bahsini yatıran; diğer fazlarda = cevaplayan.
       answeredCount: this.eligiblePlayers().filter((player) => this.phase === "bet" ? player.bet !== null : this.hasAnswered(player)).length,
@@ -880,14 +962,26 @@ export class Room {
     this.lastReveal = null;
     this.lastCircleReveal = null;
     this.betDeadline = Date.now() + GAME.BET_MS;
-    for (const player of this.eligiblePlayers()) player.bet = null;
+    this.rescueRound = new Set();
+    for (const player of this.eligiblePlayers()) {
+      player.bet = null;
+      // Parası bitmiş oyuncu bahis yapamaz: bahsi 0'a kilitlenir, doğru cevap
+      // GAME.BET_BROKE_REWARD kazandırır. Masa onu 9 sn beklemez.
+      if (player.score <= 0) {
+        player.bet = 0;
+        this.rescueRound.add(player.id);
+      }
+    }
     // Botlar hemen yatırır: bankrollerinin rastgele bir dilimini (¼–hepsi arası).
     for (const player of this.eligiblePlayers()) {
-      if (!player.isBot) continue;
+      if (!player.isBot || this.rescueRound.has(player.id)) continue;
       const fraction = 0.25 + Math.random() * 0.75;
       player.bet = Math.max(0, Math.min(player.score, Math.round(player.score * fraction)));
     }
     this.broadcast();
+    // Herkes zaten kilitliyse (ör. tüm masa kurtarma turunda) bekletmeden soruya geç.
+    this.advanceIfEveryoneBet();
+    if (this.phase !== "bet") return;
     this.timer = setTimeout(() => {
       if (this.phase !== "bet") return;
       this.beginQuestion();
@@ -990,7 +1084,9 @@ export class Room {
         // Çifte Bahis: doğru → yatırılan katlanır (+bahis), yanlış → yanar (−bahis).
         // Hız bonusu yok; mekanik bahsin kendisi. Bahis bankrolle sınırlı, skor <0 olmaz.
         const stake = player.bet ?? 0;
-        gain = correct ? stake : -stake;
+        gain = this.rescueRound.has(player.id)
+          ? (correct ? GAME.BET_BROKE_REWARD : 0)
+          : (correct ? stake : -stake);
         player.score = Math.max(0, player.score + gain);
       } else {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
@@ -1007,7 +1103,10 @@ export class Room {
     }
     this.phase = "reveal";
     this.revealUntil = Date.now() + GAME.REVEAL_MS;
-    this.lastReveal = { correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.lastReveal = {
+      correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS,
+      ...(this.gameMode === "bet" && this.rescueRound.size ? { rescued: [...this.rescueRound] } : {}),
+    };
     this.broadcast();
     this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
@@ -1036,7 +1135,7 @@ export class Room {
     }
     this.phase = "reveal";
     this.revealUntil = Date.now() + GAME.REVEAL_MS;
-    this.lastCircleReveal = { answer: prompt.answer, rankedPlayerIds: correct.map((player) => player.id), gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
+    this.lastCircleReveal = { answer: prompt.answer, ...(prompt.answerEn && prompt.clueEn ? { answerEn: prompt.answerEn } : {}), rankedPlayerIds: correct.map((player) => player.id), gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
     this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
@@ -1104,6 +1203,19 @@ export class Room {
     }
     this.podiumSnapshot = this.snapshotPodium();
     this.fastestFingerSnapshot = this.fastestFinger();
+    const humans = [...this.players.values()].filter((player) => !player.isBot);
+    this.lastMatchMeta = {
+      id: ++this.matchSeq,
+      gameMode: this.gameMode,
+      roundTotal: this.gameMode === "circle" ? this.circlePrompts.length : this.roundLimit,
+      teamScores: [this.teamScores[0], this.teamScores[1]],
+      podium: this.podiumSnapshot,
+      xpGains: this.progress && this.xpGains.size ? Object.fromEntries(this.xpGains) : null,
+      dailyDay: this.dailyMatch ? this.dailyDay : null,
+    };
+    this.frozenSummaries = new Map(humans.map((player) => [player.id, this.summaryFor(player)]));
+    this.frozenDaily = new Map(this.dailyResults);
+    this.inResults = new Set(humans.map((player) => player.id));
     this.phase = "podium";
     this.lastReveal = null;
     this.lastCircleReveal = null;
@@ -1195,6 +1307,7 @@ export class Room {
       waiting: player.eligibleFrom > this.qIndex,
       streak: player.stats.currentStreak,
       team: player.team,
+      ...(this.phase === "lobby" && this.inResults.has(player.id) ? { inResults: true } : {}),
       ...(player.isBot ? {} : {
         progress: this.progress?.badge(player.id) ?? undefined,
         ...(player.title ? { title: player.title } : {}),

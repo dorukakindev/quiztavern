@@ -9,11 +9,10 @@ export type CirclePrompt = {
   /** Kabul edilebilir alternatif yazımlar/yaygın adlar. Ham hâlde verilir;
    *  normalizeCircleAnswer ile aynı şekilde normalleştirilerek karşılaştırılır. */
   aliases?: string[];
-  /** İngilizce çember modu için hazırlık: BAĞIMSIZ bir ipucu/cevap çifti (aynı
-   *  kelimenin çevirisi değil — harf kuralını kendi başına sağlar). Henüz hiçbir
-   *  çalışma zamanı kodu bunu okumuyor (çember modu bilinçli olarak Türkçe kalıyor,
-   *  bkz. shared/types.ts CirclePayload); ileride İngilizce çember modu açılırsa
-   *  içerik yeniden yazılmasın diye yazım anında birlikte ekleniyor. */
+  /** İngilizce arayüz için BAĞIMSIZ bir ipucu/cevap çifti (aynı kelimenin
+   *  çevirisi değil — harf kuralını kendi başına sağlar). Varsa CirclePayload ile
+   *  istemciye gider; EN arayüzdeki oyuncu bunu görür, matchesCircleAnswer
+   *  answerEn'i de doğru sayar. */
   letterEn?: string;
   clueEn?: string;
   answerEn?: string;
@@ -147,7 +146,7 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
   { letter: "M", clue: "Doğru akıl yürütme kurallarını inceleyen felsefe dalı.", answer: "mantık", category: "Felsefe", difficulty: "orta" },
   { letter: "E", clue: "Doğru ve yanlış davranışları inceleyen felsefe dalı.", answer: "etik", category: "Felsefe", difficulty: "orta" },
   { letter: "G", clue: "Var olan her şeyin toplamı; felsefede sıkça sorgulanan kavram.", answer: "gerçeklik", category: "Felsefe", difficulty: "orta" },
-  { letter: "B", clue: "Derin deneyim ve anlayıştan doğan akıl; 'felsefe' kelimesinin kökeninde de bu vardır (sevgisi).", answer: "bilgelik", category: "Felsefe", difficulty: "orta" },
+  { letter: "B", clue: "Derin anlayış ve tecrübeden doğan akıl; 'felsefe' sözcüğü Yunancada bunun sevgisi anlamına gelir.", answer: "bilgelik", category: "Felsefe", difficulty: "orta" },
   { letter: "V", clue: "Felsefede 'ne var, ne yok' sorusuyla ilgilenen temel kavram.", answer: "varlık", category: "Felsefe", difficulty: "zor" },
   { letter: "D", clue: "Karşıt görüşlerin tartışılarak yeni bir senteze ulaşılması yöntemi.", answer: "diyalektik", category: "Felsefe", difficulty: "zor" },
   // Yemek
@@ -1619,10 +1618,12 @@ export const normalizeCircleAnswer = (value: string) =>
  * Oyuncunun cevabı prompt'un `answer` ya da `aliases` alanındaki herhangi bir
  * biçimle normalize eşleştiğinde true.
  */
-export const matchesCircleAnswer = (prompt: Pick<CirclePrompt, "answer" | "aliases">, value: string) => {
+export const matchesCircleAnswer = (prompt: Pick<CirclePrompt, "answer" | "aliases" | "answerEn">, value: string) => {
   const normalized = normalizeCircleAnswer(value);
   if (!normalized) return false;
   if (normalized === normalizeCircleAnswer(prompt.answer)) return true;
+  // İngilizce arayüzdeki oyuncu EN ipucunu görür ve EN cevabı yazar.
+  if (prompt.answerEn && normalized === normalizeCircleAnswer(prompt.answerEn)) return true;
   return (prompt.aliases ?? []).some((alias) => normalizeCircleAnswer(alias) === normalized);
 };
 

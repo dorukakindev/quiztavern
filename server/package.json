@@ -20,7 +20,8 @@
     "test:anticheat": "tsx scripts/anticheat-test.ts",
     "test:circle-alias": "tsx scripts/circle-alias-test.ts",
     "test:packs": "tsx scripts/packs-test.ts",
-    "test:xp": "tsx scripts/xp-test.ts"
+    "test:xp": "tsx scripts/xp-test.ts",
+    "test:podium-lobby": "tsx scripts/podium-lobby-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
