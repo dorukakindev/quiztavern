@@ -133,6 +133,13 @@ export const BADGE_DEFS: readonly BadgeDef[] = [
   { key: "gunluk3", earned: (s) => s.streakDays >= 3 },
   { key: "gunluk7", earned: (s) => s.streakDays >= 7 },
   { key: "podyum", earned: (_s, e) => e.placement <= 3 },
+  { key: "tekeTek", earned: (_s, e) => e.won && e.gameMode === "duel" },
+  { key: "zilUstasi", earned: (_s, e) => e.won && e.gameMode === "zil" },
+  { key: "kahin", earned: (_s, e) => e.won && e.gameMode === "numeric" },
+  { key: "kronolog", earned: (_s, e) => e.won && e.gameMode === "timeline" },
+  { key: "panoFatihi", earned: (_s, e) => e.won && e.gameMode === "board" },
+  { key: "sozcu", earned: (_s, e) => e.won && e.gameMode === "word" },
+  { key: "blitzci", earned: (_s, e) => e.won && e.gameMode === "blitz" },
   { key: "tamIsabet", earned: (_s, e) => e.total >= 5 && e.correct === e.total },
   { key: "ligKalfa", earned: (s) => s.xp >= leagueMinXp("kalfa") },
   { key: "ligUsta", earned: (s) => s.xp >= leagueMinXp("usta") },
@@ -153,6 +160,8 @@ export interface MatchFinishedEntry {
   won: boolean;
   /** Maç içi kategori bazlı doğru sayıları — ustalık (§6.4) tablosuna yazar. */
   perCategory?: { category: string; correct: number }[];
+  /** Maçın modu — mod-rozetleri (tekeTek, kahin…) buna bakar. */
+  gameMode?: string;
 }
 
 /** Tek maçın XP'si — saf fonksiyon, testlerde de doğrulanır. AFK (total=0) kazanamaz. */
