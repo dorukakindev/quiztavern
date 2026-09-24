@@ -323,6 +323,8 @@ export type ToastKey =
   | "err.cardUsed"
   | "err.cardEmpty"
   | "err.invalidInput"
+  | "err.predictPhase"
+  | "err.predictFailed"
   | "err.kicked"
   | "err.kickFailed"
   | "err.transferFailed"
@@ -480,6 +482,11 @@ export interface GameState {
    *  (oynamayan bot hariç) oyuncuların yarısından fazlasına ulaşınca sunucu
    *  host'u beklemeden yeni maçı başlatır. */
   rematch: { votes: number; needed: number; youVoted: boolean } | null;
+  /** İzleyicinin kazanan tahmini (playerId) — oyuncularda her zaman null.
+   *  §6.3: maç başında yapılır, bilene +XP. */
+  yourPrediction: string | null;
+  /** Tahmin penceresi açık mı: geri sayım + ilk tur (ilk reveal'e kadar). */
+  predictOpen: boolean;
   minPlayers: number;
   /** Boş dizi, tüm kategorilerin karışık kullanılacağı anlamına gelir. */
   categorySelection: string[];
@@ -523,6 +530,8 @@ export const EV = {
   USE_CARD: "use-card",
   /** Podyumda rövanş oyu: {} — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
   REMATCH: "rematch",
+  /** İzleyici kazanan tahmini: { targetId } — maç başında, pencere kapanmadan. */
+  PREDICT: "predict",
   PLAY_AGAIN: "play-again",
   ADD_BOT: "add-bot",
   READY: "ready",
