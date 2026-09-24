@@ -7,6 +7,7 @@ import { Room, type RoomPlayer } from "../src/rooms";
 import { GameError } from "../src/errors"
 import { GAME } from "../src/config";
 import type { GameState } from "../../shared/types";
+import { sampleWordPrompts } from "../src/circle";
 
 type PublicPlayerRow = GameState["players"][number];
 
@@ -180,6 +181,18 @@ const row = (state: GameState, id: string): PublicPlayerRow => {
   const prompt = (room as unknown as { currentWordPrompt(): { answer: string } }).currentWordPrompt();
   assert.ok(!raw.includes(prompt.answer), "kapalı cevap payload'a sızmasın");
   stop(room);
+}
+
+// 9b) Havuz sözleşmesi: örneklenen hiçbir prompt ipucunda/kategoride cevabı sızdırmasın
+// (tohumdan bağımsız — w9'un rastgele yakaladığı kusurun kalıcı regresyonu).
+{
+  const sample = sampleWordPrompts();
+  assert.ok(sample.length > 0, "kelime havuzu boş olmasın");
+  for (const p of sample) {
+    const hay = `${p.clue} ${p.clueEn ?? ""} ${p.category}`.toLowerCase();
+    assert.ok(!hay.includes(p.answer.toLowerCase()), `ipucu TR cevabı sızdırmasın: ${p.answer}`);
+    assert.ok(!(p.answerEn && hay.includes(p.answerEn.toLowerCase())), `ipucu EN cevabı sızdırmasın: ${p.answerEn}`);
+  }
 }
 
 // 10) wordLetter/ wordAnswer diğer modlarda no-op.
