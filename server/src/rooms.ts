@@ -124,7 +124,7 @@ export interface ProgressStore {
 
 /** Soru yazarı turunun puan-akışlı modları — bu modlarda yazılan sorular maça
  *  karışır; bahis/çember/kelime/bulanık kendi mekaniğine sahip olduğu için dışarıda. */
-const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team"]);
+const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team", "duel"]);
 
 /** 0..n-1 karışık indeksler — yazılan soruların hangi slotlara düşeceğini belirler. */
 function shuffleIdx(n: number): number[] {
@@ -303,7 +303,7 @@ export class Room {
       // oyuncunun ortadan girmesi eleme mantığını bozar.
       eligibleFrom: this.phase === "lobby" || this.phase === "countdown"
         ? 0
-        : this.gameMode === "bet" || this.gameMode === "elim"
+        : this.gameMode === "bet" || this.gameMode === "elim" || this.gameMode === "duel"
           ? this.roundLimit
           : this.qIndex + 1,
       lives: 0,
@@ -583,7 +583,11 @@ export class Room {
   /** İzleyici kazanan tahmini (§6.3). Tek izleyici tek hedef; değiştirilebilir
    *  (pencere açıkken). Doğru bilenler finish'te GAME.PREDICT_XP alır. */
   predict(spectatorId: string, targetId: unknown): void {
-    if (!this.spectators.has(spectatorId)) return; // oyuncu/bot tahmin kullanamaz
+    // Düello'da masadaki fazla oyuncular da izleyici sayılır (eligibleFrom=
+    // roundLimit): kazananı tahmin ederler. Diğer modlarda tahmin izleyiciye özel.
+    const watcher = this.players.get(spectatorId);
+    const isDuelWatcher = this.gameMode === "duel" && !!watcher && !watcher.isBot && watcher.eligibleFrom >= this.roundLimit;
+    if (!this.spectators.has(spectatorId) && !isDuelWatcher) return;
     if (!this.predictOpen()) throw new GameError("err.predictPhase");
     if (typeof targetId !== "string" || !this.players.has(targetId)) throw new GameError("err.invalidTarget");
     this.predictions.set(spectatorId, targetId);
@@ -688,7 +692,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur" && mode !== "word" && mode !== "duel") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -698,6 +702,9 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
+    // Düello hep 7 soru — host'a sayı seçtirilmez (QUESTION_COUNTS dışı olduğu
+    // için setQuestionCount zaten reddeder).
+    if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
@@ -909,6 +916,10 @@ export class Room {
     // Günlükten sonra "Aynı masayla devam" masanın KENDİ moduna dönmeli.
     if (!daily && this.modeBeforeDaily) gameMode = this.modeBeforeDaily;
     const normalizedMode = daily ? "classic" : gameMode === "quiz" ? "classic" : gameMode;
+    // Düello en az 2 koltuk ister; fazlası izler (state mutasyonundan önce).
+    if (normalizedMode === "duel" && connectedPlayers.length < 2) {
+      throw new GameError("err.needPlayers", { count: 2 });
+    }
     if (normalizedMode === "team") {
       let hasTeamA = connectedPlayers.some((player) => player.team === 0);
       let hasTeamB = connectedPlayers.some((player) => player.team === 1);
@@ -1048,6 +1059,12 @@ export class Room {
       player.stats = emptyStats();
       player.answers = [];
       player.typed = [];
+    }
+    // Düello (§6.1): masadaki ilk iki oyuncu kapışır; fazlası izleyici olur —
+    // oturma sırası karar verir, ayrılanların yerine yeni düellocu çekilmez.
+    if (this.gameMode === "duel") {
+      const bySeat = [...this.players.values()].sort((a, b) => a.seat - b.seat);
+      for (const watcher of bySeat.slice(2)) watcher.eligibleFrom = this.roundLimit;
     }
     this.beginCountdown();
   }
@@ -1783,7 +1800,7 @@ export class Room {
       const winnerId = this.podiumSnapshot?.[0]?.id;
       for (const [spectatorId, target] of this.predictions) {
         if (target !== winnerId) continue;
-        const spectator = this.spectators.get(spectatorId);
+        const spectator = this.spectators.get(spectatorId) ?? this.players.get(spectatorId);
         if (!spectator) continue;
         try {
           const gain = this.progress.bonusXp({ userId: spectator.id, name: spectator.name, avatarUrl: spectator.avatarUrl, amount: GAME.PREDICT_XP });
@@ -1870,7 +1887,9 @@ export class Room {
   }
 
   private snapshotPodium(): PodiumEntry[] {
-    return this.sortedPlayers().map(({ id, name, avatarUrl, score, team, title }) => {
+    return this.sortedPlayers()
+      .filter((player) => this.gameMode !== "duel" || player.eligibleFrom < this.roundLimit)
+      .map(({ id, name, avatarUrl, score, team, title }) => {
       const league = this.progress?.badge(id)?.league;
       return { id, name, avatarUrl, score, team, ...(title ? { title } : {}), ...(league ? { league } : {}) };
     });

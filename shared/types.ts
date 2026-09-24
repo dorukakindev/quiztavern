@@ -20,7 +20,8 @@ export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "pod
  *  zaman havuzundan beslenir — havuz bitince oyun biter. */
 export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim"
   | "blur"
-  | "word";
+  | "word"
+  | "duel";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
