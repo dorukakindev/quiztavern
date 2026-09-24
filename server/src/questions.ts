@@ -163,15 +163,49 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   // düşer (min(havuz, hedef)) — zorlama yok, maç normal devam eder.
   const pictures = source.filter((q) => q.image);
   const texts = source.filter((q) => !q.image);
-  const pictureFresh = shuffle(pictures.filter((q) => !exclude.has(q.id)));
-  const pictureUsed = shuffle(pictures.filter((q) => exclude.has(q.id)));
-  const picturePool = [...pictureFresh, ...pictureUsed];
-  const textFresh = shuffle(texts.filter((q) => !exclude.has(q.id)));
-  const textUsed = shuffle(texts.filter((q) => exclude.has(q.id)));
-  const textPool = [...textFresh, ...textUsed];
   const { min, max } = imageOnly ? { min: n, max: n } : pictureQuota(n);
-  const pictureTarget = Math.min(picturePool.length, n, randomInt(min, max));
-  const selected = [...picturePool.slice(0, pictureTarget), ...textPool.slice(0, n - pictureTarget)];
+  const pictureTarget = Math.min(pictures.length, n, randomInt(min, max));
+  // Kategori dengesi: birden çok kategori seçiliyken (ya da seçim yokken tüm
+  // havuzda) sorular havuz boyutuna ORANLI değil, kategorilere NÖBETLEŞEREK
+  // dağılır — küçük kategori de maçta yerini alır. Her kategori için
+  // resimli/resimsiz alt-havuz ayrı tutulur: taze-önce sırası ve resim kotası
+  // korunur; bir kategorinin alt-havuzu tükenince sıra diğerlerine geçer.
+  const perCat = new Map<string, { pics: Question[]; texts: Question[] }>();
+  for (const q of source) {
+    const entry = perCat.get(q.category) ?? { pics: [], texts: [] };
+    (q.image ? entry.pics : entry.texts).push(q);
+    perCat.set(q.category, entry);
+  }
+  // Taze-önce garantisi GLOBAL kalır: önce tüm kategorilerin taze kuyrukları
+  // nöbetleşerek çekilir; toplam taze sayı yetmezse kullanılmış kuyruklar da
+  // aynı nöbetle devam eder. Böylece bir kategorinin tazesi bitince diğer
+  // kategorilerde hâlâ taze varken erken tekrar başlamaz (küresel semantik).
+  const subpools = shuffle([...perCat.keys()]).map((name) => {
+    const entry = perCat.get(name)!;
+    const split = (list: Question[]) => ({
+      fresh: shuffle(list.filter((q) => !exclude.has(q.id))),
+      used: shuffle(list.filter((q) => exclude.has(q.id))),
+    });
+    return { pics: split(entry.pics), texts: split(entry.texts) };
+  });
+  const drawRoundRobin = (key: "pics" | "texts", count: number): Question[] => {
+    const out: Question[] = [];
+    let remaining = count;
+    for (const queue of ["fresh", "used"] as const) {
+      while (remaining > 0) {
+        let progressed = false;
+        for (const sub of subpools) {
+          if (remaining <= 0) break;
+          const q = sub[key][queue].shift();
+          if (q) { out.push(q); remaining -= 1; progressed = true; }
+        }
+        if (!progressed) break;
+      }
+      if (remaining <= 0) break;
+    }
+    return out;
+  };
+  const selected = [...drawRoundRobin("pics", pictureTarget), ...drawRoundRobin("texts", n - pictureTarget)];
   // Resimli sorular maçın sabit bir yerinde (ör. hep ilk sıralarda) kümelenmesin
   // diye seçilenler tekrar karıştırılır — sıra tamamen rastgele.
   const pool = shuffle(selected);
