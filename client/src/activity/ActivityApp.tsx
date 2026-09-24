@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type WordPayload, type XpGain } from '../../../shared/types'
+import { CIRCLE_COUNTS, EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -1068,9 +1068,10 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </div>
         </div>
 
-        {mode !== 'circle' && <div className="qt-settings__group"><span>{t('table.questionCount')}</span>
-          <div className="qt-count-row">{QUESTION_COUNTS.map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
-        </div>}
+        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). */}
+        <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
+          <div className="qt-count-row">{(mode === 'circle' ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
+        </div>
 
         {/* Zorluk: mod'dan bağımsız, tüm modlara uygulanır. Karışık = tüm zorluklar. */}
         <div className="qt-settings__group"><span>{t('table.difficulty')}</span>

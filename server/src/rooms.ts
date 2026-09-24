@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { QUESTION_COUNTS } from "../../shared/types";
+import { CIRCLE_COUNTS, QUESTION_COUNTS } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
@@ -572,6 +572,7 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
+    if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
       .filter((name) => {
@@ -609,12 +610,14 @@ export class Room {
 
   /**
    * Masa ayarı: sonraki maçın soru sayısı. Süre moda sabittir; sayı değil.
-   * Çember kendi sabit tur sayısını kullandığı için bu ayardan etkilenmez.
+   * Çember'de aynı alan tur sayısı olarak okunur (10/15/20).
    */
   setQuestionCount(playerId: string, count: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.countHostOnly");
-    if (!QUESTION_COUNTS.includes(count as QuestionCount)) throw new GameError("err.countInvalid");
+    // Çember'de aynı alan tur sayısını taşır: 10/15/20.
+    const valid = this.gameMode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS;
+    if (!(valid as readonly number[]).includes(count as number)) throw new GameError("err.countInvalid");
     if (this.questionCount === count) return;
     this.questionCount = count as QuestionCount;
     // Kategori değişimiyle aynı kural: masa ayarı değişince herkes tekrar onaylar.
@@ -728,8 +731,8 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
-    // Soru sayısı masa ayarıdır; Çember kendi sabit tur sayısıyla oynanır.
-    this.roundLimit = this.gameMode === "circle" ? GAME.CIRCLE_PROMPTS_PER_MATCH : this.questionCount;
+    // Soru sayısı masa ayarıdır; Çember'de aynı alan tur sayısı olarak okunur.
+    this.roundLimit = this.questionCount;
     const compatibleCategories = this.categorySelection.filter((name) => {
       const category = CATEGORY_CATALOG.find((item) => item.name === name);
       return this.gameMode === "circle" ? !!category?.circleCount : !!category?.classicCount;
@@ -772,8 +775,8 @@ export class Room {
 
     if (this.gameMode === "circle") {
       const unseenC = circlePoolKeys(compatibleCategories, this.difficulty).filter((k) => !this.seenCirclePromptKeys.has(k)).length;
-      if (unseenC < GAME.CIRCLE_PROMPTS_PER_MATCH) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
-      this.circlePrompts = sampleCirclePrompts(GAME.CIRCLE_PROMPTS_PER_MATCH, compatibleCategories, this.seenCirclePromptKeys, this.difficulty);
+      if (unseenC < this.roundLimit) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
+      this.circlePrompts = sampleCirclePrompts(this.roundLimit, compatibleCategories, this.seenCirclePromptKeys, this.difficulty);
       this.lastCirclePromptKeys = new Set(this.circlePrompts.map((p) => `${p.category}|${p.answer}`));
       this.circlePrompts.forEach((p) => this.seenCirclePromptKeys.add(`${p.category}|${p.answer}`));
       this.wordPrompts = [];
