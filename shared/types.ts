@@ -106,6 +106,15 @@ export const BADGE_KEYS = [
 ] as const;
 export type BadgeKey = (typeof BADGE_KEYS)[number];
 
+/** Henüz kazanılmamış, sayısal hedefi olan rozet — lobide kilitli rozet
+ *  olarak `current/target` çubuğuyla gösterilir. Olay rozetleri (tek maçta
+ *  koşulanlar: podyum, mod galibiyetleri, tamİsabet) buraya girmez. */
+export interface BadgeProgress {
+  key: BadgeKey;
+  current: number;
+  target: number;
+}
+
 /** İzleyen oyuncunun kendi ilerleme özeti — lobide XP bar'ı, podyumda
  *  kazanım satırı ve sezon sırası bununla çizilir. */
 export interface ProgressSnapshot extends ProgressBadge {
@@ -124,6 +133,9 @@ export interface ProgressSnapshot extends ProgressBadge {
   badges: BadgeKey[];
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına 50+ doğru. */
   categoryMastery: string[];
+  /** Kilitli rozetlerin ilerlemesi — orana göre azalan sırada; hedefsiz
+   *  olay rozetleri listeye girmez. */
+  badgeProgress: BadgeProgress[];
 }
 
 /** Maç bitince bir oyuncuya yazılan kazanım — podyumda "+X XP" animasyonu. */

@@ -741,3 +741,33 @@
   .qt-board-col__head { font-size: .6rem; padding: .4rem .2rem; }
   .qt-board-cell { min-height: 2.3rem; font-size: .85rem; }
 }
+
+/* ── Kilitli rozetler (hedef ilerlemesi) ── */
+.qt-badge.is-locked {
+  opacity: 0.55;
+  border-style: dashed;
+  cursor: default;
+  filter: grayscale(0.55);
+}
+.qt-badge.is-locked em {
+  font-style: normal;
+  font-size: 0.72em;
+  color: var(--ink-3, #b8a98a);
+  letter-spacing: 0.02em;
+}
+.qt-badge__bar {
+  display: inline-block;
+  width: 34px;
+  height: 4px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+  margin: 0 3px;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.qt-badge__bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #c9a04e, #f3c362);
+}
