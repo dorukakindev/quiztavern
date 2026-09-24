@@ -179,7 +179,6 @@
 
 /* Lobi: sonuç ekranında kalanlar */
 .qt-orbit__ready.is-results i { background: #f3c362; }
- HEAD
 
 /* ---------- Resimli soru: yatay düzen + kredi + lightbox (G8) ----------
    Eskiden görsel başlığın üstünde tam genişlik duruyordu; uzun sorularda
@@ -238,3 +237,32 @@
 /* Lobide barmen baykuş: köşede küçük maskot. */
 .qt-lobby-owl { position: absolute; right: 14px; bottom: 10px; width: clamp(58px, 8.5vw, 108px); opacity: .94; pointer-events: none; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .5)); z-index: 1; }
 @media (max-height: 430px) { .qt-lobby-owl { width: 54px; } }
+
+/* ---- Kelime Oyunu (word) ---- */
+.qt-scene-emblem.is-word { color: #a8906a; }
+.qt-question-head--word .qt-word-letters {
+  display: flex; gap: 0.35rem; justify-content: center; flex-wrap: wrap;
+  margin: 0.55rem 0 0.35rem;
+}
+.qt-word-letters i {
+  font-style: normal; min-width: 1.9rem; height: 2.3rem; padding: 0 0.3rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 0.45rem; font-weight: 700; font-size: 1.15rem;
+  background: color-mix(in srgb, #a8906a 14%, transparent);
+  border: 1px solid color-mix(in srgb, #a8906a 35%, transparent);
+  color: transparent; /* kapalı kutu — harf yok ama kutu görünür */
+}
+.qt-word-letters i.is-open {
+  color: var(--qt-ink, #f3ead7); background: color-mix(in srgb, #a8906a 30%, transparent);
+  text-transform: uppercase;
+}
+.qt-question-head--word .qt-word-clue { margin: 0.35rem 0 0; font-size: 1.02rem; }
+.qt-word-meta { display: flex; gap: 0.6rem; align-items: center; justify-content: center; margin-top: 0.55rem; flex-wrap: wrap; }
+.qt-word-value, .qt-word-pool {
+  display: inline-flex; align-items: center; gap: 0.3rem; font-weight: 700;
+  padding: 0.28rem 0.6rem; border-radius: 999px; font-size: 0.92rem;
+  background: color-mix(in srgb, #d8b96a 18%, transparent);
+  border: 1px solid color-mix(in srgb, #d8b96a 40%, transparent);
+}
+.qt-word-pool { opacity: 0.85; font-variant-numeric: tabular-nums; }
+.qt-word-letter { font-size: 0.92rem; padding: 0.3rem 0.8rem; }

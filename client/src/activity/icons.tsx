@@ -59,6 +59,7 @@ const UI_ICONS = {
   heart: Heart,
   star: Star,
   clap: HandsClapping,
+  scroll: Scroll,        // Kelime Oyunu: parşömen
   speaker: SpeakerHigh,
   speakerOff: SpeakerSlash,
   music: MusicNotes,

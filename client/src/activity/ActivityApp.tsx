@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type XpGain } from '../../../shared/types'
+import { EMOTE_KEYS, QUESTION_COUNTS, RECONNECT_GRACE_MS, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -120,10 +120,11 @@ const MODE_KEYS = {
   team: { name: 'mode.team', meta: 'mode.team.meta', tag: 'mode.team.tag', icon: 'teams' },
   elim: { name: 'mode.elim', meta: 'mode.elim.meta', tag: 'mode.elim.tag', icon: 'heart' },
   blur: { name: 'mode.blur', meta: 'mode.blur.meta', tag: 'mode.blur.tag', icon: 'eye' },
+  word: { name: 'mode.word', meta: 'mode.word.meta', tag: 'mode.word.tag', icon: 'scroll' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : 'classic'
 }
 
 /**
@@ -384,7 +385,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, onMixed, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -504,7 +505,7 @@ const BEAT_VOTERS_MS = 250
 const BEAT_GAINS_MS = 650
 
 function useRevealBeats(state: GameState): RevealBeats {
-  const payload = state.reveal ?? state.circleReveal
+  const payload = state.reveal ?? state.circleReveal ?? state.wordReveal
   const now = useServerNow(state.serverNow, 60)
   if (state.phase !== 'reveal' || !payload) return { active: false, cards: false, voters: false, gains: false, progress: 1, remainingMs: 0, elapsedMs: 0 }
   const remainingMs = Math.max(0, payload.until - now)
@@ -691,11 +692,12 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
     {scene === 'elim' && <div className="qt-scene-emblem is-elim"><Icon name="heart" weight="duotone" /></div>}
     {scene === 'blur' && <div className="qt-scene-emblem is-blur"><Icon name="eye" weight="duotone" /></div>}
+    {scene === 'word' && <div className="qt-scene-emblem is-word"><Icon name="letters" weight="duotone" /></div>}
   </div>
 }
 
@@ -1197,7 +1199,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onReport, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onLeave, onSpectate, onReport, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
@@ -1205,15 +1207,18 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   const waiting = !!self?.waiting || (state.gameMode === 'elim' && !!self && (self.lives ?? 0) <= 0)
   const { t, language } = useI18n()
   const isCircle = state.gameMode === 'circle'
+  const isWord = state.gameMode === 'word'
   const question = state.question
   const circle = state.circle
+  const word = state.word
   const beats = useRevealBeats(state)
   const [circleAnswer, setCircleAnswer] = useState('')
   const circleInputRef = useRef<HTMLInputElement>(null)
-  // Her yeni çember turunda kutuyu temizle. Bağımlılık `circle?.deadline`: her tur
-  // değişir. (Eski `question?.deadline` çember modunda hep undefined'dı — ölü bağımlılık;
-  // `circle?.letter` de ardışık turlar aynı harfi taşıyınca tetiklenmiyordu.)
-  useEffect(() => setCircleAnswer(''), [circle?.deadline])
+  // Her yeni çember/kelime turunda kutuyu temizle. Bağımlılık `circle?.deadline` /
+  // `word?.deadline`: her tur değişir. (Eski `question?.deadline` çember modunda hep
+  // undefined'dı — ölü bağımlılık; `circle?.letter` de ardışık turlar aynı harfi
+  // taşıyınca tetiklenmiyordu.)
+  useEffect(() => setCircleAnswer(''), [circle?.deadline, word?.deadline])
 
   // Reveal'da soru/şık metinleri payload'dan düşer; son turu ekranda tutmak için saklarız.
   const lastRound = useRef<{ category: string; text: string; choices: string[]; textEn: string; choicesEn: string[]; deadline: number; durationMs: number; image?: string; imageCredit?: string } | null>(null)
@@ -1222,7 +1227,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   const lastCircle = useRef<CirclePayload | null>(null)
   if (circle) lastCircle.current = circle
   const shownCircle = circle ?? lastCircle.current
-  useEffect(() => { if (state.phase !== 'reveal' && state.phase !== 'question') { lastRound.current = null; lastCircle.current = null } }, [state.phase])
+  const lastWord = useRef<WordPayload | null>(null)
+  if (word) lastWord.current = word
+  const shownWord = word ?? lastWord.current
+  useEffect(() => { if (state.phase !== 'reveal' && state.phase !== 'question') { lastRound.current = null; lastCircle.current = null; lastWord.current = null } }, [state.phase])
 
   // "Bu soru hatalı": buton reveal'da görünür; her turda yalnız bir kez
   // tıklanabilir (sunucu tarafı da oyuncu+soru başına tek rapor tutar).
@@ -1244,26 +1252,30 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
   const selected = state.yourChoice
   const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting })
   const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
+  const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
   // Çember reveal: kutuda oyuncunun KENDİ cevabı kalır; bildiyse yeşil, bilemediyse
   // kırmızı. Doğru cevap alttaki satırda yazar (eskiden kutu herkes için doğru
   // cevapla dolup yeşile dönüyordu — yanlış yazan kendini doğru sanıyordu).
   const circleVerdict: 'right' | 'wrong' | null = !beats.active || state.yourCircleAnswer === null
     ? null
     : state.circleReveal?.rankedPlayerIds.includes(state.youId) ? 'right' : 'wrong'
+  const wordVerdict: 'right' | 'wrong' | null = !beats.active || state.yourWordAnswer === null
+    ? null
+    : state.wordReveal?.rankedPlayerIds.includes(state.youId) ? 'right' : 'wrong'
   useEffect(() => {
-    if (!circleInputShouldFocus({ hasPrompt: !!circle, locked: circleLocked })) return
+    if (!circleInputShouldFocus({ hasPrompt: !!circle || !!word, locked: circleLocked && wordLocked })) return
     const frame = window.requestAnimationFrame(() => circleInputRef.current?.focus())
     return () => window.cancelAnimationFrame(frame)
-  }, [circle?.deadline, circleLocked])
+  }, [circle?.deadline, word?.deadline, circleLocked, wordLocked])
   // Hic cevap vermeden reveal'a girdiysen sahne hafifce sallanir — tek sikkin
   // is-wrong sarsintisindan ayri, "hic secmedin" icin daha dramatik bir isaret.
   const youMissed = beats.cards && !isCircle && selected === null && !youAreSpectator
   // Cevap dağılımı (5a): kaç kişi hangi şıkkı seçti. picks[index] = o şıkkı
   // seçenlerin id listesi. Yüzde tabanı = cevap verenlerin toplamı ("%60 B dedi").
   const totalPicks = (state.reveal?.picks ?? []).reduce((sum, ids) => sum + ids.length, 0)
-  const deadline = isCircle ? shownCircle?.deadline : shown?.deadline
-  const durationMs = isCircle ? shownCircle?.durationMs : shown?.durationMs
-  const accent = categoryAccent(isCircle ? shownCircle?.category : shown?.category)
+  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline
+  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs
+  const accent = categoryAccent(isCircle ? shownCircle?.category : isWord ? shownWord?.category : shown?.category)
   const playerById = (id: string) => state.players.find((item) => item.id === id)
 
   // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
@@ -1339,8 +1351,29 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onLeave, onSpectate, onRep
           <button className={`qt-button ${circleLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!circleAnswer.trim() || circleLocked} onClick={() => { sfx.play('lock'); onCircleAnswer(circleAnswer) }}>{circleLocked && state.yourCircleAnswer !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
         </div>
         <p className="qt-locked-note" data-empty={!state.yourCircleAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.circleReveal?.answerEn ? state.circleReveal.answerEn : state.circleReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourCircleAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
+      </> : isWord && shownWord ? <>
+        {/* Kelime Oyunu: harf kutuları + ipucu + değer + ortak havuz. Reveal'da
+            kutular tam cevabı gösterir (maskenin son hâli yerine). */}
+        <div className="qt-question-head qt-question-head--word"><span className="qt-category">{categoryLabel(language, shownWord.category)}</span>
+          <div className="qt-word-letters" aria-label={t('word.lettersLabel')}>
+            {(beats.active && state.wordReveal
+              ? [...(language === 'en' && state.wordReveal.answerEn ? state.wordReveal.answerEn : state.wordReveal.answer)]
+              : (language === 'en' && shownWord.lettersEn?.length ? shownWord.lettersEn : shownWord.letters)
+            ).map((ch, i) => <i key={i} className={ch ? 'is-open' : ''}>{ch ?? ''}</i>)}
+          </div>
+          <p className="qt-word-clue">{language === 'en' && shownWord.clueEn ? shownWord.clueEn : shownWord.clue}</p>
+          <div className="qt-word-meta">
+            <span className="qt-word-value" title={t('word.value')}><Icon name="coins" />{formatNumber(language, shownWord.value)}</span>
+            <span className="qt-word-pool" title={t('word.pool')}><Icon name="fuse" />{t('word.poolValue', { s: Math.max(0, Math.ceil(shownWord.poolMs / 1000)) })}</span>
+            <button type="button" className="qt-button qt-word-letter" disabled={wordLocked || beats.active} onClick={() => { sfx.play('lock'); onWordLetter() }}><Icon name="scroll" /> {t('word.takeLetter')}</button>
+          </div>
+        </div>
+        <div className="qt-circle-entry">
+          <input ref={circleInputRef} value={beats.active ? (state.yourWordAnswer ?? '') : (state.yourWordAnswer ?? circleAnswer)} disabled={wordLocked} maxLength={48} onChange={(event) => setCircleAnswer(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && circleAnswer.trim() && !wordLocked) { event.preventDefault(); sfx.play('lock'); onWordAnswer(circleAnswer) } }} placeholder={beats.active ? t('review.noAnswer') : t('word.placeholder')} aria-label={t('word.placeholder')} className={wordVerdict === 'right' ? 'is-correct' : wordVerdict === 'wrong' ? 'is-wrong' : state.yourWordAnswer !== null ? 'is-locked' : ''} />
+          <button className={`qt-button ${wordLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!circleAnswer.trim() || wordLocked} onClick={() => { sfx.play('lock'); onWordAnswer(circleAnswer) }}>{wordLocked && state.yourWordAnswer !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
+        </div>
+        <p className="qt-locked-note" data-empty={!state.yourWordAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.wordReveal?.answerEn ? state.wordReveal.answerEn : state.wordReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourWordAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
-
         <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
@@ -2075,7 +2108,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
     // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.

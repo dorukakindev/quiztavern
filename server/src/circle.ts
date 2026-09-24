@@ -1679,3 +1679,48 @@ export function sampleCirclePrompts(count = ALL_CIRCLE_PROMPTS.length, categorie
 export function circlePoolKeys(categories: string[] = [], difficulty: Difficulty | null = null): string[] {
   return effectiveCirclePool(categories, difficulty).map((prompt) => `${prompt.category}|${prompt.answer}`);
 }
+
+/** Kelime Oyunu adayı: cevabı 4-10 harfli prompt. Harf-kutu görseli için
+ *  cevabın kısa ve tek kelime olması şart — çember havuzunun kısa kelimeleri. */
+const isWordLength = (p: CirclePrompt) => p.answer.length >= 4 && p.answer.length <= 10;
+
+/** Kelime Oyunu havuzunun TÜM anahtarları (category|answer) — tekrar-önleme
+ *  döngüsü havuz boyutunu buradan bilir (circlePoolKeys ile aynı sözleşme). */
+export function wordPoolKeys(categories: string[] = [], difficulty: Difficulty | null = null): string[] {
+  return effectiveCirclePool(categories, difficulty).filter(isWordLength).map((p) => `${p.category}|${p.answer}`);
+}
+
+/**
+ * Kelime Oyunu: 4→10 harf, her uzunluktan en çok 2 prompt (14 tur). Cevap
+ * uzunluğu turun değerini (harf × 100) belirlediği için dağılım sabit tutulur;
+ * bir uzunluk dar havuzda eksikse maç o kadar kısalır, başka uzunluktan
+ * tamamlanmaz (denge bozulmasın). Taze-önce + cevap dedup: Çember'le aynı kural.
+ */
+export function sampleWordPrompts(categories: string[] = [], exclude: Set<string> = new Set(), difficulty: Difficulty | null = null): CirclePrompt[] {
+  const source = effectiveCirclePool(categories, difficulty).filter(isWordLength);
+  const key = (p: CirclePrompt) => `${p.category}|${p.answer}`;
+  const shuf = (arr: CirclePrompt[]) => {
+    const result = [...arr];
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  };
+  const answers = new Set<string>();
+  const picked: CirclePrompt[] = [];
+  for (let len = 4; len <= 10; len++) {
+    const bucket = source.filter((p) => p.answer.length === len);
+    const pool = [...shuf(bucket.filter((p) => !exclude.has(key(p)))), ...shuf(bucket.filter((p) => exclude.has(key(p))))];
+    for (const p of pool) {
+      const answerKey = normalizeCircleAnswer(p.answer);
+      if (answers.has(answerKey)) continue;
+      answers.add(answerKey);
+      picked.push(p);
+      if (picked.filter((x) => x.answer.length === len).length === 2) break;
+    }
+  }
+  // Aynı uzunluktakiler kendi içinde karışık; uzunluklar 4→10'a artan sırada
+  // oynanır (TV formatı: kolay kutulardan uzun kelimeye).
+  return shuf(picked).sort((a, b) => a.answer.length - b.answer.length);
+}
