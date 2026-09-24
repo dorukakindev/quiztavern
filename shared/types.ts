@@ -14,9 +14,13 @@ export type Phase = "lobby" | "countdown" | "bet" | "question" | "reveal" | "pod
  *  `elim` (Son Masa): 3 canla başlanır; yanlış/cevapsız tur 1 can götürür,
  *  son kalan kazanır, elenenler izler.
  *  `blur` (Bulanık Resim): yalnız resimli sorular; görsel süre boyunca
- *  netleşir — erken cevap = çok puan (hız bonusu mekaniği). */
+ *  netleşir — erken cevap = çok puan (hız bonusu mekaniği).
+ *  `word` (Kelime Oyunu): 4→10 harfli kelime turları; "harf al" ortak bir
+ *  harfi açar ama soru değerini düşürür (kalan harf × 100). Maç tek bir ortak
+ *  zaman havuzundan beslenir — havuz bitince oyun biter. */
 export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim"
-  | "blur";
+  | "blur"
+  | "word";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -168,6 +172,24 @@ export interface CirclePayload {
   letterEn?: string;
   clueEn?: string;
   category: string;
+  deadline: number;
+  durationMs: number;
+}
+
+/** Kelime Oyunu tur yükü. Harfler maske olarak sızar: açılan pozisyonlarda
+ *  harf, gizli olanlarda null — ham cevap hiçbir zaman istemciye gitmez. */
+export interface WordPayload {
+  /** Maske: açılmış pozisyonlarda harf, diğerlerinde null. Uzunluk = harf sayısı. */
+  letters: (string | null)[];
+  /** EN arayüz cevabının maskesi (varsa) — aynı açılan pozisyonlar uygulanır. */
+  lettersEn?: (string | null)[];
+  clue: string;
+  clueEn?: string;
+  category: string;
+  /** Şu anki soru değeri: gizli kalan harf × 100. "Harf al" düşürür. */
+  value: number;
+  /** Ortak zaman havuzu: tüm maç için kalan süre (ms). Bitince maç biter. */
+  poolMs: number;
   deadline: number;
   durationMs: number;
 }
@@ -364,6 +386,8 @@ export interface GameState {
   round: { index: number; total: number };
   question: QuestionPayload | null;
   circle: CirclePayload | null;
+  /** Kelime Oyunu turu; yalnız o modda ve question fazında dolu. */
+  word: WordPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;
@@ -373,8 +397,12 @@ export interface GameState {
   yourChoice: number | null;
   /** Çemberde yalnızca oyuncunun kendi kilitlediği cevap görünür. */
   yourCircleAnswer: string | null;
+  /** Kelime Oyunu'nda oyuncunun bu turdaki kilitli cevabı. */
+  yourWordAnswer: string | null;
   reveal: RevealPayload | null;
   circleReveal: CircleRevealPayload | null;
+  /** Kelime Oyunu reveal'ı: tam kelime + kazançlar. Yalnız word modunda dolu. */
+  wordReveal: CircleRevealPayload | null;
   podium: PodiumEntry[] | null;
   /** Yalnız podyum fazında; izleyen oyuncuya özel maç özeti (4d). */
   matchSummary: MatchSummary | null;
@@ -421,6 +449,10 @@ export const EV = {
   START: "start",
   ANSWER: "answer",
   CIRCLE_ANSWER: "circle-answer",
+  /** Kelime Oyunu: { answer } — turun kelime cevabını kilitler */
+  WORD_ANSWER: "word-answer",
+  /** Kelime Oyunu: payload yok — herkes için ortak bir harf açar, değer düşer */
+  WORD_LETTER: "word-letter",
   /** Çifte Bahis: { amount } — bahis fazında yatırılan tutar (0..bankroll) */
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */

@@ -29,6 +29,20 @@ function botDelay(durationMs: number): number {
 }
 
 export function scheduleBotAnswers(room: Room): void {
+  if (room.gameMode === "word") {
+    const wp = room.currentWordPrompt();
+    if (!wp) return;
+    for (const p of room.players.values()) {
+      if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+      const delay = botDelay(room.questionDuration());
+      const roundAtSchedule = room.qIndex;
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
+        room.wordAnswer(p.id, Math.random() < 0.55 ? wp.answer : "bilmiyorum");
+      }, delay);
+    }
+    return;
+  }
   if (room.gameMode === "circle") {
     const prompt = room.currentCirclePrompt();
     if (!prompt) return;
