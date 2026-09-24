@@ -1328,7 +1328,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (beats.gains && !s.gained) {
         s.gained = true
         const answered = isCircle ? state.yourCircleAnswer !== null : state.yourChoice !== null
-        if (answered) sfx.play(((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0 ? 'correct' : 'wrong')
+        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
       }
     } else {
       s.revealed = false
