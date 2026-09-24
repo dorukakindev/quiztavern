@@ -8,6 +8,8 @@ import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 import { ALL_QUESTIONS } from "../server/src/questions";
 import { ALL_CIRCLE_PROMPTS, normalizeCircleAnswer } from "../server/src/circle";
+import { ALL_NUMERIC } from "../server/src/questions-numeric";
+import { ALL_ORDER } from "../server/src/questions-order";
 import { EXTRA_CATEGORIES } from "../server/src/categories";
 import type { Difficulty } from "../shared/types";
 
@@ -110,8 +112,37 @@ for (const p of ALL_CIRCLE_PROMPTS) {
   }
 }
 
+// ── Yakın Tahmin (sayısal) ──────────────────────────────────────────────────
+const seenNumericTexts = new Map<string, string>();
+for (const q of ALL_NUMERIC) {
+  const where = q.id || "(id yok)";
+  if (!DIFFICULTIES.includes(q.difficulty)) err(`${where}: difficulty "${q.difficulty}" geçersiz`);
+  if (!DEFINED_CATEGORIES.has(q.category)) {
+    warn(`${where}: kategori "${q.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin`);
+  }
+  if (!(q.answer > 0)) warn(`${where}: cevap ${q.answer} — pozitif olmayan değerler UI'da beklenmedik olabilir`);
+  const textKey = q.text.trim().toLocaleLowerCase("tr-TR");
+  if (seenNumericTexts.has(textKey)) warn(`${where}: "${seenNumericTexts.get(textKey)}" ile aynı soru metni`);
+  seenNumericTexts.set(textKey, where);
+}
+
+// ── Zaman Çizelgesi ─────────────────────────────────────────────────────────
+const seenOrderTexts = new Map<string, string>();
+for (const q of ALL_ORDER) {
+  const where = q.id || "(id yok)";
+  if (!DIFFICULTIES.includes(q.difficulty)) err(`${where}: difficulty "${q.difficulty}" geçersiz`);
+  if (!DEFINED_CATEGORIES.has(q.category)) {
+    warn(`${where}: kategori "${q.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin`);
+  }
+  const textKey = q.text.trim().toLocaleLowerCase("tr-TR");
+  if (seenOrderTexts.has(textKey)) warn(`${where}: "${seenOrderTexts.get(textKey)}" ile aynı soru metni`);
+  seenOrderTexts.set(textKey, where);
+  const labels = new Set(q.events.map((e) => e.label.trim().toLocaleLowerCase("tr-TR")));
+  if (labels.size !== q.events.length) err(`${where}: olay etiketleri tekrar ediyor`);
+}
+
 // ── Rapor ───────────────────────────────────────────────────────────────────
-console.log(`[validate] ${ALL_QUESTIONS.length} klasik soru, ${ALL_CIRCLE_PROMPTS.length} çember prompt'u denetlendi`);
+console.log(`[validate] ${ALL_QUESTIONS.length} klasik, ${ALL_CIRCLE_PROMPTS.length} çember, ${ALL_NUMERIC.length} sayısal, ${ALL_ORDER.length} çizelge denetlendi`);
 for (const w of warnings) console.warn(`  ⚠ ${w}`);
 if (errors.length) {
   for (const e of errors) console.error(`  ✗ ${e}`);
