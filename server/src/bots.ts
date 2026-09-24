@@ -60,6 +60,25 @@ export function scheduleBotAnswers(room: Room): void {
   // Zil'de botlar basmayı Room.scheduleZilBots ile kendisi planlar — klasik
   // answer() zamanlayıcıları burada çalışmaz.
   if (room.gameMode === "zil") return;
+  // Yakın Tahmin: botlar gerçek değerin çevresinde makul saçlılımla tahmin girer.
+  if (room.gameMode === "numeric") {
+    const n = room.currentNumeric();
+    if (!n) return;
+    for (const p of room.players.values()) {
+      if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
+      const delay = botDelay(room.questionDuration());
+      const roundAtSchedule = room.qIndex;
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule) return;
+        // %15 tam isabet, gerisi cevabın ±%5–40'ı civarında.
+        const guess = Math.random() < 0.15
+          ? n.answer
+          : n.answer * (1 + (Math.random() - 0.5) * 0.8) + (Math.random() - 0.5) * Math.max(1, n.answer * 0.05);
+        room.numericAnswer(p.id, Math.round(guess * 100) / 100);
+      }, delay);
+    }
+    return;
+  }
   const q = room.currentQuestion();
   if (!q) return;
   for (const p of room.players.values()) {

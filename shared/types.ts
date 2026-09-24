@@ -22,7 +22,8 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "blur"
   | "word"
   | "duel"
-  | "zil";
+  | "zil"
+  | "numeric";
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
@@ -216,6 +217,8 @@ export interface RevealPayload {
   fact?: string;
   /** İngilizce arayüz için fact çevirisi. */
   factEn?: string;
+  /** Yakın Tahmin: gerçek değer + tahmin dağılımı + kazanan(lar). */
+  numeric?: NumericRevealPayload;
 }
 
 export interface CirclePayload {
@@ -245,6 +248,28 @@ export interface WordPayload {
   poolMs: number;
   deadline: number;
   durationMs: number;
+}
+
+/** Yakın Tahmin (§6.1): sayısal cevap — doğru yanıt reveal'a dek sunucuda kalır. */
+export interface NumericQuestionPayload {
+  category: string;
+  text: string;
+  textEn: string;
+  /** Yanıt birimi — istemci giriş kutusunun yanında gösterir ("km", "yıl"...). */
+  unit: string;
+  unitEn: string;
+  deadline: number;
+  durationMs: number;
+}
+
+/** Yakın Tahmin reveal'ı: gerçek değer + herkesin tahmini + en yakın(lar). */
+export interface NumericRevealPayload {
+  answer: number;
+  unit: string;
+  unitEn: string;
+  /** Oyuncu id → girilen tahmin (yalnız tahmin edenler). */
+  guesses: Record<string, number>;
+  winnerIds: string[];
 }
 
 /** Maç soru açılmadan önce, tüm istemcilerin aynı anda oynattığı geri sayım. */
@@ -499,6 +524,8 @@ export interface GameState {
   circle: CirclePayload | null;
   /** Kelime Oyunu turu; yalnız o modda ve question fazında dolu. */
   word: WordPayload | null;
+  /** Yakın Tahmin turu; yalnız o modda ve question fazında dolu. */
+  numeric: NumericQuestionPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;
@@ -510,6 +537,8 @@ export interface GameState {
   yourCircleAnswer: string | null;
   /** Kelime Oyunu'nda oyuncunun bu turdaki kilitli cevabı. */
   yourWordAnswer: string | null;
+  /** Yakın Tahmin: bu tur kilitlediğin tahmin (null = henüz girmedin). */
+  yourNumericGuess: number | null;
   /** Tavern kartları: elindeki joker sayısı (Klasik/Takım'da maç başı 1,
    *  her 3'lü seride +1; diğer modlarda 0). */
   yourCards: number;
@@ -594,6 +623,8 @@ export const EV = {
   WORD_ANSWER: "word-answer",
   /** Kelime Oyunu: payload yok — herkes için ortak bir harf açar, değer düşer */
   WORD_LETTER: "word-letter",
+  /** Yakın Tahmin: { value } — turun sayısal tahminini kilitler */
+  NUMERIC_ANSWER: "numeric-answer",
   /** Çifte Bahis: { amount } — bahis fazında yatırılan tutar (0..bankroll) */
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */

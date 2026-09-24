@@ -139,6 +139,9 @@ export const GAME = {
   ZIL_MIN: 100,
   /** Yanlış cevaplayan basanın kaybı (§6.1: "yanlışsa −puan"). */
   ZIL_PENALTY: 200,
+  /** Yakın Tahmin (§6.1): en yakın tahmine taban puan; tam isabete bonus eklenir. */
+  NUMERIC_BASE: 400,
+  NUMERIC_EXACT: 200,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -147,10 +147,11 @@ const MODE_KEYS = {
   word: { name: 'mode.word', meta: 'mode.word.meta', tag: 'mode.word.tag', icon: 'scroll' },
   duel: { name: 'mode.duel', meta: 'mode.duel.meta', tag: 'mode.duel.tag', icon: 'sword' },
   zil: { name: 'mode.zil', meta: 'mode.zil.meta', tag: 'mode.zil.tag', icon: 'bolt' },
+  numeric: { name: 'mode.numeric', meta: 'mode.numeric.meta', tag: 'mode.numeric.tag', icon: 'target' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : 'classic'
 }
 
 /**
@@ -414,7 +415,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil', 'numeric'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -734,7 +735,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : mode === 'numeric' ? 'numeric' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
   </div>
@@ -1305,7 +1306,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onUseCard, onLeave, onSpectate, onReport, onPredict, onBuzz, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; onBuzz?: () => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onNumericAnswer, onUseCard, onLeave, onSpectate, onReport, onPredict, onBuzz, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onNumericAnswer?: (value: number) => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; onBuzz?: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
@@ -1314,6 +1315,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const { t, language } = useI18n()
   const isCircle = state.gameMode === 'circle'
   const isWord = state.gameMode === 'word'
+  const isNumeric = state.gameMode === 'numeric'
+  const numeric = state.numeric
   const isZil = state.gameMode === 'zil'
   const zilWinner = state.zil?.winnerId ?? null
   const zilWinnerName = zilWinner ? state.players.find((p) => p.id === zilWinner)?.name : null
@@ -1340,8 +1343,11 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const shownCircle = circle ?? lastCircle.current
   const lastWord = useRef<WordPayload | null>(null)
   if (word) lastWord.current = word
+  const lastNumeric = useRef<NumericQuestionPayload | null>(null)
+  if (numeric) lastNumeric.current = numeric
   const shownWord = word ?? lastWord.current
-  useEffect(() => { if (state.phase !== 'reveal' && state.phase !== 'question') { lastRound.current = null; lastCircle.current = null; lastWord.current = null } }, [state.phase])
+  const shownNumeric = numeric ?? lastNumeric.current
+  useEffect(() => { if (state.phase !== 'reveal' && state.phase !== 'question') { lastRound.current = null; lastCircle.current = null; lastWord.current = null; lastNumeric.current = null } }, [state.phase])
 
   // "Bu soru hatalı": buton reveal'da görünür; her turda yalnız bir kez
   // tıklanabilir (sunucu tarafı da oyuncu+soru başına tek rapor tutar).
@@ -1370,6 +1376,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const cardLocked = !cardsEnabled || selected !== null || state.yourCardUsed !== null || state.yourCards <= 0 || beats.active
   const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
   const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
+  const numericLocked = circleAnswerIsLocked({ answered: state.yourNumericGuess !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
+  // Ondalık virgülle de yazılabilir — gönderimde noktaya çevrilir.
+  const numericParsed = Number(circleAnswer.trim().replace(',', '.'))
+  const numericReady = circleAnswer.trim() !== '' && Number.isFinite(numericParsed)
   // Çember reveal: kutuda oyuncunun KENDİ cevabı kalır; bildiyse yeşil, bilemediyse
   // kırmızı. Doğru cevap alttaki satırda yazar (eskiden kutu herkes için doğru
   // cevapla dolup yeşile dönüyordu — yanlış yazan kendini doğru sanıyordu).
@@ -1490,6 +1500,42 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
           <button className={`qt-button ${wordLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!circleAnswer.trim() || wordLocked} onClick={() => { sfx.play('lock'); onWordAnswer(circleAnswer) }}>{wordLocked && state.yourWordAnswer !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
         </div>
         <p className="qt-locked-note" data-empty={!state.yourWordAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.wordReveal?.answerEn ? state.wordReveal.answerEn : state.wordReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourWordAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
+      </> : isNumeric && shownNumeric ? <>
+        {/* Yakın Tahmin (§6.1): soru metni + sayı kutusu. Reveal'da sayı
+            doğrusu — tahminler mesafe sırasında, kazanan(lar) vurgulu. */}
+        <div className="qt-question-head qt-question-head--numeric"><span className="qt-category">{categoryLabel(language, shownNumeric.category)}</span><h1 className={questionLengthClass(language === 'en' ? shownNumeric.textEn : shownNumeric.text)}>{language === 'en' ? shownNumeric.textEn : shownNumeric.text}</h1></div>
+        {beats.active && state.reveal?.numeric
+          ? <div className="qt-numeric-board" role="list">
+              {(() => {
+                const nr = state.reveal.numeric
+                const unit = language === 'en' ? nr.unitEn : nr.unit
+                const rows = Object.entries(nr.guesses)
+                  .map(([id, guess]) => ({ id, guess, dist: Math.abs(guess - nr.answer) }))
+                  .sort((a, b) => a.dist - b.dist)
+                const range = Math.max(Math.abs(nr.answer), ...rows.map((r) => Math.abs(r.guess)), 1)
+                return <>
+                  <p className="qt-numeric-answer"><Icon name="check" /> {t('numeric.answer')} <b>{formatNumber(language, nr.answer)} {unit}</b></p>
+                  {rows.map((row) => {
+                    const player = state.players.find((p) => p.id === row.id)
+                    const won = nr.winnerIds.includes(row.id)
+                    const pct = Math.min(100, Math.abs(row.guess) / range * 100)
+                    return <div key={row.id} role="listitem" className={`qt-numeric-row ${won ? 'is-winner' : ''}`}>
+                      <span className="qt-numeric-name">{player ? player.name : row.id}</span>
+                      <span className="qt-numeric-guess">{formatNumber(language, row.guess)} <em>{unit}</em></span>
+                      <span className="qt-numeric-bar" aria-hidden="true"><i style={{ width: `${pct}%` }} /></span>
+                      <span className="qt-numeric-dist">{won ? t('numeric.closest') : `±${formatNumber(language, Math.round(row.dist * 100) / 100)}`}</span>
+                    </div>
+                  })}
+                  {rows.length === 0 ? <p className="qt-locked-note">{t('numeric.noGuesses')}</p> : null}
+                </>
+              })()}
+            </div>
+          : <div className="qt-circle-entry">
+              <input inputMode="decimal" value={state.yourNumericGuess !== null ? String(state.yourNumericGuess) : circleAnswer} disabled={numericLocked} maxLength={16} onChange={(event) => setCircleAnswer(event.target.value.replace(/[^0-9,.−-]/g, ''))} onKeyDown={(event) => { if (event.key === 'Enter' && numericReady && !numericLocked) { event.preventDefault(); sfx.play('lock'); onNumericAnswer?.(numericParsed) } }} placeholder={t('numeric.placeholder')} aria-label={t('numeric.placeholder')} className={state.yourNumericGuess !== null ? 'is-locked' : ''} />
+              <span className="qt-numeric-unit">{language === 'en' ? shownNumeric.unitEn : shownNumeric.unit}</span>
+              <button className={`qt-button ${numericLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!numericReady || numericLocked} onClick={() => { sfx.play('lock'); onNumericAnswer?.(numericParsed) }}>{numericLocked && state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
+            </div>}
+        {!beats.active ? <p className="qt-locked-note" data-empty={state.yourNumericGuess === null}>{state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p> : null}
       </> : shown ? <>
         <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         {cardsEnabled ? <div className="qt-card-bar">
@@ -2286,7 +2332,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} onNumericAnswer={game.answerNumeric} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
     // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.
