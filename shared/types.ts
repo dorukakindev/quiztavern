@@ -237,6 +237,8 @@ export interface BetPayload {
   /** Bakiye 0: bahis yok (otomatik 0'a kilitli), doğru cevap brokeReward kazandırır. */
   broke: boolean;
   brokeReward: number;
+  /** Son soru (Jeopardy usulü final): çipler yerine serbest tutar girilir. */
+  final?: boolean;
 }
 
 export interface CircleRevealPayload {
