@@ -1442,6 +1442,22 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     }
   }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
 
+  // Zil: Space (veya B) fiziksel buton gibi — tıklamayla aynı şartlarda BAS
+  // yapar. Yarış hızlı olduğu için klavyeden basmak fareyi bulmaktan adil.
+  useEffect(() => {
+    if (!isZil || beats.active || zilYouWon || waiting || zilWinner || zilYouFailed || !self) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
+      if (document.querySelector('[role="dialog"]')) return
+      if (event.key !== ' ' && event.key.toLowerCase() !== 'b') return
+      event.preventDefault()
+      sfx.play('lock')
+      onBuzz?.()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isZil, beats.active, zilYouWon, waiting, zilWinner, zilYouFailed, self, onBuzz])
+
   // Klavye kısayolu: A/B/C/D veya 1/2/3/4 tıklamayla aynı işi yapar (kilitler).
   // Çember modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
   // alanına yazarken ya da masadan-ayrıl onay kutusu açıkken de sessizce yutar.
