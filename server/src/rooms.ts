@@ -2328,6 +2328,7 @@ export class Room {
           bestStreak: player.stats.bestStreak,
           placement,
           won: this.gameMode === "team" ? player.team === winningTeam : placement === 1,
+          gameMode: this.gameMode,
           perCategory: [...player.stats.perCategory.entries()]
             .map(([category, value]) => ({ category, correct: value.correct })),
         }));

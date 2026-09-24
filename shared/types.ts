@@ -102,6 +102,7 @@ export const BADGE_KEYS = [
   "gunluk3", "gunluk7",
   "podyum", "tamIsabet",
   "ligKalfa", "ligUsta", "ligEfsane",
+  "tekeTek", "zilUstasi", "kahin", "kronolog", "panoFatihi", "sozcu", "blitzci",
 ] as const;
 export type BadgeKey = (typeof BADGE_KEYS)[number];
 
