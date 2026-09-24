@@ -79,14 +79,14 @@ function NewBadgeChips({ gain }: { gain: XpGain }) {
 }
 
 /** Lobide güncel sezonun ilk 5'i + sıralamada olmayan senin satırın. */
-function SeasonStrip({ state }: { state: GameState }) {
+function SeasonStrip({ state, weekly = false }: { state: GameState; weekly?: boolean }) {
   const { t, language } = useI18n()
-  const board = state.seasonBoard
+  const board = weekly ? state.weeklyBoard : state.seasonBoard
   if (!board) return null
-  const yourRank = state.progress?.seasonRank ?? null
+  const yourRank = weekly ? null : (state.progress?.seasonRank ?? null)
   const youIn = board.entries.some((entry) => entry.userId === state.youId)
-  return <div className="qt-season">
-    <div className="qt-season__head"><span>{t('season.title', { season: board.season })}</span></div>
+  return <div className={`qt-season ${weekly ? 'qt-season--weekly' : ''}`}>
+    <div className="qt-season__head"><span>{weekly ? t('weekly.title', { week: board.season }) : t('season.title', { season: board.season })}</span></div>
     {board.entries.length
       ? <ol className="qt-season__list">
         {board.entries.map((entry) => <li key={entry.userId} className={entry.userId === state.youId ? 'is-you' : ''}>
@@ -1213,6 +1213,7 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {(state?.spectatorCount ?? 0) > 0 && <small className="qt-spectator-count"><Icon name="eye" /> {t('spectator.count', { count: state!.spectatorCount })}</small>}
           </>}
         {state?.seasonBoard && <SeasonStrip state={state} />}
+        {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
         {state?.dailyBoard && <DailyStrip state={state} />}
         <div className="qt-howto"><span>{t('table.howTo')}</span><p>{t('table.howToBody')}</p></div>
       </aside>
