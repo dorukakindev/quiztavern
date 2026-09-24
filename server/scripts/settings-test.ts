@@ -1,6 +1,8 @@
 import { strict as assert } from 'node:assert'
 import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
+import { GAME } from '../src/config'
+import { effectiveDifficulty } from '../src/questions'
 
 let passed = 0
 const test = (name: string, run: () => void) => {
@@ -55,18 +57,20 @@ test('Ayar değişince hazırlar sıfırlanır', () => {
   assert.equal(r.stateFor('a', true).questionTimeMs, 20_000)
 })
 
-test('Hız bonusu kapalıyken doğru cevap yalnız taban puan verir', () => {
+test('Hız bonusu kapalıyken doğru cevapta hız bileşeni eklenmez', () => {
   const r = lobby('s-flat')
   r.setTableFlag('a', 'speedBonus', false)
   r.setReady('a', true); r.setReady('b', true)
   r.start('a', 'classic')
   stop(r)
   begin(r)
-  r.answer('a', r.currentQuestion()!.correctIndex)
+  const q = r.currentQuestion()!
+  r.answer('a', q.correctIndex)
   const inner = internals(r)
   inner.reveal()
-  // Taban 700; hız bonusu açık olsaydı erken cevap ~1000 olurdu.
-  assert.equal(inner.players.get('a')!.score, 700, `skor 700 olmalı, ${inner.players.get('a')!.score}`)
+  // Hız bonusu kapalıyken kazanç = taban + zorluk bonusu (açık olsaydı ~+300 hız bileşeni de gelirdi).
+  const expected = GAME.BASE_POINTS + GAME.DIFF_BONUS[effectiveDifficulty(q)]
+  assert.equal(inner.players.get('a')!.score, expected, `skor ${expected} olmalı, ${inner.players.get('a')!.score}`)
 })
 
 test('Hız bonusu açıkken erken doğru cevap taban üstü verir', () => {
