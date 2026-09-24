@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -972,7 +972,29 @@ function PackEditor({ packs, myId, auth, categories, onSaved }: { packs: Questio
   </div>
 }
 
-function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetQuestionTime, onSetSpeedBonus, onSetImageOnly, onSetTableTheme, onSetTitle, onSetMode, onSetTeam, onShuffleTeams, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetQuestionTime: (ms: number | null) => void; onSetSpeedBonus: (value: boolean) => void; onSetImageOnly: (value: boolean) => void; onSetTableTheme: (theme: TableTheme) => void; onSetTitle: (title: BadgeKey | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onShuffleTeams: () => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void }) {
+/** Soru yazarı formu (§6.3): metin + 4 şık + doğru şık. Yerel state —
+ *  gönderim sunucuda doğrulanır; geçerliyse oyun state'indeki writers'a düşer. */
+function WriterForm({ hasWritten, onSubmit, onDelete }: { hasWritten: boolean; onSubmit: (q: { text: string; choices: string[]; correctIndex: number }) => void; onDelete: () => void }) {
+  const { t } = useI18n()
+  const [text, setText] = useState('')
+  const [choices, setChoices] = useState(['', '', '', ''])
+  const [correctIndex, setCorrectIndex] = useState(0)
+  const valid = text.trim().length >= 8 && choices.every((c) => c.trim().length > 0) && new Set(choices.map((c) => c.trim().toLocaleLowerCase('tr'))).size === 4
+  return <form className="qt-writer-form" onSubmit={(e) => { e.preventDefault(); if (valid) onSubmit({ text: text.trim(), choices: choices.map((c) => c.trim()), correctIndex }) }}>
+    <input className="qt-writer-input" value={text} maxLength={200} placeholder={t('writeQ.prompt')} aria-label={t('writeQ.prompt')} onChange={(e) => setText(e.target.value)} />
+    {choices.map((choice, i) => <label key={i} className={`qt-writer-choice ${correctIndex === i ? 'is-correct' : ''}`}>
+      <input type="radio" name="qt-writer-correct" checked={correctIndex === i} onChange={() => setCorrectIndex(i)} aria-label={`${t('writeQ.correct')} ${'ABCD'[i]}`} />
+      <input className="qt-writer-input" value={choice} maxLength={80} placeholder={t('writeQ.choice', { n: 'ABCD'[i] })} onChange={(e) => setChoices(choices.map((c, ci) => ci === i ? e.target.value : c))} />
+    </label>)}
+    <small className="qt-writer-hint"><Icon name="info" /> {t('writeQ.modes')}</small>
+    <div className="qt-writer-actions">
+      <button type="submit" className="qt-button qt-button--primary" disabled={!valid}>{t('writeQ.submit')}</button>
+      {hasWritten && <button type="button" className="qt-button qt-writer-delete" onClick={onDelete}>{t('writeQ.delete')}</button>}
+    </div>
+  </form>
+}
+
+function ActivityLobby({ state, status, identity, language, onLanguageChange, onReady, onStart, onSetCategories, onSetQuestionCount, onSetDifficulty, onStartDaily, onSetPack, onSetQuestionTime, onSetSpeedBonus, onSetImageOnly, onSetTableTheme, onSetTitle, onSetMode, onSetTeam, onShuffleTeams, onKick, onTransferHost, onInvite, onSpectate, onTakeSeat, onSubmitQuestion, onDeleteQuestion, speakingIds }: { state: GameState | null; status: string; identity: ReturnType<typeof useDiscordActivity>['identity']; speakingIds?: ReadonlySet<string>; language: ActivityLanguage; onLanguageChange: (language: ActivityLanguage) => void; onReady: (ready: boolean) => void; onStart: (mode: GameMode) => void; onStartDaily: () => void; onSetCategories: (categories: string[]) => void; onSetQuestionCount: (count: number) => void; onSetDifficulty: (difficulty: Difficulty | null) => void; onSetPack: (packId: string | null) => void; onSetQuestionTime: (ms: number | null) => void; onSetSpeedBonus: (value: boolean) => void; onSetImageOnly: (value: boolean) => void; onSetTableTheme: (theme: TableTheme) => void; onSetTitle: (title: BadgeKey | null) => void; onSetMode: (mode: GameMode) => void; onSetTeam: (id: string, team: number) => void; onShuffleTeams: () => void; onKick: (id: string) => void; onTransferHost: (id: string) => void; onInvite: (message: string) => Promise<boolean>; onSpectate: () => void; onTakeSeat: () => void; onSubmitQuestion: (q: { text: string; choices: string[]; correctIndex: number }) => void; onDeleteQuestion: () => void }) {
   const { t } = useI18n()
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
   // seçtiğinde diğer oyuncuların merkez diski Klasik göstermeye devam ederdi.
@@ -1212,6 +1234,16 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
             {/* Oyuncu koltuğu bırakıp izleyebilir; izleyici sayısı da burada. */}
             {self && <button className="qt-button qt-btn-home qt-spectate-btn" onClick={onSpectate}>{t('spectator.become')}</button>}
             {(state?.spectatorCount ?? 0) > 0 && <small className="qt-spectator-count"><Icon name="eye" /> {t('spectator.count', { count: state!.spectatorCount })}</small>}
+            {/* Soru yazarı turu (§6.3): lobide herkes bir soru yazabilir; sorular
+                Klasik/Fitil/Takım/Son Masa maçlarına karışır. Yazar kendi turunda
+                oynamaz, puan kazananların ortalamasını alır. */}
+            {self && <div className="qt-writer">
+              <details className="qt-writer__box">
+                <summary className="qt-button qt-writer__toggle"><Icon name="scroll" /> {state?.writers?.includes(self.id) ? t('writeQ.done') : t('writeQ.button')}</summary>
+                <WriterForm hasWritten={!!state?.writers?.includes(self.id)} onSubmit={onSubmitQuestion} onDelete={onDeleteQuestion} />
+              </details>
+              {(state?.writers?.length ?? 0) > 0 && <small className="qt-writer__count" title={t('writeQ.modes')}>{t('writeQ.count', { count: state!.writers.length })}</small>}
+            </div>}
           </>}
         {state?.seasonBoard && <SeasonStrip state={state} />}
         {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
@@ -1293,7 +1325,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   useEffect(() => setCircleAnswer(''), [circle?.deadline, word?.deadline])
 
   // Reveal'da soru/şık metinleri payload'dan düşer; son turu ekranda tutmak için saklarız.
-  const lastRound = useRef<{ category: string; text: string; choices: string[]; textEn: string; choicesEn: string[]; deadline: number; durationMs: number; image?: string; imageCredit?: string } | null>(null)
+  const lastRound = useRef<QuestionPayload | null>(null)
   if (question) lastRound.current = question
   const shown = question ?? lastRound.current
   const lastCircle = useRef<CirclePayload | null>(null)
@@ -1452,7 +1484,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
         </div>
         <p className="qt-locked-note" data-empty={!state.yourWordAnswer && !beats.active && !waiting}>{beats.active ? <><span className="qt-check-draw"><Icon name="check" /></span> {t('circle.correctAnswer')} <b>{language === 'en' && state.wordReveal?.answerEn ? state.wordReveal.answerEn : state.wordReveal?.answer}</b></> : waiting ? t('game.waitingNextRound') : state.yourWordAnswer ? <><Icon name="check" /> {t('circle.answerLocked')}</> : null}</p>
       </> : shown ? <>
-        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
+        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         {cardsEnabled ? <div className="qt-card-bar">
           <span className="qt-card-count" title={t('card.title')}><Icon name="deck" />×{state.yourCards}</span>
           {CARD_TYPES.map((type) => <button key={type} type="button" className={`qt-card ${freezePick && type === 'freeze' ? 'is-picking' : ''}`} title={t(`card.${type}.hint`)} aria-label={t(`card.${type}.hint`)} disabled={cardLocked} onClick={() => {
@@ -1465,7 +1497,9 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
             {state.players.filter((item) => item.id !== state.youId && item.connected && !item.waiting && !item.answered).map((item) => <button key={item.id} type="button" className="qt-card-target" onClick={() => { sfx.play('lock'); onUseCard('freeze', item.id); setFreezePick(false) }}><Avatar player={item} compact />{item.name}</button>)}
           </div> : null}
         </div> : null}
-        <div className="qt-answers">
+        {shown.writtenByYou
+          ? <p className="qt-writer-note"><Icon name="eye" /> {t('writeQ.youWrote')}</p>
+          : <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
             const removed = state.removedChoices.includes(index)
             const isCorrect = beats.cards && index === correctIndex
@@ -1504,7 +1538,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
               </span>}
             </button>
           })}
-        </div>
+        </div>}
         {beats.active && state.reveal?.fact ? <p className="qt-locked-note qt-reveal-fact"><Icon name="info" /> <b>{t('reveal.factTitle')}</b> {language === 'en' && state.reveal.factEn ? state.reveal.factEn : state.reveal.fact}</p>
         : <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>}
       </> : null}
@@ -2220,7 +2254,7 @@ export function ActivityApp() {
       const resultsState: GameState = { ...game.state!, phase: 'podium', gameMode: lm.gameMode, teamScores: lm.teamScores, podium: lm.podium, matchSummary: lm.matchSummary, xpGains: lm.xpGains, daily: lm.daily, round: { index: Math.max(0, lm.roundTotal - 1), total: lm.roundTotal } }
       return <Podium state={resultsState} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onBackToLobby={() => { setSeenMatchId(lm.id); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
     }
-    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetQuestionTime={game.setQuestionTime} onSetSpeedBonus={game.setSpeedBonus} onSetImageOnly={game.setImageOnly} onSetTableTheme={game.setTableTheme} onSetTitle={game.setTitle} onSetMode={game.setMode} onSetTeam={game.setTeam} onShuffleTeams={game.shuffleTeams} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
+    if (game.state!.phase === 'lobby') return <ActivityLobby state={game.state} status={game.status} identity={activity.identity} speakingIds={activity.speakingIds} language={language} onLanguageChange={setLanguage} onReady={game.ready} onStart={game.start} onStartDaily={game.startDaily} onSetCategories={game.setCategories} onSetQuestionCount={game.setQuestionCount} onSetDifficulty={game.setDifficulty} onSetPack={game.setPack} onSetQuestionTime={game.setQuestionTime} onSetSpeedBonus={game.setSpeedBonus} onSetImageOnly={game.setImageOnly} onSetTableTheme={game.setTableTheme} onSetTitle={game.setTitle} onSubmitQuestion={game.submitQuestion} onDeleteQuestion={game.deleteQuestion} onSetMode={game.setMode} onSetTeam={game.setTeam} onShuffleTeams={game.shuffleTeams} onKick={game.kick} onTransferHost={game.transferHost} onInvite={activity.invite} onSpectate={game.spectate} onTakeSeat={game.takeSeat} />
 
     if (game.state!.phase === 'countdown') return <StartCountdown state={game.state!} />
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).

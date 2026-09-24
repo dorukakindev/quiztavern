@@ -599,3 +599,42 @@
 .qt-moment.is-streak { border-color: rgba(255, 190, 60, 0.45); }
 .qt-moment.is-bigBet { border-color: rgba(120, 220, 140, 0.4); }
 .qt-moment.is-flawless { border-color: rgba(190, 140, 255, 0.5); }
+
+/* §6.3 soru yazarı turu — lobide soru yazma paneli + soruda yazar etiketi. */
+.qt-writer { margin-top: 8px; }
+.qt-writer__box > summary { list-style: none; cursor: pointer; }
+.qt-writer__box > summary::-webkit-details-marker { display: none; }
+.qt-writer__toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 0.8rem; padding: 7px 13px;
+}
+.qt-writer__count { display: block; margin-top: 6px; font-size: 0.72rem; color: #d8c39a; }
+.qt-writer-form { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.qt-writer-input {
+  width: 100%; box-sizing: border-box; padding: 8px 11px;
+  border-radius: 9px; border: 1px solid rgba(255, 202, 92, 0.25);
+  background: rgba(20, 12, 6, 0.55); color: #f5e6c8; font-size: 0.82rem;
+}
+.qt-writer-input:focus { outline: none; border-color: rgba(255, 202, 92, 0.6); }
+.qt-writer-choice { display: flex; align-items: center; gap: 8px; }
+.qt-writer-choice input[type="radio"] { accent-color: #f0c45a; margin: 0; flex: none; }
+.qt-writer-choice.is-correct .qt-writer-input { border-color: rgba(120, 220, 140, 0.55); }
+.qt-writer-hint { display: inline-flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #b7a482; }
+.qt-writer-actions { display: flex; gap: 8px; }
+.qt-writer-delete { font-size: 0.78rem; opacity: 0.85; }
+.qt-writer-tag {
+  display: inline-flex; align-items: center; gap: 4px; margin-left: 8px;
+  font-style: normal; font-size: 0.7rem; font-weight: 700;
+  color: #f0c45a; padding: 2px 8px; border-radius: 999px;
+  background: rgba(240, 196, 90, 0.12); border: 1px solid rgba(240, 196, 90, 0.3);
+}
+.qt-writer-tag svg { width: 12px; height: 12px; }
+.qt-writer-note {
+  margin: 18px auto; max-width: 420px; text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 0.92rem; font-weight: 700; color: #ffe9c4;
+  padding: 14px 18px; border-radius: 12px;
+  background: linear-gradient(160deg, rgba(255, 202, 92, 0.12), rgba(118, 68, 20, 0.25));
+  border: 1px solid rgba(255, 202, 92, 0.3);
+}
+.qt-writer-note svg { width: 18px; height: 18px; flex: none; }

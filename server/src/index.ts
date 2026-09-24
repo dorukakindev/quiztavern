@@ -648,6 +648,20 @@ io.on("connection", (socket) => {
       const t = toToast(error, "err.packFailed"); toast(socket.id, t.key, t.params);
     }
   });
+  socket.on(EV.SUBMIT_QUESTION, (payload: unknown) => {
+    try {
+      room.submitQuestion(user.id, payload);
+    } catch (error) {
+      const t = toToast(error, "err.questionInvalid"); toast(socket.id, t.key, t.params);
+    }
+  });
+  socket.on(EV.DELETE_QUESTION, () => {
+    try {
+      room.removeQuestion(user.id);
+    } catch (error) {
+      const t = toToast(error, "err.questionInvalid"); toast(socket.id, t.key, t.params);
+    }
+  });
   socket.on(EV.LEAVE_GAME, () => {
     room.removePlayer(user.id);
     socket.leave(room.id);

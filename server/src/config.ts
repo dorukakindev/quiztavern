@@ -110,6 +110,8 @@ export const GAME = {
   // yukari yuvarlayip "4 saniye" yaziyordu, spec "3 saniye" diyordu (belge).
   REVEAL_MS: 3_000,
   QUESTIONS_PER_MATCH: 10,
+  /** Soru yazarı turu: maç başına karışan oyuncu-yazarı soru üst sınırı. */
+  WRITTEN_PER_MATCH: 4,
   CIRCLE_PROMPTS_PER_MATCH: 20,
   // Çifte Bahis: soru öncesi bahis fazının süresi + herkesin başladığı bankroll.
   // Bu modda skor = para: doğru cevap bahsi katlar (+bahis), yanlış bahsi yakar
