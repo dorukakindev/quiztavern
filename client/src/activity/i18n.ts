@@ -195,6 +195,7 @@ const tr = {
   'category.questionCount': '{count} soru',
   'category.lowContent': 'az içerik',
   'category.lowContentHint': 'Bu mod için önerilen en az soru sayısının altında — havuz erken tekrar edebilir',
+  'category.mastered': 'Ustalık — bu kategoride 50+ doğru cevabın var',
 
   // Özel soru paketi (FAZ 4.4)
   'pack.label': 'SORU PAKETİ',
@@ -460,6 +461,8 @@ const tr = {
   'badge.gunluk3.hint': '3 gün üst üste oyna',
   'badge.gunluk7': 'Bağımlı',
   'badge.gunluk7.hint': '7 gün üst üste oyna',
+  'badge.kategoriUstasi': 'Kategori Ustası',
+  'badge.kategoriUstasi.hint': 'Bir kategoride 50 doğru cevabı geç',
   'badge.podyum': 'Podyumcu',
   'badge.podyum.hint': 'İlk 3\'e gir',
   'badge.tamIsabet': 'Tam İsabet',
@@ -696,6 +699,7 @@ const en: Record<StringKey, string> = {
   'category.questionCount': '{count} questions',
   'category.lowContent': 'low content',
   'category.lowContentHint': 'Below the recommended minimum for this mode — the pool may repeat early',
+  'category.mastered': 'Mastery — 50+ correct answers in this category',
   'category.allTopics': 'Questions from every category',
   'category.count': '{count} categories selected',
   'category.choose': 'Choose categories',
@@ -920,6 +924,8 @@ const en: Record<StringKey, string> = {
   'badge.gunluk3.hint': 'Play 3 days in a row',
   'badge.gunluk7': 'Devoted',
   'badge.gunluk7.hint': 'Play 7 days in a row',
+  'badge.kategoriUstasi': 'Category Master',
+  'badge.kategoriUstasi.hint': 'Score 50 correct answers in one category',
   'badge.podyum': 'Podium Placer',
   'badge.podyum.hint': 'Finish in the top 3',
   'badge.tamIsabet': 'Flawless',
