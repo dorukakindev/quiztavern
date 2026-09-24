@@ -1,5 +1,5 @@
-// D/Y Blitz regresyonları (§6.1): iddia üretimi, 0/1 cevap, düz puan,
-// reveal sütunları, 8 sn pencere, çift cevap reddi, istatistik.
+// D/Y Blitz regresyonları (§6.1): kişisel akış, 60 sn pencere, seri çarpanı,
+// bağımsız ilerleme, özet tablosu, istatistik, sızıntı yok.
 import assert from "node:assert";
 import { GAME } from "../src/config.js";
 import { Room } from "../src/rooms.js";
@@ -12,13 +12,16 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
+type Claim = { truth: boolean; claim: string; text: string } | null;
+type P = { score: number; stats: { total: number; correct: number }; blitzIdx: number; blitzStreak: number; blitzCorrect: number; blitzScore: number; blitzClaim: Claim; blitzTrail: { choice: number }[] };
 const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number; stats: { total: number; correct: number } }>;
+  players: Map<string, P>;
   qIndex: number;
+  phase: string;
+  questions: { id: string; correctIndex: number; choices: string[] }[];
   questionStartedAt: number;
   questionDeadline: number;
-  currentBlitz: { truth: boolean; claim: string; claimEn?: string } | null;
-  lastReveal: { correctIndex: number; picks: string[][]; gains: Record<string, number> } | null;
+  lastReveal: { correctIndex: number; gains: Record<string, number> } | null;
   beginQuestion(): void;
   reveal(): void;
 };
@@ -32,91 +35,97 @@ const blitzRoom = (id: string, ids: string[]) => {
 };
 const startRound = (room: Room) => {
   const inner = internals(room);
-  room.start(ids0(idsOf(room)), "blitz");
+  room.start("a", "blitz");
   inner.qIndex = 0;
   inner.beginQuestion();
   return inner;
 };
-// host = ilk eklenen oyuncu
-const idsOf = (room: Room) => [...(room as unknown as { players: Map<string, unknown> }).players.keys()];
-const ids0 = (ids: string[]) => ids[0];
 
 console.log("D/Y Blitz regresyonları");
 
-test("iddia turda üretilir; payload şık/correctIndex sızdırmaz", () => {
-  const room = blitzRoom("b1", ["a"]);
+test("herkes kendi ifadesini görür; truth ve şıklar sızmaz", () => {
+  const room = blitzRoom("b1", ["a", "b"]);
   const inner = startRound(room);
-  const st = room.stateFor("a", false);
-  assert.ok(inner.currentBlitz, "currentBlitz dolu olmalı");
-  assert.ok(st.blitz, "blitz payload'ı olmalı");
-  assert.ok(st.blitz!.claim.length > 0);
-  assert.equal((st.blitz as unknown as Record<string, unknown>).choices, undefined);
-  assert.equal((st.blitz as unknown as Record<string, unknown>).correctIndex, undefined);
-  assert.equal(st.question, null, "klasik soru payload'ı blitz'te yok");
+  assert.equal(inner.phase, "question");
+  const sa = room.stateFor("a", false).blitz!;
+  const sb = room.stateFor("b", false).blitz!;
+  assert.ok(sa.statement && sb.statement, "herkesin kişisel ifadesi var");
+  assert.equal((sa.statement as unknown as Record<string, unknown>).truth, undefined);
+  assert.equal(sa.statement!.text, inner.players.get("a")!.blitzClaim!.text);
+  assert.equal(room.stateFor("a", false).question, null, "klasik payload yok");
 });
 
-test("Doğru bilen +BLITZ_BASE; yanlış bilen 0", () => {
-  const room = blitzRoom("b2", ["a", "b"]);
+test("doğru +BASE; yanlış seriyi sıfırlar; akış ilerler", () => {
+  const room = blitzRoom("b2", ["a"]);
   const inner = startRound(room);
-  const truth = inner.currentBlitz!.truth;
+  const p = inner.players.get("a")!;
+  const truth = p.blitzClaim!.truth;
   room.answer("a", truth ? 0 : 1);
-  room.answer("b", truth ? 1 : 0);
-  inner.reveal();
-  assert.equal(inner.lastReveal!.gains["a"], GAME.BLITZ_BASE);
-  assert.equal(inner.lastReveal!.gains["b"], 0);
-  assert.equal(inner.lastReveal!.correctIndex, truth ? 0 : 1);
+  assert.equal(p.blitzScore, GAME.BLITZ_BASE);
+  assert.equal(p.blitzStreak, 1);
+  assert.equal(p.blitzIdx, 1, "bir sonraki ifadeye geçti");
+  room.answer("a", p.blitzClaim!.truth ? 1 : 0); // yanlış
+  assert.equal(p.blitzScore, GAME.BLITZ_BASE, "yanlış puansız");
+  assert.equal(p.blitzStreak, 0, "seri sıfırlandı");
+  assert.equal(p.blitzIdx, 2);
 });
 
-test("cevap yalnız 0 veya 1 — sınır dışı yutulur", () => {
-  const room = blitzRoom("b3", ["a", "b"]);
-  startRound(room);
-  room.answer("a", 2);
-  room.answer("a", -1);
-  assert.equal(room.stateFor("a", false).yourChoice, null);
-  room.answer("a", 1);
-  assert.equal(room.stateFor("a", false).yourChoice, 1);
+test("seri çarpanı: üst üste doğrular STEP artar, CAP'te durur", () => {
+  const room = blitzRoom("b3", ["a"]);
+  const inner = startRound(room);
+  const p = inner.players.get("a")!;
+  for (let i = 0; i < 6; i++) room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  // kazançlar: 100 +125 +150 +175 +200(cap) +200(cap)
+  const expected = [100, 125, 150, 175, 200, 200].reduce((x, y) => x + y, 0);
+  assert.equal(p.blitzScore, expected);
+  assert.equal(p.blitzCorrect, 6);
 });
 
-test("kilitli cevap değişmez", () => {
-  const room = blitzRoom("b4", ["a", "b"]);
-  startRound(room);
+test("havuz tükenince statement null — oyuncu izler", () => {
+  const room = blitzRoom("b4", ["a"]);
+  const inner = startRound(room);
+  const p = inner.players.get("a")!;
+  p.blitzIdx = inner.questions.length; // sona taşı
+  p.blitzClaim = null;
   room.answer("a", 0);
-  room.answer("a", 1);
-  assert.equal(room.stateFor("a", false).yourChoice, 0);
+  assert.equal(p.blitzAnswered, 0, "ifade yokken cevap yutulur");
 });
 
-test("tur süresi 8 sn — masa ayarından bağımsız", () => {
-  const room = new Room("b5", () => {}, { minPlayers: 1, questionDurationMs: 20_000 });
-  room.addPlayer({ ...user("a"), isBot: false });
-  room.setGameMode("a", "blitz");
-  room.setReady("a", true);
+test("oyuncular bağımsız ilerler — A 5 ifadede, B 1'de olabilir", () => {
+  const room = blitzRoom("b5", ["a", "b"]);
   const inner = startRound(room);
-  assert.equal(inner.questionDeadline - inner.questionStartedAt, GAME.BLITZ_MS);
+  const a = inner.players.get("a")!;
+  for (let i = 0; i < 5; i++) room.answer("a", a.blitzClaim!.truth ? 0 : 1);
+  assert.equal(a.blitzIdx, 5);
+  assert.equal(inner.players.get("b")!.blitzIdx, 0, "B henüz başlamadı");
 });
 
-test("reveal istatistiği sayar; zil/numeric alanları boş", () => {
-  const room = blitzRoom("b6", ["a"]);
+test("pencere 60 sn; reveal özet tablosu skor sıralı", () => {
+  const room = blitzRoom("b6", ["a", "b"]);
   const inner = startRound(room);
-  room.answer("a", inner.currentBlitz!.truth ? 0 : 1);
+  assert.equal(inner.questionDeadline - inner.questionStartedAt, GAME.BLITZ_TOTAL_MS);
+  room.answer("a", inner.players.get("a")!.blitzClaim!.truth ? 0 : 1);
+  room.answer("b", inner.players.get("b")!.blitzClaim!.truth ? 1 : 0); // yanlış
   inner.reveal();
   const st = room.stateFor("a", false);
-  assert.equal(inner.players.get("a")!.stats.total, 1);
-  assert.equal(inner.players.get("a")!.stats.correct, 1);
-  assert.equal(st.numeric, null);
-  assert.equal(st.zil, null);
-  // blitz payload'ı reveal fazında da dolu kalır (sütunlar iddiayı gösterir).
-  assert.ok(st.blitz);
+  assert.equal(inner.phase, "reveal");
+  assert.ok(st.blitzSummary, "özet dolu");
+  assert.equal(st.blitzSummary!.rows.length, 2);
+  assert.equal(st.blitzSummary!.rows[0].id, "a", "skor sahibi başta");
+  assert.equal(inner.lastReveal!.gains["a"], GAME.BLITZ_BASE);
+  assert.equal(inner.players.get("a")!.blitzClaim, null, "akış dondu");
+  assert.equal(st.blitz, null, "reveal'da canlı payload yok");
 });
 
-test("hız bonusu yok — son saniyede doğru da tam puan almaz, sabit BASE", () => {
+test("istatistik ve iz sürümü doğru sayılır", () => {
   const room = blitzRoom("b7", ["a"]);
   const inner = startRound(room);
-  const truth = inner.currentBlitz!.truth;
-  // cevap deadline'a yakın: hız oranı ~0 olsa bile BASE verilmeli
-  inner.questionStartedAt -= 7_000;
-  room.answer("a", truth ? 0 : 1);
-  inner.reveal();
-  assert.equal(inner.lastReveal!.gains["a"], GAME.BLITZ_BASE);
+  const p = inner.players.get("a")!;
+  room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  room.answer("a", p.blitzClaim!.truth ? 1 : 0);
+  assert.equal(p.stats.total, 2);
+  assert.equal(p.stats.correct, 1);
+  assert.equal(p.blitzTrail.length, 2);
 });
 
 console.log(`blitz-test: ${passed} geçti`);

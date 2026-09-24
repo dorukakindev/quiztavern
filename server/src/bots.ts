@@ -61,18 +61,19 @@ export function scheduleBotAnswers(room: Room): void {
   // answer() zamanlayıcıları burada çalışmaz.
   if (room.gameMode === "zil") return;
   if (room.gameMode === "blitz") {
-    // Botlar %65 doğru bilgiyle oynar — iddia doğruysa 0 (Doğru), yanlışsa 1.
+    // Kendi hızında ilerleyen akış: bot zincirleme cevaplar (~1.2–3 sn arayla),
+    // %65 doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
     for (const p of room.players.values()) {
       if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
-      const delay = botDelay(room.questionDuration());
-      const roundAtSchedule = room.qIndex;
-      room.scheduleBotTask(() => {
-        if (room.qIndex !== roundAtSchedule) return;
-        const truth = room.blitzTruth();
-        if (truth === null) return;
+      const step = () => {
+        if (room.phase !== "question" || Date.now() >= room.questionDeadline) return;
+        const claim = (p as unknown as { blitzClaim: { truth: boolean } | null }).blitzClaim;
+        if (!claim) return;
         const knows = Math.random() < 0.65;
-        room.answer(p.id, knows ? (truth ? 0 : 1) : (truth ? 1 : 0));
-      }, delay);
+        room.answer(p.id, knows ? (claim.truth ? 0 : 1) : (claim.truth ? 1 : 0));
+        room.scheduleBotTask(step, 1_200 + Math.random() * 1_800);
+      };
+      room.scheduleBotTask(step, 500 + Math.random() * 900);
     }
     return;
   }

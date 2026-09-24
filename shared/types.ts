@@ -273,16 +273,23 @@ export interface NumericRevealPayload {
   winnerIds: string[];
 }
 
-/** D/Y Blitz turu: klasik soru metni + iddia (bir şık). İstemci "iddia doğru mu?"
- *  diye yarar — şıklar ve doğru cevap hiç gönderilmez; reveal'da `correctIndex`
- *  0=Doğru / 1=Yanlış sütununu işaretler. Soru ve reveal fazında dolu. */
-export interface BlitzQuestionPayload {
-  category: string;
-  text: string;
-  textEn?: string;
-  claim: string;
-  claimEn?: string;
+/** D/Y Blitz canlı durumu (§6.1): herkes KENDİ ifade akışında bağımsız
+ *  ilerler — ortak 60 sn'lik pencere + seri çarpanı. `statement` izleyenin
+ *  kendi geçerli ifadesi; doğruluk (`truth`) istemciye hiç gönderilmez. */
+export interface BlitzLivePayload {
   deadline: number;
+  durationMs: number;
+  /** null = oyuncu havuzu tüketti (nadir); pencerenin kalanını izler. */
+  statement: { text: string; textEn?: string; claim: string; claimEn?: string; category: string } | null;
+  index: number;
+  correct: number;
+  streak: number;
+}
+
+/** D/Y Blitz kapanış özeti — reveal fazında dolu; skor sıralı. */
+export interface BlitzSummaryPayload {
+  rows: { id: string; score: number; correct: number; answered: number }[];
+  until: number;
   durationMs: number;
 }
 
@@ -540,8 +547,10 @@ export interface GameState {
   word: WordPayload | null;
   /** Yakın Tahmin turu; yalnız o modda ve question fazında dolu. */
   numeric: NumericQuestionPayload | null;
-  /** D/Y Blitz turu; o modda question+reveal fazında dolu. */
-  blitz: BlitzQuestionPayload | null;
+  /** D/Y Blitz canlı durumu; o modda question fazında dolu (kişisel). */
+  blitz: BlitzLivePayload | null;
+  /** D/Y Blitz özet tablosu; o modda reveal fazında dolu. */
+  blitzSummary: BlitzSummaryPayload | null;
   countdown: CountdownPayload | null;
   /** Yalnız Çifte Bahis'te bet fazında dolu; kategori + bankroll taşır. */
   bet: BetPayload | null;

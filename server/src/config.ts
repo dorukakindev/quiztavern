@@ -142,9 +142,14 @@ export const GAME = {
   /** Yakın Tahmin (§6.1): en yakın tahmine taban puan; tam isabete bonus eklenir. */
   NUMERIC_BASE: 400,
   NUMERIC_EXACT: 200,
-  /** D/Y Blitz: kısa karar penceresi ve düz puan (§6.1). */
-  BLITZ_MS: 8_000,
-  BLITZ_BASE: 300,
+  /** D/Y Blitz (§6.1): tek 60 sn'lik pencere; herkes kendi hızında ilerler.
+   *  Puan = BASE + STEP·min(seri-1, CAP); yanlış seriyi sıfırlar. Havuz,
+   *  oyuncu başına düşen akışı besleyecek kadar büyük örneklenir. */
+  BLITZ_TOTAL_MS: 60_000,
+  BLITZ_BASE: 100,
+  BLITZ_STREAK_STEP: 25,
+  BLITZ_STREAK_CAP: 4,
+  BLITZ_POOL: 30,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */
