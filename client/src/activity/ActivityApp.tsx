@@ -1439,7 +1439,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
             </button>
           })}
         </div>
-        <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>
+        {beats.active && state.reveal?.fact ? <p className="qt-locked-note qt-reveal-fact"><Icon name="info" /> <b>{t('reveal.factTitle')}</b> {language === 'en' && state.reveal.factEn ? state.reveal.factEn : state.reveal.fact}</p>
+        : <p className="qt-locked-note" data-empty={selected === null && !beats.active && !waiting}>{beats.active ? null : waiting ? t(state.gameMode === 'bet' ? 'bet.waitingNextMatch' : state.gameMode === 'elim' && (self?.lives ?? 1) <= 0 ? 'elim.waitingNextMatch' : 'game.waitingNextRound') : selected !== null ? <><Icon name="check" /> {t('game.answerLocked')}</> : null}</p>}
       </> : null}
       {beats.active && !isCircle
         ? <button type="button" className="qt-report-flag" title={t('report.flag')} aria-label={t('report.flag')} disabled={reported} onClick={() => { onReport(); setReported(true) }}><Icon name="flag" /></button>

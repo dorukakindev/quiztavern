@@ -183,6 +183,10 @@ export interface RevealPayload {
   durationMs: number;
   /** Çifte Bahis: bu soruda kurtarma turunda olanlar (bakiye 0, doğru = sabit ödül). */
   rescued?: string[];
+  /** Opsiyonel: doğru cevapla ilgili kısa trivia notu — reveal'da gösterilir. */
+  fact?: string;
+  /** İngilizce arayüz için fact çevirisi. */
+  factEn?: string;
 }
 
 export interface CirclePayload {
