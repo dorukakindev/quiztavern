@@ -224,6 +224,8 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     },
     /** Podyumdan lobiye dön: odada kalır, sahiplik değişmez (sunucu: Room.returnToLobby). */
     returnToLobby: () => socket.emit(EV.RETURN_TO_LOBBY),
+    /** Podyumda rövanş oyu — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
+    rematch: () => socket.emit(EV.REMATCH),
     rejoinGame: () => socket.connect(),
   }
 }

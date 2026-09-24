@@ -1634,7 +1634,7 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
   </div>
 }
 
-function Podium({ state, onAgain, onBackToLobby, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain?: () => void; onBackToLobby: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
+function Podium({ state, onAgain, onRematch, onBackToLobby, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain?: () => void; onRematch?: () => void; onBackToLobby: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const winner = state.podium?.[0]
   const rest = state.podium?.slice(1) ?? []
@@ -1655,9 +1655,9 @@ function Podium({ state, onAgain, onBackToLobby, onLeave, speakingIds, isDiscord
       <button role="tab" aria-selected={active === 'summary'} className={active === 'summary' ? 'is-active' : ''} onClick={() => setTab('summary')}>{t('podium.tabSummary')}</button>
       {hasReview && <button role="tab" aria-selected={active === 'review'} className={active === 'review' ? 'is-active' : ''} onClick={() => setTab('review')}>{t('review.tab')}</button>}
     </div>}
-    {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onBackToLobby={onBackToLobby} />
+    {active === 'summary' && summary ? <MatchSummaryCard state={state} summary={summary} onAgain={onAgain} onRematch={onRematch} onBackToLobby={onBackToLobby} />
       : active === 'review' && summary ? <MatchReview review={summary.review} />
-      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onBackToLobby={onBackToLobby} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
+      : <PodiumRanking state={state} winner={winner} rest={rest} onAgain={onAgain} onRematch={onRematch} onBackToLobby={onBackToLobby} speakingIds={speakingIds} isDiscord={isDiscord} onShare={onShare} />}
   </main>
 }
 
@@ -1741,7 +1741,7 @@ function Confetti() {
   </div>
 }
 
-function PodiumRanking({ state, winner, rest, onAgain, onBackToLobby, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain?: () => void; onBackToLobby: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
+function PodiumRanking({ state, winner, rest, onAgain, onRematch, onBackToLobby, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain?: () => void; onRematch?: () => void; onBackToLobby: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
   const { language, t } = useI18n()
   const reduced = usePrefersReducedMotion()
   const winnerScore = useCountUp(winner?.score ?? 0, reduced)
@@ -1795,6 +1795,9 @@ function PodiumRanking({ state, winner, rest, onAgain, onBackToLobby, speakingId
         {onAgain && (isHost
           ? <button className="qt-button qt-button--gold qt-podium-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
           : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>)}
+        {/* Rövanş oylaması (§6.3): masadakilerin yarısından fazlası basarsa
+            sunucu host'u beklemeden yeni maçı başlatır. Izleyiciler oy kullanamaz. */}
+        {state.rematch && !state.youAreSpectator && onRematch && <button className={`qt-button qt-podium-rematch ${state.rematch.youVoted ? 'is-voted' : ''}`} onClick={onRematch} disabled={state.rematch.youVoted} aria-pressed={state.rematch.youVoted}><Icon name="refresh" /> {t('podium.rematch')} <b>{state.rematch.votes}/{state.rematch.needed}</b></button>}
         {/* Kanala paylaş: SDK shareLink sonuç kartı (metin + aktivite linki);
             Discord dışında (yerel test) SDK yok — buton gizlenir. */}
         {isDiscord && onShare && winner && <button className="qt-button qt-podium-share" onClick={() => onShare(t('share.message', { name: winner.name, score: formatNumber(language, winner.score), mode: t(MODE_KEYS[modeKeyOf(state.gameMode)].name) }))}><Icon name="globe" /> {t('podium.share')}</button>}
@@ -1825,7 +1828,7 @@ function DailyShare({ day, pattern }: { day: number; pattern: string }) {
   </div>
 }
 
-function MatchSummaryCard({ state, summary, onAgain, onBackToLobby }: { state: GameState; summary: MatchSummary; onAgain?: () => void; onBackToLobby: () => void }) {
+function MatchSummaryCard({ state, summary, onAgain, onRematch, onBackToLobby }: { state: GameState; summary: MatchSummary; onAgain?: () => void; onRematch?: () => void; onBackToLobby: () => void }) {
   const { t, language } = useI18n()
   const winner = state.podium?.[0]
   const isHost = state.youId === state.hostId
@@ -1871,6 +1874,7 @@ function MatchSummaryCard({ state, summary, onAgain, onBackToLobby }: { state: G
     {onAgain && (isHost
       ? <button className="qt-button qt-button--gold qt-summary-again" onClick={onAgain}>{t('podium.again')} <Icon name="arrow" /></button>
       : <div className="qt-podium-wait" role="status">{t('podium.waitHost')}</div>)}
+    {state.rematch && !state.youAreSpectator && onRematch && <button className={`qt-button qt-podium-rematch ${state.rematch.youVoted ? 'is-voted' : ''}`} onClick={onRematch} disabled={state.rematch.youVoted} aria-pressed={state.rematch.youVoted}><Icon name="refresh" /> {t('podium.rematch')} <b>{state.rematch.votes}/{state.rematch.needed}</b></button>}
     <button className="qt-button qt-btn-home qt-summary-home" onClick={onBackToLobby}><Icon name="arrowBack" /> {t('podium.home')}</button>
   </div>
 }
@@ -2193,7 +2197,7 @@ export function ActivityApp() {
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.
     // Gerçek ayrılma sağ üstteki onaylı "Masadan ayrıl"da.
     const matchId = game.state!.lastMatchId
-    return <Podium state={game.state!} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onAgain={() => game.start(game.state!.gameMode)} onBackToLobby={() => { if (matchId !== null) setSeenMatchId(matchId); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
+    return <Podium state={game.state!} speakingIds={activity.speakingIds} isDiscord={activity.identity.isDiscord} onShare={activity.share} onAgain={() => game.start(game.state!.gameMode)} onRematch={game.rematch} onBackToLobby={() => { if (matchId !== null) setSeenMatchId(matchId); game.returnToLobby() }} onLeave={() => setLeaveConfirmOpen(true)} />
   }, [activity.error, activity.identity, activity.layoutMode, activity.status, game, hasLeftGame, i18n, isLoading, language, seenMatchId])
   /**
    * Discord Activity'de instance = masa; gidilecek ayrı bir "ana sayfa" yok.
