@@ -47,6 +47,8 @@ export interface PublicPlayer {
   lives?: number;
   /** Lobi: oda lobiye döndü ama bu oyuncu hâlâ son maçın sonuç ekranında. */
   inResults?: boolean;
+  /** Takım modunda kaptan: takımın en düşük seat'li bağlı üyesi; oy eşitliğinde takım cevabını belirler. */
+  captain?: boolean;
   /** Üst üste doğru sayısı (güncel seri); istemci eşik üstünde alev gösterir. */
   streak: number;
   /** Takım modu: oyuncunun takımı (0 veya 1). Otomatik dengeli atanır, host
