@@ -382,7 +382,7 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 8. **Test coverage açıkları:** timeline'da 2 turlu cevap senaryosu (B1'i yakalardı); blitz'te kopma senaryosu (B6); duel/elim'de countdown katılımı (B4/B5); i18n testine `BADGE_KEYS × .hint` kesişimi (B7).
 9. **CI'a Windows işi ekle** (`runs-on: windows-latest`) — B19/B20 yalnızca Windows'ta görünür.
 10. **`server/data/question-reports.db`'yi repodan çıkar** (`git rm --cached`), `.gitignore` desenini `server/data/*.db` ile daralt (sorular `questions*.json` izli kalsın).
-11. **Instance doğrulama koşulu:** `!ALLOW_MOCK_AUTH` yerine `IS_PRODUCTION || DISCORD_BOT_TOKEN` — `NODE_ENV` unutulan dağıtımda oda beyanına güvenilen pencere kapanır (bkz. B-bulgu bölümündeki B-orta sınıfından; kod: `index.ts` handshake bloğu).
+11. **Instance doğrulama koşulu:** Handshake'teki instance doğrulaması `!ALLOW_MOCK_AUTH` bloğuna bağlı (`server/src/index.ts`, `io.use` handshake bloğu). `NODE_ENV=production` unutulmuş (ama mock auth kapalı, gerçek Discord kimlikleri tanımlı) bir dağıtımda oturum doğrulaması çalışır ancak `verifyInstanceMembership` hiç çağrılmaz ve kullanıcının beyan ettiği `roomId` kabul edilir — doğrulanmış kullanıcı başka instance'ın odasını izleyebilir. Koşulu `!ALLOW_MOCK_AUTH` yerine `IS_PRODUCTION || DISCORD_BOT_TOKEN mevcut` yaparak pencereyi kapat.
 12. **`translate()` geliştirme modunda eksik anahtar için `console.warn`** bassın — `undefined` sessiz kalmaz.
 
 ---
