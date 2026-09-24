@@ -213,4 +213,34 @@ test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () =
   assert.equal(shuffleRoom.players.get('s2')!.ready, true)
 })
 
+test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir', () => {
+  const showRoom = new Room('edge-showbet', () => {}, { minPlayers: 1, questionCount: 5 })
+  showRoom.addPlayer(player('p1', 'P1'))
+  showRoom.addPlayer(player('p2', 'P2'))
+  showRoom.setGameMode('p1', 'bet')
+  showRoom.setReady('p1', true)
+  showRoom.setReady('p2', true)
+  showRoom.start('p1', 'bet')
+  stop(showRoom)
+  ;(showRoom as unknown as { beginBet: () => void }).beginBet()
+  showRoom.placeBet('p1', 250)
+  showRoom.placeBet('p2', 0) // pas
+  ;(showRoom as unknown as { beginQuestion: () => void }).beginQuestion()
+  showRoom.answer('p1', showRoom.currentQuestion()!.correctIndex)
+  showRoom.answer('p2', (showRoom.currentQuestion()!.correctIndex + 1) % 4)
+  ;(showRoom as unknown as { reveal: () => void }).reveal()
+  const reveal = showRoom.stateFor('p1', true).reveal!
+  assert.deepEqual(reveal.bets, { p1: 250, p2: 0 })
+  // klasik maçta bets alanı olmaz
+  const kl = new Room('edge-nobets', () => {}, { minPlayers: 1, questionCount: 5 })
+  kl.addPlayer(player('k', 'K'))
+  kl.setReady('k', true)
+  kl.start('k', 'classic')
+  stop(kl)
+  ;(kl as unknown as { beginQuestion: () => void }).beginQuestion()
+  kl.answer('k', kl.currentQuestion()!.correctIndex)
+  assert.equal(kl.stateFor('k', true).reveal!.bets, undefined)
+})
+
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`)
+
