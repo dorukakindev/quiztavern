@@ -37,7 +37,8 @@
     "test:weekly": "tsx scripts/weekly-test.ts",
     "test:teamvote": "tsx scripts/teamvote-test.ts",
     "test:writer": "tsx scripts/writer-test.ts",
-    "test:duel": "tsx scripts/duel-test.ts"
+    "test:duel": "tsx scripts/duel-test.ts",
+    "test:zil": "tsx scripts/zil-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",

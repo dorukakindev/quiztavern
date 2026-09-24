@@ -146,10 +146,11 @@ const MODE_KEYS = {
   blur: { name: 'mode.blur', meta: 'mode.blur.meta', tag: 'mode.blur.tag', icon: 'eye' },
   word: { name: 'mode.word', meta: 'mode.word.meta', tag: 'mode.word.tag', icon: 'scroll' },
   duel: { name: 'mode.duel', meta: 'mode.duel.meta', tag: 'mode.duel.tag', icon: 'sword' },
+  zil: { name: 'mode.zil', meta: 'mode.zil.meta', tag: 'mode.zil.tag', icon: 'bolt' },
 } as const
 
 function modeKeyOf(mode: GameMode): keyof typeof MODE_KEYS {
-  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : 'classic'
+  return mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : 'classic'
 }
 
 /**
@@ -413,7 +414,7 @@ function CategoryPicker({ categories, selection, disabled, hint, mode, mastery, 
  *  geri kalanı (Fitil/Çifte Bahis/Takım) CategoryPicker ile aynı desende
  *  (tetikleyici kart -> açılır modal -> seçilebilir kartlar) katlanır — 5 modu
  *  hep açık göstermek satır taşırıyor + gözü dağıtıyordu. */
-const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel'] as const
+const OTHER_MODES = ['lightning', 'bet', 'team', 'elim', 'blur', 'word', 'duel', 'zil'] as const
 // Tripo'dan üretilip aynı kamera/ışıkla render edilen mod nesneleri (webp,
 // şeffaf). Bu listede olmayan modlar ikonla gösterilir.
 const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
@@ -733,7 +734,7 @@ function OrbitSeats({ state, radius, onInvite, viewerIsHost, onManage, openManag
 
 /** Masanın imza öğesi: seçilen mod, disk üzerinde kendi fiziksel nesnesine dönüşür. */
 function ModeTableScene({ mode }: { mode: GameMode }) {
-  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : 'classic'
+  const scene = mode === 'circle' ? 'circle' : mode === 'lightning' ? 'lightning' : mode === 'bet' ? 'bet' : mode === 'team' ? 'team' : mode === 'elim' ? 'elim' : mode === 'blur' ? 'blur' : mode === 'word' ? 'word' : mode === 'duel' ? 'duel' : mode === 'zil' ? 'zil' : 'classic'
   return <div className={`qt-mode-scene qt-mode-scene--${scene}`} data-mode={mode} aria-hidden="true">
     {MODE_EMBLEMS[scene] && <div className={`qt-scene-emblem is-${scene} is-art`}><img src={MODE_EMBLEMS[scene]} alt="" /></div>}
   </div>
@@ -1304,7 +1305,7 @@ function FinalIntro({ deadline, durationMs, serverNow }: { deadline?: number; du
  * sayısı YOK: gerçek puan mekaniği olmayan "+6" uydurma olurdu. Segmentlerin
  * birleşme animasyonu Adım 5 Motion'a bırakıldı.
  */
-function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onUseCard, onLeave, onSpectate, onReport, onPredict, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; speakingIds?: ReadonlySet<string> }) {
+function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter, onUseCard, onLeave, onSpectate, onReport, onPredict, onBuzz, speakingIds }: { state: GameState; onAnswer: (choice: number) => void; onCircleAnswer: (value: string) => void; onWordAnswer: (value: string) => void; onWordLetter: () => void; onUseCard: (type: CardType, targetId?: string) => void; onLeave: () => void; onSpectate: () => void; onReport: () => void; onPredict?: (targetId: string) => void; onBuzz?: () => void; speakingIds?: ReadonlySet<string> }) {
   const youAreSpectator = state.youAreSpectator
   const self = state.players.find((player) => player.id === state.youId)
   // Son Masa'da elenen oyuncu da cevap veremez — bekleme durumuyla aynı
@@ -1313,6 +1314,11 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   const { t, language } = useI18n()
   const isCircle = state.gameMode === 'circle'
   const isWord = state.gameMode === 'word'
+  const isZil = state.gameMode === 'zil'
+  const zilWinner = state.zil?.winnerId ?? null
+  const zilWinnerName = zilWinner ? state.players.find((p) => p.id === zilWinner)?.name : null
+  const zilYouWon = !!self && zilWinner === self.id
+  const zilYouFailed = !!self && !!state.zil?.failedIds.includes(self.id)
   const question = state.question
   const circle = state.circle
   const word = state.word
@@ -1498,8 +1504,19 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
             {state.players.filter((item) => item.id !== state.youId && item.connected && !item.waiting && !item.answered).map((item) => <button key={item.id} type="button" className="qt-card-target" onClick={() => { sfx.play('lock'); onUseCard('freeze', item.id); setFreezePick(false) }}><Avatar player={item} compact />{item.name}</button>)}
           </div> : null}
         </div> : null}
-        {shown.writtenByYou
-          ? <p className="qt-writer-note"><Icon name="eye" /> {t('writeQ.youWrote')}</p>
+        {/* Zil (§6.1): henüz kimse basmadıysa herkes BAS'a yarışır; zili
+            kazanan şıkları görür, diğerleri "X cevaplıyor" izler. Reveal'de
+            grid herkese döner (sonuç gösterimi). */}
+        {isZil && !beats.active && !zilYouWon && !waiting ? <div className="qt-zil-panel" role="status">
+          {zilWinnerName
+            ? <p className="qt-zil-status"><Icon name="bolt" weight="fill" /> {t('zil.answering', { name: zilWinnerName })}</p>
+            : zilYouFailed
+              ? <p className="qt-zil-status is-out"><Icon name="close" /> {t('zil.out')}</p>
+              : self ? <button type="button" className="qt-zil-buzz" onClick={() => { sfx.play('lock'); onBuzz?.() }}><Icon name="bolt" weight="fill" /> {t('zil.buzz')}</button> : null}
+        </div> : null}
+        {isZil && !beats.active && zilYouWon ? <p className="qt-zil-status is-you"><Icon name="bolt" weight="fill" /> {t('zil.yourTurn')}</p> : null}
+        {shown.writtenByYou || (isZil && !beats.active && !zilYouWon)
+          ? shown.writtenByYou ? <p className="qt-writer-note"><Icon name="eye" /> {t('writeQ.youWrote')}</p> : null
           : <div className="qt-answers">
           {(language === 'en' ? shown.choicesEn : shown.choices).map((choice, index) => {
             const removed = state.removedChoices.includes(index)
@@ -2269,7 +2286,7 @@ export function ActivityApp() {
     // Çifte Bahis: soru öncesi bahis fazı — kendi board'u (kategori + bahis arayüzü).
     if (game.state!.phase === 'bet') return <BetBoard state={game.state!} onBet={game.placeBet} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} speakingIds={activity.speakingIds} />
     // Soru ve reveal aynı board: faz değişse de bileşen unmount olmaz, kartlar yerinde kalır.
-    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} speakingIds={activity.speakingIds} />
+    if (game.state!.phase === 'question' || game.state!.phase === 'reveal') return <GameBoard state={game.state!} onAnswer={game.answer} onCircleAnswer={game.answerCircle} onWordAnswer={game.answerWord} onWordLetter={game.wordLetter} onUseCard={game.useCard} onLeave={() => setLeaveConfirmOpen(true)} onSpectate={game.spectate} onReport={() => game.reportQuestion()} onPredict={game.predict} onBuzz={game.buzz} speakingIds={activity.speakingIds} />
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
     // Eskiden bu düğme masadan ayrılıyordu: sahiplik devrediliyor, geri gelen
     // yine podyuma düşüyor, herkes tıklamadan kimse lobiye ulaşamıyordu.

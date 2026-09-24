@@ -563,6 +563,7 @@ io.on("connection", (socket) => {
     }
   });
   socket.on(EV.ANSWER, (choice: unknown) => room.answer(user.id, Number(choice)));
+  socket.on(EV.BUZZ, () => room.buzz(user.id));
   socket.on(EV.CIRCLE_ANSWER, (answer: unknown) => room.answerCircle(user.id, typeof answer === "string" ? answer : ""));
   socket.on(EV.WORD_ANSWER, (answer: unknown) => room.wordAnswer(user.id, typeof answer === "string" ? answer : ""));
   socket.on(EV.WORD_LETTER, () => room.wordLetter(user.id));

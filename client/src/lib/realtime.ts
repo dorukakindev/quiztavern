@@ -180,6 +180,7 @@ export function useRealtimeGame(roomId = 'ana-lobi', identity?: ActivityRealtime
     start: (mode: GameMode = 'quiz') => socket.emit(EV.START, { mode }),
     startDaily: () => socket.emit(EV.START, { daily: true }),
     answer: (choice: number) => { if (socket.connected) socket.emit(EV.ANSWER, choice) },
+    buzz: () => { if (socket.connected) socket.emit(EV.BUZZ) },
     answerCircle: (answer: string) => { if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer) },
     answerWord: (answer: string) => { if (socket.connected) socket.emit(EV.WORD_ANSWER, answer) },
     wordLetter: () => { if (socket.connected) socket.emit(EV.WORD_LETTER) },

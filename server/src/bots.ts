@@ -57,6 +57,9 @@ export function scheduleBotAnswers(room: Room): void {
     }
     return;
   }
+  // Zil'de botlar basmayı Room.scheduleZilBots ile kendisi planlar — klasik
+  // answer() zamanlayıcıları burada çalışmaz.
+  if (room.gameMode === "zil") return;
   const q = room.currentQuestion();
   if (!q) return;
   for (const p of room.players.values()) {
