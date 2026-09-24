@@ -157,6 +157,8 @@ export class Room {
   private wordOrder: number[] = [];
   private wordPoolMs = 0;
   private wordRoundStartedAt = 0;
+  /** Fitil: bu maçta doğru cevap çıkan tur sayısı — her biri fitili bir kademe kısaltır. */
+  private lightningBurn = 0;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
@@ -715,6 +717,7 @@ export class Room {
     }
     this.clearLastMatch();
     this.rescueRound = new Set();
+    this.lightningBurn = 0;
     this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
     this.gameMode = normalizedMode;
     this.dailyMatch = daily;
@@ -1232,6 +1235,8 @@ export class Room {
       this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null);
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
     }
+    // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
+    if (this.gameMode === "lightning" && picks[question.correctIndex].length > 0) this.lightningBurn++;
     this.phase = "reveal";
     // Trivia notu taşıyan turda reveal 2 sn uzar — satırı okumaya vakit kalsın.
     const revealMs = GAME.REVEAL_MS + (question.fact ? 2_000 : 0);
@@ -1464,7 +1469,11 @@ export class Room {
     if (this.gameMode === "blur") return GAME.BLUR_QUESTION_MS;
     // Kelime Oyunu: tur tavanı 45 sn ama ortak havuzdan fazla yiyemez.
     if (this.gameMode === "word") return Math.min(GAME.WORD_ROUND_MS, Math.max(0, this.wordPoolMs));
-    return this.gameMode === "lightning" ? 8_000 : GAME.QUESTION_MS;
+    if (this.gameMode === "lightning") {
+      // Her doğrulu tur fitili 0,5 sn kısaltır; 4 sn'de durur.
+      return Math.max(GAME.LIGHTNING_MIN_MS, GAME.LIGHTNING_START_MS - this.lightningBurn * GAME.LIGHTNING_STEP_MS);
+    }
+    return GAME.QUESTION_MS;
   }
 
   private publicPlayer(player: RoomPlayer): PublicPlayer {
