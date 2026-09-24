@@ -95,6 +95,7 @@ export const GAME = {
   COUNTDOWN_MS: 3_000,
   QUESTION_MS: 15_000,
   CIRCLE_QUESTION_MS: 12_000,
+  BLUR_QUESTION_MS: 12_000,
   // 3000: geri sayim cizgisi ilk karede "3 sn" gosterir. 3500 iken Math.ceil
   // yukari yuvarlayip "4 saniye" yaziyordu, spec "3 saniye" diyordu (belge).
   REVEAL_MS: 3_000,

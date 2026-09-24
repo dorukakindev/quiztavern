@@ -540,7 +540,7 @@ export class Room {
   setGameMode(playerId: string, mode: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.modeHostOnly");
-    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim") throw new GameError("err.modeInvalid");
+    if (mode !== "classic" && mode !== "lightning" && mode !== "circle" && mode !== "bet" && mode !== "team" && mode !== "elim" && mode !== "blur") throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
     if (mode === "classic") this.questionCount = 10;
@@ -548,6 +548,7 @@ export class Room {
     if (mode === "bet") this.questionCount = 10;
     if (mode === "team") this.questionCount = 10;
     if (mode === "elim") this.questionCount = 10;
+    if (mode === "blur") this.questionCount = 10;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
       .filter((name) => {
@@ -726,15 +727,15 @@ export class Room {
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
     } else {
       this.seenQuestionIds = resetExhaustedSubpools(compatibleCategories, this.difficulty, this.seenQuestionIds, this.lastQuestionIds, this.roundLimit);
-      // Özel paket seçiliyse (Çember hariç — kendi prompt havuzu var) sorular
-      // paketin listesinden çekilir; kategori/zorluk filtreleri paket için
-      // uygulanmaz, paket temalı havuzun kendisidir.
-      const pack = this.packId && this.gameMode !== "circle" ? getPack(this.packId) : null;
-      if (this.packId && this.gameMode !== "circle" && !pack) throw new GameError("err.packUnknown");
+      // Özel paket seçiliyse (Çember ve Bulanık Resim hariç — çemberin kendi
+      // prompt havuzu, bulanığın resimli-soru zorunluluğu var) sorular paketin
+      // listesinden çekilir; kategori/zorluk filtreleri paket için uygulanmaz.
+      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" ? getPack(this.packId) : null;
+      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && !pack) throw new GameError("err.packUnknown");
       if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
       this.questions = pack
         ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
-        : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty);
+        : sampleQuestions(this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur");
       this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
     }
@@ -1309,6 +1310,7 @@ export class Room {
   /** Aktif modun soru süresi. Botlar cevap gecikmesini buna göre planlar. */
   questionDuration() {
     if (this.gameMode === "circle") return GAME.CIRCLE_QUESTION_MS;
+    if (this.gameMode === "blur") return GAME.BLUR_QUESTION_MS;
     return this.gameMode === "lightning" ? 8_000 : GAME.QUESTION_MS;
   }
 
