@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { QUESTION_COUNTS } from "../../shared/types";
+import { CIRCLE_COUNTS, QUESTION_COUNTS } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { resetExhaustedSubpools, sampleQuestions, type Question } from "./questions";
 import { getPack, samplePackQuestions } from "./packs";
@@ -157,6 +157,8 @@ export class Room {
   private wordOrder: number[] = [];
   private wordPoolMs = 0;
   private wordRoundStartedAt = 0;
+  /** Fitil: bu maçta doğru cevap çıkan tur sayısı — her biri fitili bir kademe kısaltır. */
+  private lightningBurn = 0;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
@@ -570,6 +572,7 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
+    if (mode === "circle") this.questionCount = 20;
     const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
     this.categorySelection = this.categorySelection
       .filter((name) => {
@@ -606,13 +609,33 @@ export class Room {
   }
 
   /**
+   * Takım modu: host tek dokunuşla takımları yeniden karıştırır. Hazır onayını
+   * sıfırlamaz (setTeam ile aynı gerekçe). Rastgele ve dengeli: |A−B| ≤ 1 —
+   * dönüşümlü atama iki tarafın da güçsüz kalmasını önler.
+   */
+  shuffleTeams(byId: string): void {
+    if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
+    if (this.hostId !== byId) throw new GameError("err.teamHostOnly");
+    if (this.gameMode !== "team") throw new GameError("err.teamInvalid");
+    const seated = [...this.players.values()];
+    for (let i = seated.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [seated[i], seated[j]] = [seated[j], seated[i]];
+    }
+    seated.forEach((player, index) => { player.team = index % 2; });
+    this.broadcast();
+  }
+
+  /**
    * Masa ayarı: sonraki maçın soru sayısı. Süre moda sabittir; sayı değil.
-   * Çember kendi sabit tur sayısını kullandığı için bu ayardan etkilenmez.
+   * Çember'de aynı alan tur sayısı olarak okunur (10/15/20).
    */
   setQuestionCount(playerId: string, count: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.countHostOnly");
-    if (!QUESTION_COUNTS.includes(count as QuestionCount)) throw new GameError("err.countInvalid");
+    // Çember'de aynı alan tur sayısını taşır: 10/15/20.
+    const valid = this.gameMode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS;
+    if (!(valid as readonly number[]).includes(count as number)) throw new GameError("err.countInvalid");
     if (this.questionCount === count) return;
     this.questionCount = count as QuestionCount;
     // Kategori değişimiyle aynı kural: masa ayarı değişince herkes tekrar onaylar.
@@ -715,6 +738,7 @@ export class Room {
     }
     this.clearLastMatch();
     this.rescueRound = new Set();
+    this.lightningBurn = 0;
     this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
     this.gameMode = normalizedMode;
     this.dailyMatch = daily;
@@ -725,8 +749,8 @@ export class Room {
     this.teamScores = [0, 0];
     this.podiumSnapshot = null;
     this.fastestFingerSnapshot = undefined;
-    // Soru sayısı masa ayarıdır; Çember kendi sabit tur sayısıyla oynanır.
-    this.roundLimit = this.gameMode === "circle" ? GAME.CIRCLE_PROMPTS_PER_MATCH : this.questionCount;
+    // Soru sayısı masa ayarıdır; Çember'de aynı alan tur sayısı olarak okunur.
+    this.roundLimit = this.questionCount;
     const compatibleCategories = this.categorySelection.filter((name) => {
       const category = CATEGORY_CATALOG.find((item) => item.name === name);
       return this.gameMode === "circle" ? !!category?.circleCount : !!category?.classicCount;
@@ -769,8 +793,8 @@ export class Room {
 
     if (this.gameMode === "circle") {
       const unseenC = circlePoolKeys(compatibleCategories, this.difficulty).filter((k) => !this.seenCirclePromptKeys.has(k)).length;
-      if (unseenC < GAME.CIRCLE_PROMPTS_PER_MATCH) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
-      this.circlePrompts = sampleCirclePrompts(GAME.CIRCLE_PROMPTS_PER_MATCH, compatibleCategories, this.seenCirclePromptKeys, this.difficulty);
+      if (unseenC < this.roundLimit) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
+      this.circlePrompts = sampleCirclePrompts(this.roundLimit, compatibleCategories, this.seenCirclePromptKeys, this.difficulty);
       this.lastCirclePromptKeys = new Set(this.circlePrompts.map((p) => `${p.category}|${p.answer}`));
       this.circlePrompts.forEach((p) => this.seenCirclePromptKeys.add(`${p.category}|${p.answer}`));
       this.wordPrompts = [];
@@ -1235,14 +1259,19 @@ export class Room {
       this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null);
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
     }
+    // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
+    if (this.gameMode === "lightning" && picks[question.correctIndex].length > 0) this.lightningBurn++;
     this.phase = "reveal";
-    this.revealUntil = Date.now() + GAME.REVEAL_MS;
+    // Trivia notu taşıyan turda reveal 2 sn uzar — satırı okumaya vakit kalsın.
+    const revealMs = GAME.REVEAL_MS + (question.fact ? 2_000 : 0);
+    this.revealUntil = Date.now() + revealMs;
     this.lastReveal = {
-      correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS,
+      correctIndex: question.correctIndex, picks, gains, until: this.revealUntil, durationMs: revealMs,
       ...(this.gameMode === "bet" && this.rescueRound.size ? { rescued: [...this.rescueRound] } : {}),
+      ...(question.fact ? { fact: question.fact, factEn: question.factEn } : {}),
     };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.timer = setTimeout(() => this.advanceFromReveal(), revealMs);
   }
 
   private revealCircle() {
@@ -1464,7 +1493,11 @@ export class Room {
     if (this.gameMode === "blur") return GAME.BLUR_QUESTION_MS;
     // Kelime Oyunu: tur tavanı 45 sn ama ortak havuzdan fazla yiyemez.
     if (this.gameMode === "word") return Math.min(GAME.WORD_ROUND_MS, Math.max(0, this.wordPoolMs));
-    return this.gameMode === "lightning" ? 8_000 : GAME.QUESTION_MS;
+    if (this.gameMode === "lightning") {
+      // Her doğrulu tur fitili 0,5 sn kısaltır; 4 sn'de durur.
+      return Math.max(GAME.LIGHTNING_MIN_MS, GAME.LIGHTNING_START_MS - this.lightningBurn * GAME.LIGHTNING_STEP_MS);
+    }
+    return GAME.QUESTION_MS;
   }
 
   private publicPlayer(player: RoomPlayer): PublicPlayer {

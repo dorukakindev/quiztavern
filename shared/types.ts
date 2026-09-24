@@ -183,6 +183,10 @@ export interface RevealPayload {
   durationMs: number;
   /** Çifte Bahis: bu soruda kurtarma turunda olanlar (bakiye 0, doğru = sabit ödül). */
   rescued?: string[];
+  /** Opsiyonel: doğru cevapla ilgili kısa trivia notu — reveal'da gösterilir. */
+  fact?: string;
+  /** İngilizce arayüz için fact çevirisi. */
+  factEn?: string;
 }
 
 export interface CirclePayload {
@@ -388,12 +392,14 @@ export const RECONNECT_GRACE_MS = 30_000;
 
 /** Masa sahibinin seçebildiği soru sayıları. Süre moda sabittir, sayı değil. */
 export const QUESTION_COUNTS = [5, 10, 15] as const;
-export type QuestionCount = (typeof QUESTION_COUNTS)[number];
+/** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
+export const CIRCLE_COUNTS = [10, 15, 20] as const;
+export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
 
 export interface GameState {
   phase: Phase;
   gameMode: GameMode;
-  /** Masa ayarı: sonraki maçın soru sayısı (Çember kendi sabitini kullanır) */
+  /** Masa ayarı: sonraki maçın soru sayısı. Çember'de tur sayısı olarak okunur. */
   questionCount: QuestionCount;
   /** Masa ayarı: zorluk filtresi; null = karışık (tüm zorluklar). Tüm modlara uygulanır. */
   difficulty: Difficulty | null;
@@ -479,6 +485,8 @@ export const EV = {
   BET: "bet",
   /** Takım modu, yalnız host, lobide: { targetId, team } — oyuncunun takımını değiştirir */
   SET_TEAM: "set-team",
+  /** Takım modu, yalnız host, lobide: {} — koltukları rastgele ve dengeli yeniden dağıtır */
+  TEAM_SHUFFLE: "team-shuffle",
   PLAY_AGAIN: "play-again",
   ADD_BOT: "add-bot",
   READY: "ready",

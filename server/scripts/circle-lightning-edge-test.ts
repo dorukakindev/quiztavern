@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert'
 import { ALL_CIRCLE_PROMPTS, normalizeCircleAnswer, type CirclePrompt } from '../src/circle'
 import { Room } from '../src/rooms'
+import type { Question } from '../src/questions'
 
 let passed = 0
 const test = (name: string, run: () => void) => {
@@ -11,6 +12,8 @@ const test = (name: string, run: () => void) => {
 const player = (id: string, name: string) => ({ id, name, avatarUrl: null, socketId: `socket:${id}`, isBot: false })
 const internals = (room: Room) => room as unknown as {
   circlePrompts: CirclePrompt[]
+  questions: Question[]
+  lightningBurn: number
   finish: () => void
 }
 
@@ -66,6 +69,38 @@ test('podyumda ayrılan oyuncu en hızlı parmak özetini değiştirmez', () => 
   const after = podiumRoom.stateFor('slow', true)
   assert.deepEqual(after.podium, podiumBefore.podium)
   assert.deepEqual(after.matchSummary?.fastest, { name: 'Ada', ms: 100 })
+})
+
+const burnRoom = new Room('edge-lightning-burn', () => {}, { minPlayers: 1 })
+burnRoom.addPlayer(player('ace', 'Ace'))
+burnRoom.gameMode = 'lightning'
+burnRoom.phase = 'question'
+burnRoom.qIndex = 0
+internals(burnRoom).questions = [{ id: 't1', category: 'x', text: 'test?', choices: ['a', 'b', 'c', 'd'], correctIndex: 2, difficulty: 'kolay', textEn: 'test?', choicesEn: ['a', 'b', 'c', 'd'] }]
+burnRoom.questionStartedAt = Date.now()
+burnRoom.questionDeadline = Date.now() + 8_000
+
+test('Fitil: doğru cevap çıkan tur fitili 0,5 sn kısaltır (4 sn tabanı)', () => {
+  assert.equal(burnRoom.questionDuration(), 8_000)
+  burnRoom.answer('ace', 2) // herkes cevapladı → reveal → burn++
+  assert.equal(burnRoom.questionDuration(), 8_000 - 500)
+  // Taban: burn ne kadar büyük olursa olsun süre 4 sn'nin altına inmez.
+  internals(burnRoom).lightningBurn = 99
+  assert.equal(burnRoom.questionDuration(), 4_000)
+  internals(burnRoom).lightningBurn = 1
+})
+
+test('Çember tur sayısı: host 10/15/20 seçebilir, klasik set reddedilir', () => {
+  const room = new Room('edge-ccount', () => {}, { minPlayers: 1 })
+  room.addPlayer(player('h', 'Host'))
+  room.setGameMode('h', 'circle')
+  assert.equal(room.stateFor('h', true).questionCount, 20) // moda özel varsayılan
+  room.setQuestionCount('h', 15)
+  assert.equal(room.stateFor('h', true).questionCount, 15)
+  assert.throws(() => room.setQuestionCount('h', 5), /countInvalid/)
+  room.setReady('h', true)
+  room.start('h', 'circle')
+  assert.equal(room.stateFor('h', true).round.total, 15)
 })
 
 console.log(`\n[circle-lightning-edge] sonuç: ${passed} geçti, 0 kaldı`)

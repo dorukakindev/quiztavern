@@ -96,6 +96,11 @@ export const GAME = {
   QUESTION_MS: 15_000,
   CIRCLE_QUESTION_MS: 12_000,
   BLUR_QUESTION_MS: 12_000,
+  // Fitil: soru 8 sn'den başlar; maçta her doğru cevap veren tur fitili 0,5 sn
+  // kısaltır (4 sn tabanı). Gerilim maç ilerledikçe büyür.
+  LIGHTNING_START_MS: 8_000,
+  LIGHTNING_STEP_MS: 500,
+  LIGHTNING_MIN_MS: 4_000,
   // Kelime Oyunu: 14 tur (4-10 harf × 2), tek ortak zaman havuzu, harf başına 100.
   WORD_ROUNDS: 14,
   WORD_LETTER_POINTS: 100,

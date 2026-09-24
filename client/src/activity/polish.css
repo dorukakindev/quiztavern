@@ -273,6 +273,11 @@
 .qt-daily-streak { font-style: normal; font-size: 9px; font-weight: 800; color: #ffb44d; background: rgba(255,166,77,.14); border: 1px solid rgba(255,166,77,.35); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
 .qt-daily-pattern { flex: none; font-style: normal; font-size: 9px; letter-spacing: 1px; }
 
+/* Reveal trivia notu — doğru cevabın ardından kısa "biliyor muydun?" satırı. */
+.qt-reveal-fact { color: #f3d9a4; font-size: 13px; line-height: 1.45; text-align: center; max-width: 640px; margin-left: auto; margin-right: auto; }
+.qt-reveal-fact svg { color: #ffd166; flex: none; }
+.qt-reveal-fact b { color: #ffd166; font-weight: 700; }
+
 /* Çifte Bahis "Hepsi" çarpan rozeti: altın vurgu, bet-option içinde mikro. */
 .qt-bet-boost { font-style: normal; font-size: 10px; font-weight: 800; letter-spacing: .4px; color: #f3c362; background: rgba(240,189,88,.14); border: 1px solid rgba(240,189,88,.4); border-radius: 999px; padding: 1px 8px; }
 .qt-bet-option.is-selected .qt-bet-boost { color: #ffd98a; border-color: rgba(255,217,138,.6); }

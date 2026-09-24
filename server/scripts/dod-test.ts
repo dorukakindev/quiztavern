@@ -137,7 +137,9 @@ async function main() {
       assert(reveal.reveal !== null, `reveal ${round + 1} payload'ı var`);
       // Sabiti tekrar yazma: config tek kaynak. 3500'ü elle yazdığımız için
       // REVEAL_MS 3000'e çekilince test "yanlış" diye patlamıştı.
-      assert(reveal.reveal!.durationMs === GAME.REVEAL_MS, `reveal ${round + 1} durationMs=${GAME.REVEAL_MS}`);
+      // Trivia notu (fact) taşıyan turlar okunabilirlik için 2 sn uzar.
+      const expectedRevealMs = GAME.REVEAL_MS + (reveal.reveal!.fact ? 2000 : 0);
+      assert(reveal.reveal!.durationMs === expectedRevealMs, `reveal ${round + 1} durationMs=${expectedRevealMs}`);
       const pickTotal = reveal.reveal!.picks.flat().length;
       assert(pickTotal === 2, `reveal ${round + 1} iki oyuncunun seçimini taşıyor`);
       // Puanlama değişmezi: doğru şıkkı seçen puan alır, seçmeyen almaz.

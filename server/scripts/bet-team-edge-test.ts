@@ -190,4 +190,27 @@ test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
   assert.equal(halfRoom.players.get('h2')!.score, 1500) // 500 bahis + 500 kazanç
 })
 
+test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () => {
+  const shuffleRoom = new Room('edge-shuffle', () => {}, { minPlayers: 1 })
+  for (const id of ['s1', 's2', 's3', 's4', 's5']) shuffleRoom.addPlayer(player(id, id))
+  shuffleRoom.setGameMode('s1', 'team')
+  // Host değil → red; takım modu değil → red
+  assert.throws(() => shuffleRoom.shuffleTeams('s2'), /teamHostOnly/)
+  const classic = new Room('edge-shuffle-kl', () => {}, { minPlayers: 1 })
+  classic.addPlayer(player('k', 'k'))
+  assert.throws(() => classic.shuffleTeams('k'), /teamInvalid/)
+  for (let round = 0; round < 8; round++) {
+    shuffleRoom.shuffleTeams('s1')
+    const teams = [...shuffleRoom.players.values()].map((p) => p.team)
+    assert.ok(teams.every((t) => t === 0 || t === 1))
+    const a = teams.filter((t) => t === 0).length
+    const b = teams.filter((t) => t === 1).length
+    assert.ok(Math.abs(a - b) <= 1 && a + b === 5, `dengesiz dağılım: ${a}-${b}`)
+  }
+  // Hazır onayları korunur (setTeam kuralıyla aynı)
+  shuffleRoom.setReady('s2', true)
+  shuffleRoom.shuffleTeams('s1')
+  assert.equal(shuffleRoom.players.get('s2')!.ready, true)
+})
+
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`)
