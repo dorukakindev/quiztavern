@@ -21,6 +21,8 @@ RUN npm ci
 COPY shared shared
 COPY server server
 COPY client client
+ARG VITE_DISCORD_CLIENT_ID
+ENV VITE_DISCORD_CLIENT_ID=$VITE_DISCORD_CLIENT_ID
 RUN npm run build
 
 # Runtime'a yalnızca prod bağımlılıklar gider (vite/tsx/dev tipleri atılır).
