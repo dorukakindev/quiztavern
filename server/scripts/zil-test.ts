@@ -81,8 +81,8 @@ test("Herkes yanarsa tur puansız biter", () => {
   room.buzz("b");
   room.answer("b", wrong);
   assert.equal(room.phase, "reveal");
-  assert.equal(inner.players.get("a")!.score, 0);
-  assert.equal(inner.players.get("b")!.score, 0);
+  assert.equal(inner.players.get("a")!.score, -GAME.ZIL_PENALTY, "yanlış basan −puan");
+  assert.equal(inner.players.get("b")!.score, -GAME.ZIL_PENALTY);
 });
 
 test("Zil yokken cevaplar yutulur", () => {

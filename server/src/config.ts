@@ -132,11 +132,13 @@ export const GAME = {
   DUEL_QUESTIONS: 7,
   /** Zil (§6.1): zili kazananın cevap penceresi (üstü ayrıca turun genel
    *  süresiyle sınırlı). */
-  ZIL_ANSWER_MS: 8_000,
+  ZIL_ANSWER_MS: 5_000,
   /** Zil: doğru cevabın değeri her denemede bu kadar düşer (1. deneme taban). */
   ZIL_BASE: 500,
   ZIL_DECAY: 100,
   ZIL_MIN: 100,
+  /** Yanlış cevaplayan basanın kaybı (§6.1: "yanlışsa −puan"). */
+  ZIL_PENALTY: 200,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
   CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */

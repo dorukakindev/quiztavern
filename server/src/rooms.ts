@@ -1674,8 +1674,9 @@ export class Room {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
-        // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre düşer.
-        if (this.gameMode === "zil") gain = correct ? this.zilValue() : 0;
+        // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
+        // düşer; yanlış basan puan kaybeder (§6.1 "yanlışsa −puan").
+        if (this.gameMode === "zil") gain = correct ? this.zilValue() : -GAME.ZIL_PENALTY;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         if (gain) player.score += gain;
