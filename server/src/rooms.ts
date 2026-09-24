@@ -10,6 +10,7 @@ import type { MatchFinishedEntry } from "./xp";
 import type {
   BadgeKey,
   BetPayload,
+  CardType,
   CirclePayload,
   CircleRevealPayload,
   CountdownPayload,
@@ -61,6 +62,14 @@ export interface RoomPlayer {
   /** Kelime Oyunu: doğru cevap anındaki donmuş değer (kalan harf × 100).
    *  Harf sonradan açılsa da erken cevaplayan yüksek değerini korur. */
   wordGain: number;
+  /** Tavern kartı (joker) sayısı — maç başı 1, 3'lü seride +1. Klasik/Takım. */
+  cards: number;
+  /** Bu tur kullanılan joker (tur başına bir; tur başında sıfırlanır). */
+  cardUsed: CardType | null;
+  /** %50 jokeriyle silinen şık indeksleri (yalnız kullananın payload'ında). */
+  fiftyRemoved: number[];
+  /** Dondur jokeri yiyen oyuncu — bu tur deadline'ı CARD_FREEZE_MS kısalır. */
+  frozen: boolean;
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
@@ -202,7 +211,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -253,6 +262,10 @@ export class Room {
           : this.qIndex + 1,
       lives: 0,
       wordGain: 0,
+      cards: 0,
+      cardUsed: null,
+      fiftyRemoved: [],
+      frozen: false,
       stats: emptyStats(),
       answers: [],
       typed: [],
@@ -823,6 +836,12 @@ export class Room {
       player.bet = null;
       player.wordGain = 0;
       player.lives = this.gameMode === "elim" ? GAME.ELIM_LIVES : 0;
+      // Tavern kartları: Klasik/Takım maçında herkes 1 jokerle başlar;
+      // diğer modlarda kart mekaniği yok (sıfırda kalır, kazanılamaz da).
+      player.cards = this.gameMode === "classic" || this.gameMode === "team" ? 1 : 0;
+      player.cardUsed = null;
+      player.fiftyRemoved = [];
+      player.frozen = false;
       player.eligibleFrom = 0;
       player.stats = emptyStats();
       player.answers = [];
@@ -837,7 +856,10 @@ export class Room {
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
+    // Dondur jokeri: yiyen oyuncunun süresi genel deadline'dan önce dolar.
+    if (Date.now() >= this.deadlineFor(player)) return;
     if (this.gameMode === "elim" && player.lives <= 0) return;
+    if (player.fiftyRemoved.includes(choice)) return; // %50 ile silinmiş şık seçilemez
     player.choice = choice;
     player.answeredAt = Date.now();
     if (this.firstAnswerId === null) this.firstAnswerId = playerId;
@@ -925,6 +947,7 @@ export class Room {
   }
 
   stateFor(youId: string, devMode: boolean): GameState {
+    const self = this.players.get(youId);
     const question = this.currentQuestion();
     const circlePrompt = this.currentCirclePrompt();
     const wordPrompt = this.currentWordPrompt();
@@ -938,7 +961,9 @@ export class Room {
           choices: question.choices,
           textEn: question.textEn,
           choicesEn: question.choicesEn,
-          deadline: this.questionDeadline,
+          // Dondur jokeri yiyen oyuncuya kişisel (kısaltılmış) deadline gider;
+          // diğer herkes genel deadline'ı görür.
+          deadline: self ? this.deadlineFor(self) : this.questionDeadline,
           durationMs: this.questionDuration(),
           ...(question.image ? { image: question.image } : {}),
           ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
@@ -979,7 +1004,6 @@ export class Room {
     const podium: PodiumEntry[] | null = this.phase === "podium"
       ? this.podiumSnapshot ?? this.snapshotPodium()
       : null;
-    const self = this.players.get(youId);
     // Maç bitince dondurulan özet önceliklidir: podyumda masadan çıkıp geri
     // dönen oyuncunun kaydı yenilense de kendi sonucunu görmeye devam eder.
     const matchSummary: MatchSummary | null = this.phase === "podium"
@@ -1015,6 +1039,10 @@ export class Room {
       yourChoice: self?.choice ?? null,
       yourCircleAnswer: self?.circleAnswer ?? null,
       yourWordAnswer: this.gameMode === "word" ? self?.circleAnswer ?? null : null,
+      yourCards: self?.cards ?? 0,
+      yourCardUsed: self?.cardUsed ?? null,
+      removedChoices: self?.fiftyRemoved ?? [],
+      youFrozen: self?.frozen ?? false,
       reveal: this.phase === "reveal" ? this.lastReveal : null,
       circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
       wordReveal: this.phase === "reveal" ? this.lastWordReveal : null,
@@ -1076,6 +1104,10 @@ export class Room {
       player.answeredAt = null;
       player.circleAnswer = null;
       player.circleCorrectAt = null;
+      // Jokerler tur başına bir: önceki turun etkileri burada sıfırlanır.
+      player.cardUsed = null;
+      player.fiftyRemoved = [];
+      player.frozen = false;
     }
     this.broadcast();
     this.onQuestionStarted?.(this);
@@ -1158,7 +1190,7 @@ export class Room {
   }
 
   /** Bir turun sonucunu oyuncunun maç istatistiğine işler (4d özet kartı). */
-  private recordStat(player: RoomPlayer, correct: boolean, category: string, correctElapsedMs: number | null): void {
+  private recordStat(player: RoomPlayer, correct: boolean, category: string, correctElapsedMs: number | null, preserveStreak = false): void {
     const s = player.stats;
     s.total += 1;
     const cat = s.perCategory.get(category) ?? { correct: 0, total: 0 };
@@ -1169,10 +1201,51 @@ export class Room {
       s.currentStreak += 1;
       if (s.currentStreak > s.bestStreak) s.bestStreak = s.currentStreak;
       if (correctElapsedMs !== null) s.fastestMs = s.fastestMs === null ? correctElapsedMs : Math.min(s.fastestMs, correctElapsedMs);
-    } else {
+      // Tavern kartları: her 3'lü seride 1 joker (yalnız Klasik/Takım).
+      if ((this.gameMode === "classic" || this.gameMode === "team") && s.currentStreak % 3 === 0) player.cards += 1;
+    } else if (!preserveStreak) {
       s.currentStreak = 0;
     }
     s.perCategory.set(category, cat);
+  }
+
+  /** Oyuncunun bu turdaki cevap deadline'ı — dondur jokeri yiyende kısalır. */
+  private deadlineFor(player: RoomPlayer): number {
+    return this.questionDeadline - (player.frozen ? GAME.CARD_FREEZE_MS : 0);
+  }
+
+  /**
+   * Tavern kartı (joker) kullanımı. Klasik/Takım, soru fazında, cevaptan önce,
+   * tur başına bir. Sunucu doğrular; etkiler tur sonuna kadar saklanır.
+   */
+  useCard(playerId: string, type: CardType, targetId?: string): void {
+    if (this.gameMode !== "classic" && this.gameMode !== "team") throw new GameError("err.cardMode");
+    if (this.phase !== "question") throw new GameError("err.cardPhase");
+    const player = this.players.get(playerId);
+    const question = this.currentQuestion();
+    if (!player || !question || player.eligibleFrom > this.qIndex) return;
+    if (player.choice !== null) throw new GameError("err.cardLate");
+    if (player.cardUsed !== null) throw new GameError("err.cardUsed");
+    if (player.cards <= 0) throw new GameError("err.cardEmpty");
+    if (type === "fifty") {
+      // Yanlış iki şık oyuncu için silinir — indeksler yalnız kendi payload'ında görünür.
+      const wrong = [0, 1, 2, 3].filter((index) => index !== question.correctIndex);
+      for (let i = wrong.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [wrong[i], wrong[j]] = [wrong[j], wrong[i]];
+      }
+      player.fiftyRemoved = wrong.slice(0, 2);
+    } else if (type === "freeze") {
+      const target = targetId ? this.players.get(targetId) : null;
+      if (!target || target.id === playerId || target.eligibleFrom > this.qIndex || !target.connected || target.choice !== null) {
+        throw new GameError("err.invalidTarget");
+      }
+      target.frozen = true;
+    }
+    // double/shield: işaret yeter — etki reveal'de uygulanır.
+    player.cardUsed = type;
+    player.cards -= 1;
+    this.broadcast();
   }
 
   /** Zaman çizgisi incelemesi (6a): izleyenin eligible olduğu her tur, sırayla. */
@@ -1247,6 +1320,8 @@ export class Room {
         const base = this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS;
         const speed = this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
+        // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
+        if (correct && player.cardUsed === "double") gain *= 2;
         if (gain) player.score += gain;
         if (this.gameMode === "team" && gain) this.teamScores[player.team === 1 ? 1 : 0] += gain;
         // Son Masa: yanlış ya da cevapsız tur 1 can götürür; doğruya puan yok
@@ -1256,7 +1331,9 @@ export class Room {
       gains[player.id] = gain;
       // Maç özeti (4d): en hızlı yalnızca gerçekten cevaplanan doğrularda sayılır
       // (deadline'a düşen cevapsız tur "hız" değil).
-      this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null);
+      // Tavern kartı Kalkan: yanlış cevap seriyi bozmaz (istatistikte yanlış
+      // sayılır ama currentStreak korunur).
+      this.recordStat(player, correct, question.category, correct && player.answeredAt !== null ? elapsed : null, player.cardUsed === "shield");
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
     }
     // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
@@ -1520,6 +1597,7 @@ export class Room {
       streak: player.stats.currentStreak,
       team: player.team,
       ...(this.phase === "lobby" && this.inResults.has(player.id) ? { inResults: true } : {}),
+      cards: player.cards,
       ...(player.isBot ? {} : {
         progress: this.progress?.badge(player.id) ?? undefined,
         ...(player.title ? { title: player.title } : {}),

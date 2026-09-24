@@ -15,11 +15,11 @@ import type { ComponentType } from 'react'
 import type { IconProps as PhosphorProps, IconWeight } from '@phosphor-icons/react'
 import {
   ArrowRight, ArrowUUpLeft, Atom, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards,
-  ChartLineUp, Check, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
+  CardsThree, ChartLineUp, Check, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
   Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
-  MusicNotesSimple, Palette, PawPrint, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldStar, Shuffle, SignOut,
-  SlidersHorizontal, Smiley, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Television,
+  MusicNotesSimple, NumberSquareTwo, Palette, PawPrint, Percent, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldCheck, ShieldStar, Shuffle, SignOut,
+  SlidersHorizontal, Smiley, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Television,
   TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
 } from '@phosphor-icons/react'
 
@@ -65,6 +65,12 @@ const UI_ICONS = {
   music: MusicNotes,
   musicOff: MusicNotesSimple,
   shuffle: Shuffle,
+  // Tavern kartları (joker)
+  deck: CardsThree,
+  percent: Percent,
+  double: NumberSquareTwo,
+  shield: ShieldCheck,
+  snowflake: Snowflake,
 } satisfies Record<string, Glyph>
 
 export type IconName = keyof typeof UI_ICONS
