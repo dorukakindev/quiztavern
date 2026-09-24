@@ -1684,10 +1684,19 @@ export function circlePoolKeys(categories: string[] = [], difficulty: Difficulty
  *  cevabın kısa ve tek kelime olması şart — çember havuzunun kısa kelimeleri. */
 const isWordLength = (p: CirclePrompt) => p.answer.length >= 4 && p.answer.length <= 10;
 
+/** İpucu ya da kategorisi cevabı aynen içeren prompt kelime oyununda elenir —
+ *  kapalı kelime kutu harflerinden önce ipucundan bedavaya okunmasın (TR ve EN
+ *  ipucu her iki dile de yayınlandığı için iki yön de kontrol edilir). */
+const isWordSafe = (p: CirclePrompt) => {
+  const hay = `${p.clue} ${p.clueEn ?? ""} ${p.category}`.toLowerCase();
+  return !hay.includes(p.answer.toLowerCase()) && !(p.answerEn && hay.includes(p.answerEn.toLowerCase()));
+};
+const isWordCandidate = (p: CirclePrompt) => isWordLength(p) && isWordSafe(p);
+
 /** Kelime Oyunu havuzunun TÜM anahtarları (category|answer) — tekrar-önleme
  *  döngüsü havuz boyutunu buradan bilir (circlePoolKeys ile aynı sözleşme). */
 export function wordPoolKeys(categories: string[] = [], difficulty: Difficulty | null = null): string[] {
-  return effectiveCirclePool(categories, difficulty).filter(isWordLength).map((p) => `${p.category}|${p.answer}`);
+  return effectiveCirclePool(categories, difficulty).filter(isWordCandidate).map((p) => `${p.category}|${p.answer}`);
 }
 
 /**
@@ -1697,7 +1706,7 @@ export function wordPoolKeys(categories: string[] = [], difficulty: Difficulty |
  * tamamlanmaz (denge bozulmasın). Taze-önce + cevap dedup: Çember'le aynı kural.
  */
 export function sampleWordPrompts(categories: string[] = [], exclude: Set<string> = new Set(), difficulty: Difficulty | null = null): CirclePrompt[] {
-  const source = effectiveCirclePool(categories, difficulty).filter(isWordLength);
+  const source = effectiveCirclePool(categories, difficulty).filter(isWordCandidate);
   const key = (p: CirclePrompt) => `${p.category}|${p.answer}`;
   const shuf = (arr: CirclePrompt[]) => {
     const result = [...arr];
