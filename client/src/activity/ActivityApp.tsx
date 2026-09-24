@@ -486,6 +486,36 @@ function GameLeaveButton({ onLeave, floating = false }: { onLeave: () => void; f
   return <button type="button" className={`qt-game-exit ${floating ? 'qt-game-exit--floating' : ''}`} onClick={onLeave} title={t('game.leave')} aria-label={t('game.leave')}><Icon name="exit" /><span className="qt-game-exit__label">{t('game.leave')}</span></button>
 }
 
+/** Oyun-içi "?": aktif modun kısa kuralını küçük bir diyalogda açar. Diyalog
+ *  `role="dialog"` taşır — klavye kısayolları (1-4, zil Space) açıkken yutulur. */
+function GameHelpButton({ mode }: { mode: GameMode }) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  return <>
+    <button type="button" className="qt-game-exit qt-game-help" onClick={() => setOpen(true)} title={t('game.help')} aria-label={t('game.help')}><Icon name="info" /></button>
+    {open && <ModeHelpDialog mode={mode} onClose={() => setOpen(false)} />}
+  </>
+}
+
+function ModeHelpDialog({ mode, onClose }: { mode: GameMode; onClose: () => void }) {
+  const { t } = useI18n()
+  const trapRef = useFocusTrap<HTMLElement>(true)
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  return <div className="qt-howto-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+    <section ref={trapRef} className="qt-howto-modal qt-howto-modal--mode" role="dialog" aria-modal="true" aria-label={t('game.help')}>
+      <div className="qt-howto-modal__head">
+        <div><span>{t('game.help')}</span><b>{t(`mode.${mode}` as StringKey)}</b></div>
+        <button type="button" className="qt-howto-modal__close" onClick={onClose} aria-label={t('leave.cancel')}><Icon name="close" /></button>
+      </div>
+      <p className="qt-mode-help__body">{t(`mode.${mode}.howto` as StringKey)}</p>
+    </section>
+  </div>
+}
+
 /** İzleyici çubuğu: oyun/podyum fazlarında izleyene "izliyorsun" der ve boş koltuk
  *  varsa "Oyna" ile oturtur (lobide bu iş you-panel'de). Sabit alt overlay. */
 function SpectatorBar({ state, canSit, onTakeSeat, onPredict }: { state: GameState; canSit: boolean; onTakeSeat: () => void; onPredict: (targetId: string) => void }) {
@@ -1497,6 +1527,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
@@ -1791,6 +1822,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
@@ -1851,6 +1883,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
