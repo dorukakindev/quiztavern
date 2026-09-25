@@ -1385,6 +1385,7 @@ export class Room {
     if (!claim) return;
     const right = (choice === 0) === claim.truth;
     player.blitzAnswered++;
+    if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     if (right) {
       player.blitzStreak++;
       const gain = GAME.BLITZ_BASE + GAME.BLITZ_STREAK_STEP * Math.min(player.blitzStreak - 1, GAME.BLITZ_STREAK_CAP);
@@ -1392,7 +1393,6 @@ export class Room {
       player.blitzScore += gain;
       player.blitzCorrect++;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
-      if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     } else {
       player.blitzStreak = 0;
     }
