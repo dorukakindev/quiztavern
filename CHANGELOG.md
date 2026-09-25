@@ -27,6 +27,32 @@ Varlık lisansları için `ASSET-LISANSLARI.md`'ye bakın.
 - Docker entrypoint bind-mount sahipliğini chown'lar (root → runuser).
 - Admin uçları: timingSafeEqual + rate limit; global Express hata işleyici.
 
+### Added — altyapı / geliştirici deneyimi
+- ESLint flat config + Prettier; repo lint'i temiz (0 hata/uyarı).
+- LICENSE (MIT), CHANGELOG, deploy/env.list (kanonik env listesi).
+- Tek komutluk test runner (run-tests.mjs) — '&&' zinciri yerine özetli rapor.
+- xp.db günlük yedekleme + haftalık bakım görevi.
+
+### Changed — sağlamlık ve denge (BUG-RAPORU B-bulguları)
+- Blitz: firstAnswerId yalnız doğru cevaba; kopuş pencereyi erken kapatmaz;
+  izleyici tahmini yalnız geri sayımda; soru sayacı kendi ilerlemesini gösterir.
+- Zil: yanlış basış skoru 0'da sınırlı; ceza yalnız basıp kaybedene; kazananın
+  izleyiciye geçişi zili takmaz; bot doğruluğu botSkill'e bağlı.
+- Tavern Panosu: ayrılan seçici kalıcı atlanır; seçim sırası maç-içi katılım/
+  ayrılığı izler; 'son maç hariç' koruması sorulanları kapsar.
+- Kelime Oyunu: harf-alma kişi başı 2; kilitli oyuncu harf alamaz; kazanç
+  kutusu ve doğru/yanlış sesi düzeltildi; ipucu cevabı sızdırmaz.
+- Yakın Tahmin: maç özeti inceleme listesi; beraberlik FP-simetrik test.
+- Yazar soruları 'Topluluk' etiketi taşır; dar havuzda delik açmaz; bedava
+  zorluk bonusu vermez.
+- Lider tabloları yalnız lobi/podium fazında state'e yazılır (ağ tasarrufu).
+- Soru sayısı çipleri anlamsız modlarda gizlenir + sunucu tarafında reddedilir.
+- Kalibrasyon mod-bilinçli; deadline kilidi geç cevapları reddeder; şık-indeks
+  cevap yalnız choice modlarında geçer.
+- MODE_CONTRACT: mod özellikleri tek sözleşme tablosunda (shared/types.ts).
+- emitRoom: ortak yük broadcast başına bir kez hesaplanır, kişisel katman
+  alıcı başına uygulanır.
+
 ### Fixed — içerik verisi
 - Çember: anlamsız EN ipucu-cevap çiftleri ve uydurma TR cevaplar düzeltildi;
   uzun bileşiklere alias; neredeyse-aynı ipuçları çeşitlendirildi.
