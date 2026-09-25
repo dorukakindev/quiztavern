@@ -1001,7 +1001,8 @@ export class Room {
       choices: choices.map((c) => (c as string).trim()),
       choicesEn: choices.map((c) => (c as string).trim()),
       correctIndex: correctIndex as number,
-      difficulty: "orta",
+      // Kalibre edilmemiş topluluk sorusu — zorluk bonusu vermesin.
+      difficulty: "kolay",
     });
     this.broadcast();
   }
