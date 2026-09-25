@@ -1485,7 +1485,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   useEffect(() => {
     if (!isZil || beats.active || zilYouWon || waiting || zilWinner || zilYouFailed || !self) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
+      if (event.target instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable)) return
       if (document.querySelector('[role="dialog"]')) return
       if (event.key !== ' ' && event.key.toLowerCase() !== 'b') return
       event.preventDefault()
@@ -1499,10 +1499,12 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   // Klavye kısayolu: A/B/C/D veya 1/2/3/4 tıklamayla aynı işi yapar (kilitler).
   // Çember modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
   // alanına yazarken ya da masadan-ayrıl onay kutusu açıkken de sessizce yutar.
+  // removedChoices dep'te — %50 jokeri şıkkı sildikten sonra bayat closure
+  // silinmiş index'i hâlâ kilitleyebilirdi.
   useEffect(() => {
     if (isCircle || locked) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
+      if (event.target instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable)) return
       if (document.querySelector('[role="dialog"]')) return
       const index = shortcutIndex(event.key, 4)
       if (index === null || state.removedChoices.includes(index)) return
@@ -1511,7 +1513,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [isCircle, locked, onAnswer])
+  }, [isCircle, locked, onAnswer, state.removedChoices])
 
   // Sahne görseli geri geldi: elipsi bunlarda sanıp kaldırmıştım, meğer
   // .qt-timer::after ekrana kaçıyormuş — görsellerin suçu yokmuş.
