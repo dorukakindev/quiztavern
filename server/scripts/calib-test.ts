@@ -108,5 +108,99 @@ test('Bilinmeyen soru id’si kalibrasyonu bozmaz', () => {
   setQuestionCalibration([])
 })
 
-console.log(`calib-test: ${passed}/8 OK`)
+test('Blitz maçı havuz kalibrasyonuna yazmaz (B46)', () => {
+  // Mod-körü döngü BLITZ_POOL'un 30 ifadesini "asked=30, correct=0" diye
+  // zehirliyordu — ifadeler kararlı soru id'si taşımaz, besleme atlanır.
+  const s = createXpStore(join(mkdtempSync(join(tmpdir(), 'calib-')), 'xp.db'))
+  const r = new Room('calib-blitz', () => {}, { minPlayers: 1 })
+  r.setProgressStore(s)
+  r.addPlayer(player('u1', 'U1'))
+  r.setGameMode('u1', 'blitz')
+  r.setReady('u1', true)
+  r.start('u1', 'blitz')
+  ;(r as unknown as { finish: () => void }).finish()
+  assert.equal(s.questionStats().length, 0)
+  s.close()
+})
+
+test('Çember maçı klasik soru istatistiği yazmaz (B46)', () => {
+  // Çemberde this.questions kullanılmayan klasiklerle doluyordu — maç sonu
+  // hepsi "soruldu-yanlış" diye yazılıyordu.
+  const s = createXpStore(join(mkdtempSync(join(tmpdir(), 'calib-')), 'xp.db'))
+  const r = new Room('calib-circle', () => {}, { minPlayers: 1 })
+  r.setProgressStore(s)
+  r.addPlayer(player('u1', 'U1'))
+  r.setGameMode('u1', 'circle')
+  r.setReady('u1', true)
+  r.start('u1', 'circle')
+  ;(r as unknown as { finish: () => void }).finish()
+  assert.equal(s.questionStats().length, 0)
+  s.close()
+})
+
+test('Elim: ölen oyuncu ve oynanmamış turlar sayılmaz (B46)', () => {
+  // Döngü this.questions'ın TAMAMINI geziyordu — erken biten maç 10
+  // soruya "soruldu" yazıyordu; elenen oyuncu da sayılıyordu.
+  const s = createXpStore(join(mkdtempSync(join(tmpdir(), 'calib-')), 'xp.db'))
+  const r = new Room('calib-elim', () => {}, { minPlayers: 1 })
+  r.setProgressStore(s)
+  r.addPlayer(player('u1', 'U1'))
+  r.addPlayer(player('u2', 'U2'))
+  r.addPlayer(player('u3', 'U3'))
+  r.setGameMode('u1', 'elim')
+  for (const pid of ['u1', 'u2', 'u3']) r.setReady(pid, true)
+  r.start('u1', 'elim')
+  stop(r)
+  begin(r)
+  const inner = internals(r)
+  const wrong = () => (r.currentQuestion()!.correctIndex + 1) % 4
+  const right = () => r.currentQuestion()!.correctIndex
+  const round = (answers: [string, number][]) => {
+    for (const [pid, choice] of answers) r.answer(pid, choice)
+    inner.reveal()
+    inner.revealUntil = 0
+    inner.advanceFromReveal()
+  }
+  // Turlar 0-2: u1 yanlış (3. turda elenir), u2/u3 doğru (hayatta kalır).
+  for (let i = 0; i < 3; i++) round([['u1', wrong()], ['u2', right()], ['u3', right()]])
+  assert.equal(inner.phase, 'question')
+  // Turlar 3-5: u1 ölü oynayamaz; u2 yanlış (6. turda elenir), u3 doğru.
+  for (let i = 0; i < 3; i++) round([['u2', wrong()], ['u3', right()]])
+  assert.equal(inner.phase, 'podium')
+  const stats = s.questionStats()
+  assert.equal(stats.length, 6, 'oynanan 6 tur yazılır — 10 değil')
+  // 4. tur: u1 ölü+cevapsız (dışlanır), u2+u3 sayılır → asked=2.
+  const row3 = stats.find((x) => x.questionId === r.questions[3].id)!
+  assert.equal(row3.asked, 2, 'u1 ölü olduğu için sayılmaz')
+  const row0 = stats.find((x) => x.questionId === r.questions[0].id)!
+  assert.equal(row0.asked, 3, 'ilk turda üçü de yaşıyordu')
+  s.close()
+})
+
+test('Zil: yalnız basan sayılır, diğerleri asked’a girmez (B46)', () => {
+  const s = createXpStore(join(mkdtempSync(join(tmpdir(), 'calib-')), 'xp.db'))
+  const r = new Room('calib-zil', () => {}, { minPlayers: 1 })
+  r.setProgressStore(s)
+  r.addPlayer(player('u1', 'U1'))
+  r.addPlayer(player('u2', 'U2'))
+  r.setGameMode('u1', 'zil')
+  for (const pid of ['u1', 'u2']) r.setReady(pid, true)
+  r.start('u1', 'zil')
+  stop(r)
+  begin(r)
+  r.buzz('u1')
+  r.answer('u1', r.currentQuestion()!.correctIndex)
+  const inner = internals(r)
+  inner.reveal()
+  inner.revealUntil = 0
+  inner.qIndex = r.stateFor('u1', true).round.total - 1
+  inner.advanceFromReveal()
+  assert.equal(inner.phase, 'podium')
+  const row0 = s.questionStats().find((x) => x.questionId === r.questions[0].id)!
+  assert.equal(row0.asked, 1, 'yalnız basan u1 soruldu sayılır')
+  assert.equal(row0.correct, 1)
+  s.close()
+})
+
+console.log(`calib-test: ${passed}/12 OK`)
 store.close()

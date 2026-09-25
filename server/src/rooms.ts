@@ -160,6 +160,12 @@ const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team", "duel"]);
  *  (firstAnswerId kaçak set olur, choice anlamsız dolar). */
 const CHOICE_MODES = new Set(["classic", "lightning", "bet", "team", "elim", "blur", "duel", "zil", "blitz", "board"]);
 
+/** Kalibrasyon beslemesine girmeyen modlar: çember/kelime this.questions'ı
+ *  kullanmadan typed[]'de cevaplar; blitz ifade havuzu kararlı soru id'si
+ *  taşımaz; numeric/timeline kendi soru dizilerinde tutulur (questions=[]).
+ *  Pano sette değil — gerçek sorulanlar boardAsked üzerinden beslenir. */
+const CALIBRATION_SKIP_MODES = new Set(["circle", "word", "blitz", "numeric", "timeline"]);
+
 /** 0..n-1 karışık indeksler — yazılan soruların hangi slotlara düşeceğini belirler. */
 function shuffleIdx(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -2377,22 +2383,41 @@ export class Room {
         try { this.xpGains = this.progress.recordMatch(matchEntries); }
         catch (error) { console.error("[xp] maç sonucu yazılamadı:", error); }
       }
-      // §6.3 zorluk kalibrasyonu: her soru için kimlere soruldu / kimler bildi.
-      // Bot cevapları istatistiği bozmasın diye yalnız gerçek oyuncular sayılır.
-      if (this.questions.length) {
+      // §6.3 zorluk kalibrasyonu: yalnız gerçekten sorulan sorular ve yalnız
+      // oynayabilen oyuncular sayılır — mod-körü döngü blitz/çember'in
+      // kullanılmayan sorularını ve elim'in ölü oyuncularını "yanlış" diye
+      // zehirliyordu (B46). Bot cevapları yine dışarıda.
+      if (this.questions.length || this.boardAsked.length) {
         try {
           const rows = new Map<string, { questionId: string; asked: number; correct: number }>();
-          this.questions.forEach((question, index) => {
+          const feed = (question: { id: string; correctIndex: number }, index: number) => {
+            if (question.id.startsWith("written-")) return; // oturumluk yazar sorusu havuz istatistiği değil
             const row = rows.get(question.id) ?? { questionId: question.id, asked: 0, correct: 0 };
             for (const player of this.players.values()) {
               if (player.isBot || player.eligibleFrom > index) continue;
+              const answered = player.answers[index] != null; // reveal cevapsızlara null yazar
+              // Zil'de yalnız zile basan test edildi — diğerleri "yanlış" değil.
+              if (this.gameMode === "zil" && !answered) continue;
+              // Son Masa'da canı biten o turu oynayamazdı; ama canı o turda
+              // biten (cevap bırakan) hâlâ sayılır.
+              if (this.gameMode === "elim" && !answered && player.lives <= 0) continue;
               row.asked += 1;
               if (player.answers[index] === question.correctIndex) row.correct += 1;
             }
             rows.set(question.id, row);
-          });
-          this.progress.recordQuestionStats([...rows.values()]);
-          setQuestionCalibration(this.progress.questionStats());
+          };
+          if (this.gameMode === "board") {
+            this.boardAsked.forEach((question, index) => feed(question, index));
+          } else if (this.questions.length && !CALIBRATION_SKIP_MODES.has(this.gameMode)) {
+            // Yalnız gerçekten sorulan turlar — elim/bet'te maç erken biterse
+            // oynanmamış kuyruk "soruldu-yanlış" yazılmaz.
+            const askedCount = Math.min(this.qIndex + 1, this.questions.length);
+            for (let index = 0; index < askedCount; index++) feed(this.questions[index], index);
+          }
+          if (rows.size) {
+            this.progress.recordQuestionStats([...rows.values()]);
+            setQuestionCalibration(this.progress.questionStats());
+          }
         } catch (error) { console.error("[xp] soru istatistiği yazılamadı:", error); }
       }
     }
