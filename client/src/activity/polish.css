@@ -2257,3 +2257,18 @@
   padding: 0;
   background: transparent;
 }
+
+/* ── Diğer modlar: modal içeriği viewport'u aşarsa içeride kaydır ─────── */
+.qt-category-modal > .qt-mode-options {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+/* Amblem görselleri karoyu doldursun (ikon karosuyla aynı kutu) */
+.qt-mode-option__icon > img,
+.qt-mode-card__tile > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
