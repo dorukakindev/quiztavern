@@ -16,6 +16,7 @@ const tr = {
   'conn.discord': 'Discord oturumunda',
   'conn.local': 'Yerel test modu',
   'room.connecting': 'Bağlanılıyor',
+  'app.loading': 'Yükleniyor…',
 
   // Açılış
   'boot.title': 'Triviara hazırlanıyor',
@@ -604,6 +605,7 @@ const en: Record<StringKey, string> = {
   'conn.discord': 'Discord connected',
   'conn.local': 'Local test mode',
   'room.connecting': 'Connecting',
+  'app.loading': 'Loading…',
 
   'boot.title': 'Getting Triviara ready',
   'boot.subtitle': 'Setting up the table…',

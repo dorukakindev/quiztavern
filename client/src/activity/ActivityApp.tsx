@@ -2236,12 +2236,14 @@ function MatchSummaryCard({ state, summary, onAgain, onRematch, onBackToLobby }:
 /**
  * Yükleme iskeleti (3d): soru/oyun gelene kadar boş kart yerine oyun düzeninin
  * shimmer'lı taslağı — durum şeridi + oyuncu paneli + soru kartı (kategori, iki
- * metin satırı, 2×2 şık) + sayaç dairesi. Saf dekor: aria-hidden.
+ * metin satırı, 2×2 şık) + sayaç dairesi. Bloklar dekoratiftir (aria-hidden);
+ * durum, görsel olmayan role="status" metniyle duyurulur.
  */
-function GameSkeleton() {
-  return <main className="qt-activity qt-skeleton" aria-hidden="true">
-    <div className="qt-skeleton__strip qt-shimmer" />
-    <div className="qt-skeleton__grid">
+function GameSkeleton({ loadingLabel }: { loadingLabel: string }) {
+  return <main className="qt-activity qt-skeleton">
+    <span className="qt-sr-only" role="status">{loadingLabel}</span>
+    <div className="qt-skeleton__strip qt-shimmer" aria-hidden="true" />
+    <div className="qt-skeleton__grid" aria-hidden="true">
       <div className="qt-skeleton__side qt-shimmer" />
       <div className="qt-skeleton__card">
         <span className="qt-shimmer qt-skeleton__chip" />
@@ -2551,7 +2553,7 @@ export function ActivityApp() {
       }
       return activity.error
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
-        : <GameSkeleton />
+        : <GameSkeleton loadingLabel={i18n.t('app.loading')} />
     }
     // Oda lobiye dönmüş olabilir ama bu oyuncu sonuç ekranından henüz çıkmadı:
     // son maçı lastMatch'ten çizmeye devam et (başkası "Lobiye dön" dedi diye
