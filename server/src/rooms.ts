@@ -75,6 +75,10 @@ export interface RoomPlayer {
   /** Kelime Oyunu: doğru cevap anındaki donmuş değer (kalan harf × 100).
    *  Harf sonradan açılsa da erken cevaplayan yüksek değerini korur. */
   wordGain: number;
+  /** Kelime Oyunu: bu tur oyuncunun aldığı harf sayısı (GAME.WORD_LETTER_CAP'e
+   *  kadar). Tur başında sıfırlanır — yoksa tek oyuncu tüm harfleri açıp
+   *  herkesin değerini çökertir. */
+  wordLettersTaken: number;
   /** Tavern kartı (joker) sayısı — maç başı 1, 3'lü seride +1. Klasik/Takım. */
   cards: number;
   /** Bu tur kullanılan joker (tur başına bir; tur başında sıfırlanır). */
@@ -315,7 +319,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -373,6 +377,7 @@ export class Room {
               : this.qIndex + 1,
       lives: 0,
       wordGain: 0,
+      wordLettersTaken: 0,
       cards: 0,
       cardUsed: null,
       fiftyRemoved: [],
@@ -1324,6 +1329,11 @@ export class Room {
     const prompt = this.currentWordPrompt();
     if (!player || !prompt || player.eligibleFrom > this.qIndex) return;
     if (this.wordLettersRevealed >= prompt.answer.length - 1) return;
+    // Cevabını kilitleyen artık harf alamaz — işi biten oyuncu başkalarının
+    // değerini düşüremez. Tur başına da kişi başı üst sınır var: tek oyuncu
+    // arka arkaya tüm harfleri açıp soruyu değersizleştiremez.
+    if (player.circleAnswer !== null || player.wordLettersTaken >= GAME.WORD_LETTER_CAP) return;
+    player.wordLettersTaken += 1;
     this.wordLettersRevealed += 1;
     this.broadcast();
   }
@@ -1699,6 +1709,7 @@ export class Room {
       player.answeredAt = null;
       player.circleAnswer = null;
       player.circleCorrectAt = null;
+      player.wordLettersTaken = 0;
       // Jokerler tur başına bir: önceki turun etkileri burada sıfırlanır.
       player.cardUsed = null;
       player.fiftyRemoved = [];

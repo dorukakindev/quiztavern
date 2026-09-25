@@ -104,6 +104,8 @@ export const GAME = {
   // Kelime Oyunu: 14 tur (4-10 harf × 2), tek ortak zaman havuzu, harf başına 100.
   WORD_ROUNDS: 14,
   WORD_LETTER_POINTS: 100,
+  /** Kelime Oyunu: oyuncu başına turda en çok bu kadar harf açtırılabilir. */
+  WORD_LETTER_CAP: 2,
   WORD_POOL_MS: 360_000,
   WORD_ROUND_MS: 45_000,
   // 3000: geri sayim cizgisi ilk karede "3 sn" gosterir. 3500 iken Math.ceil
