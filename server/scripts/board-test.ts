@@ -204,6 +204,24 @@ test("maç ortasında katılan oyuncu pano sırasına girer (B60)", () => {
   assert.ok(inner.boardPickerOrder.includes("c"), "katılan kuyruğun sonunda");
 });
 
+test("önceki panoda sorulanlar 'son maç' korumasına taşınır (B58)", () => {
+  // Board'da questions dizisi boş olduğu için lastQuestionIds hep boştu —
+  // alt-havuz reseti önceki panonun sorularını hemen geri getirebilirdi.
+  const room = boardRoom("b13", ["a"]);
+  const inner = startPick(room);
+  room.pickCell("a", 0);
+  room.answer("a", 0);
+  inner.reveal();
+  const askedIds = inner.boardAsked.map((q) => q.id);
+  assert.ok(askedIds.length === 1);
+  // İkinci maç: sorulan hücre id'si son-maç korumasına girmeli.
+  inner.finish();
+  room.returnToLobby("a");
+  room.start("a", "board");
+  const lastIds = (room as unknown as { lastQuestionIds: Set<string> }).lastQuestionIds;
+  assert.ok(lastIds.has(askedIds[0]!), "sorulan soru lastQuestionIds'te");
+});
+
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 14);
+assert.equal(passed, 15);
 process.exit(0);
