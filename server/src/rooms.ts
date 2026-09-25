@@ -1445,6 +1445,7 @@ export class Room {
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
     const inNumeric = this.phase === "question" && numericPrompt;
+    const showBoards = this.phase === "lobby" || this.phase === "podium";
     const writerId = question && question.id.startsWith("written-") ? question.id.slice(8) : null;
     const questionPayload: QuestionPayload | null = inQuestion
       ? {
@@ -1632,9 +1633,11 @@ export class Room {
       xpGains: this.phase === "podium" && this.progress && this.xpGains.size
         ? Object.fromEntries(this.xpGains)
         : null,
-      seasonBoard: this.progress?.seasonBoard(5) ?? null,
-      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
-      dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
+      // Lider tabloları yalnız lobi/podium'da gösterilir — oyun fazlarında her
+      // stateFor çağrısı alıcı başına gereksiz SQLite sorgusu üretirdi (§7.1).
+      seasonBoard: showBoards ? this.progress?.seasonBoard(5) ?? null : null,
+      weeklyBoard: showBoards ? this.progress?.weeklyBoard(5) ?? null : null,
+      dailyBoard: showBoards ? this.dailyBoardProvider?.(youId) ?? null : null,
       serverNow: Date.now(),
     };
   }
