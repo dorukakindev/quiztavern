@@ -115,6 +115,9 @@ async function main() {
       "https://evil.example",
     );
     assert(!evil.ok && evil.code === "ORIGIN_DENIED", `yabancı origin ORIGIN_DENIED aldı (kod=${evil.code})`);
+    // pino stdout'u pipe üzerinden ana sürece asenkron düşer — chunk henüz
+    // gelmeden assert koşmak CI'da flake üretir; kısa süre poll'la bekle.
+    for (let i = 0; i < 40 && !serverLog.includes("ORIGIN_DENIED"); i++) await sleep(50);
     assert(serverLog.includes("ORIGIN_DENIED"), "sunucu loguna reddetme kodu yazıldı");
 
     console.log("\nKimlik katmanları Origin'sizken de korunuyor:");
