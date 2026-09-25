@@ -1435,8 +1435,12 @@ export class Room {
     this.progress = store;
   }
 
-  stateFor(youId: string, devMode: boolean): GameState {
-    const self = this.players.get(youId);
+  /** Ortak state yükü — emitRoom'da broadcast başına BİR kez kurulur (§7.3).
+    * Kişisel alanlar (your*, joker deadline'ı, bankroll/broke, blitz canlı
+    * durumu, matchSummary/lastMatch, günlük pattern, rozet snapshot'ı,
+    * günlük tablo, rematch oyu) nötr değerlerle döner; personalStateFor
+    * her alıcı için bunların üzerine yazar. */
+  sharedState(devMode: boolean): GameState {
     const question = this.currentQuestion();
     const circlePrompt = this.currentCirclePrompt();
     const wordPrompt = this.currentWordPrompt();
@@ -1453,13 +1457,13 @@ export class Room {
           choices: question.choices,
           textEn: question.textEn,
           choicesEn: question.choicesEn,
-          // Dondur jokeri yiyen oyuncuya kişisel (kısaltılmış) deadline gider;
-          // diğer herkes genel deadline'ı görür.
-          deadline: self ? this.deadlineFor(self) : this.questionDeadline,
+          // Dondur jokeri yiyen oyuncuya kişisel deadline — personalStateFor yazar.
+          deadline: this.questionDeadline,
           durationMs: this.questionDuration(),
           ...(question.image ? { image: question.image } : {}),
           ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
-          ...(writerId ? { writtenByName: this.players.get(writerId)?.name ?? null, writtenByYou: writerId === youId } : {}),
+          // writtenByYou kişisel — personalStateFor yazar.
+          ...(writerId ? { writtenByName: this.players.get(writerId)?.name ?? null } : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle
@@ -1496,18 +1500,8 @@ export class Room {
       : null;
     // D/Y Blitz: KİŞİSEL canlı durum — herkesin ifadesi farklıdır; truth
     // istemciye hiç çıkmaz. Reveal'da akış donar, özet blitzSummary'de gider.
-    const selfBlitz = self ?? null;
-    const blitz: BlitzLivePayload | null = this.gameMode === "blitz" && this.phase === "question"
-      ? {
-          deadline: this.questionDeadline, durationMs: GAME.BLITZ_TOTAL_MS,
-          statement: selfBlitz?.blitzClaim
-            ? { text: selfBlitz.blitzClaim.text, textEn: selfBlitz.blitzClaim.textEn, claim: selfBlitz.blitzClaim.claim, claimEn: selfBlitz.blitzClaim.claimEn, category: selfBlitz.blitzClaim.category }
-            : null,
-          index: selfBlitz?.blitzIdx ?? 0,
-          correct: selfBlitz?.blitzCorrect ?? 0,
-          streak: selfBlitz?.blitzStreak ?? 0,
-        }
-      : null;
+    // Blitz canlı durumu kişisel — personalStateFor doldurur.
+    const blitz: BlitzLivePayload | null = null;
     const blitzSummary: BlitzSummaryPayload | null = this.gameMode === "blitz" && this.phase === "reveal" ? this.lastBlitzSummary : null;
     // Zaman Çizelgesi: karışık dizilim (yıllar gizli) soru+reveal fazında;
     // çözüm timelineReveal'da yıllarıyla açılır.
@@ -1526,9 +1520,8 @@ export class Room {
       ? { deadline: this.countdownDeadline, durationMs: GAME.COUNTDOWN_MS }
       : null;
     // Çifte Bahis bahis fazı: yalnız kategori + oyuncunun bankrolü sızar; soru gizli.
-    const self0 = this.players.get(youId);
     const bet: BetPayload | null = this.phase === "bet" && question
-      ? { category: question.category, bankroll: Math.max(0, self0?.score ?? 0), deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: this.rescueRound.has(youId), brokeReward: GAME.BET_BROKE_REWARD, ...(this.qIndex === this.roundLimit - 1 ? { final: true } : {}) }
+      ? { category: question.category, bankroll: 0 /* kişisel */, deadline: this.betDeadline, durationMs: GAME.BET_MS, broke: false /* kişisel */, brokeReward: GAME.BET_BROKE_REWARD, ...(this.qIndex === this.roundLimit - 1 ? { final: true } : {}) }
       : null;
     // Tavern Panosu: pick fazında pano — yalnız değer+kullanılmışlık (soru sızıntısı yok).
     const pickerId = this.boardPickerId();
@@ -1547,11 +1540,126 @@ export class Room {
       : null;
     // Maç bitince dondurulan özet önceliklidir: podyumda masadan çıkıp geri
     // dönen oyuncunun kaydı yenilense de kendi sonucunu görmeye devam eder.
+    // Kişisel — personalStateFor doldurur.
+    const matchSummary: MatchSummary | null = null;
+    const moments = this.phase === "podium" ? this.momentsSnapshot : null;
+    const meta = this.lastMatchMeta;
+    // Kişisel — personalStateFor doldurur.
+    const lastMatch: LastMatch | null = null;
+    return {
+      phase: this.phase,
+      gameMode: this.gameMode,
+      roomId: this.id,
+      hostId: this.hostId,
+      youId: "",
+      players: this.sortedPlayers().map((player) => this.publicPlayer(player)),
+      teamScores: this.teamScores,
+      round: { index: this.qIndex, total: this.gameMode === "circle" ? this.circlePrompts.length : this.roundLimit },
+      question: questionPayload,
+      circle,
+      countdown,
+      bet,
+      yourBet: null,
+      yourChoice: null,
+      yourCircleAnswer: null,
+      yourWordAnswer: null,
+      yourCards: 0,
+      yourCardUsed: null,
+      removedChoices: [],
+      youFrozen: false,
+      reveal: this.phase === "reveal" ? this.lastReveal : null,
+      circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
+      wordReveal: this.phase === "reveal" ? this.lastWordReveal : null,
+      word,
+      numeric,
+      blitz,
+      blitzSummary,
+      timeline,
+      timelineReveal,
+      yourNumericGuess: null,
+      yourOrder: null,
+      board,
+      podium,
+      matchSummary,
+      moments,
+      lastMatch,
+      lastMatchId: this.phase === "podium" && meta ? meta.id : null,
+      daily: this.dailyMatch ? { day: this.dailyDay, pattern: null /* kişisel */ } : null,
+      // Bahis fazında "kilitleyen" = bahsini yatıran; diğer fazlarda = cevaplayan.
+      answeredCount: this.eligiblePlayers().filter((player) => this.phase === "bet" ? player.bet !== null : this.hasAnswered(player)).length,
+      eligibleCount: this.eligiblePlayers().length,
+      firstAnswerId: this.firstAnswerId,
+      youAreSpectator: false,
+      spectatorCount: this.spectators.size,
+      rematch: this.phase === "podium"
+        ? { votes: this.rematchVotes.size, needed: this.rematchNeeded(), youVoted: false /* kişisel */ }
+        : null,
+      writers: [...this.writtenQuestions.keys()],
+      yourPrediction: null,
+      predictOpen: this.predictOpen(),
+      zil: this.gameMode === "zil" ? { winnerId: this.buzzWinnerId, failedIds: [...this.buzzFailed] } : null,
+      minPlayers: this.minPlayers,
+      questionCount: this.questionCount,
+      difficulty: this.difficulty,
+      tableTheme: this.tableTheme,
+      questionTimeMs: this.questionTimeMs,
+      speedBonus: this.speedBonus,
+      imageOnly: this.imageOnly,
+      categorySelection: this.categorySelection,
+      pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
+      availableCategories: CATEGORY_CATALOG,
+      devMode,
+      progress: null,
+      xpGains: this.phase === "podium" && this.progress && this.xpGains.size
+        ? Object.fromEntries(this.xpGains)
+        : null,
+      seasonBoard: this.progress?.seasonBoard(5) ?? null,
+      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
+      dailyBoard: null,
+      serverNow: Date.now(),
+    };
+  }
+
+  /** Kişisel katman: ortak yükün üstüne alıcıya özel alanları yazar.
+    * emitRoom her alıcı için çağırır; ağır nesne (maske, sıralama, pano)
+    * shared'den referansla gelir — yalnız kopyalanacak alanlar yeni nesne. */
+  private personalStateFor(youId: string, shared: GameState): GameState {
+    const self = this.players.get(youId);
+    const meta = this.lastMatchMeta;
+    // Dondur jokeri yiyen oyuncuya kişisel (kısaltılmış) deadline gider;
+    // diğer herkes genel deadline'ı görür. Yazar sorusunda writtenByYou da kişisel.
+    let question = shared.question;
+    if (question) {
+      const q = this.currentQuestion();
+      const writerId = q && q.id.startsWith("written-") ? q.id.slice(8) : null;
+      const deadline = self ? this.deadlineFor(self) : this.questionDeadline;
+      if (writerId || deadline !== question.deadline) {
+        question = { ...question, deadline, ...(writerId ? { writtenByYou: writerId === youId } : {}) };
+      }
+    }
+    // Çifte Bahis: bankroll + broke kişisel.
+    let bet = shared.bet;
+    if (bet) {
+      bet = { ...bet, bankroll: Math.max(0, self?.score ?? 0), broke: this.rescueRound.has(youId) };
+    }
+    // D/Y Blitz: KİŞİSEL canlı durum — herkesin ifadesi farklıdır; truth
+    // istemciye hiç çıkmaz. Reveal'da akış donar, özet blitzSummary'de gider.
+    const blitz: BlitzLivePayload | null = this.gameMode === "blitz" && this.phase === "question"
+      ? {
+          deadline: this.questionDeadline, durationMs: GAME.BLITZ_TOTAL_MS,
+          statement: self?.blitzClaim
+            ? { text: self.blitzClaim.text, textEn: self.blitzClaim.textEn, claim: self.blitzClaim.claim, claimEn: self.blitzClaim.claimEn, category: self.blitzClaim.category }
+            : null,
+          index: self?.blitzIdx ?? 0,
+          correct: self?.blitzCorrect ?? 0,
+          streak: self?.blitzStreak ?? 0,
+        }
+      : null;
+    // Maç bitince dondurulan özet önceliklidir: podyumda masadan çıkıp geri
+    // dönen oyuncunun kaydı yenilense de kendi sonucunu görmeye devam eder.
     const matchSummary: MatchSummary | null = this.phase === "podium"
       ? this.frozenSummaries.get(youId) ?? (self ? this.summaryFor(self) : null)
       : null;
-    const moments = this.phase === "podium" ? this.momentsSnapshot : null;
-    const meta = this.lastMatchMeta;
     const lastMatch: LastMatch | null = this.phase === "lobby" && meta && this.inResults.has(youId)
       ? {
           id: meta.id,
@@ -1566,17 +1674,9 @@ export class Room {
         }
       : null;
     return {
-      phase: this.phase,
-      gameMode: this.gameMode,
-      roomId: this.id,
-      hostId: this.hostId,
+      ...shared,
       youId,
-      players: this.sortedPlayers().map((player) => this.publicPlayer(player)),
-      teamScores: this.teamScores,
-      round: { index: this.qIndex, total: this.gameMode === "circle" ? this.circlePrompts.length : this.roundLimit },
-      question: questionPayload,
-      circle,
-      countdown,
+      question,
       bet,
       yourBet: self?.bet ?? null,
       yourChoice: self?.choice ?? null,
@@ -1586,57 +1686,26 @@ export class Room {
       yourCardUsed: self?.cardUsed ?? null,
       removedChoices: self?.fiftyRemoved ?? [],
       youFrozen: self?.frozen ?? false,
-      reveal: this.phase === "reveal" ? this.lastReveal : null,
-      circleReveal: this.phase === "reveal" ? this.lastCircleReveal : null,
-      wordReveal: this.phase === "reveal" ? this.lastWordReveal : null,
-      word,
-      numeric,
       blitz,
-      blitzSummary,
-      timeline,
-      timelineReveal,
       yourNumericGuess: this.numericGuesses.get(youId) ?? null,
       yourOrder: this.orderGuesses.get(youId) ?? null,
-      board,
-      podium,
       matchSummary,
-      moments,
       lastMatch,
-      lastMatchId: this.phase === "podium" && meta ? meta.id : null,
       daily: this.dailyMatch ? { day: this.dailyDay, pattern: this.dailyResults.get(youId) ?? null } : null,
-      // Bahis fazında "kilitleyen" = bahsini yatıran; diğer fazlarda = cevaplayan.
-      answeredCount: this.eligiblePlayers().filter((player) => this.phase === "bet" ? player.bet !== null : this.hasAnswered(player)).length,
-      eligibleCount: this.eligiblePlayers().length,
-      firstAnswerId: this.firstAnswerId,
       youAreSpectator: this.spectators.has(youId),
-      spectatorCount: this.spectators.size,
-      rematch: this.phase === "podium"
-        ? { votes: this.rematchVotes.size, needed: this.rematchNeeded(), youVoted: this.rematchVotes.has(youId) }
-        : null,
-      writers: [...this.writtenQuestions.keys()],
+      rematch: shared.rematch ? { ...shared.rematch, youVoted: this.rematchVotes.has(youId) } : null,
       yourPrediction: this.predictions.get(youId) ?? null,
-      predictOpen: this.predictOpen(),
-      zil: this.gameMode === "zil" ? { winnerId: this.buzzWinnerId, failedIds: [...this.buzzFailed] } : null,
-      minPlayers: this.minPlayers,
-      questionCount: this.questionCount,
-      difficulty: this.difficulty,
-      tableTheme: this.tableTheme,
-      questionTimeMs: this.questionTimeMs,
-      speedBonus: this.speedBonus,
-      imageOnly: this.imageOnly,
-      categorySelection: this.categorySelection,
-      pack: this.packId ? { id: this.packId, name: getPack(this.packId)?.name ?? this.packId } : null,
-      availableCategories: CATEGORY_CATALOG,
-      devMode,
       progress: this.progress?.snapshot(youId) ?? null,
-      xpGains: this.phase === "podium" && this.progress && this.xpGains.size
-        ? Object.fromEntries(this.xpGains)
-        : null,
-      seasonBoard: this.progress?.seasonBoard(5) ?? null,
-      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
       dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
-      serverNow: Date.now(),
     };
+  }
+
+  /** boolean arg: ortak yükü sıfırdan kurup kişisel katmanı ekler (tek-kişilik
+    * yollar ve testler). GameState arg: emitRoom'un bir kez kurduğu ortak
+    * yükün üstüne yalnız kişisel katmanı yazar. */
+  stateFor(youId: string, devModeOrShared: boolean | GameState = false): GameState {
+    const shared = typeof devModeOrShared === "boolean" ? this.sharedState(devModeOrShared) : devModeOrShared;
+    return this.personalStateFor(youId, shared);
   }
 
   private beginQuestion() {
