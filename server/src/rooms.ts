@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
+import { CIRCLE_COUNTS, COUNTLESS_MODES, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, shuffleChoices, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
@@ -90,8 +90,12 @@ export interface RoomPlayer {
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
-   *  çember = yazılan metin. Yalnız reveal'de o turun gözü doldurulur. */
+   *  çember = yazılan metin, numeric = tahmin edilen sayı. Yalnız reveal'de
+   *  o turun gözü doldurulur. */
   answers: (number | null)[];
+  /** Yakın Tahmin: tur bazında turu kazandı mı (en yakın ya da tam isabet).
+   *  answers[]'a paralel — inceleme kartındaki doğru/yanlış işaretini besler. */
+  numericWins: boolean[];
   typed: (string | null)[];
   /** D/Y Blitz (§6.1): oyuncunun bağımsız ifade akışı — herkes kendi hızında
    *  ilerler; pencere ortak 60 sn, seri çarpanıyla puanlanır. */
@@ -319,7 +323,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers" | "numericWins">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -384,6 +388,7 @@ export class Room {
       frozen: false,
       stats: emptyStats(),
       answers: [],
+      numericWins: [],
       typed: [],
       blitzIdx: 0,
       blitzStreak: 0,
@@ -501,6 +506,9 @@ export class Room {
     this.fastestFingerSnapshot = undefined;
     this.momentsSnapshot = null;
     this.dailyMatch = false;
+    // Günlük öncesi modu "geri yükle" anısı masa sıfırlanınca da silinmeli —
+    // yoksa yeni masanın ilk maçı bayat modla açılırdı (B50).
+    this.modeBeforeDaily = null;
     this.dailyResults = new Map();
     this.xpGains = new Map();
     this.clearLastMatch();
@@ -563,9 +571,15 @@ export class Room {
     this.rematchVotes.delete(userId);
     this.writtenQuestions.delete(userId);
     if (this.hostId === userId) this.reassignHost();
+    // Zil kazananı izleyiciye geçtiyse denemesi yanmış sayılır — yoksa zil
+    // buzzWinnerId'de takılır ve masa ~5 sn zilTimer bekler (B61).
+    if (this.buzzWinnerId === userId) this.zilFailWinner();
+    // İzleyici kaydı handleNoPlayersLeft'ten ÖNCE: son insan izleyiciye
+    // geçtiğinde erken return bu satırı atlıyordu — socket sahipsiz kalıp
+    // oda onsuz kapanıyordu (B47). Kayıtlı izleyici odayı canlı tutar.
+    this.spectators.set(id, { id, name, avatarUrl, socketId });
     if (this.handleNoPlayersLeft()) return;
     this.checkRematchTrigger();
-    this.spectators.set(id, { id, name, avatarUrl, socketId }); // artık izleyici olduğu için oda kapanmaz, lobiye döner
     this.broadcast();
     this.revealIfEveryoneAnswered();
     this.advanceIfEveryoneBet();
@@ -726,6 +740,10 @@ export class Room {
    *  hile olur — kapanır. */
   private predictOpen(): boolean {
     if (this.phase === "countdown") return true;
+    // Blitz'te tüm maç tek "question" fazı ve qIndex hep 0 — genel kural
+    // pencereyi 60 sn açık bırakırdı; son saniyede lidere oynamak bedava
+    // XP olur (B49). Blitz'te tahmin yalnız geri sayımda kabul edilir.
+    if (this.gameMode === "blitz") return false;
     return (this.phase === "question" || this.phase === "bet") && this.qIndex === 0;
   }
 
@@ -768,8 +786,11 @@ export class Room {
   private checkRematchTrigger(): void {
     if (this.phase !== "podium" || !this.rematchVotes.size) return;
     if (this.rematchVotes.size < this.rematchNeeded()) return;
+    // İlk oyu clear'dan önce oku — clear sonrası values() boştu; host yoksa
+    // başlatıcı hep "ilk bağlı insan"a düşüyordu, ilk oy veren olmalı (B55).
+    const firstVoter = this.rematchVotes.values().next().value;
     this.rematchVotes.clear();
-    const by = this.hostId && this.players.has(this.hostId) ? this.hostId : this.rematchVotes.values().next().value;
+    const by = this.hostId && this.players.has(this.hostId) ? this.hostId : firstVoter;
     // Oylar temizlendi; tetikleyici kalmadıysa ilk bağlı oyuncu adına başlat.
     const requester = by ?? [...this.players.values()].find((p) => p.connected && !p.isBot)?.id;
     if (!requester) return;
@@ -852,8 +873,8 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
-    // Düello hep 7 soru — host'a sayı seçtirilmez (QUESTION_COUNTS dışı olduğu
-    // için setQuestionCount zaten reddeder).
+    // Düello hep 7 soru — host'a sayı seçtirilmez (COUNTLESS_MODES; lobi çipi
+    // gizli + setQuestionCount reddeder).
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "zil") this.questionCount = 10;
     if (mode === "numeric") this.questionCount = 10;
@@ -921,6 +942,9 @@ export class Room {
   setQuestionCount(playerId: string, count: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.countHostOnly");
+    // Soru sayısı ayarı anlamsız modlar (duel=7 sabit; word/blitz/board sayıyı
+    // yok sayar) — istemcide çip gizli, burada da reddedilir.
+    if (COUNTLESS_MODES.includes(this.gameMode)) throw new GameError("err.countMode");
     // Çember'de aynı alan tur sayısını taşır: 10/15/20.
     const valid = this.gameMode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS;
     if (!(valid as readonly number[]).includes(count as number)) throw new GameError("err.countInvalid");
@@ -999,7 +1023,7 @@ export class Room {
     }
     this.writtenQuestions.set(playerId, {
       id: `written-${playerId}`,
-      category: "community",
+      category: "Topluluk",
       text, textEn: text,
       choices: choices.map((c) => (c as string).trim()),
       choicesEn: choices.map((c) => (c as string).trim()),
@@ -1150,6 +1174,10 @@ export class Room {
       // Tavern Panosu: sorular hücrelerde oturur; questions dizisi boş kalır —
       // currentQuestion açık hücreden okur, buildReview açılış sırasını izler.
       if (this.gameMode === "board") {
+        // Pano'da questions dizisi boş olduğundan genel atama lastQuestionIds'i
+        // hep boşaltıyordu — "son maç hariç" korumasına önceki panoda SORULMUŞ
+        // soruları taşı (B58).
+        this.lastQuestionIds = new Set(this.boardAsked.map((q) => q.id));
         const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
         this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
         this.boardCategories = spec.categories;
@@ -1163,7 +1191,9 @@ export class Room {
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
           : sampleQuestions(this.gameMode === "blitz" ? GAME.BLITZ_POOL : this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
-      this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
+      // Board'da questions boş — lastQuestionIds az önce önceki panonun
+      // sorulanlarıyla dolduruldu; boş setle ezme (B58).
+      if (this.gameMode !== "board") this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
       // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
@@ -1172,9 +1202,12 @@ export class Room {
         const pool = [...this.players.keys()]
           .filter((id) => this.writtenQuestions.has(id))
           .map((id) => this.writtenQuestions.get(id)!);
-        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
+        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length, this.questions.length);
         if (count > 0) {
-          const slots = shuffleIdx(this.roundLimit).slice(0, count);
+          // Slotlar dizi sınırından örneklenmeli — roundLimit istenen sayıdır
+          // ama dar havuzda questions.length daha kısa olur; slot ≥ length
+          // yazımı sparse delik açar ve maç ilk delikte erken biter (B59).
+          const slots = shuffleIdx(this.questions.length).slice(0, count);
           shuffleIdx(pool.length).slice(0, count).forEach((poolIdx, i) => {
             // Şık sırası da karışır — yazan "doğru hep ilk sırada" diye
             // arkadaşına pozisyonla cevabı işaret edemesin.
@@ -1233,6 +1266,7 @@ export class Room {
       player.eligibleFrom = 0;
       player.stats = emptyStats();
       player.answers = [];
+      player.numericWins = [];
       player.typed = [];
       player.orderAnswers = [];
     }
@@ -1385,6 +1419,7 @@ export class Room {
     if (!claim) return;
     const right = (choice === 0) === claim.truth;
     player.blitzAnswered++;
+    if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     if (right) {
       player.blitzStreak++;
       const gain = GAME.BLITZ_BASE + GAME.BLITZ_STREAK_STEP * Math.min(player.blitzStreak - 1, GAME.BLITZ_STREAK_CAP);
@@ -1392,7 +1427,6 @@ export class Room {
       player.blitzScore += gain;
       player.blitzCorrect++;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
-      if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     } else {
       player.blitzStreak = 0;
     }
@@ -1445,6 +1479,7 @@ export class Room {
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
     const inNumeric = this.phase === "question" && numericPrompt;
+    const showBoards = this.phase === "lobby" || this.phase === "podium";
     const writerId = question && question.id.startsWith("written-") ? question.id.slice(8) : null;
     const questionPayload: QuestionPayload | null = inQuestion
       ? {
@@ -1632,9 +1667,11 @@ export class Room {
       xpGains: this.phase === "podium" && this.progress && this.xpGains.size
         ? Object.fromEntries(this.xpGains)
         : null,
-      seasonBoard: this.progress?.seasonBoard(5) ?? null,
-      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
-      dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
+      // Lider tabloları yalnız lobi/podium'da gösterilir — oyun fazlarında her
+      // stateFor çağrısı alıcı başına gereksiz SQLite sorgusu üretirdi (§7.1).
+      seasonBoard: showBoards ? this.progress?.seasonBoard(5) ?? null : null,
+      weeklyBoard: showBoards ? this.progress?.weeklyBoard(5) ?? null : null,
+      dailyBoard: showBoards ? this.dailyBoardProvider?.(youId) ?? null : null,
       serverNow: Date.now(),
     };
   }
@@ -1948,6 +1985,21 @@ export class Room {
           correctAnswerEn: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.labelEn).join(" → "),
         });
       });
+    } else if (this.gameMode === "numeric") {
+      this.numericQuestions.slice(0, this.roundLimit).forEach((prompt, i) => {
+        if (player.eligibleFrom > i) return;
+        const guess = player.answers[i] ?? null;
+        items.push({
+          category: prompt.category,
+          prompt: prompt.text,
+          correct: player.numericWins[i] ?? false,
+          yourAnswer: guess !== null ? String(guess) : "",
+          correctAnswer: String(prompt.answer),
+          promptEn: prompt.textEn,
+          yourAnswerEn: guess !== null ? String(guess) : "",
+          correctAnswerEn: String(prompt.answer),
+        });
+      });
     } else if (this.gameMode === "board") {
       this.boardAsked.forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -2058,8 +2110,10 @@ export class Room {
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
-        // düşer; yanlış basan puan kaybeder (§6.1 "yanlışsa −puan").
-        if (this.gameMode === "zil") gain = correct ? this.zilValue() : -GAME.ZIL_PENALTY;
+        // düşer; ceza YALNIZ gerçekten basıp kaybedene (yanlış ya da süresi
+        // dolan deneme → buzzFailed). Hiç basmayan oyuncu turu 0 ile bitirir —
+        // katılmamak denemeyi cezalandırmakla aynı sayılamaz (B48).
+        if (this.gameMode === "zil") gain = correct ? this.zilValue() : (this.buzzFailed.has(player.id) ? -GAME.ZIL_PENALTY : 0);
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
         if (this.gameMode === "board") gain = correct ? this.boardCells[this.currentCell]?.value ?? 0 : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
@@ -2189,6 +2243,10 @@ export class Room {
     for (const player of this.eligiblePlayers()) {
       const guessed = this.numericGuesses.get(player.id);
       const isWinner = winnerIds.includes(player.id);
+      // İnceleme kartı (B51): numericGuesses tur sonunda silindiği için tur
+      // geçmişi answers[]/numericWins[]'a kopyalanır.
+      player.answers[this.qIndex] = guessed ?? null;
+      player.numericWins[this.qIndex] = isWinner;
       // Tam isabet bonusu yalnız kazanana — eşit mesafede ama tam tutturamayan bonus almaz.
       const exact = isWinner && guessed === prompt.answer;
       const gain = isWinner ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0) : 0;

@@ -469,6 +469,7 @@ const tr = {
   'err.teamFailed': 'Takım değiştirilemedi.',
   'err.countHostOnly': 'Soru sayısını yalnızca masa sahibi değiştirebilir.',
   'err.countInvalid': 'Geçersiz soru sayısı.',
+  'err.countMode': 'Bu modda soru sayısı seçilemez.',
   'err.difficultyHostOnly': 'Zorluğu yalnızca masa sahibi değiştirir.',
   'err.difficultyInvalid': 'Geçersiz zorluk.',
   'err.themeHostOnly': 'Temayı yalnızca masa sahibi değiştirir.',
@@ -1042,6 +1043,7 @@ const en: Record<StringKey, string> = {
   'err.teamFailed': 'Could not change the team.',
   'err.countHostOnly': 'Only the table host can change the question count.',
   'err.countInvalid': 'Invalid question count.',
+  'err.countMode': 'This mode has a fixed question count.',
   'err.difficultyHostOnly': 'Only the host can change difficulty.',
   'err.difficultyInvalid': 'Invalid difficulty.',
   'err.themeHostOnly': 'Only the table host can change the theme.',
@@ -1233,6 +1235,7 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Olimpiyatlar': 'Olympics',
   'Orta Çağ': 'Middle Ages',
   'İklim & Hava': 'Weather & Climate',
+  'Topluluk': 'Community',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
@@ -1245,7 +1248,13 @@ export function categoryLabel(language: ActivityLanguage, name: string): string 
 export type Translate = (key: StringKey, params?: Record<string, string | number>) => string
 
 export function translate(language: ActivityLanguage, key: StringKey, params?: Record<string, string | number>): string {
-  const template = STRINGS[language][key]
+  const template = STRINGS[language][key] as string | undefined
+  if (template === undefined) {
+    // Eksik anahtar sessizce "undefined" diye render edilmesin — dev'de
+    // console.warn görünür, prod'da anahtar düz metin düşer (§7.12).
+    if (import.meta.env.DEV) console.warn(`[i18n] eksik anahtar: ${language}.${String(key)}`)
+    return String(key)
+  }
   if (!params) return template
   return template.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match))
 }

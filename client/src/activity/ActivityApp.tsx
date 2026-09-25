@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, COUNTLESS_MODES, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -852,7 +852,7 @@ function SfxToggle() {
 
 /** Paket yükleme formu (yalnız host görür): JSON/CSV yapıştır + isteğe bağlı
  *  yönetici belirteci. Sunucu Faz 1.4 kurallarıyla doğrular; hatalar listelenir. */
-function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
+function PackUploadForm({ auth, onUploaded }: { auth: PackAuth; onUploaded: () => void }) {
   const { t } = useI18n()
   const [name, setName] = useState('')
   const [format, setFormat] = useState<'json' | 'csv'>('json')
@@ -864,7 +864,10 @@ function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
     setBusy(true)
     setResult(null)
     try {
-      const res = await uploadPack({ name: name.trim(), content, format, token: token.trim() || undefined })
+      // Elle yapıştırılan token öncelikli (başka oturumun sahipliği); boşsa
+      // bileşen auth'u — mock modda devId düşer, yoksa 401 (B57).
+      const pasted = token.trim()
+      const res = await uploadPack({ name: name.trim(), content, format, auth: pasted ? { sessionToken: pasted } : auth })
       setResult(res)
       if (res.ok) {
         setContent('')
@@ -1147,10 +1150,12 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </div>
         </div>
 
-        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). */}
-        <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
+        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). Sayının anlam
+            taşımadığı modlarda (duel/word/blitz/board) grup gizlenir — çip
+            ölü kontrol olmasın. */}
+        {!COUNTLESS_MODES.includes(mode) && <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
           <div className="qt-count-row">{(mode === 'circle' ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
-        </div>
+        </div>}
 
         {/* Takım modu: host tek dokunuşla takımları yeniden dağıtır. */}
         {mode === 'team' && <div className="qt-settings__group"><span>{t('team.shuffleLabel')}</span>
@@ -1226,7 +1231,10 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </details>}
           {isHost && <details className="qt-pack-upload">
             <summary>{t('pack.upload')}</summary>
-            <PackUploadForm onUploaded={() => void listPacks().then(setPacks)} />
+            <PackUploadForm
+              auth={{ sessionToken: identity.sessionToken ?? null, devId: identity.isDiscord ? null : getDevIdentity().id }}
+              onUploaded={() => void listPacks().then(setPacks)}
+            />
           </details>}
         </div>}
         </div>
@@ -1490,8 +1498,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (!s.revealed) { s.revealed = true; sfx.play('reveal') }
       if (beats.gains && !s.gained) {
         s.gained = true
-        const answered = isCircle ? state.yourCircleAnswer !== null : state.yourChoice !== null
-        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
+        const answered = isCircle ? state.yourCircleAnswer !== null : isWord ? state.yourWordAnswer !== null : state.yourChoice !== null
+        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : isWord ? state.wordReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
       }
     } else {
       s.revealed = false
@@ -1501,7 +1509,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (secLeft >= 1 && secLeft <= 3 && s.tick !== secLeft) { s.tick = secLeft; sfx.play('tick'); sfx.play(secLeft === 1 ? 'heart3' : secLeft === 2 ? 'heart2' : 'heart') }
       if (secLeft > 3) s.tick = -1
     }
-  }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
+  }, [beats.active, beats.gains, secLeft, isCircle, isWord, state.reveal, state.circleReveal, state.wordReveal, state.yourChoice, state.yourCircleAnswer, state.yourWordAnswer, state.youId])
 
   // Zil: Space (veya B) fiziksel buton gibi — tıklamayla aynı şartlarda BAS
   // yapar. Yarış hızlı olduğu için klavyeden basmak fareyi bulmaktan adil.
@@ -1547,8 +1555,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     {state.round.index === state.round.total - 1 && !beats.active && state.gameMode !== 'lightning' && <FinalIntro deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} />}
     <div className="qt-game-head">
       <header className="qt-game-top">
-        <div><b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b><span>{t(isCircle ? 'game.roundOf' : 'game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
-        <RoundProgress index={state.round.index} total={state.round.total} />
+        <div><b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b><span>{state.gameMode === 'blitz' ? (state.blitz ? t('blitz.progress', { n: state.blitz.index + 1, c: state.blitz.correct }) : t(MODE_KEYS.blitz.name)) : t(isCircle ? 'game.roundOf' : 'game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
+        {/* Blitz'te round.index hep 0 / total havuz boyutu — 'Soru 1/30' yanıltıcı;
+            bar kendi ilerlemesini izler (B54). */}
+        <RoundProgress index={state.gameMode === 'blitz' ? (state.blitz?.index ?? 0) : state.round.index} total={state.round.total} />
         <span className="qt-game-summary"><span className="qt-game-summary__full">{beats.active ? t('game.revealed') : t('game.lockedCount', { answered: state.answeredCount, total: state.eligibleCount })}</span><span className="qt-game-summary__short" aria-hidden="true">{beats.active ? <Icon name="check" /> : <><Icon name="lock" />{state.answeredCount}/{state.eligibleCount}</>}</span></span>
       </header>
       <div className="qt-game-controls">
@@ -1940,7 +1950,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
 function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const rescued = state.gameMode === 'bet' && !!state.reveal?.rescued?.includes(state.youId)
   if (!beats.gains) return <div className="qt-your-gain" aria-hidden="true" />
   if (rescued && gain <= 0) return <div className="qt-your-gain is-zero"><b>{t('reveal.noGain')}</b><small>{t('reveal.betRescueMiss')}</small></div>
@@ -2190,7 +2200,7 @@ function MatchSummaryCard({ state, summary, onAgain, onRematch, onBackToLobby }:
   const cats = summary.perCategory.filter((item) => item.total > 0)
   return <div className="qt-summary-card">
     <div className="qt-summary-head">
-      <div className="qt-summary-brand"><img src="/table/quiztavern-logo.png" alt="" /><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
+      <div className="qt-summary-brand"><img src="/table/quiztavern-logo.png" alt="" /><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.gameMode === 'blitz' ? summary.total : state.round.total })}</small></div></div>
       {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
@@ -2269,7 +2279,7 @@ function PipCard({ state }: { state: GameState | null }) {
   if (!state) return null
 
   const self = state.players.find((player) => player.id === state.youId)
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const answered = !!self?.answered
 
   let tag: string
@@ -2312,7 +2322,7 @@ function PipCard({ state }: { state: GameState | null }) {
       <span>{gain > 0 ? t('pip.gained', { score: gain }) : gain < 0 ? `−${gain * -1}` : t('pip.noPoints')}</span>
     </div>
   } else {
-    tag = t('pip.round', { index: state.round.index + 1, total: state.round.total })
+    tag = state.gameMode === 'blitz' ? (state.blitz ? t('blitz.progress', { n: state.blitz.index + 1, c: state.blitz.correct }) : t(MODE_KEYS.blitz.name)) : t('pip.round', { index: state.round.index + 1, total: state.round.total })
     body = <div className="qt-pip__row">
       <b className={`qt-pip__big ${seconds <= 3 ? 'is-urgent' : ''}`}>{seconds}</b>
       <span className={`qt-pip__lock ${answered ? 'is-locked' : 'is-open'}`}>
