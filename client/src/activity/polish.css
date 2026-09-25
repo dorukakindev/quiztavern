@@ -2204,3 +2204,56 @@
 .qt-guest-gate__share code {
   color: var(--qt-accent, #d5a35c);
 }
+
+/* ── Profil kartı (katlanabilir ilerleme) ─────────────────────────────── */
+.qt-profile {
+  border: 1px solid rgba(72, 180, 204, 0.2);
+  border-radius: var(--r-md, 12px);
+  background: rgba(6, 20, 38, 0.55);
+}
+.qt-profile__head {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 11px;
+}
+.qt-profile__head::-webkit-details-marker {
+  display: none;
+}
+.qt-profile__title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9fd8ea;
+}
+.qt-profile__chips {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  color: #eef8ff;
+}
+.qt-profile__head::after {
+  content: "▾";
+  font-size: 11px;
+  color: #9fd8ea;
+  transition: transform 0.15s ease;
+}
+.qt-profile[open] .qt-profile__head::after {
+  transform: rotate(180deg);
+}
+.qt-profile__body {
+  display: grid;
+  gap: 8px;
+  padding: 0 9px 9px;
+}
+.qt-profile__body .qt-xp-strip,
+.qt-profile__body .qt-season {
+  border: none;
+  padding: 0;
+  background: transparent;
+}

@@ -2790,14 +2790,28 @@ function ActivityLobby({
               )}
             </>
           )}
-          {/* Kalıcı ilerleme: seviye/lig çubuğu + sezon lider tablosu —
-            sunucu progress deposu bağlıysa dolu gelir, değilse hiç çizilmez.
-            CTA'nın ALTINDA: Hazırım/Başlat alçak iframe'de fold altında
-            kalıyordu, istatistikler kaydırılabilir. */}
-          {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
-          {state?.seasonBoard && <SeasonStrip state={state} />}
-          {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
-          {state?.dailyBoard && <DailyStrip state={state} />}
+          {/* Profil: ilerleme istatistikleri (XP/lig, rozetler, sezon/hafta/
+            günlük tabloları) katlanabilir kartta — başlıkta seviye rozeti
+            görünür kalır, liste lobi akışını şişirmez. */}
+          {(state?.progress || state?.seasonBoard || state?.weeklyBoard || state?.dailyBoard) && (
+            <details className="qt-profile">
+              <summary className="qt-profile__head">
+                <span className="qt-profile__title">{t("profile.title")}</span>
+                {state?.progress && (
+                  <span className="qt-profile__chips">
+                    <LeagueBadge badge={state.progress} />
+                    <b>{t("progress.level", { n: state.progress.level })}</b>
+                  </span>
+                )}
+              </summary>
+              <div className="qt-profile__body">
+                {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
+                {state?.seasonBoard && <SeasonStrip state={state} />}
+                {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
+                {state?.dailyBoard && <DailyStrip state={state} />}
+              </div>
+            </details>
+          )}
           <div className="qt-howto">
             <span>{t("table.howTo")}</span>
             <p>{t("table.howToBody")}</p>
