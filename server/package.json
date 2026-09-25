@@ -48,7 +48,7 @@
     "test:botcards": "tsx scripts/bot-cards-test.ts"
   },
   "dependencies": {
-    "better-sqlite3": "^12.11.1",
+    "better-sqlite3": "^13.0.3",
     "express": "^5.2.1",
     "pino": "^9.14.0",
     "socket.io": "^4.8.3"
