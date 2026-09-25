@@ -21,6 +21,10 @@ Varlık lisansları için `ASSET-LISANSLARI.md`'ye bakın.
 - Rövanş oylaması, izleyici tahmini, emote paketi, mod yardımı.
 - Özel soru paketi yükleme + uygulama içi paket editörü.
 - Mod amblemleri (Tripo render), kategori ikonları, lisans defteri.
+- Web misafir modu: Discord'suz tarayıcı oynanışı (guest:/web- izolasyonu,
+  ALLOW_GUEST_AUTH), ?room= paylaşım bağlantısı, domain bağlama rehberi.
+- /triviara slash komutu: minimal gateway responder (DISCORD_GATEWAY),
+  register:command kayıt scripti — Discovery şartı.
 
 ### Changed — sağlamlık
 
