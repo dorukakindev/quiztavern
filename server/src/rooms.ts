@@ -1371,7 +1371,7 @@ export class Room {
         this.gameMode === "board"
           ? []
           : pack
-            ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
+            ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds, this.imageOnly)
             : sampleQuestions(
                 this.gameMode === "blitz" ? GAME.BLITZ_POOL : this.roundLimit,
                 compatibleCategories,
@@ -1386,7 +1386,8 @@ export class Room {
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
       // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
       // turunda oynamaz — reveal'de yazara puan kazananların ortalaması yazılır.
-      if (MODE_CONTRACT[this.gameMode].writerCompatible && this.writtenQuestions.size) {
+      // "Sadece resimli" masada yazar soruları resimsiz olduğu için karışmaz.
+      if (MODE_CONTRACT[this.gameMode].writerCompatible && this.writtenQuestions.size && !this.imageOnly) {
         const pool = [...this.players.keys()]
           .filter((id) => this.writtenQuestions.has(id))
           .map((id) => this.writtenQuestions.get(id)!);

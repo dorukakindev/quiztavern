@@ -271,10 +271,20 @@ function shuffle<T>(items: T[]): T[] {
 /**
  * Paketten n soru örnekler: taze (önceki maçlarda görülmemiş) sorular önce,
  * yetmezse görülenlerle tamamlanır — maç hiç boş kalmaz.
+ * imageOnly: "sadece resimli soru" masa ayarı paketlere de uygulanır; pakette
+ * hiç resimli soru yoksa havuz resimsizleri de kapsar (maç boş kalmaz —
+ * sampleQuestions ile aynı zarif-düşüş kuralı).
  */
-export function samplePackQuestions(n: number, questions: Question[], exclude: Set<string>): Question[] {
-  const fresh = shuffle(questions.filter((q) => !exclude.has(q.id)));
-  const used = shuffle(questions.filter((q) => exclude.has(q.id)));
+export function samplePackQuestions(
+  n: number,
+  questions: Question[],
+  exclude: Set<string>,
+  imageOnly = false,
+): Question[] {
+  const source = imageOnly ? questions.filter((q) => q.image) : questions;
+  const pool = source.length ? source : questions;
+  const fresh = shuffle(pool.filter((q) => !exclude.has(q.id)));
+  const used = shuffle(pool.filter((q) => exclude.has(q.id)));
   // Şık sırası da karışır — paket yazarının doğruyu hep aynı index'e
   // koyması oyuna pozisyon ipucu olarak sızmasın.
   return [...fresh, ...used].slice(0, n).map(shuffleChoices);
