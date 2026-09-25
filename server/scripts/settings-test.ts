@@ -117,3 +117,7 @@ test('Sayı destekli modda çalışmaya devam eder', () => {
 })
 
 console.log(`settings-test: ${passed} OK`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

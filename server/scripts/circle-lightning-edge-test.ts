@@ -135,3 +135,7 @@ test('Çember örnekleme EN cevabı da tekilleştirir (galibiyet/zafer→victory
 })
 
 console.log(`\n[circle-lightning-edge] sonuç: ${passed} geçti, 0 kaldı`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

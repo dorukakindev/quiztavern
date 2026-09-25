@@ -126,3 +126,7 @@ test('Klasik modda captain işaretlenmez', () => {
 })
 
 console.log(`teamvote-test: ${passed}/8 OK`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

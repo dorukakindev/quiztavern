@@ -195,3 +195,7 @@ test("3'lü seri kart kazanımı oyuncuya toast olarak gider", () => {
 })
 
 console.log(`\n${passed} test geçti — Tavern kartları`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

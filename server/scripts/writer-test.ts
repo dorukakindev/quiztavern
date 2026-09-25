@@ -147,3 +147,7 @@ test('Dar havuzda yazar slotu dizi sınırını aşmaz — delik yok (B59)', () 
 
 console.log(`writer-test: ${passed} geçti`)
 assert.equal(passed, 10)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

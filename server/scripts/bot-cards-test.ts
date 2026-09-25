@@ -81,3 +81,7 @@ test("rakip state'i silinen şık indekslerini sızdırmaz", () => {
 });
 
 console.log(`\n[bot-cards] sonuç: ${passed} geçti, 0 kaldı`);
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)
