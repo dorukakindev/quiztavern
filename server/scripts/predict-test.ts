@@ -161,4 +161,23 @@ const fakeStore = {
   stop(room);
 }
 
-console.log("predict-test: 8/8 OK");
+// 9. Blitz'te pencere soru fazında kapalı — tüm 60 sn boyunca qIndex=0
+//    olduğu için genel kural pencereyi maç sonuna dek açık bırakırdı (B49).
+{
+  const room = new Room("r", () => {}, { minPlayers: 1 });
+  addPlayer(room, "a"); addPlayer(room, "b");
+  room.setGameMode("a", "blitz");
+  room.setReady("a", true); room.setReady("b", true); // setGameMode ready'leri sıfırlar
+  room.start("a", "blitz");
+  room.becomeSpectator("b");
+  assert.equal(room.phase, "countdown");
+  room.predict("b", "a"); // geri sayımda serbest
+  assert.equal(room.stateFor("b").yourPrediction, "a");
+  beginQuestion(room);
+  assert.equal(room.phase, "question");
+  assert.equal(room.stateFor("b").predictOpen, false, "blitz'te soru fazında kapalı");
+  assert.throws(() => room.predict("b", "a"), /predictPhase/);
+  stop(room);
+}
+
+console.log("predict-test: 9/9 OK");

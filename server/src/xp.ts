@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, renameSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import { GAME } from "./config.js";
 import type {
@@ -213,6 +213,10 @@ export interface XpStore {
   /** Unvan seç: yalnız kazanılmış rozet geçerli; null seçimi kaldırır.
    *  Geçersiz/rozet kazanılmamışsa false döner. */
   setTitle(userId: string, title: BadgeKey | null): boolean;
+  /** Kalıcı dosyanın tutarlı kopyasını `dest`'e üretir (VACUUM INTO — çevrimiçi
+   *  yedek; §7.18). `fullMaintenance` ile ayrıca WAL checkpoint(TRUNCATE) ve
+   *  ana dosyaya VACUUM uygulanır (haftalık bakım). */
+  backup(dest: string, fullMaintenance?: boolean): void;
   close(): void;
 }
 
@@ -558,6 +562,18 @@ export function createXpStore(file: string): XpStore {
           league: leagueFor(row.totalXp),
         })),
       };
+    },
+    backup(dest, fullMaintenance = false) {
+      if (fullMaintenance) {
+        db.pragma("wal_checkpoint(TRUNCATE)");
+        db.exec("VACUUM");
+      }
+      // VACUUM INTO var olan dosyaya yazamaz — önce geçici dosyaya üret,
+      // sonra atomik rename: hata olursa önceki sağlam kopya korunur.
+      const tmp = `${dest}.tmp`;
+      rmSync(tmp, { force: true });
+      db.exec(`VACUUM INTO '${tmp.replace(/'/g, "''")}'`);
+      renameSync(tmp, dest);
     },
     close() { db.close(); },
   };
