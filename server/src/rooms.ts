@@ -1150,6 +1150,10 @@ export class Room {
       // Tavern Panosu: sorular hücrelerde oturur; questions dizisi boş kalır —
       // currentQuestion açık hücreden okur, buildReview açılış sırasını izler.
       if (this.gameMode === "board") {
+        // Pano'da questions dizisi boş olduğundan genel atama lastQuestionIds'i
+        // hep boşaltıyordu — "son maç hariç" korumasına önceki panoda SORULMUŞ
+        // soruları taşı (B58).
+        this.lastQuestionIds = new Set(this.boardAsked.map((q) => q.id));
         const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
         this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
         this.boardCategories = spec.categories;
@@ -1163,7 +1167,9 @@ export class Room {
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
           : sampleQuestions(this.gameMode === "blitz" ? GAME.BLITZ_POOL : this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
-      this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
+      // Board'da questions boş — lastQuestionIds az önce önceki panonun
+      // sorulanlarıyla dolduruldu; boş setle ezme (B58).
+      if (this.gameMode !== "board") this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
       // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
