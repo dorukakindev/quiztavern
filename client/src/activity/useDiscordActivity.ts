@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { browserRandomId, storageGet, storageSet } from "../lib/storage";
 import { Common, DiscordSDK, RPCCloseCodes } from "@discord/embedded-app-sdk";
 import {
   captureClientLog,
@@ -20,6 +21,9 @@ export type ActivityIdentity = {
   /** Discord istemcisinin dili (userSettingsGetLocale); yoksa undefined. */
   locale?: string;
   isDiscord: boolean;
+  /** Üretimde iframe DIŞI tarayıcı: Discord'suz web misafiri. Sunucu kimliği
+   *  `guest:` önekiyle kurar; kalıcı ilerleme (XP/rozet) misafire yazılmaz. */
+  webGuest?: boolean;
 };
 
 /**
@@ -35,6 +39,26 @@ const fallbackIdentity: ActivityIdentity = {
   user: null,
   isDiscord: false,
 };
+
+/** Web misafir kimliği: sekme/cihaz başına kalıcı rastgele id + kullanıcının
+ *  girdiği takma ad. İsim henüz yazılmadıysa boş döner — kapı ekranı ister. */
+function webGuestIdentity(roomCode: string): ActivityIdentity {
+  let guestId = storageGet("qt-guest-id");
+  if (!guestId) {
+    guestId = browserRandomId();
+    storageSet("qt-guest-id", guestId);
+  }
+  const params = new URLSearchParams(window.location.search);
+  const name = params.get("name")?.trim().slice(0, 24) || storageGet("qt-guest-name") || "";
+  return {
+    instanceId: roomCode,
+    channelId: null,
+    guildId: null,
+    user: { id: `guest:${guestId}`, name, avatarUrl: null },
+    isDiscord: false,
+    webGuest: true,
+  };
+}
 
 /**
  * Discord SDK hataları `Error` değil, `{ code, message }` biçiminde düz nesne
@@ -259,7 +283,10 @@ export function useDiscordActivity() {
       ? fallbackIdentity.instanceId
       : new URLSearchParams(window.location.search).get("room") || fallbackIdentity.instanceId;
   const localIdentity = { ...fallbackIdentity, instanceId: localRoomId };
-  const [identity, setIdentity] = useState<ActivityIdentity>(localIdentity);
+  const [identity, setIdentity] = useState<ActivityIdentity>(() =>
+    // Üretimde iframe dışı = web misafiri; dev'de (vite dev) mock kimlik kalır.
+    !import.meta.env.DEV ? webGuestIdentity(localRoomId) : localIdentity,
+  );
   const [status, setStatus] = useState<"booting" | "ready" | "fallback" | "error">("booting");
   const [error, setError] = useState<string | null>(null);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>(() => layoutFromQuery() ?? "focused");
@@ -327,7 +354,9 @@ export function useDiscordActivity() {
     const clientId = (import.meta as unknown as { env?: Record<string, string | undefined> }).env
       ?.VITE_DISCORD_CLIENT_ID;
     if (!clientId || window.parent === window) {
-      setIdentity(localIdentity);
+      // Prod derlemesi Discord iframe'i dışında açıldı: misafir akışı.
+      // Dev ortamında yerel geliştirme/mock kimliği korunur.
+      setIdentity(import.meta.env.DEV ? localIdentity : webGuestIdentity(localRoomId));
       setStatus("fallback");
       return;
     }
@@ -370,6 +399,17 @@ export function useDiscordActivity() {
     };
   }, [attempt, localRoomId]);
 
+  // Misafir kapısı ismi yazdıktan sonra kimliği tazeler (socket'in
+  // bağlanması bu andan itibarendir — name'siz guest zaten bağlanmaz).
+  const setGuestName = useCallback((name: string) => {
+    const trimmed = name.trim().slice(0, 24);
+    if (!trimmed) return;
+    storageSet("qt-guest-name", trimmed);
+    setIdentity((current) =>
+      current.webGuest && current.user ? { ...current, user: { ...current.user, name: trimmed } } : current,
+    );
+  }, []);
+
   // Query ile zorlanan yerleşim her zaman kazanır (yerel PIP denemesi için).
   const forced = layoutFromQuery();
   return {
@@ -383,5 +423,6 @@ export function useDiscordActivity() {
     share,
     setPresence,
     retry,
+    setGuestName,
   };
 }

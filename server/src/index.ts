@@ -7,6 +7,7 @@ import express from "express";
 import { Server } from "socket.io";
 import { BOT_NAMES, scheduleBotAnswers } from "./bots";
 import {
+  ALLOW_GUEST_AUTH,
   ALLOW_MOCK_AUTH,
   DISCORD_CLIENT_ID,
   DISCORD_OAUTH_REDIRECT_URI,
@@ -104,6 +105,27 @@ function socketError(message: string, code: string): Error {
   const error = new Error(message) as Error & { data?: { code: string } };
   error.data = { code };
   return error;
+}
+
+const GUEST_ID_PATTERN = /^[a-zA-Z0-9_-]{8,64}$/;
+const WEB_ROOM_PATTERN = /^[a-z0-9][a-z0-9-]{0,23}$/;
+
+/** Misafir takma adı: kontrol karakterleri ve HTML köşeli ayraçlar atılır;
+ *  boş kalırsa "Misafir"e düşer. */
+function sanitizeGuestName(raw: string): string {
+  const name = raw
+    .replace(/[<>&"'`]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 24);
+  return name || "Misafir";
+}
+
+/** Misafir oda kimliği: istemcinin beyan ettiği kod her koşulda `web-` öneki
+ *  alır — Discord instance odaları misafir beyanıyla asla paylaşılmaz. */
+function webRoomId(raw: unknown): string {
+  const code = (typeof raw === "string" ? raw : "").trim().toLowerCase();
+  return `web-${WEB_ROOM_PATTERN.test(code) ? code : "ana-lobi"}`;
 }
 
 const OAUTH_STATE_COOKIE = "qt-oauth-state";
@@ -533,9 +555,19 @@ io.use(async (socket, next) => {
     devName?: string;
     devId?: string;
     instanceId?: string;
+    roomId?: string;
+    guestName?: string;
+    guestId?: string;
   };
   const session = auth.sessionToken ? verifySession(auth.sessionToken) : null;
   let user: SessionUser | null = session;
+  // Web misafiri: imzalı oturum yoksa açıkça beyan edilmiş (guestName
+  // gönderilmiş) tarayıcı oyuncusu. `guest:` öneki kalıcı kayıtlardan ayırır;
+  // instance doğrulaması gerektirmez çünkü yalnız `web-` odalarına girer.
+  if (!user && ALLOW_GUEST_AUTH && typeof auth.guestName === "string" && auth.guestName.trim()) {
+    const guestId = typeof auth.guestId === "string" && GUEST_ID_PATTERN.test(auth.guestId) ? auth.guestId : socket.id;
+    user = { id: `guest:${guestId}`, name: sanitizeGuestName(auth.guestName), avatarUrl: null };
+  }
   if (!user && ALLOW_MOCK_AUTH) {
     const name = (auth.devName || "Sen").slice(0, 24);
     const stableId =
@@ -546,7 +578,11 @@ io.use(async (socket, next) => {
   if (!socketUserLimiter.consume(user.id).allowed) {
     return deny("RATE_LIMITED", "Çok fazla bağlantı denemesi.");
   }
-  if (!ALLOW_MOCK_AUTH) {
+  if (!ALLOW_MOCK_AUTH && user.id.startsWith("guest:")) {
+    // Misafirler yalnız `web-` önekli odaya bağlanır; Discord instance
+    // odasına misafir kimliğiyle girme yolu kapalıdır.
+    socket.data.roomId = webRoomId(auth.roomId);
+  } else if (!ALLOW_MOCK_AUTH) {
     // instanceId zorunlu: gönderilmezse doğrulama "atlanmış" olmaz, bağlantı reddedilir.
     if (typeof auth.instanceId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(auth.instanceId)) {
       return deny("INSTANCE_REQUIRED", "Activity instance bilgisi eksik.");
@@ -604,26 +640,27 @@ io.on("connection", (socket) => {
   // Üyelik yalnız handshake anında sonsuza kadar geçerli sayılmaz. Oturum süresi
   // veya Activity üyeliği biterse en geç bu pencere içinde socket düşer.
   let membershipCheckRunning = false;
-  const membershipTimer = !ALLOW_MOCK_AUTH
-    ? setInterval(() => {
-        if (membershipCheckRunning || !socket.connected) return;
-        membershipCheckRunning = true;
-        void (async () => {
-          const sessionToken = socket.data.sessionToken as string | undefined;
-          const instanceId = socket.data.instanceId as string | undefined;
-          if (!sessionToken || !verifySession(sessionToken)) {
-            socket.emit(EV.AUTH_REQUIRED);
-            socket.disconnect(true);
-            return;
-          }
-          if (!instanceId || !(await verifyInstanceMembership(instanceId, user.id))) {
-            socket.disconnect(true);
-          }
-        })().finally(() => {
-          membershipCheckRunning = false;
-        });
-      }, 60_000)
-    : null;
+  const membershipTimer =
+    !ALLOW_MOCK_AUTH && !user.id.startsWith("guest:")
+      ? setInterval(() => {
+          if (membershipCheckRunning || !socket.connected) return;
+          membershipCheckRunning = true;
+          void (async () => {
+            const sessionToken = socket.data.sessionToken as string | undefined;
+            const instanceId = socket.data.instanceId as string | undefined;
+            if (!sessionToken || !verifySession(sessionToken)) {
+              socket.emit(EV.AUTH_REQUIRED);
+              socket.disconnect(true);
+              return;
+            }
+            if (!instanceId || !(await verifyInstanceMembership(instanceId, user.id))) {
+              socket.disconnect(true);
+            }
+          })().finally(() => {
+            membershipCheckRunning = false;
+          });
+        }, 60_000)
+      : null;
   membershipTimer?.unref();
 
   socket.on(EV.EMOTE, (payload: unknown) => {
@@ -879,6 +916,12 @@ io.on("connection", (socket) => {
     }
   });
   socket.on(EV.QUESTION_REPORT, (payload: unknown) => {
+    // Misafirler bildiremez: anonim kimliklerle aynı soruya ≥3 rapor döşeyip
+    // havuzdan düşürme suistimali açık olurdu.
+    if (user.id.startsWith("guest:")) {
+      toast(socket.id, "report.failed");
+      return;
+    }
     // Soru kimliği istemciden GELMEZ — güncel soru sunucudan çözülür; böylece
     // sahte question_id ile tablo kirletilemez. Yalnız aktif oyun fazında
     // kabul edilir; Çember'in Question'ı yoktur (currentQuestion null döner).

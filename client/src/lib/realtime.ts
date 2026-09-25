@@ -31,6 +31,9 @@ export type ActivityRealtimeIdentity = {
   instanceId?: string;
   sessionToken?: string | null;
   user?: { id: string; name: string } | null;
+  /** Üretimde Discord'suz tarayıcı oyuncusu: sessionToken yerine guestName+
+   *  guestId gönderilir; sunucu kimliği `guest:` önekiyle kurar. */
+  webGuest?: boolean;
 };
 
 type ConnectionStatus = "connecting" | "connected" | "reconnecting" | "offline";
@@ -98,13 +101,19 @@ export function useRealtimeGame(roomId = "ana-lobi", identity?: ActivityRealtime
       // Proxy, /api önekini soyup isteği sunucu tüneline iletir; sunucudaki
       // Socket.IO standart /socket.io yolunda kalır.
       path: inDiscordProxy ? "/api/socket.io" : "/socket.io",
-      auth: {
-        roomId,
-        instanceId: identity?.instanceId,
-        devId: identity?.user?.id || dev.id,
-        devName: identity?.user?.name || dev.name,
-        sessionToken: identity?.sessionToken || undefined,
-      },
+      auth: identity?.webGuest
+        ? {
+            roomId,
+            guestName: identity.user?.name ?? "",
+            guestId: (identity.user?.id ?? "").replace(/^guest:/, ""),
+          }
+        : {
+            roomId,
+            instanceId: identity?.instanceId,
+            devId: identity?.user?.id || dev.id,
+            devName: identity?.user?.name || dev.name,
+            sessionToken: identity?.sessionToken || undefined,
+          },
     });
   }, [roomId, identity?.instanceId, identity?.sessionToken, identity?.user?.id, identity?.user?.name]);
 
@@ -113,6 +122,8 @@ export function useRealtimeGame(roomId = "ana-lobi", identity?: ActivityRealtime
     // sunucu tarafından zaten reddedilir; erken deneme yalnızca sahte
     // "bağlantı koptu" gürültüsü üretir. Token gelince socket yeniden kurulur.
     if (inDiscordProxy && !identity?.sessionToken) return;
+    // Web misafiri ad seçmeden bağlanmaz — kapı ekranı ismi yazdırır.
+    if (identity?.webGuest && !identity.user?.name) return;
     const onConnect = () => {
       setStatus("connected");
       setDroppedAt(null);

@@ -24,6 +24,16 @@ const tr = {
   "boot.unreachable": "Oyun sunucusuna ulaşılamadı",
   "boot.retry": "Tekrar dene",
 
+  // Web misafir kapısı (Discord'suz tarayıcı)
+  "web.gateTitle": "Triviara",
+  "web.gateIntro": "Discord'suz da oynanır — adını yaz, masaya otur.",
+  "web.name": "Adın",
+  "web.namePlaceholder": "Misafir",
+  "web.roomCode": "Oda kodu",
+  "web.join": "Masaya katıl",
+  "web.guestNote": "Misafir olarak oynuyorsun — XP, rozetler ve sıralamalar kaydedilmez.",
+  "web.shareHint": "Bu bağlantıyı paylaş, aynı masaya gelsinler",
+
   // Lobi
   "lobby.liveTable": "CANLI MASA",
   "lobby.title": "Masana dön.",
@@ -624,6 +634,16 @@ const en: Record<StringKey, string> = {
   "boot.subtitle": "Setting up the table…",
   "boot.unreachable": "Could not reach the game server",
   "boot.retry": "Try again",
+
+  // Web guest gate (Discord-free browser)
+  "web.gateTitle": "Triviara",
+  "web.gateIntro": "No Discord needed — pick a name, take a seat.",
+  "web.name": "Your name",
+  "web.namePlaceholder": "Guest",
+  "web.roomCode": "Room code",
+  "web.join": "Join the table",
+  "web.guestNote": "You're playing as a guest — XP, badges and standings won't be saved.",
+  "web.shareHint": "Share this link to bring friends to your table",
 
   "lobby.liveTable": "LIVE TABLE",
   "lobby.title": "Take your seat.",

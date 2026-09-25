@@ -2130,3 +2130,77 @@
     margin-top: 14px;
   }
 }
+
+/* ── Web misafir kapısı (Discord'suz tarayıcı) ────────────────────────── */
+.qt-guest-gate {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.qt-guest-gate .qt-activity-bar {
+  width: 100%;
+}
+.qt-guest-gate__card {
+  margin: auto;
+  width: min(420px, calc(100% - 32px));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px;
+  border-radius: 18px;
+  background: var(--qt-panel, rgba(20, 16, 28, 0.82));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+}
+.qt-guest-gate__card h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: 0.02em;
+}
+.qt-guest-gate__intro {
+  margin: 0;
+  opacity: 0.75;
+  font-size: 14px;
+}
+.qt-guest-gate__card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.9;
+}
+.qt-guest-gate__card input {
+  font: inherit;
+  font-size: 16px;
+  text-transform: none;
+  letter-spacing: normal;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.35);
+  color: inherit;
+  outline: none;
+}
+.qt-guest-gate__card input:focus {
+  border-color: var(--qt-accent, #d5a35c);
+  box-shadow: 0 0 0 3px rgba(213, 163, 92, 0.18);
+}
+.qt-guest-gate__note {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.6;
+  text-align: center;
+}
+.qt-guest-gate__share {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: center;
+  word-break: break-all;
+}
+.qt-guest-gate__share code {
+  color: var(--qt-accent, #d5a35c);
+}

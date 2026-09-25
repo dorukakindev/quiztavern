@@ -190,6 +190,11 @@ export interface ProgressStore {
  *  Pano sette değil — gerçek sorulanlar boardAsked üzerinden beslenir. */
 const CALIBRATION_SKIP_MODES = new Set(["circle", "word", "blitz", "numeric", "timeline"]);
 
+/** Web misafiri: `guest:` önekliler kalıcı kullanıcı kayıtlarına (XP/rozet/
+ *  günlük/tahmin ödülü) yazılmaz — anonim kimlikler tabloyu kirletmesin.
+ *  Soru istatistikleri sayılmaya devam eder (kişi değil soru verisi). */
+const isGuestId = (userId: string) => userId.startsWith("guest:");
+
 /** 0..n-1 karışık indeksler — yazılan soruların hangi slotlara düşeceğini belirler. */
 function shuffleIdx(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -2889,7 +2894,7 @@ export class Room {
       for (const player of this.players.values()) {
         // Maç ortasında oturan oyuncu günlük setin tamamını oynamadı: kaydı
         // yazılırsa kaçırdığı turlar ⬜ olur ve bugünkü hakkı boşa yanar.
-        if (player.isBot || player.eligibleFrom > 0) continue;
+        if (player.isBot || player.eligibleFrom > 0 || isGuestId(player.id)) continue;
         const pattern = dailyPattern(player.answers, questions);
         this.dailyResults.set(player.id, pattern);
         entries.push({ day: this.dailyDay, userId: player.id, name: player.name, pattern, score: player.score });
@@ -2914,7 +2919,7 @@ export class Room {
           : -1;
       const matchEntries = order
         .map((player, index) => ({ player, placement: index + 1 }))
-        .filter(({ player }) => !player.isBot && player.stats.total > 0)
+        .filter(({ player }) => !player.isBot && !isGuestId(player.id) && player.stats.total > 0)
         .map(({ player, placement }): MatchFinishedEntry => ({
           userId: player.id,
           name: player.name,
@@ -2986,7 +2991,7 @@ export class Room {
     if (this.progress && this.predictions.size) {
       const winnerId = this.podiumSnapshot?.[0]?.id;
       for (const [spectatorId, target] of this.predictions) {
-        if (target !== winnerId) continue;
+        if (isGuestId(spectatorId) || target !== winnerId) continue;
         const spectator = this.spectators.get(spectatorId) ?? this.players.get(spectatorId);
         if (!spectator) continue;
         try {

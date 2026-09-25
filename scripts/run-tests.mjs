@@ -22,6 +22,7 @@ const TESTS = [
   { name: "test:bet-team-edge", ws: "server" },
   { name: "test:dod", ws: "server" },
   { name: "test:origin-gate", ws: "server" },
+  { name: "test:guest", ws: "server" },
   { name: "test:reliability", ws: "server" },
   { name: "test:reports", ws: "server" },
   { name: "test:daily", ws: "server" },
