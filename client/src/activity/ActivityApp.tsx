@@ -569,6 +569,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
         <div><b title={player.name}>{player.name}</b><TitleTag title={player.title} />{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : state.gameMode === 'elim' && player.lives === 0 ? t('elim.out') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         {state.gameMode === 'elim' && player.lives !== undefined && <span className="qt-player-lives" title={t('elim.lives')}>{Array.from({ length: 3 }, (_, i) => <i key={i} className={i < player.lives! ? 'is-full' : ''}><Icon name="heart" weight="fill" /></i>)}</span>}
         {state.gameMode === 'bet' && beats.active && state.reveal?.bets?.[player.id] !== undefined && <span className="qt-player-bet" title={t('bet.stakedTitle')}><Icon name="coins" />{formatNumber(language, state.reveal.bets[player.id])}</span>}
+        {player.cardPlayed && <span className="qt-card-played" title={t('card.played')}><Icon name="deck" /></span>}
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}

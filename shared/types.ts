@@ -68,6 +68,9 @@ export interface PublicPlayer {
   /** Tavern kartı (joker) sayısı. Maç başında 1, her 3'lü seride +1.
    *  Klasik/Takım dışındaki modlarda 0 kalır. */
   cards?: number;
+  /** Bu tur joker oynadı — kart TÜRÜ sızmasın diye yalnız boolean.
+   *  İstemci koltukta küçük deste ikonu gösterir. */
+  cardPlayed?: boolean;
 }
 
 /** Tavern kartı (joker) türleri — Klasik/Takım maçlarında tur başına bir adet. */
