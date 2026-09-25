@@ -1452,7 +1452,7 @@ export class Room {
     this.lastReveal = { correctIndex: -1, picks: [[], [], [], []], gains: Object.fromEntries(rows.map((r) => [r.id, r.score])), until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.lastBlitzSummary = { rows, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.scheduleNext(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
   /** Oyuncuya giden toast: socket katmanına index.ts köprüler. */
@@ -1745,7 +1745,7 @@ export class Room {
     this.broadcast();
     this.onQuestionStarted?.(this);
     if (this.gameMode === "zil") this.scheduleZilBots();
-    this.timer = setTimeout(() => this.reveal(), duration);
+    this.scheduleNext(() => this.reveal(), duration);
   }
 
   /** Tüm istemcilere tek bir deadline gönderir; animasyon yerelde aksa bile tur eşzamanlı başlar. */
@@ -1757,7 +1757,7 @@ export class Room {
     this.lastCircleReveal = null;
     this.lastWordReveal = null;
     this.broadcast();
-    this.timer = setTimeout(() => {
+    this.scheduleNext(() => {
       if (this.phase !== "countdown") return;
       // Çifte Bahis: sorudan önce bahis fazı gelir; diğer modlar doğrudan soruya.
       this.gameMode === "bet" ? this.beginBet() : this.gameMode === "board" ? this.beginPick() : this.beginQuestion();
@@ -1798,7 +1798,7 @@ export class Room {
     // Herkes zaten kilitliyse (ör. tüm masa kurtarma turunda) bekletmeden soruya geç.
     this.advanceIfEveryoneBet();
     if (this.phase !== "bet") return;
-    this.timer = setTimeout(() => {
+    this.scheduleNext(() => {
       if (this.phase !== "bet") return;
       this.beginQuestion();
     }, GAME.BET_MS);
@@ -1852,7 +1852,7 @@ export class Room {
         if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
       }, 1_000 + Math.random() * 2_000);
     }
-    this.timer = setTimeout(() => {
+    this.scheduleNext(() => {
       if (this.phase !== "pick") return;
       // Sıradaki pasif kalırsa masa beklemez: kalan hücrelerden biri rastgele açılır.
       const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
@@ -2177,7 +2177,7 @@ export class Room {
       ...(question.fact ? { fact: question.fact, factEn: question.factEn } : {}),
     };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), revealMs);
+    this.scheduleNext(() => this.advanceFromReveal(), revealMs);
   }
 
   private revealCircle() {
@@ -2207,7 +2207,7 @@ export class Room {
     this.revealUntil = Date.now() + GAME.REVEAL_MS;
     this.lastCircleReveal = { answer: prompt.answer, ...(prompt.answerEn && prompt.clueEn ? { answerEn: prompt.answerEn } : {}), rankedPlayerIds: correct.map((player) => player.id), gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.scheduleNext(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
   /**
@@ -2266,7 +2266,7 @@ export class Room {
     };
     this.lastNumericReveal = this.lastReveal.numeric ?? null;
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.scheduleNext(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
   /**
@@ -2328,7 +2328,7 @@ export class Room {
     this.lastReveal = { correctIndex: -1, picks: [[], [], [], []], gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.lastTimelineReveal = { ordered, orders, hits, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.scheduleNext(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
   private revealWord() {
@@ -2355,7 +2355,7 @@ export class Room {
     this.revealUntil = Date.now() + GAME.REVEAL_MS;
     this.lastWordReveal = { answer: prompt.answer, ...(prompt.answerEn && prompt.clueEn ? { answerEn: prompt.answerEn } : {}), rankedPlayerIds: correct.map((player) => player.id), gains, until: this.revealUntil, durationMs: GAME.REVEAL_MS };
     this.broadcast();
-    this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
+    this.scheduleNext(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
   /**
@@ -2367,7 +2367,7 @@ export class Room {
     if (this.phase !== "reveal") return;
     if (Date.now() < this.revealUntil) {
       this.clearTimer();
-      this.timer = setTimeout(() => this.advanceFromReveal(), this.revealUntil - Date.now());
+      this.scheduleNext(() => this.advanceFromReveal(), this.revealUntil - Date.now());
       return;
     }
     // Son Masa: ayakta 1'den az/1 kişi kaldıysa maç burada biter — elenenler
@@ -2494,6 +2494,13 @@ export class Room {
     this.timer = null;
     if (this.zilTimer) clearTimeout(this.zilTimer);
     this.zilTimer = null;
+  }
+
+  /** clearTimer + this.timer = setTimeout desenini tek yerde toplar (§7.4).
+    * Yalnız ana zamanlayıcıyı yönetir — zilTimer gibi yardımcılar dokunulmaz. */
+  private scheduleNext(fn: () => void, ms: number) {
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(fn, ms);
   }
 
   private clearGrace(playerId: string) {
