@@ -2003,3 +2003,130 @@
   width: 13px;
   height: 13px;
 }
+
+/* ==========================================================================
+   Denetim tasarım turu (T3–T8)
+   ========================================================================== */
+
+/* T3 — Buton hiyerarşisi: Hazırım (birincil) > Başlat (altın) > Günlük > İzleyici ol (ikincil). */
+.qt-you-panel .qt-spectate-btn {
+  min-height: 36px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  background: transparent;
+  border-color: rgba(72, 180, 204, 0.22);
+  color: #9fc3d6;
+  box-shadow: none;
+}
+.qt-you-panel .qt-spectate-btn:hover {
+  border-color: rgba(72, 180, 204, 0.5);
+  color: #d9efff;
+}
+.qt-start-table:disabled {
+  background: rgba(243, 195, 98, 0.06);
+  border: 1px dashed rgba(243, 195, 98, 0.38);
+  color: rgba(243, 195, 98, 0.62);
+  box-shadow: none;
+  filter: none;
+  opacity: 1;
+}
+.qt-daily-start {
+  font-size: 13px;
+}
+
+/* Yardım düğmesi müzik/ses düğmeleriyle aynı kalıpta (qt-music-toggle + bu) */
+.qt-help-toggle {
+  font-weight: 900;
+  font-size: 15px;
+  line-height: 1;
+}
+
+/* T5 — Soru kartı her soruda aynı yükseklik: görselli/görselsiz geçişte grid zıplamasın. */
+@media (min-width: 901px) and (min-height: 641px) {
+  .qt-game .qt-question-stage {
+    min-height: min(520px, calc(100vh - 170px));
+    align-content: center;
+  }
+}
+
+/* T6 — Kısa-yatayda görselli soru: görsel solda büyük, soru + şıklar sağda.
+   Görsel DOM'da figure > button > img olarak iç içedir; question-head ve
+   question-body'yi display:contents yaparak figure'ü doğrudan grid öğesi
+   yaparız. Areasiz kalan öğeler (kart barı, yazar notu) sağ sütuna düşer. */
+@media (orientation: landscape) and (max-width: 900px) and (max-height: 560px) {
+  .qt-question-stage:has(.qt-question-image) {
+    display: grid;
+    grid-template-columns: minmax(0, 42%) minmax(0, 1fr);
+    grid-template-areas: "img cat" "img q" "img ans" "img note";
+    grid-template-rows: auto auto 1fr auto;
+    column-gap: 14px;
+    row-gap: 6px;
+    align-content: center;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-question-head,
+  .qt-question-stage:has(.qt-question-image) .qt-question-body {
+    display: contents;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-category {
+    grid-area: cat;
+    justify-self: start;
+    margin: 0;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-question-figure {
+    grid-area: img;
+    align-self: center;
+    width: 100%;
+    margin: 0;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-question-imagebtn {
+    display: block;
+    width: 100%;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-question-image {
+    width: 100%;
+    height: auto;
+    max-height: calc(100vh - 130px);
+    margin: 0;
+    border-radius: 12px;
+    object-fit: contain;
+  }
+  .qt-question-stage:has(.qt-question-image) h1 {
+    grid-area: q;
+    margin: 0;
+    text-align: left;
+    font-size: 15px;
+    line-height: 1.25;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-answers {
+    grid-area: ans;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    align-content: start;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-answer {
+    min-height: 40px;
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-locked-note {
+    grid-area: note;
+  }
+  .qt-question-stage:has(.qt-question-image) .qt-card-bar,
+  .qt-question-stage:has(.qt-question-image) .qt-writer-note,
+  .qt-question-stage:has(.qt-question-image) .qt-zil-status {
+    grid-column: 2;
+  }
+}
+
+/* T7 — Lobi yatay taşması (gölge/etiket dışarı çıkıyordu). */
+.qt-lobby {
+  overflow-x: clip;
+}
+
+/* T8 — Mobil dikey: kontrol şeridi host koltuğunun tacına yapışıyordu. */
+@media (max-width: 560px) and (orientation: portrait) {
+  .qt-lobby .qt-orbit {
+    margin-top: 14px;
+  }
+}

@@ -2185,6 +2185,7 @@ function ActivityLobby({
   onSubmitQuestion,
   onDeleteQuestion,
   speakingIds,
+  onHelp,
 }: {
   state: GameState | null;
   status: string;
@@ -2214,6 +2215,7 @@ function ActivityLobby({
   onTakeSeat: () => void;
   onSubmitQuestion: (q: { text: string; choices: string[]; correctIndex: number }) => void;
   onDeleteQuestion: () => void;
+  onHelp?: () => void;
 }) {
   const { t } = useI18n();
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
@@ -2328,6 +2330,17 @@ function ActivityLobby({
         <SfxToggle />
         <MusicToggle />
         <LanguagePicker language={language} onChange={onLanguageChange} />
+        {onHelp && (
+          <button
+            type="button"
+            className="qt-music-toggle qt-help-toggle"
+            onClick={onHelp}
+            title={t("table.howTo")}
+            aria-label={t("table.howTo")}
+          >
+            ?
+          </button>
+        )}
       </div>
 
       <section className="qt-table-shell">
@@ -5769,6 +5782,7 @@ export function ActivityApp() {
           onInvite={activity.invite}
           onSpectate={game.spectate}
           onTakeSeat={game.takeSeat}
+          onHelp={() => setHowToOpen(true)}
         />
       );
 
