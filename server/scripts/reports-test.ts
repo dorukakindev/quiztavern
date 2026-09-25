@@ -94,5 +94,5 @@ try {
   console.log(`\n[reports] sonuç: ${passed} geçti, 0 kaldı`);
 } finally {
   store.close();
-  rmSync(file, { force: true });
+  rmSync(file, { force: true, maxRetries: 5, retryDelay: 200 });
 }
