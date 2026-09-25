@@ -1639,6 +1639,9 @@ export class Room {
     this.lastTimelineReveal = null;
     // Yakın Tahmin: yeni turda tahminler sıfırlanır.
     this.numericGuesses.clear();
+    // Zaman Çizelgesi: yeni turda dizimler sıfırlanır — yoksa 2. turdan
+    // itibaren order() hepsini "zaten cevapladı" sanıp yutar.
+    this.orderGuesses.clear();
     this.lastBlitzSummary = null;
     // Kelime Oyunu: yeni tur kapalı kelimeyle başlar; harfler karışık sırada açılır.
     if (this.gameMode === "word" && round) {
