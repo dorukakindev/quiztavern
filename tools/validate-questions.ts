@@ -66,6 +66,19 @@ for (const q of ALL_QUESTIONS) {
   }
   seenTexts.set(textKey, `${where}${q.image ? "|img" : ""}`);
 
+  // Görsel sorularda TR şıkların İngilizce kalması (ör. "Fennec fox") — TR arayüzde yabancı ad görünür.
+  if (
+    q.image &&
+    q.choices.join("|") === q.choicesEn.join("|") &&
+    q.choices.some((c) =>
+      /\b(the|of|fox|tailed|tree|fish|bird|lake|flower|snake|shark|crab|frog|monkey|bear|plant|palm|fern|house|tower|bridge|hat|coat|shoe|dress|horn|drum|fruit|nut|berry|leaf|sea|river|mountain|valley|cave|island)\b/i.test(
+        c,
+      ),
+    )
+  ) {
+    warn(`${where}: TR şıklar İngilizce görünüyor (choices === choicesEn) — Türkçeye çevirin`);
+  }
+
   for (const choice of q.choices) {
     if (choice.length > 40) warn(`${where}: şık 40 karakterden uzun ("${choice.slice(0, 30)}…")`);
   }
