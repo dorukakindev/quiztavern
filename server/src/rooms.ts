@@ -1774,6 +1774,11 @@ export class Room {
   /** Tavern Panosu pick fazı: sırası gelen hücre seçer; süre dolunca sunucu
    *  rastgele kalan hücreyi açar (bot ya da pasif oyuncu maçı kilitlemesin). */
   private beginPick() {
+    // Tamamen ayrılan seçicinin sırası kalıcı kaybedilir — yoksa o slot her
+    // turda PICK_MS kadar boşa bekletir. Kopan ama masada kalan (grace'teki)
+    // oyuncu atlanmaz: süre yeniden bağlanma penceresi olarak da çalışır.
+    let guard = 0;
+    while (guard++ < this.boardPickerOrder.length && !this.players.has(this.boardPickerId()!)) this.boardPickerPos += 1;
     if (!this.boardCells.some((cell) => !cell.used)) return this.finish();
     this.clearTimer();
     this.phase = "pick";
