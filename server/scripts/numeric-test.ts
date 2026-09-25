@@ -64,8 +64,10 @@ test("Eşit mesafe berabere — ikisi de kazanır", () => {
   const room = numericRoom("n-tie", ["a", "b"]);
   const inner = startRound(room);
   const answer = inner.numericQuestions[0].answer;
+  // İki tarafa aynı tahmin — kayan nokta mesafeleri bit-bit eşit olur
+  // (örn. cevap 3.05 için |a+5−a| ile |a−5−a| ULP farklılaşır ve beraberlik bozulur).
   room.numericAnswer("a", answer + 5);
-  room.numericAnswer("b", answer - 5);
+  room.numericAnswer("b", answer + 5);
   const nr = room.stateFor("a").reveal?.numeric;
   assert.equal(nr?.winnerIds.length, 2);
   assert.equal(inner.players.get("a")!.score, GAME.NUMERIC_BASE);
