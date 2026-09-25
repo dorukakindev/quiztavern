@@ -152,6 +152,29 @@ test("boardAsked açılış sırasını korur; round.total hücre sayısı", () 
   assert.equal(inner.boardAsked[0], inner.boardCells[12].question);
 });
 
+test("tamamen ayrılan seçici sırası kalıcı atlanır", () => {
+  const room = boardRoom("b10", ["a", "b"]);
+  const inner = startPick(room);
+  inner.openCell(0); // a açtı, sıra b'de (pos=1)
+  assert.equal(inner.boardPickerId(), "b");
+  room.removePlayer("b");
+  inner.phase = "reveal";
+  inner.beginPick(); // b'nin slotu atlanmalı, sıra a'ya dönmeli
+  assert.equal(inner.boardPickerId(), "a");
+  assert.equal(inner.phase, "pick");
+});
+
+test("kopan ama masada kalan seçicinin 10 sn yeniden bağlanma penceresi korunur", () => {
+  const room = boardRoom("b11", ["a", "b"]);
+  const inner = startPick(room);
+  inner.openCell(0);
+  const pb = internals(room).players.get("b")!;
+  (pb as { connected?: boolean }).connected = false;
+  inner.phase = "reveal";
+  inner.beginPick(); // b hâlâ players'ta — slotu korunur
+  assert.equal(inner.boardPickerId(), "b");
+});
+
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 9);
+assert.equal(passed, 11);
 process.exit(0);
