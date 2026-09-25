@@ -37,6 +37,7 @@ import type {
   ReviewItem,
   QuestionCount,
   QuestionPayload,
+  ToastKey,
   RevealPayload,
   SeasonBoard,
   WordPayload,
@@ -297,6 +298,7 @@ export class Room {
   private inResults = new Set<string>();
   private onQuestionStarted: QuestionStarted | null = null;
   private onEmptied: (() => void) | null = null;
+  private onToast: ((playerId: string, key: ToastKey) => void) | null = null;
 
   constructor(
     readonly id: string,
@@ -815,6 +817,7 @@ export class Room {
     this.kickedUntil.clear();
     this.onQuestionStarted = null;
     this.onEmptied = null;
+    this.onToast = null;
   }
 
   setReady(playerId: string, ready: boolean): void {
@@ -1402,6 +1405,11 @@ export class Room {
     this.timer = setTimeout(() => this.advanceFromReveal(), GAME.REVEAL_MS);
   }
 
+  /** Oyuncuya giden toast: socket katmanına index.ts köprüler. */
+  setToastHandler(handler: (playerId: string, key: ToastKey) => void) {
+    this.onToast = handler;
+  }
+
   setQuestionStartedHandler(handler: QuestionStarted) {
     this.onQuestionStarted = handler;
   }
@@ -1824,7 +1832,10 @@ export class Room {
       if (s.currentStreak > s.bestStreak) s.bestStreak = s.currentStreak;
       if (correctElapsedMs !== null) s.fastestMs = s.fastestMs === null ? correctElapsedMs : Math.min(s.fastestMs, correctElapsedMs);
       // Tavern kartları: her 3'lü seride 1 joker (yalnız Klasik/Takım).
-      if ((this.gameMode === "classic" || this.gameMode === "team") && s.currentStreak % 3 === 0) player.cards += 1;
+      if ((this.gameMode === "classic" || this.gameMode === "team") && s.currentStreak % 3 === 0) {
+        player.cards += 1;
+        this.onToast?.(player.id, "info.cardEarned");
+      }
     } else if (!preserveStreak) {
       s.currentStreak = 0;
     }

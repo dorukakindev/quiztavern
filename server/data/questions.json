@@ -137,7 +137,9 @@
    "Proton and neutron",
    "Atom and molecule",
    "Neutron and ion"
-  ]
+  ],
+  "fact": "Atomun kütlesinin %99,9'undan fazlası çekirdekte toplanır; çekirdek atomun hacminin trilyonda birinden küçüktür.",
+  "factEn": "Over 99.9% of an atom's mass sits in its nucleus, yet the nucleus occupies less than a trillionth of the atom's volume."
  },
  {
   "id": "science-orbit",
@@ -157,7 +159,9 @@
    "365",
    "500",
    "730"
-  ]
+  ],
+  "fact": "Tam süre ~365,24 gündür; bu çeyrek günü telafi etmek için her 4 yılda bir artık yıl (366 gün) eklenir.",
+  "factEn": "The true period is ~365.24 days; leap years add a day every 4 years to compensate."
  },
  {
   "id": "science-oxygen",
@@ -177,7 +181,9 @@
    "Osmium",
    "Oxygen",
    "Nitrogen"
-  ]
+  ],
+  "fact": "Oksijen yerkabuğundaki en bol elementtir — kabuğun kütlece yaklaşık %46'sını oluşturur.",
+  "factEn": "Oxygen is the most abundant element in Earth's crust, making up roughly 46% of its mass."
  },
  {
   "id": "science-sound",
@@ -197,7 +203,9 @@
    "At the speed of light",
    "They cannot travel",
    "Instantly"
-  ]
+  ],
+  "fact": "Sesin yayılmak için bir ortama (maddeye) ihtiyacı vardır; uzay boşluğunda kimse çığlığınızı duyamaz.",
+  "factEn": "Sound needs a medium to travel — in the vacuum of space, nobody can hear you scream."
  },
  {
   "id": "science-skin",
@@ -217,7 +225,9 @@
    "Liver",
    "Skin",
    "Lung"
-  ]
+  ],
+  "fact": "Deri yaklaşık 2 m² alan kaplar ve vücut ağırlığının yaklaşık %15'ini oluşturur.",
+  "factEn": "Skin covers about 2 m² and accounts for roughly 15% of body weight."
  },
  {
   "id": "history-istanbul",
@@ -237,7 +247,9 @@
    "1299",
    "1453",
    "1923"
-  ]
+  ],
+  "fact": "Kuşatmada Macar usta Orban'ın döktüğü devasa toplar surların yıkılmasında belirleyici oldu; fetih Çarşamba günü tamamlandı.",
+  "factEn": "Massive cannons cast by the Hungarian master Orban proved decisive; the city fell on a Wednesday."
  },
  {
   "id": "history-republic",
@@ -257,7 +269,9 @@
    "1920",
    "1923",
    "1938"
-  ]
+  ],
+  "fact": "\"Efendiler, yarın Cumhuriyeti ilan edeceğiz\" sözü 28 Ekim 1923 akşamı Çankaya'daki bir yemekte söylendi; ilan ertesi gün yapıldı.",
+  "factEn": "\"Gentlemen, tomorrow we will proclaim the Republic\" was said at a Çankaya dinner on 28 Oct 1923; the proclamation followed the next day."
  },
  {
   "id": "history-ww1",
@@ -277,7 +291,9 @@
    "1914",
    "1918",
    "1939"
-  ]
+  ],
+  "fact": "Savaşı ateşleyen kıvılcım, Saraybosna'da Arşidük Franz Ferdinand'a düzenlenen 28 Haziran 1914 suikastıydı.",
+  "factEn": "The spark was the assassination of Archduke Franz Ferdinand in Sarajevo on 28 June 1914."
  },
  {
   "id": "history-osman",
@@ -297,7 +313,9 @@
    "Osman Gazi",
    "Mehmed the Conqueror",
    "Ertuğrul Gazi"
-  ]
+  ],
+  "fact": "Söğüt ve çevresinde kurulan beylik, 1299 yılı bağımsızlığın kabul edilen başlangıcı olarak sayılır.",
+  "factEn": "The beylik founded around Söğüt is conventionally dated to 1299."
  },
  {
   "id": "history-frenchrev",
@@ -317,7 +335,9 @@
    "1789",
    "1815",
    "1900"
-  ]
+  ],
+  "fact": "14 Temmuz 1789 Bastille baskını ihtilalin sembolü oldu ve bugün Fransa'nın ulusal günüdür.",
+  "factEn": "The storming of the Bastille on 14 July 1789 became the revolution's symbol and France's national day."
  },
  {
   "id": "history-ataturk",
@@ -337,7 +357,9 @@
    "Thessaloniki",
    "Ankara",
    "Izmir"
-  ]
+  ],
+  "fact": "Selanik o dönem Osmanlı toprağıydı; bugün Yunanistan'ın ikinci büyük şehridir.",
+  "factEn": "Thessaloniki was Ottoman territory then; today it is Greece's second-largest city."
  },
  {
   "id": "music-vivaldi",
@@ -457,7 +479,9 @@
    "Indian",
    "Pacific",
    "Arctic"
-  ]
+  ],
+  "fact": "Pasifik Okyanusu yeryüzünün yaklaşık %30'unu kaplar — tüm kara alanlarının toplamından daha büyüktür.",
+  "factEn": "The Pacific covers about 30% of Earth's surface — larger than all land combined."
  },
  {
   "id": "geography-everest",
@@ -477,7 +501,9 @@
    "Everest",
    "Mount Ararat",
    "Mont Blanc"
-  ]
+  ],
+  "fact": "Resmî yüksekliği 8.848,86 m'dir; tektonik hareket nedeniyle her yıl birkaç milimetre yükselmeye devam eder.",
+  "factEn": "Its official height is 8,848.86 m and it still grows a few millimetres a year from tectonic uplift."
  },
  {
   "id": "geography-van",
@@ -497,7 +523,9 @@
    "Lake Van",
    "Lake Beyşehir",
    "Lake Eğirdir"
-  ]
+  ],
+  "fact": "Van Gölü sodalı (alkali) sudur; içinde yaşayan endemik inci kefali tatlı suya girmeden üreyemez.",
+  "factEn": "Lake Van is highly alkaline; its endemic pearl mullet can only spawn in fresh water."
  },
  {
   "id": "geography-sahara",
@@ -517,7 +545,9 @@
    "Africa",
    "Australia",
    "South America"
-  ]
+  ],
+  "fact": "Sahra yaklaşık 9,2 milyon km² ile ABD'nin kara alanından daha büyüktür.",
+  "factEn": "The Sahara spans ~9.2 million km² — larger than the land area of the USA."
  },
  {
   "id": "geography-kizilirmak",
@@ -537,7 +567,9 @@
    "Sakarya",
    "Kızılırmak",
    "Tigris"
-  ]
+  ],
+  "fact": "Yaklaşık 1.355 km uzunluğundaki Kızılırmak Karadeniz'e dökülür; Antikçağ'da Halys olarak bilinirdi.",
+  "factEn": "At ~1,355 km it empties into the Black Sea; it was known as the Halys in antiquity."
  },
  {
   "id": "geography-capital-fr",
@@ -557,7 +589,9 @@
    "Paris",
    "Marseille",
    "Nice"
-  ]
+  ],
+  "fact": "Paris, Sen Nehri'ndeki Île de la Cité adasında doğdu — şehrin kalbi hâlâ oradadır.",
+  "factEn": "Paris was born on Île de la Cité, an island in the Seine — still the heart of the city."
  },
  {
   "id": "math-triangle",
@@ -1777,7 +1811,9 @@
    "Vatican City",
    "San Marino",
    "Liechtenstein"
-  ]
+  ],
+  "fact": "Vatikan yaklaşık 44 hektar alan ve ~800 kişilik nüfusuyla bağımsız devletlerin en küçüğüdür.",
+  "factEn": "Vatican City is the smallest sovereign state: ~44 hectares and roughly 800 residents."
  },
  {
   "id": "geography-mexicoborders",
@@ -1797,7 +1833,9 @@
    "3",
    "4",
    "5"
-  ]
+  ],
+  "fact": "Meksika kuzeyde ABD, güneydoğuda Guatemala ve Belize ile komşudur.",
+  "factEn": "Mexico borders the USA to the north and Guatemala and Belize to the southeast."
  },
  {
   "id": "geography-helsinki",
@@ -1817,7 +1855,9 @@
    "Stockholm",
    "Helsinki",
    "Copenhagen"
-  ]
+  ],
+  "fact": "Helsinki, Reykjavík'ten sonra dünyanın en kuzeydeki ikinci başkentidir.",
+  "factEn": "Helsinki is the world's second-northernmost capital after Reykjavík."
  },
  {
   "id": "geography-austin",
@@ -1837,7 +1877,9 @@
    "Dallas",
    "Austin",
    "San Antonio"
-  ]
+  ],
+  "fact": "Austin, Teksas eyaletleri arasında en büyük şehir olmasa da başkenttir; \"Keep Austin Weird\" sloganıyla bilinir.",
+  "factEn": "Austin is the capital despite not being Texas's largest city; its slogan is \"Keep Austin Weird\"."
  },
  {
   "id": "geography-japandrive",
@@ -1857,7 +1899,9 @@
    "Japan",
    "France",
    "Russia"
-  ]
+  ],
+  "fact": "Dünyada yaklaşık 70 ülkede trafik soldan akar — dünya nüfusunun yaklaşık üçte biri.",
+  "factEn": "About 70 countries drive on the left — roughly a third of the world's population."
  },
  {
   "id": "geography-troposphere",
@@ -1877,7 +1921,9 @@
    "Mesosphere",
    "Troposphere",
    "Thermosphere"
-  ]
+  ],
+  "fact": "Troposfer, hava olaylarının neredeyse tamamının yaşandığı katmandır; yükseldikçe sıcaklık düşer.",
+  "factEn": "The troposphere hosts nearly all weather, and temperature drops with altitude within it."
  },
  {
   "id": "general-descartes",
@@ -1997,7 +2043,9 @@
    "500",
    "1000",
    "50"
-  ]
+  ],
+  "fact": "Roma rakamlarında D=500, M=1000'dir; rakamlar Etrüsk işaretlerinden evrilmiştir.",
+  "factEn": "In Roman numerals D=500 and M=1000; the symbols evolved from Etruscan tally marks."
  },
  {
   "id": "history-apollomoon",
@@ -2017,7 +2065,9 @@
    "4",
    "6",
    "9"
-  ]
+  ],
+  "fact": "Altı inişte (Apollo 11, 12, 14, 15, 16, 17) toplam 12 astronot Ay yüzeyine ayak bastı.",
+  "factEn": "Across six landings (Apollo 11, 12, 14, 15, 16, 17) a total of 12 astronauts walked on the Moon."
  },
  {
   "id": "history-napoleon",
@@ -2037,7 +2087,9 @@
    "Corsica",
    "Saint Helena (St. Helena)",
    "Sicily"
-  ]
+  ],
+  "fact": "Aziz Helena Güney Atlantik'te anakaradan ~2.000 km uzaktadır; Napolyon 1821'de orada öldü.",
+  "factEn": "St Helena lies ~2,000 km off the African coast; Napoleon died there in 1821."
  },
  {
   "id": "history-lenin",
@@ -2057,7 +2109,9 @@
    "Joseph Stalin",
    "Leon Trotsky",
    "Nicholas II"
-  ]
+  ],
+  "fact": "\"Ekim Devrimi\" adı eski Jülyen takviminden gelir — Gregoryen takvimle kasıma denk gelir.",
+  "factEn": "The \"October Revolution\" is named for the Julian calendar date — it fell in November by the Gregorian calendar."
  },
  {
   "id": "history-ww2start",
@@ -2077,7 +2131,9 @@
    "Poland",
    "Belgium",
    "Denmark"
-  ]
+  ],
+  "fact": "Almanya 1 Eylül 1939'da Polonya'yı işgal etti; sınır provokasyonu için Gleiwitz radyo istasyonuna sahte saldırı düzenlendi.",
+  "factEn": "Germany invaded Poland on 1 September 1939, after staging a fake attack on the Gleiwitz radio station."
  },
  {
   "id": "science-laser",
@@ -2097,7 +2153,9 @@
    "Long Array Sensor Emission Ray",
    "Linear Amplified Signal Energy Radiation",
    "Light Array System for Energy Release"
-  ]
+  ],
+  "fact": "İlk çalışan lazer 1960'ta Theodore Maiman tarafından bir yakut kristaliyle yapıldı.",
+  "factEn": "The first working laser was built in 1960 by Theodore Maiman using a ruby crystal."
  },
  {
   "id": "science-nasa",
@@ -2117,7 +2175,9 @@
    "Space",
    "System",
    "Satellite"
-  ]
+  ],
+  "fact": "NASA 1958'de kuruldu; selefi NACA (Ulusal Havacılık Danışma Komitesi) idi.",
+  "factEn": "NASA was founded in 1958, succeeding the NACA (National Advisory Committee for Aeronautics)."
  },
  {
   "id": "science-dolly",
@@ -2137,7 +2197,9 @@
    "1990",
    "1996",
    "2001"
-  ]
+  ],
+  "fact": "Dolly 6 yaşındaki bir koyunun hücresinden klonlandı ve adını şarkıcı Dolly Parton'dan aldı.",
+  "factEn": "Dolly was cloned from a 6-year-old sheep's cell and named after singer Dolly Parton."
  },
  {
   "id": "science-circadian",
@@ -2157,7 +2219,9 @@
    "18",
    "24",
    "36"
-  ]
+  ],
+  "fact": "\"Sirkadiyen\" Latince \"circa diem\"den gelir — \"yaklaşık bir gün\" demektir.",
+  "factEn": "\"Circadian\" comes from the Latin \"circa diem\" — \"about a day\"."
  },
  {
   "id": "science-sagittarius",
@@ -2177,7 +2241,9 @@
    "Sagittarius",
    "Taurus",
    "Capricorn"
-  ]
+  ],
+  "fact": "Samanyolu'nun merkezinde, Yay yönünde ~4 milyon güneş kütleli Sagittarius A* kara deliği bulunur.",
+  "factEn": "The Milky Way's center hosts Sagittarius A*, a ~4-million-solar-mass black hole, in the direction of Sagittarius."
  },
  {
   "id": "science-ammonia",
@@ -2197,7 +2263,9 @@
    "CO2",
    "NO3",
    "CH4"
-  ]
+  ],
+  "fact": "NH3 keskin kokulu bir bileşiktir; gübre üretimi ve temizlik ürünlerinde yaygın kullanılır.",
+  "factEn": "NH3 is a pungent compound widely used in fertilizers and cleaning products."
  },
  {
   "id": "science-helium",
@@ -2217,7 +2285,9 @@
    "Helium",
    "Neon",
    "Nitrogen"
-  ]
+  ],
+  "fact": "Helyum yaklaşık −269 °C'de kaynar; sıvı helyum mutlak sıfıra en yakın soğutucudur.",
+  "factEn": "Helium boils near −269 °C; liquid helium is the closest coolant to absolute zero."
  },
  {
   "id": "science-earthage",
@@ -2237,7 +2307,9 @@
    "3.5 billion",
    "4.5 billion",
    "5.5 billion"
-  ]
+  ],
+  "fact": "Yaş, meteoritlerin radyometrik ölçümleriyle hesaplanır — Dünya ve güneş sistemi aynı bulutdan doğdu.",
+  "factEn": "The age comes from radiometric dating of meteorites, which formed with the solar system."
  },
  {
   "id": "science-sunelements",
@@ -2257,7 +2329,9 @@
    "Hydrogen and Helium",
    "Oxygen and Carbon",
    "Hydrogen and Nitrogen"
-  ]
+  ],
+  "fact": "Güneş kütlece yaklaşık %74 hidrojen ve %24 helyumdan oluşur.",
+  "factEn": "The Sun is roughly 74% hydrogen and 24% helium by mass."
  },
  {
   "id": "science-diamond",
@@ -2277,7 +2351,9 @@
    "Nitrogen",
    "Oxygen",
    "Hydrogen"
-  ]
+  ],
+  "fact": "Elmas ve kurşunkalemdeki grafit aynı elementtir — karbonun farklı allotropları.",
+  "factEn": "Diamond and pencil graphite are the same element — different allotropes of carbon."
  },
  {
   "id": "biology-tibia",
@@ -2397,7 +2473,9 @@
    "Sverige",
    "Eesti",
    "Norge"
-  ]
+  ],
+  "fact": "Finliler ülkelerine \"Suomi\" der; \"Finland\" adı İsveççe kökenlidir.",
+  "factEn": "Finns call their country \"Suomi\"; \"Finland\" is of Swedish origin."
  },
  {
   "id": "geography-timbuktu",
@@ -2417,7 +2495,9 @@
    "Senegal",
    "Niger",
    "Burkina Faso"
-  ]
+  ],
+  "fact": "Timbuktu 14-16. yüzyıllarda İslamî öğrenim merkeziydi; Sankore Üniversitesi buradaydı.",
+  "factEn": "Timbuktu was an Islamic learning center in the 14th-16th centuries, home to Sankore University."
  },
  {
   "id": "geography-vilnius",
@@ -2437,7 +2517,9 @@
    "Tallinn",
    "Vilnius",
    "Minsk"
-  ]
+  ],
+  "fact": "Litvanya 1990'da SSCB'den bağımsızlığını ilan eden ilk Sovyet cumhuriyetidir.",
+  "factEn": "Lithuania was the first Soviet republic to declare independence from the USSR in 1990."
  },
  {
   "id": "geography-antarctica",
@@ -2457,7 +2539,9 @@
    "It does not belong to any country (although various claims exist)",
    "It belongs to the United Nations",
    "It belongs to Australia"
-  ]
+  ],
+  "fact": "1959 Antarktika Antlaşması kıtada askerî faaliyet ve madenciliği yasaklar, bilimsel işbirliğini korur.",
+  "factEn": "The 1959 Antarctic Treaty bans military activity and mining on the continent, protecting scientific cooperation."
  },
  {
   "id": "geography-washingtondc",
@@ -2477,7 +2561,9 @@
    "Washington D.C.",
    "Los Angeles",
    "Chicago"
-  ]
+  ],
+  "fact": "Washington D.C. hiçbir eyalete ait değildir — Kongre'nin yönettiği federal bölgedir.",
+  "factEn": "Washington D.C. belongs to no state — it is a federal district governed by Congress."
  },
  {
   "id": "geography-pyrenees",
@@ -2497,7 +2583,9 @@
    "France and Spain",
    "Norway and Sweden",
    "Russia and Ukraine"
-  ]
+  ],
+  "fact": "Pireneler ~430 km uzanır; arasında küçük Andorra ülkesi de bulunur.",
+  "factEn": "The Pyrenees stretch ~430 km, with tiny Andorra nestled within them."
  },
  {
   "id": "geography-ljubljana",
@@ -2517,7 +2605,9 @@
    "Ljubljana",
    "Bratislava",
    "Maribor"
-  ]
+  ],
+  "fact": "Ljubljana'nın sembolü ejderhadır; ünlü Ejderha Köprüsü şehir merkezindedir.",
+  "factEn": "Ljubljana's symbol is the dragon; the famous Dragon Bridge crosses the city center."
  },
  {
   "id": "cinema-castaway",
@@ -3097,7 +3187,9 @@
    "Neville Chamberlain",
    "Stanley Baldwin",
    "Ramsay MacDonald"
-  ]
+  ],
+  "fact": "Chamberlain 1938 Münih Anlaşması'nı \"çağımız için barış\" diye duyurmuştu; Mayıs 1940'ta görevi Churchill'e bıraktı.",
+  "factEn": "Chamberlain called the 1938 Munich Agreement \"peace for our time\"; he handed office to Churchill in May 1940."
  },
  {
   "id": "history-sevenwonders",
@@ -3117,7 +3209,9 @@
    "Colossus of Rhodes",
    "Great Wall of China",
    "Hanging Gardens of Babylon"
-  ]
+  ],
+  "fact": "Yedi Harika'dan günümüze ayakta kalan yalnız Gize Piramidi'dir.",
+  "factEn": "Of the Seven Wonders, only the Great Pyramid of Giza survives today."
  },
  {
   "id": "history-williamconqueror",
@@ -3137,7 +3231,9 @@
    "1066",
    "1123",
    "1205"
-  ]
+  ],
+  "fact": "1066 Hastings zaferi İngilizceye ~10.000 Fransızca kelime kazandırdı ve dilin yapısını değiştirdi.",
+  "factEn": "The 1066 Hastings victory brought ~10,000 French words into English and reshaped the language."
  },
  {
   "id": "history-vietnamwar",
@@ -3157,7 +3253,9 @@
    "1969",
    "1975",
    "1978"
-  ]
+  ],
+  "fact": "Savaş 30 Nisan 1975'te Saygon'un düşüşüyle bitti; şehir bugün Ho Chi Minh Kenti adını taşır.",
+  "factEn": "The war ended with the fall of Saigon on 30 April 1975; the city is now Ho Chi Minh City."
  },
  {
   "id": "history-chichenitza",
@@ -3177,7 +3275,9 @@
    "Maya",
    "Incas",
    "Toltecs"
-  ]
+  ],
+  "fact": "Kukulkan Piramidi'nde ekinoks günlerinde gölge, merdiven korkuluğunda yılan deseni oluşturur.",
+  "factEn": "At the equinoxes, shadows on Kukulkan Pyramid's stairway form a serpent pattern."
  },
  {
   "id": "history-moongolf",
@@ -3197,7 +3297,9 @@
    "Football (Soccer)",
    "Tennis",
    "Baseball"
-  ]
+  ],
+  "fact": "Shepard bir sopa ve iki top getirmişti; ikinci topu \"millerce öteye\" vurduğu söylenir.",
+  "factEn": "Shepard smuggled a club head and two balls; he claimed his second shot went \"miles and miles\"."
  },
  {
   "id": "history-verdun",
@@ -3217,7 +3319,9 @@
    "1916",
    "1917",
    "1918"
-  ]
+  ],
+  "fact": "Muharebe ~10 ay sürdü ve iki taraf toplam ~700.000 kayıp verdi.",
+  "factEn": "The battle lasted ~10 months with about 700,000 total casualties on both sides."
  },
  {
   "id": "history-rmstitanic",
@@ -3237,7 +3341,9 @@
    "Royal Majesty Service",
    "Regular Maritime Schedule",
    "Regulated Maelstrom Sensor"
-  ]
+  ],
+  "fact": "RMS = Royal Mail Ship — Titanic resmî olarak posta da taşıyan bir gemiydi.",
+  "factEn": "RMS stands for Royal Mail Ship — Titanic officially carried mail as well."
  },
  {
   "id": "history-greatfire",
@@ -3257,7 +3363,9 @@
    "Pudding Lane",
    "Fleet Street",
    "Downing Street"
-  ]
+  ],
+  "fact": "Yangın Pudding Lane'deki fırıncı Thomas Farriner'ın dükkânında başladı ve ~4 gün sürdü.",
+  "factEn": "The fire began in Thomas Farriner's bakery on Pudding Lane and burned for about 4 days."
  },
  {
   "id": "general-bluetooth",
@@ -3417,7 +3525,9 @@
    "Japan",
    "South Korea",
    "Australia"
-  ]
+  ],
+  "fact": "Tarihte ilk kez ertelenen Olimpiyat oldu ve neredeyse tamamen seyircisiz oynandı.",
+  "factEn": "It was the first Olympics ever postponed and was held almost entirely without spectators."
  },
  {
   "id": "sport-bowlingturkey",
@@ -3437,7 +3547,9 @@
    "Eagle",
    "Flamingo",
    "Birdie"
-  ]
+  ],
+  "fact": "Üç art arda strike'a \"turkey\" denir; kökeni Şükran Günü'nde hindi ödülü verilen yarışmalara dayanır.",
+  "factEn": "Three consecutive strikes are a \"turkey\" — the name comes from Thanksgiving contests that awarded a bird."
  },
  {
   "id": "sport-button2009",
@@ -3457,7 +3569,9 @@
    "2007",
    "2009",
    "2010"
-  ]
+  ],
+  "fact": "Button'ı şampiyon yapan Brawn GP mucizesi takımın son sezonuydu — sezon sonunda Mercedes'e satıldı.",
+  "factEn": "Button's title was Brawn GP's fairy-tale single season — the team was sold to Mercedes afterwards."
  },
  {
   "id": "sport-pumalogo",
@@ -3477,7 +3591,9 @@
    "Nike",
    "Puma",
    "Reebok"
-  ]
+  ],
+  "fact": "Puma'yı Rudolf, adidas'ı Adolf \"Adi\" Dassler kurdu — iki marka düşman kardeşlerin eseridir.",
+  "factEn": "Puma was founded by Rudolf Dassler and adidas by his brother Adolf \"Adi\" — rival brands from feuding brothers."
  },
  {
   "id": "sport-realmadrid2016",
@@ -3497,7 +3613,9 @@
    "Real Madrid",
    "Bayern Munich",
    "Manchester City"
-  ]
+  ],
+  "fact": "Real Madrid finalde Atletico'yu penaltılarla yendi ve 11. Avrupa kupasını kaldırdı.",
+  "factEn": "Real Madrid beat Atlético on penalties in the final, lifting their 11th European Cup."
  },
  {
   "id": "sport-shearer200",
@@ -3517,7 +3635,9 @@
    "Alan Shearer",
    "Thierry Henry",
    "Robbie Fowler"
-  ]
+  ],
+  "fact": "Shearer'ın 260 gollük Premier Lig rekoru hâlâ kırılmadı.",
+  "factEn": "Shearer's Premier League record of 260 goals still stands."
  },
  {
   "id": "art-dalinat",

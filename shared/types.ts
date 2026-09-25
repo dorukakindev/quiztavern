@@ -474,6 +474,7 @@ export type ToastKey =
   | "err.title"
   | "err.dailyDone"
   | "info.kicked"
+  | "info.cardEarned"
   | "report.sent"
   | "report.duplicate"
   | "report.failed"

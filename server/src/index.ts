@@ -337,6 +337,10 @@ function getRoom(roomId: string) {
       room?.dispose();
       rooms.delete(id);
     });
+    room.setToastHandler((playerId, key) => {
+      const socketId = room!.recipients().find((r) => r.id === playerId)?.socketId;
+      if (socketId) toast(socketId, key);
+    });
     rooms.set(id, room);
   }
   return room;
