@@ -547,7 +547,9 @@
    "South America"
   ],
   "fact": "Sahra yaklaşık 9,2 milyon km² ile ABD'nin kara alanından daha büyüktür.",
-  "factEn": "The Sahara spans ~9.2 million km² — larger than the land area of the USA."
+  "factEn": "The Sahara spans ~9.2 million km² — larger than the land area of the USA.",
+  "image": "geography-sahara.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "geography-kizilirmak",
@@ -2393,7 +2395,9 @@
    "Cub",
    "Pup",
    "Calf"
-  ]
+  ],
+  "image": "biology-joey.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "biology-lucy",
@@ -3425,7 +3429,9 @@
    "Europe",
    "South America",
    "Hawaii (Oceania)"
-  ]
+  ],
+  "image": "general-pineapple.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "general-furlong",
@@ -3697,7 +3703,9 @@
    "Pablo Picasso",
    "Henri Matisse",
    "Leonardo da Vinci"
-  ]
+  ],
+  "image": "art-guernica.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "art-vangoghnat",
@@ -3757,7 +3765,9 @@
    "1931",
    "1934",
    "1937"
-  ]
+  ],
+  "image": "art-persistmemory.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "myth-fenrir",
@@ -5657,7 +5667,9 @@
    "Fat Pig",
    "Water Giant",
    "Swamp Monster"
-  ]
+  ],
+  "image": "animal-hippo.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "animal-polarbear",
@@ -6881,7 +6893,9 @@
    "Asia and Europe",
    "Asia and Africa",
    "Europe and America"
-  ]
+  ],
+  "image": "turkey-bosphorusbridge.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "turkey-baklavagaziantep",
@@ -7281,7 +7295,9 @@
    "Raphael",
    "Michelangelo",
    "Botticelli"
-  ]
+  ],
+  "image": "art-monalisa.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "art-florence",
@@ -7341,7 +7357,9 @@
    "Edgar Degas",
    "Paul Cézanne",
    "Camille Pissarro"
-  ]
+  ],
+  "image": "art-monet.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "art-rodin",
@@ -7361,7 +7379,9 @@
    "Michelangelo",
    "Donatello",
    "Constantin Brâncuși"
-  ]
+  ],
+  "image": "art-rodin.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "art-rembrandt",
@@ -7401,7 +7421,9 @@
    "Marble",
    "Wood",
    "Clay"
-  ]
+  ],
+  "image": "art-david.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "art-warholcampbell",
@@ -7421,7 +7443,9 @@
    "Roy Lichtenstein",
    "Jasper Johns",
    "Keith Haring"
-  ]
+  ],
+  "image": "art-warholcampbell.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "lit-crimeandpunishment",
@@ -10801,7 +10825,9 @@
    "Australia",
    "South America",
    "Asia"
-  ]
+  ],
+  "image": "animal-kangarooaustralia.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "animal-koalaeucalyptus",
@@ -10861,7 +10887,9 @@
    "2",
    "3",
    "4"
-  ]
+  ],
+  "image": "animal-octopushearts.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "animal-giraffeneck",
@@ -10881,7 +10909,9 @@
    "Neck vertebrae",
    "Teeth",
    "Fingers"
-  ]
+  ],
+  "image": "animal-giraffeneck.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "anime-tokyocenter",
@@ -13141,7 +13171,9 @@
    "Abraham Maslow",
    "Carl Jung",
    "B.F. Skinner"
-  ]
+  ],
+  "image": "psych-maslow.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "psych-introspection",
@@ -14481,7 +14513,9 @@
    "Azathoth",
    "Nyarlathotep",
    "Yog-Sothoth"
-  ]
+  ],
+  "image": "korku-cthulhu.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "korku-jigsaw",
@@ -16061,7 +16095,9 @@
    "Lewis Waterman",
    "Marcel Bich",
    "George Parker"
-  ]
+  ],
+  "image": "invent2-ballpoint.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "invent2-wattengine",
@@ -16661,7 +16697,9 @@
    "Antarctica",
    "The Amazon",
    "The Sahara"
-  ]
+  ],
+  "image": "doga-kutup-ayi.webp",
+  "imageCredit": "Triviara"
  },
  {
   "id": "doga-penguen-antarktika",
