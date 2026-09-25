@@ -115,6 +115,19 @@ test("stateFor yourNumericGuess ve zil ile çakışmaz", () => {
   assert.equal(inner.players.get("a")!.stats.total, 1);
 });
 
+test("choice emit'i numeric modda state'i kirletmez", () => {
+  const room = numericRoom("n-choice", ["a"]);
+  const inner = startRound(room);
+  room.answer("a", 2); // numeric modda indeks cevap yutulmalı
+  const internals2 = internals(room) as unknown as {
+    players: Map<string, { choice: number | null }>;
+    firstAnswerId: string | null;
+  };
+  assert.equal(internals2.players.get("a")!.choice, null);
+  assert.equal(internals2.firstAnswerId, null);
+  assert.equal(room.phase, "question"); // erken reveal da tetiklenmez
+});
+
 console.log(`numeric-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın
