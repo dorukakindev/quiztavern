@@ -74,3 +74,7 @@ test("yanlış cevap zorluk bonusu üretmez", () => {
 });
 
 console.log(`\n[difficulty-bonus] sonuç: ${passed} geçti, 0 kaldı`);
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

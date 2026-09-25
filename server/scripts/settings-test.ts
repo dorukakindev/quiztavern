@@ -99,3 +99,7 @@ test('Non-boolean bayrak reddedilir', () => {
 })
 
 console.log(`settings-test: ${passed}/8 OK`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

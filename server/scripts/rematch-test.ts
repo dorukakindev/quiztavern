@@ -102,3 +102,7 @@ test('Kopan oyuncu eşikten düşer — bekleyen çoğunluk maçı hemen başlat
 })
 
 console.log(`\n${passed} test geçti — rövanş oylaması`)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)

@@ -11,10 +11,18 @@ const test = (name: string, run: () => void) => {
 }
 const player = (id: string, name: string) => ({ id, name, avatarUrl: null, socketId: `socket:${id}`, isBot: false })
 const stop = (room: Room) => (room as unknown as { clearTimer: () => void }).clearTimer()
+// Odalar stop() sonrası da timer arm eder (beginQuestion/reveal) — hepsini
+// kaydet, dosya sonunda dispose() et ki tsx process'i çıkabilsin.
+const liveRooms: Room[] = []
+const mkRoom = (name: string, opts: ConstructorParameters<typeof Room>[2]) => {
+  const room = new Room(name, () => {}, opts)
+  liveRooms.push(room)
+  return room
+}
 
 console.log('Çifte Bahis + Takım edge-case regresyonları')
 
-const teamRoom = new Room('edge-team', () => {}, { minPlayers: 2, questionCount: 5 })
+const teamRoom = mkRoom('edge-team', { minPlayers: 2, questionCount: 5 })
 teamRoom.addPlayer(player('a', 'Ada'))
 teamRoom.addPlayer(player('b', 'Bora'))
 teamRoom.addPlayer(player('c', 'Cem'))
@@ -65,7 +73,7 @@ test('podyumdaki ayrılma sıralamayı, MVPyi ve takım sonucunu değiştirmez',
 })
 stop(teamRoom)
 
-const replayRoom = new Room('edge-team-replay', () => {}, { minPlayers: 2 })
+const replayRoom = mkRoom('edge-team-replay', { minPlayers: 2 })
 replayRoom.addPlayer(player('r1', 'Replay One'))
 replayRoom.addPlayer(player('r2', 'Replay Two'))
 replayRoom.setGameMode('r1', 'team')
@@ -79,7 +87,7 @@ test('podyum ayrılıkları bir takımı boşalttıysa tekrar oyunda bağlı kol
 })
 stop(replayRoom)
 
-const betRoom = new Room('edge-bet', () => {}, { minPlayers: 2, questionCount: 5 })
+const betRoom = mkRoom('edge-bet', { minPlayers: 2, questionCount: 5 })
 betRoom.addPlayer(player('h', 'Host'))
 betRoom.addPlayer(player('g', 'Guest'))
 betRoom.setGameMode('h', 'bet')
@@ -117,7 +125,7 @@ stop(betRoom)
 // §2 kurtarma turu: bakiyesi biten oyuncu masadan düşmez — bahsi otomatik
 // 0'a kilitlenir, doğru cevap BET_BROKE_REWARD kazandırır, ertesi turda
 // biriken bakiyeyle normal bahse döner.
-const brokeRoom = new Room('edge-broke', () => {}, { minPlayers: 2, questionCount: 5 })
+const brokeRoom = mkRoom('edge-broke', { minPlayers: 2, questionCount: 5 })
 brokeRoom.addPlayer(player('br', 'Broke'))
 brokeRoom.addPlayer(player('ok', 'Okay'))
 brokeRoom.setGameMode('br', 'bet')
@@ -163,7 +171,7 @@ test('ertesi turda kurtarılan bakiyeyle normal bahis (broke temizlenir)', () =>
 stop(brokeRoom)
 
 test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
-  const allInRoom = new Room('edge-allin', () => {}, { minPlayers: 1, questionCount: 5 })
+  const allInRoom = mkRoom('edge-allin', { minPlayers: 1, questionCount: 5 })
   allInRoom.addPlayer(player('w', 'Wager'))
   allInRoom.setGameMode('w', 'bet')
   allInRoom.setReady('w', true)
@@ -176,7 +184,7 @@ test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
   ;(allInRoom as unknown as { reveal: () => void }).reveal()
   assert.equal(allInRoom.players.get('w')!.score, 2500) // 1000 bahis + 1500 kazanç
 
-  const halfRoom = new Room('edge-half', () => {}, { minPlayers: 1, questionCount: 5 })
+  const halfRoom = mkRoom('edge-half', { minPlayers: 1, questionCount: 5 })
   halfRoom.addPlayer(player('h2', 'Half'))
   halfRoom.setGameMode('h2', 'bet')
   halfRoom.setReady('h2', true)
@@ -191,12 +199,12 @@ test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
 })
 
 test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () => {
-  const shuffleRoom = new Room('edge-shuffle', () => {}, { minPlayers: 1 })
+  const shuffleRoom = mkRoom('edge-shuffle', { minPlayers: 1 })
   for (const id of ['s1', 's2', 's3', 's4', 's5']) shuffleRoom.addPlayer(player(id, id))
   shuffleRoom.setGameMode('s1', 'team')
   // Host değil → red; takım modu değil → red
   assert.throws(() => shuffleRoom.shuffleTeams('s2'), /teamHostOnly/)
-  const classic = new Room('edge-shuffle-kl', () => {}, { minPlayers: 1 })
+  const classic = mkRoom('edge-shuffle-kl', { minPlayers: 1 })
   classic.addPlayer(player('k', 'k'))
   assert.throws(() => classic.shuffleTeams('k'), /teamInvalid/)
   for (let round = 0; round < 8; round++) {
@@ -214,7 +222,7 @@ test('takım karıştırma: dengeli dağıtır, host ve takım modu şart', () =
 })
 
 test('final bahsi: bayrak yalnız son soruda döner', () => {
-  const fin = new Room('edge-final', () => {}, { minPlayers: 1, questionCount: 5 })
+  const fin = mkRoom('edge-final', { minPlayers: 1, questionCount: 5 })
   fin.addPlayer(player('f', 'F'))
   fin.setGameMode('f', 'bet')
   fin.setReady('f', true)
@@ -227,7 +235,7 @@ test('final bahsi: bayrak yalnız son soruda döner', () => {
   assert.equal(fin.stateFor('f', true).bet?.final, true)
 })
 test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir', () => {
-  const showRoom = new Room('edge-showbet', () => {}, { minPlayers: 1, questionCount: 5 })
+  const showRoom = mkRoom('edge-showbet', { minPlayers: 1, questionCount: 5 })
   showRoom.addPlayer(player('p1', 'P1'))
   showRoom.addPlayer(player('p2', 'P2'))
   showRoom.setGameMode('p1', 'bet')
@@ -245,7 +253,7 @@ test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir',
   const reveal = showRoom.stateFor('p1', true).reveal!
   assert.deepEqual(reveal.bets, { p1: 250, p2: 0 })
   // klasik maçta bets alanı olmaz
-  const kl = new Room('edge-nobets', () => {}, { minPlayers: 1, questionCount: 5 })
+  const kl = mkRoom('edge-nobets', { minPlayers: 1, questionCount: 5 })
   kl.addPlayer(player('k', 'K'))
   kl.setReady('k', true)
   kl.start('k', 'classic')
@@ -254,6 +262,8 @@ test('reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir',
   kl.answer('k', kl.currentQuestion()!.correctIndex)
   assert.equal(kl.stateFor('k', true).reveal!.bets, undefined)
 })
+
+for (const room of liveRooms) (room as unknown as { dispose: () => void }).dispose()
 
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`)
 

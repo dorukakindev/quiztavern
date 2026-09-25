@@ -130,3 +130,7 @@ test('İkinci gönderim üzerine yazar; masadan çıkınca kayıt düşer', () =
 
 console.log(`writer-test: ${passed} geçti`)
 assert.equal(passed, 9)
+
+// Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
+// testler bittiğinde çık.
+process.exit(0)
