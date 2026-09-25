@@ -1761,7 +1761,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     {lightbox && <div className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
       <figure className="qt-lightbox-card" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="qt-lightbox-close" onClick={() => setLightbox(null)} aria-label={t('game.imageClose')}><Icon name="close" /></button>
-        <img src={lightbox.src} alt="" />
+        <img src={lightbox.src} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} />
         {lightbox.credit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{lightbox.credit}</span></figcaption>}
       </figure>
     </div>}
