@@ -104,6 +104,26 @@ const tokenEqual = (a: string, b: string) => {
   return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
 };
 
+// İstemci hata özeti (§7.17): imza = tür + mesaj başı; admin panelde top-10.
+const clientErrorStats = new Map<string, { type: string; message: string; count: number; lastAt: number }>();
+const CLIENT_ERROR_SIG_MAX = 500;
+function recordClientError(type: string, message: string) {
+  const key = `${type}::${message.slice(0, 120)}`;
+  const hit = clientErrorStats.get(key);
+  if (hit) { hit.count += 1; hit.lastAt = Date.now(); return; }
+  if (clientErrorStats.size >= CLIENT_ERROR_SIG_MAX) {
+    // Sınırsız bellek büyümesini önle: en eski imzayı düşür.
+    let oldestKey: string | null = null;
+    let oldest = Infinity;
+    for (const [k, v] of clientErrorStats) if (v.lastAt < oldest) { oldest = v.lastAt; oldestKey = k; }
+    if (oldestKey) clientErrorStats.delete(oldestKey);
+  }
+  clientErrorStats.set(key, { type, message: message.slice(0, 200), count: 1, lastAt: Date.now() });
+}
+function topClientErrors(limit = 10) {
+  return [...clientErrorStats.values()].sort((a, b) => b.count - a.count || b.lastAt - a.lastAt).slice(0, limit);
+}
+
 app.get(["/admin/reports", "/api/admin/reports"],
   createRateLimitMiddleware({ limit: 10, windowMs: 60_000 }),
   (req, res) => {
@@ -113,12 +133,16 @@ app.get(["/admin/reports", "/api/admin/reports"],
     return res.status(401).json({ error: "Yetkisiz." });
   }
   const rows = reports.list();
-  if (!req.accepts("html")) return res.json({ reports: rows });
+  const errs = topClientErrors();
+  if (!req.accepts("html")) return res.json({ reports: rows, clientErrors: errs });
   const trs = rows.map((r) => `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`).join("");
-  res.type("html").send(`<!doctype html><meta charset="utf-8"><title>Soru bildirimleri</title>
-<style>body{font-family:system-ui;margin:24px;background:#0c1420;color:#dbe7f0}table{border-collapse:collapse;width:100%}td,th{border:1px solid #335;padding:6px 10px;font-size:13px;text-align:left;vertical-align:top}th{background:#16283c}</style>
+  const ers = errs.map((e) => `<tr><td>${e.count}</td><td>${esc(e.type)}</td><td>${esc(e.message)}</td><td>${new Date(e.lastAt).toISOString()}</td></tr>`).join("");
+  res.type("html").send(`<!doctype html><meta charset="utf-8"><title>Yönetici paneli</title>
+<style>body{font-family:system-ui;margin:24px;background:#0c1420;color:#dbe7f0}table{border-collapse:collapse;width:100%;margin-bottom:32px}td,th{border:1px solid #335;padding:6px 10px;font-size:13px;text-align:left;vertical-align:top}th{background:#16283c}</style>
 <h1>Soru bildirimleri (${rows.length})</h1>
-<table><tr><th>#</th><th>Tarih</th><th>Kategori</th><th>Soru</th><th>Not</th><th>Bildiren</th></tr>${trs}</table>`);
+<table><tr><th>#</th><th>Tarih</th><th>Kategori</th><th>Soru</th><th>Not</th><th>Bildiren</th></tr>${trs}</table>
+<h2>İstemci hataları — en sık 10</h2>
+<table><tr><th>Adet</th><th>Tür</th><th>Mesaj</th><th>Son görülme</th></tr>${ers}</table>`);
 });
 
 // ── Özel soru paketleri (FAZ 4.4) ─────────────────────────────────────────
@@ -246,16 +270,19 @@ app.post(
       return s === undefined ? undefined
         : s.replace(/[?&][^\s?&]*=[^\s?&]+/g, "[q]").replace(/[A-Za-z0-9_-]{24,}/g, "[redacted]");
     };
+    const errType = clip(body?.type, 40) ?? "?";
+    const errMessage = redact(body?.message, 500) ?? "";
     log.warn(
       {
         ip: clientAddressKey(req.headers, req.socket.remoteAddress),
-        type: clip(body?.type, 40),
-        message: redact(body?.message, 500),
+        type: errType,
+        message: errMessage,
         stack: redact(body?.stack, 2000),
         url: redact(body?.url, 300),
       },
       "istemci hatası raporlandı",
     );
+    recordClientError(errType, errMessage);
     res.status(204).end();
   },
 );

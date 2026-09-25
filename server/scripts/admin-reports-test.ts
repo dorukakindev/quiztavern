@@ -72,6 +72,16 @@ const dbPath = join(tmp, "reports.db");
     });
     store.close();
 
+    // İstemci hata özeti (§7.17): aynı imza iki kez, bir farklı imza.
+    const postErr = (message: string) => fetch(`${baseUrl}/client-errors`, {
+      method: "post",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ type: "unhandledrejection", message, url: "https://x.test/activity" }),
+    });
+    assert((await postErr("ResizeObserver loop limit exceeded")).status === 204, "client-errors POST → 204");
+    await postErr("ResizeObserver loop limit exceeded");
+    await postErr("Socket kapandı");
+
     const noAuth = await fetch(`${baseUrl}/admin/reports`);
     assert(noAuth.status === 401, "Bearer yok → 401");
 
@@ -82,9 +92,10 @@ const dbPath = join(tmp, "reports.db");
       headers: { authorization: "Bearer gizli-token-123", accept: "application/json" },
     });
     assert(jsonRes.status === 200, "doğru Bearer → 200 (JSON)");
-    const body = await jsonRes.json() as { reports: Array<{ questionId: string; note: string }> };
+    const body = await jsonRes.json() as { reports: Array<{ questionId: string; note: string }>; clientErrors: Array<{ count: number; message: string }> };
     assert(Array.isArray(body.reports) && body.reports.length === 1, "JSON: 1 rapor döndü");
     assert(body.reports[0].questionId === "tarih-001", "JSON: rapor içeriği doğru");
+    assert(body.clientErrors.length === 2 && body.clientErrors[0].count === 2 && body.clientErrors[0].message === "ResizeObserver loop limit exceeded", "JSON: hata özeti en sık 2× imza ile başlıyor");
 
     const htmlRes = await fetch(`${baseUrl}/api/admin/reports`, {
       headers: { authorization: "Bearer gizli-token-123", accept: "text/html" },
@@ -93,6 +104,7 @@ const dbPath = join(tmp, "reports.db");
     assert(htmlRes.status === 200 && html.includes("<table"), "/api takma adı → HTML tablo");
     assert(html.includes("&#60;img&#62;") || !html.includes("<img>"), "HTML: not içindeki HTML kaçışlı (XSS yok)");
     assert(html.includes("Soru bildirimleri"), "HTML: başlık var");
+    assert(html.includes("İstemci hataları") && html.includes("ResizeObserver"), "HTML: hata özeti bölümü var");
   } finally {
     server.kill();
   }
