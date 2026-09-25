@@ -494,18 +494,22 @@ export function createXpStore(file: string): XpStore {
       const oldLeague = leagueFor(oldXp);
       const xp = oldXp + amount;
       const now = new Date();
-      upsertPlayer.run({
-        userId, name, avatarUrl, xp,
-        matches: row?.matches ?? 0,
-        wins: row?.wins ?? 0,
-        correctTotal: row?.correct_total ?? 0,
-        bestStreak: row?.best_streak ?? 0,
-        streakDays: row?.streak_days ?? 0,
-        lastDay: row?.last_day ?? null,
-        updatedAt: now.getTime(),
-      });
-      upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
-      upsertWeekly.run({ userId, week: weekKey(now), xp: amount, name });
+      // Üç tablo tek transaction'da: yarıda kesilirse oyuncu XP'siyle sezon/
+      // haftalık toplamları birbirinden ayrılmaz (grantMatch'in writeAll kalıbı).
+      db.transaction(() => {
+        upsertPlayer.run({
+          userId, name, avatarUrl, xp,
+          matches: row?.matches ?? 0,
+          wins: row?.wins ?? 0,
+          correctTotal: row?.correct_total ?? 0,
+          bestStreak: row?.best_streak ?? 0,
+          streakDays: row?.streak_days ?? 0,
+          lastDay: row?.last_day ?? null,
+          updatedAt: now.getTime(),
+        });
+        upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
+        upsertWeekly.run({ userId, week: weekKey(now), xp: amount, name });
+      })();
       const level = levelFor(xp);
       const league = leagueFor(xp);
       return { gained: amount, xp, level, league, leveledUp: level > oldLevel, leagueChanged: league !== oldLeague };

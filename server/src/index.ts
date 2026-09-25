@@ -764,6 +764,11 @@ function shutdown(signal: NodeJS.Signals) {
     if (finished) return;
     finished = true;
     clearTimeout(forceTimer);
+    // SQLite bağlantılarını kapat: WAL checkpoint'i ve buffer flush'ı ancak
+    // düzgün close() ile garanti edilir — kapatılmazsa son yazılar kaybolabilir.
+    for (const store of [xpStore, dailyStore, reports]) {
+      try { store.close(); } catch (closeError) { log.warn({ err: closeError }, "store kapatma hatası"); }
+    }
     if (error) {
       log.error({ err: error }, "kapanış hatası");
       process.exitCode = 1;
