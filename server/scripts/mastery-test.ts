@@ -42,6 +42,6 @@ try {
   assert.deepEqual(store.categoryMastery("v"), ["Tarih"]);
 } finally {
   store.close();
-  rmSync(dir, { recursive: true, force: true });
+  rmSync(dir, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 }
 console.log("mastery-test: 7/7 OK");

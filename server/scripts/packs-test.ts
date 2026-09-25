@@ -114,7 +114,7 @@ async function main() {
   const { rmSync, readdirSync } = await import("node:fs");
   const packsDir = fileURLToPath(new URL("../src/../data/packs", import.meta.url));
   try {
-    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`);
+    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`, { force: true, maxRetries: 5, retryDelay: 200 });
   } catch { /* dizin henüz yok */ }
 
   const port = await findFreePort();

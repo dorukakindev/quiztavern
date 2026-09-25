@@ -98,6 +98,6 @@ const dbPath = join(tmp, "reports.db");
   }
 }
 
-rmSync(tmp, { recursive: true, force: true });
+rmSync(tmp, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
 console.log(`\n[admin-reports] sonuç: ${passed} geçti, ${failed} kaldı`);
 process.exit(failed ? 1 : 0);
