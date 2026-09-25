@@ -151,6 +151,11 @@ export interface ProgressStore {
  *  karışır; bahis/çember/kelime/bulanık kendi mekaniğine sahip olduğu için dışarıda. */
 const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team", "duel"]);
 
+/** ANSWER (şık indeksi) kabul eden modlar — numeric/timeline/circle/word kendi
+ *  giriş yollarını kullanır; onlarda choice emit'i state'i kirletir
+ *  (firstAnswerId kaçak set olur, choice anlamsız dolar). */
+const CHOICE_MODES = new Set(["classic", "lightning", "bet", "team", "elim", "blur", "duel", "zil", "blitz", "board"]);
+
 /** 0..n-1 karışık indeksler — yazılan soruların hangi slotlara düşeceğini belirler. */
 function shuffleIdx(n: number): number[] {
   const idx = Array.from({ length: n }, (_, i) => i);
@@ -1251,7 +1256,7 @@ export class Room {
   }
 
   answer(playerId: string, choice: number): void {
-    if (this.gameMode === "circle" || this.gameMode === "word" || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
+    if (!CHOICE_MODES.has(this.gameMode) || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
     // Karar deadline'a göre: timer gecikmiş olsa bile süre dolduysa cevap yerine reveal işler.
     if (Date.now() >= this.questionDeadline) return this.reveal();
     const player = this.players.get(playerId);
