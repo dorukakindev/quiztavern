@@ -91,6 +91,7 @@ export function Icon({ name, weight = 'bold', className = '' }: { name: IconName
 
 /** Kategori kartı ikonları — anahtarlar oyundaki GERÇEK kategori adları. */
 const CATEGORY_ICONS: Record<string, Glyph> = {
+  'Topluluk': UsersThree,
   'Sinema': FilmSlate,
   'Müzik': MusicNotes,
   'Bilim': Flask,

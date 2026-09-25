@@ -98,4 +98,22 @@ test('Non-boolean bayrak reddedilir', () => {
   assert.throws(() => r.setTableFlag('a', 'imageOnly', 'yes'), (e: unknown) => e instanceof GameError && e.key === 'err.settingInvalid')
 })
 
-console.log(`settings-test: ${passed}/8 OK`)
+test('Sayısız modlarda soru sayısı reddedilir (duel/word/blitz/board)', () => {
+  for (const mode of ['duel', 'word', 'blitz', 'board'] as const) {
+    const r = lobby(`s-count-${mode}`)
+    r.setGameMode('a', mode)
+    assert.throws(() => r.setQuestionCount('a', 10), (e: unknown) => e instanceof GameError && e.key === 'err.countMode')
+  }
+})
+
+test('Sayı destekli modda çalışmaya devam eder', () => {
+  const r = lobby('s-count-ok')
+  r.setGameMode('a', 'zil')
+  r.setQuestionCount('a', 15) // zil'de sayı fiilen tur sayısını belirler
+  const c = lobby('s-count-circle')
+  c.setGameMode('a', 'circle')
+  c.setQuestionCount('a', 20) // CIRCLE_COUNTS
+  assert.throws(() => c.setQuestionCount('a', 5), (e: unknown) => e instanceof GameError && e.key === 'err.countInvalid')
+})
+
+console.log(`settings-test: ${passed} OK`)

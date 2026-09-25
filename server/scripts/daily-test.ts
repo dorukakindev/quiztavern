@@ -181,4 +181,19 @@ test("eski şema: name sütunu olmayan veritabanı ALTER ile geçirilir", () => 
   } finally { store.close(); }
 });
 
+test("günlük sonrası masa sıfırlanırsa bayat mod sonraki maça sızmasın (B50)", () => {
+  const room = new Room("r-stale-mode", () => {}, { minPlayers: 1, questionCount: 10 });
+  try {
+    room.join(player("host")); readyAll(room);
+    room.gameMode = "elim"; // günlük öncesi masa modu
+    room.start("host", "elim", { daily: true, completed: () => false });
+    assert.equal(room.gameMode, "classic"); // günlük klasik oynar
+    // Masadaki son insan gider → oda lobiye sıfırlanır.
+    (room as unknown as { resetToLobby(): void }).resetToLobby();
+    room.join(player("newbie")); room.setReady("newbie", true);
+    room.start("newbie", "zil");
+    assert.equal(room.gameMode, "zil"); // bayat "elim" zorlanmaz
+  } finally { stop(room); }
+});
+
 console.log(`\n[daily] sonuç: ${passed} geçti, 0 kaldı`);
