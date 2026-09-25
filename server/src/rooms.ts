@@ -90,8 +90,12 @@ export interface RoomPlayer {
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
-   *  çember = yazılan metin. Yalnız reveal'de o turun gözü doldurulur. */
+   *  çember = yazılan metin, numeric = tahmin edilen sayı. Yalnız reveal'de
+   *  o turun gözü doldurulur. */
   answers: (number | null)[];
+  /** Yakın Tahmin: tur bazında turu kazandı mı (en yakın ya da tam isabet).
+   *  answers[]'a paralel — inceleme kartındaki doğru/yanlış işaretini besler. */
+  numericWins: boolean[];
   typed: (string | null)[];
   /** D/Y Blitz (§6.1): oyuncunun bağımsız ifade akışı — herkes kendi hızında
    *  ilerler; pencere ortak 60 sn, seri çarpanıyla puanlanır. */
@@ -319,7 +323,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers" | "numericWins">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -384,6 +388,7 @@ export class Room {
       frozen: false,
       stats: emptyStats(),
       answers: [],
+      numericWins: [],
       typed: [],
       blitzIdx: 0,
       blitzStreak: 0,
@@ -1233,6 +1238,7 @@ export class Room {
       player.eligibleFrom = 0;
       player.stats = emptyStats();
       player.answers = [];
+      player.numericWins = [];
       player.typed = [];
       player.orderAnswers = [];
     }
@@ -1948,6 +1954,21 @@ export class Room {
           correctAnswerEn: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.labelEn).join(" → "),
         });
       });
+    } else if (this.gameMode === "numeric") {
+      this.numericQuestions.slice(0, this.roundLimit).forEach((prompt, i) => {
+        if (player.eligibleFrom > i) return;
+        const guess = player.answers[i] ?? null;
+        items.push({
+          category: prompt.category,
+          prompt: prompt.text,
+          correct: player.numericWins[i] ?? false,
+          yourAnswer: guess !== null ? String(guess) : "",
+          correctAnswer: String(prompt.answer),
+          promptEn: prompt.textEn,
+          yourAnswerEn: guess !== null ? String(guess) : "",
+          correctAnswerEn: String(prompt.answer),
+        });
+      });
     } else if (this.gameMode === "board") {
       this.boardAsked.forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -2189,6 +2210,10 @@ export class Room {
     for (const player of this.eligiblePlayers()) {
       const guessed = this.numericGuesses.get(player.id);
       const isWinner = winnerIds.includes(player.id);
+      // İnceleme kartı (B51): numericGuesses tur sonunda silindiği için tur
+      // geçmişi answers[]/numericWins[]'a kopyalanır.
+      player.answers[this.qIndex] = guessed ?? null;
+      player.numericWins[this.qIndex] = isWinner;
       // Tam isabet bonusu yalnız kazanana — eşit mesafede ama tam tutturamayan bonus almaz.
       const exact = isWinner && guessed === prompt.answer;
       const gain = isWinner ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0) : 0;

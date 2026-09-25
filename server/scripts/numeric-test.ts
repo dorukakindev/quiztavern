@@ -141,6 +141,28 @@ test("süresi geçmiş cevap: reveal + err.lateAnswer toast'ı", () => {
   assert.equal(inner.numericGuesses.has("a"), false);
 });
 
+test("maç özeti incelemesi numeric'te tur geçmişi taşır (B51)", () => {
+  const room = numericRoom("n-review", ["a", "b"]);
+  const inner = startRound(room);
+  const answer = inner.numericQuestions[0].answer;
+  room.numericAnswer("a", answer);      // tam isabet → kazanan
+  room.numericAnswer("b", answer + 40); // kaybeden
+  assert.equal(room.phase, "reveal");
+  const fin = room as unknown as {
+    finish(): void;
+    frozenSummaries: Map<string, { review: { correct: boolean; yourAnswer: string; correctAnswer: string }[] }>;
+  };
+  fin.finish();
+  const reviewA = fin.frozenSummaries.get("a")!.review;
+  assert.equal(reviewA.length, inner.numericQuestions.length); // oynanmamış turlar da listelenir (diğer modlarla aynı)
+  assert.equal(reviewA[0].correct, true);
+  assert.equal(reviewA[0].yourAnswer, String(answer));
+  assert.equal(reviewA[0].correctAnswer, String(answer));
+  const reviewB = fin.frozenSummaries.get("b")!.review;
+  assert.equal(reviewB[0].correct, false);
+  assert.equal(reviewB[0].yourAnswer, String(answer + 40));
+});
+
 console.log(`numeric-test: ${passed} geçti`);
-assert.equal(passed, 10);
+assert.equal(passed, 11);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın
