@@ -213,16 +213,35 @@ function NewBadgeChips({ gain }: { gain: XpGain }) {
 }
 
 /** Lobide güncel sezonun ilk 5'i + sıralamada olmayan senin satırın. */
-function SeasonStrip({ state, weekly = false }: { state: GameState; weekly?: boolean }) {
+function SeasonStrip({
+  state,
+  weekly = false,
+  allTime = false,
+}: {
+  state: GameState;
+  weekly?: boolean;
+  allTime?: boolean;
+}) {
   const { t, language } = useI18n();
-  const board = weekly ? state.weeklyBoard : state.seasonBoard;
+  const board = allTime ? state.allTimeBoard : weekly ? state.weeklyBoard : state.seasonBoard;
   if (!board) return null;
-  const yourRank = weekly ? null : (state.progress?.seasonRank ?? null);
+  const yourRank = allTime
+    ? (state.progress?.allTimeRank ?? null)
+    : weekly
+      ? null
+      : (state.progress?.seasonRank ?? null);
+  const yourXp = allTime ? state.progress?.xp : state.progress?.seasonXp;
   const youIn = board.entries.some((entry) => entry.userId === state.youId);
   return (
     <div className={`qt-season ${weekly ? "qt-season--weekly" : ""}`}>
       <div className="qt-season__head">
-        <span>{weekly ? t("weekly.title", { week: board.season }) : t("season.title", { season: board.season })}</span>
+        <span>
+          {allTime
+            ? t("prestige.title")
+            : weekly
+              ? t("weekly.title", { week: board.season })
+              : t("season.title", { season: board.season })}
+        </span>
       </div>
       {board.entries.length ? (
         <ol className="qt-season__list">
@@ -234,12 +253,12 @@ function SeasonStrip({ state, weekly = false }: { state: GameState; weekly?: boo
               <em>{formatNumber(language, entry.xp)} XP</em>
             </li>
           ))}
-          {!youIn && yourRank !== null && state.progress && (
+          {!youIn && yourRank !== null && yourXp !== undefined && state.progress && (
             <li className="is-you">
               <b>#{yourRank}</b>
               <i className={`qt-league-dot is-${state.progress.league}`} aria-hidden="true" />
               <span>{t("podium.you")}</span>
-              <em>{formatNumber(language, state.progress.seasonXp)} XP</em>
+              <em>{formatNumber(language, yourXp)} XP</em>
             </li>
           )}
         </ol>
@@ -2822,7 +2841,11 @@ function ActivityLobby({
           {/* Profil: ilerleme istatistikleri (XP/lig, rozetler, sezon/hafta/
             günlük tabloları) katlanabilir kartta — başlıkta seviye rozeti
             görünür kalır, liste lobi akışını şişirmez. */}
-          {(state?.progress || state?.seasonBoard || state?.weeklyBoard || state?.dailyBoard) && (
+          {(state?.progress ||
+            state?.seasonBoard ||
+            state?.weeklyBoard ||
+            state?.allTimeBoard ||
+            state?.dailyBoard) && (
             <details className="qt-profile">
               <summary className="qt-profile__head">
                 <span className="qt-profile__title">{t("profile.title")}</span>
@@ -2837,6 +2860,7 @@ function ActivityLobby({
                 {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
                 {state?.seasonBoard && <SeasonStrip state={state} />}
                 {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
+                {state?.allTimeBoard && <SeasonStrip state={state} allTime />}
                 {state?.dailyBoard && <DailyStrip state={state} />}
               </div>
             </details>

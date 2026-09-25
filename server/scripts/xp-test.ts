@@ -143,6 +143,12 @@ test("sezon tablosu: aylık ayrı birikir, sıralama XP'ye göre", () => {
   assert.equal(snap.seasonXp, 0); // yeni sezonda sıfır
   assert.equal(snap.seasonRank, null);
   assert.equal(snap.xp > 0, true); // toplam XP korunur
+  const allTime = store.allTimeBoard(5);
+  assert.equal(allTime.season, "all");
+  assert.equal(allTime.entries.length, 2);
+  assert.equal(allTime.entries[0].userId, "u2"); // kümülatif XP'de u2 önde (205 > 90)
+  assert.equal(snap.allTimeRank, 2); // u1 sezonda 0 puan ama tüm zamanlarda 2.
+  assert.equal(store.snapshot("u2", oct)!.allTimeRank, 1);
   store.close();
 });
 

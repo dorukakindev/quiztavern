@@ -169,6 +169,8 @@ export interface ProgressStore {
   snapshot(userId: string): ProgressSnapshot | null;
   seasonBoard(limit?: number): SeasonBoard;
   weeklyBoard(limit?: number): SeasonBoard;
+  /** Tüm zamanlar XP tablosu (prestij); season alanı "all" döner. */
+  allTimeBoard(limit?: number): SeasonBoard;
   recordMatch(entries: MatchFinishedEntry[]): Map<string, XpGain>;
   /** Maç dışı küçük XP grantı — izleyici kazanan tahmini. Sayaçlara yazmaz. */
   bonusXp(entry: { userId: string; name: string; avatarUrl: string | null; amount: number }): XpGain;
@@ -360,14 +362,20 @@ export class Room {
   /** Lider tabloları her yayında × her alıcı için SQLite'a gidiyordu; kısa
    *  ömürlü önbellek (15 sn) — maç sonu yazımları bir sonraki yayında zaten
    *  tazelenir (invalidate, recordMatch sonrası çağrılır). */
-  private boardCache: { at: number; season: SeasonBoard | null; weekly: SeasonBoard | null } | null = null;
-  private boardsCached(): { season: SeasonBoard | null; weekly: SeasonBoard | null } {
+  private boardCache: {
+    at: number;
+    season: SeasonBoard | null;
+    weekly: SeasonBoard | null;
+    allTime: SeasonBoard | null;
+  } | null = null;
+  private boardsCached(): { season: SeasonBoard | null; weekly: SeasonBoard | null; allTime: SeasonBoard | null } {
     const now = Date.now();
     if (!this.boardCache || now - this.boardCache.at > 15_000) {
       this.boardCache = {
         at: now,
         season: this.progress?.seasonBoard(5) ?? null,
         weekly: this.progress?.weeklyBoard(5) ?? null,
+        allTime: this.progress?.allTimeBoard(5) ?? null,
       };
     }
     return this.boardCache;
@@ -1919,6 +1927,7 @@ export class Room {
       // her alıcı aynı iki sorguyu tekrar tetikliyordu.
       seasonBoard: showBoards ? this.boardsCached().season : null,
       weeklyBoard: showBoards ? this.boardsCached().weekly : null,
+      allTimeBoard: showBoards ? this.boardsCached().allTime : null,
       dailyBoard: null,
       serverNow: Date.now(),
     };

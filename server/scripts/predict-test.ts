@@ -36,6 +36,7 @@ const fakeStore = {
   snapshot: () => null,
   seasonBoard: () => ({ season: "x", rows: [] }),
   weeklyBoard: () => ({ season: "x", rows: [] }),
+  allTimeBoard: () => ({ season: "all", entries: [] }),
   recordMatch: () => new Map<string, XpGain>(),
   recordQuestionStats: () => {},
   questionStats: () => [],
