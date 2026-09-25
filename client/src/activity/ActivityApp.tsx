@@ -1434,10 +1434,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     ? null
     : state.wordReveal?.rankedPlayerIds.includes(state.youId) ? 'right' : 'wrong'
   useEffect(() => {
-    if (!circleInputShouldFocus({ hasPrompt: !!circle || !!word, locked: circleLocked && wordLocked })) return
+    if (!circleInputShouldFocus({ hasPrompt: !!circle || !!word || !!numeric, locked: circle ? circleLocked : word ? wordLocked : numericLocked })) return
     const frame = window.requestAnimationFrame(() => circleInputRef.current?.focus())
     return () => window.cancelAnimationFrame(frame)
-  }, [circle?.deadline, word?.deadline, circleLocked, wordLocked])
+  }, [circle?.deadline, word?.deadline, numeric?.deadline, circleLocked, wordLocked, numericLocked])
   // Hic cevap vermeden reveal'a girdiysen sahne hafifce sallanir — tek sikkin
   // is-wrong sarsintisindan ayri, "hic secmedin" icin daha dramatik bir isaret.
   const youMissed = beats.cards && !isCircle && selected === null && !youAreSpectator
@@ -1592,7 +1592,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
               })()}
             </div>
           : <div className="qt-circle-entry">
-              <input inputMode="decimal" value={state.yourNumericGuess !== null ? String(state.yourNumericGuess) : circleAnswer} disabled={numericLocked} maxLength={16} onChange={(event) => setCircleAnswer(event.target.value.replace(/[^0-9,.−-]/g, ''))} onKeyDown={(event) => { if (event.key === 'Enter' && numericReady && !numericLocked) { event.preventDefault(); sfx.play('lock'); onNumericAnswer?.(numericParsed) } }} placeholder={t('numeric.placeholder')} aria-label={t('numeric.placeholder')} className={state.yourNumericGuess !== null ? 'is-locked' : ''} />
+              <input ref={circleInputRef} inputMode="decimal" value={state.yourNumericGuess !== null ? String(state.yourNumericGuess) : circleAnswer} disabled={numericLocked} maxLength={16} onChange={(event) => setCircleAnswer(event.target.value.replace(/[^0-9,.−-]/g, ''))} onKeyDown={(event) => { if (event.key === 'Enter' && numericReady && !numericLocked) { event.preventDefault(); sfx.play('lock'); onNumericAnswer?.(numericParsed) } }} placeholder={t('numeric.placeholder')} aria-label={t('numeric.placeholder')} className={state.yourNumericGuess !== null ? 'is-locked' : ''} />
               <span className="qt-numeric-unit">{language === 'en' ? shownNumeric.unitEn : shownNumeric.unit}</span>
               <button className={`qt-button ${numericLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!numericReady || numericLocked} onClick={() => { sfx.play('lock'); onNumericAnswer?.(numericParsed) }}>{numericLocked && state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
             </div>}
