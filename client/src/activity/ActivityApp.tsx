@@ -1224,7 +1224,10 @@ function RoomStrip({
                 <Icon name="deck" />
               </span>
             )}
-            <b className="qt-player-score">{formatNumber(language, player.score)}</b>
+            <span className="qt-player-scorecol" title={t("game.totalScore")}>
+              <b className="qt-player-score">{formatNumber(language, player.score)}</b>
+              <small className="qt-player-total">{t("game.total")}</small>
+            </span>
             {player.answered && !beats.gains && <Icon name="check" />}
           </div>
         ))}
@@ -3147,6 +3150,27 @@ function GameBoard({
   const accent = categoryAccent(isCircle ? shownCircle?.category : isWord ? shownWord?.category : shown?.category);
   const playerById = (id: string) => state.players.find((item) => item.id === id);
 
+  // Reveal'de sayacın köşesine tur sonucu rozeti: sayaç yok olmak yerine
+  // ✓/✗ durumuna geçer (ekranlar arası düzen tutarlı kalır). İzleyici ya da
+  // turu bekleyen oyuncuda sonuç yok — rozet gösterilmez.
+  const yourGain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId];
+  const resultMark: "right" | "wrong" | null =
+    !beats.active || waiting || youAreSpectator
+      ? null
+      : isCircle
+        ? circleVerdict === "right"
+          ? "right"
+          : "wrong"
+        : isWord
+          ? wordVerdict === "right"
+            ? "right"
+            : "wrong"
+          : yourGain === undefined
+            ? null
+            : yourGain > 0
+              ? "right"
+              : "wrong";
+
   // Bulanık Resim: görsel soru süresi boyunca netleşir. Oran sunucu saatinden
   // türer (sfxNow), transform:scale kenar sızdırmazlığı için blur'le birlikte
   // azalır. Reveal'da (faz=question değil) görsel tamamen net.
@@ -3338,6 +3362,16 @@ function GameBoard({
             kaldırıldı, kart merkezi tek odak. Reveal'de yerini sonuç/gain alır. */}
           {!beats.active && deadline ? (
             <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} compact />
+          ) : null}
+          {resultMark ? (
+            <div
+              className={`qt-result-mark is-${resultMark}`}
+              role="img"
+              aria-label={t(resultMark === "right" ? "reveal.markRight" : "reveal.markWrong")}
+              title={t(resultMark === "right" ? "reveal.markRight" : "reveal.markWrong")}
+            >
+              <Icon name={resultMark === "right" ? "check" : "close"} weight="bold" />
+            </div>
           ) : null}
           {isCircle && shownCircle ? (
             <>
@@ -3975,6 +4009,9 @@ function GameBoard({
                 <div className="qt-answers">
                   {(language === "en" ? shown.choicesEn : shown.choices).map((choice, index) => {
                     const removed = state.removedChoices.includes(index);
+                    // %50 jokerinin sildiği şık artık hiç render edilmez —
+                    // soluk boş kutu "doldurulmamış C/D" gibi okunuyordu.
+                    if (removed) return null;
                     const isCorrect = beats.cards && index === correctIndex;
                     const isWrong = beats.cards && selected === index && index !== correctIndex;
                     const isDimmed = beats.cards && !isCorrect;
@@ -4033,7 +4070,11 @@ function GameBoard({
                   avatarlar alt kenarda bir alttaki kartın üstüne biniyordu. */}
                         {(showPct || (beats.voters && voters.length > 0)) && (
                           <span className={`qt-answer__tally ${index === correctIndex ? "is-right" : ""}`}>
-                            {showPct && <b className="qt-answer__pct">{formatPercent(language, pct)}</b>}
+                            {showPct && (
+                              <b className="qt-answer__pct" title={t("reveal.pctHint", { pct })}>
+                                {formatPercent(language, pct)}
+                              </b>
+                            )}
                             <VoterDock voters={voters} correct={index === correctIndex} beats={beats} />
                           </span>
                         )}
@@ -4522,7 +4563,11 @@ function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
         +{formatNumber(language, countUpValue(gain, beats.elapsedMs - BEAT_GAINS_MS, reduced))}
       </b>
       <small>
-        {rescued ? t("reveal.betRescued") : state.gameMode === "bet" ? t("reveal.betWon") : t("reveal.speedIncluded")}
+        {rescued
+          ? t("reveal.betRescued")
+          : state.gameMode === "bet"
+            ? t("reveal.betWon")
+            : `${t("reveal.speedIncluded")} · ${t("reveal.thisQuestion")}`}
       </small>
     </div>
   );

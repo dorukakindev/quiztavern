@@ -1021,7 +1021,7 @@ button.qt-button--danger:hover:not(:disabled) {
   min-height: 0;
   margin: auto;
   display: grid;
-  grid-template-columns: clamp(150px, 15vw, 195px) minmax(0, 720px) clamp(120px, 12vw, 156px);
+  grid-template-columns: clamp(160px, 16vw, 215px) minmax(0, 720px) clamp(120px, 12vw, 156px);
   gap: clamp(14px, 2.4vw, 32px);
   align-items: center;
   justify-content: center;
