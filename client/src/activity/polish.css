@@ -2257,3 +2257,37 @@
   padding: 0;
   background: transparent;
 }
+
+/* ── İnce ayarlar: ayar panelindeki ikincil gruplar katlanır ─────────── */
+.qt-fine {
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  padding: 7px 9px;
+}
+.qt-fine__head {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+.qt-fine__head::-webkit-details-marker {
+  display: none;
+}
+.qt-fine__head::after {
+  content: "▾";
+  margin-left: auto;
+  transition: transform 0.15s;
+}
+.qt-fine[open] > .qt-fine__head::after {
+  transform: rotate(180deg);
+}
+.qt-fine__body {
+  display: grid;
+  gap: 10px;
+  padding-top: 9px;
+}

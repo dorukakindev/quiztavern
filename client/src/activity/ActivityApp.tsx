@@ -2396,28 +2396,6 @@ function ActivityLobby({
                 </div>
               </div>
 
-              {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). Sayının anlam
-            taşımadığı modlarda (duel/word/blitz/board) grup gizlenir — çip
-            ölü kontrol olmasın. */}
-              {!COUNTLESS_MODES.includes(mode) && (
-                <div className="qt-settings__group">
-                  <span>{t(mode === "circle" ? "table.roundCount" : "table.questionCount")}</span>
-                  <div className="qt-count-row">
-                    {(mode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => (
-                      <button
-                        key={count}
-                        className={`qt-count-chip ${state?.questionCount === count ? "is-selected" : ""}`}
-                        disabled={!isHost}
-                        aria-pressed={state?.questionCount === count}
-                        onClick={() => onSetQuestionCount(count)}
-                      >
-                        {count}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Takım modu: host tek dokunuşla takımları yeniden dağıtır. */}
               {mode === "team" && (
                 <div className="qt-settings__group">
@@ -2457,86 +2435,6 @@ function ActivityLobby({
                 </div>
               </div>
 
-              {/* Masa teması (§6.3): host'un ligi kilitleri açar; tema tüm masada. */}
-              <div className="qt-settings__group">
-                <span>{t("theme.label")}</span>
-                <div className="qt-count-row qt-theme-row">
-                  {TABLE_THEMES.map((theme) => {
-                    const unlocked =
-                      LEAGUE_ORDER.indexOf(state?.progress?.league ?? "acemi") >= LEAGUE_ORDER.indexOf(theme.league);
-                    const selected = (state?.tableTheme ?? "tavern") === theme.key;
-                    return (
-                      <button
-                        key={theme.key}
-                        className={`qt-count-chip qt-theme-chip is-${theme.key} ${selected ? "is-selected" : ""}`}
-                        disabled={!isHost || !unlocked}
-                        aria-pressed={selected}
-                        title={!unlocked ? t("theme.locked", { league: t(`league.${theme.league}`) }) : undefined}
-                        onClick={() => onSetTableTheme(theme.key)}
-                      >
-                        {!unlocked && <Icon name="lock" />}
-                        {t(`theme.${theme.key}`)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Süre/bonus/resim ayarları: süreye bağlı modlar (Çember/Fitil/
-            Bulanık/Kelime) kendi sabitini kullanır; yalnız soru modlarında. */}
-              {["classic", "team", "elim", "bet"].includes(mode) && (
-                <>
-                  <div className="qt-settings__group">
-                    <span>{t("table.questionTime")}</span>
-                    <div className="qt-count-row">
-                      {QUESTION_TIMES.map((ms) => (
-                        <button
-                          key={ms}
-                          className={`qt-count-chip ${(state?.questionTimeMs ?? 15000) === ms ? "is-selected" : ""}`}
-                          disabled={!isHost}
-                          aria-pressed={(state?.questionTimeMs ?? 15000) === ms}
-                          onClick={() => onSetQuestionTime(ms)}
-                        >
-                          {ms / 1000}sn
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="qt-settings__group">
-                    <span>{t("table.speedBonus")}</span>
-                    <div className="qt-count-row">
-                      {[true, false].map((v) => (
-                        <button
-                          key={String(v)}
-                          className={`qt-count-chip ${(state?.speedBonus ?? true) === v ? "is-selected" : ""}`}
-                          disabled={!isHost}
-                          aria-pressed={(state?.speedBonus ?? true) === v}
-                          onClick={() => onSetSpeedBonus(v)}
-                        >
-                          {t(v ? "settings.on" : "settings.off")}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="qt-settings__group">
-                    <span>{t("table.imageOnly")}</span>
-                    <div className="qt-count-row">
-                      {[true, false].map((v) => (
-                        <button
-                          key={String(v)}
-                          className={`qt-count-chip ${(state?.imageOnly ?? false) === v ? "is-selected" : ""}`}
-                          disabled={!isHost}
-                          aria-pressed={(state?.imageOnly ?? false) === v}
-                          onClick={() => onSetImageOnly(v)}
-                        >
-                          {t(v ? "settings.on" : "settings.off")}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
-
               <div className="qt-settings__group">
                 <span>{t("category.label")}</span>
                 <CategoryPicker
@@ -2565,66 +2463,178 @@ function ActivityLobby({
                 </small>
               </div>
 
-              {/* Özel soru paketi (FAZ 4.4): Çember kendi prompt havuzunu kullandığı
-            için grup yalnız soru modlarında gösterilir. Seçim masa ayarıdır. */}
-              {mode !== "circle" && (
-                <div className="qt-settings__group">
-                  <span>{t("pack.label")}</span>
-                  <div className="qt-count-row qt-pack-row">
-                    <button
-                      className={`qt-count-chip ${!state?.pack ? "is-selected" : ""}`}
-                      disabled={!isHost}
-                      aria-pressed={!state?.pack}
-                      onClick={() => onSetPack(null)}
-                    >
-                      {t("pack.default")}
-                    </button>
-                    {packs.map((pack) => (
-                      <button
-                        key={pack.id}
-                        className={`qt-count-chip qt-pack-chip ${state?.pack?.id === pack.id ? "is-selected" : ""}`}
-                        disabled={!isHost}
-                        aria-pressed={state?.pack?.id === pack.id}
-                        title={t("pack.count", { count: pack.count })}
-                        onClick={() => onSetPack(pack.id)}
-                      >
-                        {pack.name}
-                        <small>{pack.count}</small>
-                      </button>
-                    ))}
-                    {state?.pack && !packs.some((pack) => pack.id === state.pack?.id) && (
-                      <span className="qt-count-chip is-selected qt-pack-chip">{state.pack.name}</span>
-                    )}
-                  </div>
-                  {isHost && (
-                    <details className="qt-pack-upload">
-                      <summary>{t("pack.editor")}</summary>
-                      <PackEditor
-                        packs={packs}
-                        myId={identity.user?.id ?? `dev:${getDevIdentity().id}`}
-                        auth={{
-                          sessionToken: identity.sessionToken ?? null,
-                          devId: identity.isDiscord ? null : getDevIdentity().id,
-                        }}
-                        categories={(state?.availableCategories ?? []).map((c) => c.name)}
-                        onSaved={() => void listPacks().then(setPacks)}
-                      />
-                    </details>
+              {/* İnce ayarlar: ikincil ayarlar katlanır bölüme taşındı — panel
+            kısa ve okunaklı; yalnız mod/zorluk/kategori hep açık kalır. */}
+              <details className="qt-fine">
+                <summary className="qt-fine__head">
+                  <span>{t("settings.fine")}</span>
+                </summary>
+                <div className="qt-fine__body">
+                  {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). Sayının anlam
+                taşımadığı modlarda (duel/word/blitz/board) grup gizlenir — çip
+                ölü kontrol olmasın. */}
+                  {!COUNTLESS_MODES.includes(mode) && (
+                    <div className="qt-settings__group">
+                      <span>{t(mode === "circle" ? "table.roundCount" : "table.questionCount")}</span>
+                      <div className="qt-count-row">
+                        {(mode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => (
+                          <button
+                            key={count}
+                            className={`qt-count-chip ${state?.questionCount === count ? "is-selected" : ""}`}
+                            disabled={!isHost}
+                            aria-pressed={state?.questionCount === count}
+                            onClick={() => onSetQuestionCount(count)}
+                          >
+                            {count}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
-                  {isHost && (
-                    <details className="qt-pack-upload">
-                      <summary>{t("pack.upload")}</summary>
-                      <PackUploadForm
-                        auth={{
-                          sessionToken: identity.sessionToken ?? null,
-                          devId: identity.isDiscord ? null : getDevIdentity().id,
-                        }}
-                        onUploaded={() => void listPacks().then(setPacks)}
-                      />
-                    </details>
+
+                  {/* Masa teması (§6.3): host'un ligi kilitleri açar; tema tüm masada. */}
+                  <div className="qt-settings__group">
+                    <span>{t("theme.label")}</span>
+                    <div className="qt-count-row qt-theme-row">
+                      {TABLE_THEMES.map((theme) => {
+                        const unlocked =
+                          LEAGUE_ORDER.indexOf(state?.progress?.league ?? "acemi") >=
+                          LEAGUE_ORDER.indexOf(theme.league);
+                        const selected = (state?.tableTheme ?? "tavern") === theme.key;
+                        return (
+                          <button
+                            key={theme.key}
+                            className={`qt-count-chip qt-theme-chip is-${theme.key} ${selected ? "is-selected" : ""}`}
+                            disabled={!isHost || !unlocked}
+                            aria-pressed={selected}
+                            title={!unlocked ? t("theme.locked", { league: t(`league.${theme.league}`) }) : undefined}
+                            onClick={() => onSetTableTheme(theme.key)}
+                          >
+                            {!unlocked && <Icon name="lock" />}
+                            {t(`theme.${theme.key}`)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Süre/bonus/resim ayarları: süreye bağlı modlar (Çember/Fitil/
+                Bulanık/Kelime) kendi sabitini kullanır; yalnız soru modlarında. */}
+                  {["classic", "team", "elim", "bet"].includes(mode) && (
+                    <>
+                      <div className="qt-settings__group">
+                        <span>{t("table.questionTime")}</span>
+                        <div className="qt-count-row">
+                          {QUESTION_TIMES.map((ms) => (
+                            <button
+                              key={ms}
+                              className={`qt-count-chip ${(state?.questionTimeMs ?? 15000) === ms ? "is-selected" : ""}`}
+                              disabled={!isHost}
+                              aria-pressed={(state?.questionTimeMs ?? 15000) === ms}
+                              onClick={() => onSetQuestionTime(ms)}
+                            >
+                              {ms / 1000}sn
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="qt-settings__group">
+                        <span>{t("table.speedBonus")}</span>
+                        <div className="qt-count-row">
+                          {[true, false].map((v) => (
+                            <button
+                              key={String(v)}
+                              className={`qt-count-chip ${(state?.speedBonus ?? true) === v ? "is-selected" : ""}`}
+                              disabled={!isHost}
+                              aria-pressed={(state?.speedBonus ?? true) === v}
+                              onClick={() => onSetSpeedBonus(v)}
+                            >
+                              {t(v ? "settings.on" : "settings.off")}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="qt-settings__group">
+                        <span>{t("table.imageOnly")}</span>
+                        <div className="qt-count-row">
+                          {[true, false].map((v) => (
+                            <button
+                              key={String(v)}
+                              className={`qt-count-chip ${(state?.imageOnly ?? false) === v ? "is-selected" : ""}`}
+                              disabled={!isHost}
+                              aria-pressed={(state?.imageOnly ?? false) === v}
+                              onClick={() => onSetImageOnly(v)}
+                            >
+                              {t(v ? "settings.on" : "settings.off")}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Özel soru paketi (FAZ 4.4): Çember kendi prompt havuzunu kullandığı
+            için grup yalnız soru modlarında gösterilir. Seçim masa ayarıdır. */}
+                  {mode !== "circle" && (
+                    <div className="qt-settings__group">
+                      <span>{t("pack.label")}</span>
+                      <div className="qt-count-row qt-pack-row">
+                        <button
+                          className={`qt-count-chip ${!state?.pack ? "is-selected" : ""}`}
+                          disabled={!isHost}
+                          aria-pressed={!state?.pack}
+                          onClick={() => onSetPack(null)}
+                        >
+                          {t("pack.default")}
+                        </button>
+                        {packs.map((pack) => (
+                          <button
+                            key={pack.id}
+                            className={`qt-count-chip qt-pack-chip ${state?.pack?.id === pack.id ? "is-selected" : ""}`}
+                            disabled={!isHost}
+                            aria-pressed={state?.pack?.id === pack.id}
+                            title={t("pack.count", { count: pack.count })}
+                            onClick={() => onSetPack(pack.id)}
+                          >
+                            {pack.name}
+                            <small>{pack.count}</small>
+                          </button>
+                        ))}
+                        {state?.pack && !packs.some((pack) => pack.id === state.pack?.id) && (
+                          <span className="qt-count-chip is-selected qt-pack-chip">{state.pack.name}</span>
+                        )}
+                      </div>
+                      {isHost && (
+                        <details className="qt-pack-upload">
+                          <summary>{t("pack.editor")}</summary>
+                          <PackEditor
+                            packs={packs}
+                            myId={identity.user?.id ?? `dev:${getDevIdentity().id}`}
+                            auth={{
+                              sessionToken: identity.sessionToken ?? null,
+                              devId: identity.isDiscord ? null : getDevIdentity().id,
+                            }}
+                            categories={(state?.availableCategories ?? []).map((c) => c.name)}
+                            onSaved={() => void listPacks().then(setPacks)}
+                          />
+                        </details>
+                      )}
+                      {isHost && (
+                        <details className="qt-pack-upload">
+                          <summary>{t("pack.upload")}</summary>
+                          <PackUploadForm
+                            auth={{
+                              sessionToken: identity.sessionToken ?? null,
+                              devId: identity.isDiscord ? null : getDevIdentity().id,
+                            }}
+                            onUploaded={() => void listPacks().then(setPacks)}
+                          />
+                        </details>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+              </details>
             </div>
           </details>
         </aside>
