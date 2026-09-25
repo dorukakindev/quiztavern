@@ -175,6 +175,16 @@ test("kopan ama masada kalan seçicinin 10 sn yeniden bağlanma penceresi korunu
   assert.equal(inner.boardPickerId(), "b");
 });
 
+test("seçici sırası eligibleFrom sıfırlandıktan sonra örneklenir", () => {
+  // Maç ortasında katılan oyuncu önceki maçın bayat eligibleFrom'uyla
+  // seçim sırasının dışında kalıyordu — sıra reset'ten sonra örneklenmeli.
+  const room = boardRoom("b12", ["a", "b"]);
+  const inner = internals(room);
+  (inner.players.get("b") as { eligibleFrom?: number })!.eligibleFrom = 99; // bayat değer
+  room.start(firstId(room), "board");
+  assert.deepEqual(inner.boardPickerOrder.sort(), ["a", "b"]);
+});
+
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 11);
+assert.equal(passed, 12);
 process.exit(0);

@@ -1156,7 +1156,6 @@ export class Room {
         this.boardAsked = [];
         this.currentCell = -1;
         this.boardPickerPos = 0;
-        this.boardPickerOrder = this.eligiblePlayers().map((player) => player.id);
         if (!this.boardCells.length) throw new GameError("err.categoryEmpty");
       }
       this.questions = this.gameMode === "word" || this.gameMode === "numeric" || this.gameMode === "timeline" || this.gameMode === "board"
@@ -1242,6 +1241,11 @@ export class Room {
     if (this.gameMode === "duel") {
       const bySeat = [...this.players.values()].sort((a, b) => a.seat - b.seat);
       for (const watcher of bySeat.slice(2)) watcher.eligibleFrom = this.roundLimit;
+    }
+    if (this.gameMode === "board") {
+      // Sıra, eligibleFrom sıfırlama döngüsünden SONRA örneklenir — maç ortasında
+      // katılanın/elenenin bayat değeri onu tüm maç boyunca seçim dışı bırakırdı.
+      this.boardPickerOrder = this.eligiblePlayers().map((player) => player.id);
     }
     this.beginCountdown();
   }
