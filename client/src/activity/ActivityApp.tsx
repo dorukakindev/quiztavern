@@ -852,7 +852,7 @@ function SfxToggle() {
 
 /** Paket yükleme formu (yalnız host görür): JSON/CSV yapıştır + isteğe bağlı
  *  yönetici belirteci. Sunucu Faz 1.4 kurallarıyla doğrular; hatalar listelenir. */
-function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
+function PackUploadForm({ auth, onUploaded }: { auth: PackAuth; onUploaded: () => void }) {
   const { t } = useI18n()
   const [name, setName] = useState('')
   const [format, setFormat] = useState<'json' | 'csv'>('json')
@@ -864,7 +864,10 @@ function PackUploadForm({ onUploaded }: { onUploaded: () => void }) {
     setBusy(true)
     setResult(null)
     try {
-      const res = await uploadPack({ name: name.trim(), content, format, token: token.trim() || undefined })
+      // Elle yapıştırılan token öncelikli (başka oturumun sahipliği); boşsa
+      // bileşen auth'u — mock modda devId düşer, yoksa 401 (B57).
+      const pasted = token.trim()
+      const res = await uploadPack({ name: name.trim(), content, format, auth: pasted ? { sessionToken: pasted } : auth })
       setResult(res)
       if (res.ok) {
         setContent('')
@@ -1228,7 +1231,10 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </details>}
           {isHost && <details className="qt-pack-upload">
             <summary>{t('pack.upload')}</summary>
-            <PackUploadForm onUploaded={() => void listPacks().then(setPacks)} />
+            <PackUploadForm
+              auth={{ sessionToken: identity.sessionToken ?? null, devId: identity.isDiscord ? null : getDevIdentity().id }}
+              onUploaded={() => void listPacks().then(setPacks)}
+            />
           </details>}
         </div>}
         </div>

@@ -90,8 +90,12 @@ export interface RoomPlayer {
   /** Maç özeti (4d) için birikenler. Her reveal'de güncellenir, start()'ta sıfırlanır. */
   stats: MatchStats;
   /** Zaman çizgisi incelemesi (6a): tur başına cevap. Klasik = şık indeksi,
-   *  çember = yazılan metin. Yalnız reveal'de o turun gözü doldurulur. */
+   *  çember = yazılan metin, numeric = tahmin edilen sayı. Yalnız reveal'de
+   *  o turun gözü doldurulur. */
   answers: (number | null)[];
+  /** Yakın Tahmin: tur bazında turu kazandı mı (en yakın ya da tam isabet).
+   *  answers[]'a paralel — inceleme kartındaki doğru/yanlış işaretini besler. */
+  numericWins: boolean[];
   typed: (string | null)[];
   /** D/Y Blitz (§6.1): oyuncunun bağımsız ifade akışı — herkes kendi hızında
    *  ilerler; pencere ortak 60 sn, seri çarpanıyla puanlanır. */
@@ -319,7 +323,7 @@ export class Room {
     this.questions = sampleQuestions(options.questionCount ?? GAME.QUESTIONS_PER_MATCH);
   }
 
-  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers">) {
+  addPlayer(player: Omit<RoomPlayer, "seat" | "score" | "connected" | "ready" | "choice" | "answeredAt" | "eligibleFrom" | "circleAnswer" | "circleCorrectAt" | "bet" | "team" | "disconnectedAt" | "lastEmoteAt" | "stats" | "answers" | "typed" | "title" | "lives" | "wordGain" | "wordLettersTaken" | "cards" | "cardUsed" | "fiftyRemoved" | "frozen" | "blitzIdx" | "blitzStreak" | "blitzCorrect" | "blitzAnswered" | "blitzScore" | "blitzClaim" | "blitzTrail" | "orderAnswers" | "numericWins">) {
     this.pruneExpiredKicks();
     const bannedUntil = this.kickedUntil.get(player.id) ?? 0;
     if (Date.now() < bannedUntil) throw new GameError("err.kicked");
@@ -384,6 +388,7 @@ export class Room {
       frozen: false,
       stats: emptyStats(),
       answers: [],
+      numericWins: [],
       typed: [],
       blitzIdx: 0,
       blitzStreak: 0,
@@ -1018,7 +1023,7 @@ export class Room {
     }
     this.writtenQuestions.set(playerId, {
       id: `written-${playerId}`,
-      category: "community",
+      category: "Topluluk",
       text, textEn: text,
       choices: choices.map((c) => (c as string).trim()),
       choicesEn: choices.map((c) => (c as string).trim()),
@@ -1169,6 +1174,10 @@ export class Room {
       // Tavern Panosu: sorular hücrelerde oturur; questions dizisi boş kalır —
       // currentQuestion açık hücreden okur, buildReview açılış sırasını izler.
       if (this.gameMode === "board") {
+        // Pano'da questions dizisi boş olduğundan genel atama lastQuestionIds'i
+        // hep boşaltıyordu — "son maç hariç" korumasına önceki panoda SORULMUŞ
+        // soruları taşı (B58).
+        this.lastQuestionIds = new Set(this.boardAsked.map((q) => q.id));
         const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
         this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
         this.boardCategories = spec.categories;
@@ -1182,7 +1191,9 @@ export class Room {
         : pack
           ? samplePackQuestions(this.roundLimit, pack.questions, this.seenQuestionIds)
           : sampleQuestions(this.gameMode === "blitz" ? GAME.BLITZ_POOL : this.roundLimit, compatibleCategories, this.seenQuestionIds, this.difficulty, this.gameMode === "blur" || this.imageOnly);
-      this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
+      // Board'da questions boş — lastQuestionIds az önce önceki panonun
+      // sorulanlarıyla dolduruldu; boş setle ezme (B58).
+      if (this.gameMode !== "board") this.lastQuestionIds = new Set(this.questions.map((q) => q.id));
       this.questions.forEach((q) => this.seenQuestionIds.add(q.id));
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
       // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
@@ -1191,9 +1202,12 @@ export class Room {
         const pool = [...this.players.keys()]
           .filter((id) => this.writtenQuestions.has(id))
           .map((id) => this.writtenQuestions.get(id)!);
-        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
+        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length, this.questions.length);
         if (count > 0) {
-          const slots = shuffleIdx(this.roundLimit).slice(0, count);
+          // Slotlar dizi sınırından örneklenmeli — roundLimit istenen sayıdır
+          // ama dar havuzda questions.length daha kısa olur; slot ≥ length
+          // yazımı sparse delik açar ve maç ilk delikte erken biter (B59).
+          const slots = shuffleIdx(this.questions.length).slice(0, count);
           shuffleIdx(pool.length).slice(0, count).forEach((poolIdx, i) => {
             // Şık sırası da karışır — yazan "doğru hep ilk sırada" diye
             // arkadaşına pozisyonla cevabı işaret edemesin.
@@ -1252,6 +1266,7 @@ export class Room {
       player.eligibleFrom = 0;
       player.stats = emptyStats();
       player.answers = [];
+      player.numericWins = [];
       player.typed = [];
       player.orderAnswers = [];
     }
@@ -1970,6 +1985,21 @@ export class Room {
           correctAnswerEn: prompt.events.slice().sort((a, b) => a.year - b.year).map((e) => e.labelEn).join(" → "),
         });
       });
+    } else if (this.gameMode === "numeric") {
+      this.numericQuestions.slice(0, this.roundLimit).forEach((prompt, i) => {
+        if (player.eligibleFrom > i) return;
+        const guess = player.answers[i] ?? null;
+        items.push({
+          category: prompt.category,
+          prompt: prompt.text,
+          correct: player.numericWins[i] ?? false,
+          yourAnswer: guess !== null ? String(guess) : "",
+          correctAnswer: String(prompt.answer),
+          promptEn: prompt.textEn,
+          yourAnswerEn: guess !== null ? String(guess) : "",
+          correctAnswerEn: String(prompt.answer),
+        });
+      });
     } else if (this.gameMode === "board") {
       this.boardAsked.forEach((question, i) => {
         if (player.eligibleFrom > i) return;
@@ -2213,6 +2243,10 @@ export class Room {
     for (const player of this.eligiblePlayers()) {
       const guessed = this.numericGuesses.get(player.id);
       const isWinner = winnerIds.includes(player.id);
+      // İnceleme kartı (B51): numericGuesses tur sonunda silindiği için tur
+      // geçmişi answers[]/numericWins[]'a kopyalanır.
+      player.answers[this.qIndex] = guessed ?? null;
+      player.numericWins[this.qIndex] = isWinner;
       // Tam isabet bonusu yalnız kazanana — eşit mesafede ama tam tutturamayan bonus almaz.
       const exact = isWinner && guessed === prompt.answer;
       const gain = isWinner ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0) : 0;
