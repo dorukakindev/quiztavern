@@ -30,3 +30,4 @@ SMOKE-DURUM.md
 # Çalışma zamanı verisi (soru bildirimleri + günlük meydan okuma db)
 server/data/
 
+*.db
