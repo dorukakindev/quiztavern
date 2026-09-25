@@ -1555,8 +1555,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     {state.round.index === state.round.total - 1 && !beats.active && state.gameMode !== 'lightning' && <FinalIntro deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} />}
     <div className="qt-game-head">
       <header className="qt-game-top">
-        <div><b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b><span>{t(isCircle ? 'game.roundOf' : 'game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
-        <RoundProgress index={state.round.index} total={state.round.total} />
+        <div><b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b><span>{state.gameMode === 'blitz' ? (state.blitz ? t('blitz.progress', { n: state.blitz.index + 1, c: state.blitz.correct }) : t(MODE_KEYS.blitz.name)) : t(isCircle ? 'game.roundOf' : 'game.questionOf', { index: state.round.index + 1, total: state.round.total })}</span></div>
+        {/* Blitz'te round.index hep 0 / total havuz boyutu — 'Soru 1/30' yanıltıcı;
+            bar kendi ilerlemesini izler (B54). */}
+        <RoundProgress index={state.gameMode === 'blitz' ? (state.blitz?.index ?? 0) : state.round.index} total={state.round.total} />
         <span className="qt-game-summary"><span className="qt-game-summary__full">{beats.active ? t('game.revealed') : t('game.lockedCount', { answered: state.answeredCount, total: state.eligibleCount })}</span><span className="qt-game-summary__short" aria-hidden="true">{beats.active ? <Icon name="check" /> : <><Icon name="lock" />{state.answeredCount}/{state.eligibleCount}</>}</span></span>
       </header>
       <div className="qt-game-controls">
@@ -2198,7 +2200,7 @@ function MatchSummaryCard({ state, summary, onAgain, onRematch, onBackToLobby }:
   const cats = summary.perCategory.filter((item) => item.total > 0)
   return <div className="qt-summary-card">
     <div className="qt-summary-head">
-      <div className="qt-summary-brand"><img src="/table/quiztavern-logo.png" alt="" /><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.round.total })}</small></div></div>
+      <div className="qt-summary-brand"><img src="/table/quiztavern-logo.png" alt="" /><div><b>{t('brand.name')}</b><small>{t(MODE_KEYS[modeKeyOf(state.gameMode)].name)} · {t('summary.questions', { count: state.gameMode === 'blitz' ? summary.total : state.round.total })}</small></div></div>
       {winner && <span className="qt-summary-winner" title={t('summary.winner', { name: winner.name })}><Icon name="crown" /> <span className="qt-summary-winner__label">{t('summary.winner', { name: winner.name })}</span></span>}
     </div>
     <div className="qt-summary-tiles">
@@ -2320,7 +2322,7 @@ function PipCard({ state }: { state: GameState | null }) {
       <span>{gain > 0 ? t('pip.gained', { score: gain }) : gain < 0 ? `−${gain * -1}` : t('pip.noPoints')}</span>
     </div>
   } else {
-    tag = t('pip.round', { index: state.round.index + 1, total: state.round.total })
+    tag = state.gameMode === 'blitz' ? (state.blitz ? t('blitz.progress', { n: state.blitz.index + 1, c: state.blitz.correct }) : t(MODE_KEYS.blitz.name)) : t('pip.round', { index: state.round.index + 1, total: state.round.total })
     body = <div className="qt-pip__row">
       <b className={`qt-pip__big ${seconds <= 3 ? 'is-urgent' : ''}`}>{seconds}</b>
       <span className={`qt-pip__lock ${answered ? 'is-locked' : 'is-open'}`}>
