@@ -354,11 +354,18 @@ export class Room {
       // them out until the next match, which also prevents spectate/reseat refills.
       // Son Masa'da da geç katılan bu maça alınmaz — canı olmayan bir
       // oyuncunun ortadan girmesi eleme mantığını bozar.
-      eligibleFrom: this.phase === "lobby" || this.phase === "countdown"
+      // Countdown'da katılmak: bet kasasını aldığı için oynar; elim'de canlar,
+      // düelloda düellocular maç başında dağıtıldığından o fazda katılan bu
+      // maçı izler — yoksa elim'de 0 canlı hayalet, düelloda 3. düellocu olur.
+      eligibleFrom: this.phase === "lobby"
         ? 0
-        : this.gameMode === "bet" || this.gameMode === "elim" || this.gameMode === "duel"
+        : this.gameMode === "elim" || this.gameMode === "duel"
           ? this.roundLimit
-          : this.qIndex + 1,
+          : this.phase === "countdown"
+            ? 0
+            : this.gameMode === "bet"
+              ? this.roundLimit
+              : this.qIndex + 1,
       lives: 0,
       wordGain: 0,
       cards: 0,
