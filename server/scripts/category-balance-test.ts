@@ -3,8 +3,14 @@ import { ALL_QUESTIONS, sampleQuestions } from "../src/questions";
 
 let passed = 0;
 function test(name: string, fn: () => void) {
-  try { fn(); passed += 1; console.log(`  ✓ ${name}`); }
-  catch (error) { console.error(`  ✗ ${name}`); throw error; }
+  try {
+    fn();
+    passed += 1;
+    console.log(`  ✓ ${name}`);
+  } catch (error) {
+    console.error(`  ✗ ${name}`);
+    throw error;
+  }
 }
 
 const countByCat = (qs: { category: string }[]) => {
@@ -44,8 +50,14 @@ test("tek kategori seçimi davranışı değişmez", () => {
 test("kategori alt-havuzu tükenince kalanlar diğerinden tamamlanır", () => {
   // 'İklim & Hava'nın 2'si hariç tüm id'lerini exclude'a koy — sampler taze
   // 2'yi önce alır, maçın kalanını Süper Kahramanlar'dan tamamlar.
-  const keepFresh = new Set(ALL_QUESTIONS.filter((q) => q.category === "İklim & Hava").slice(0, 2).map((q) => q.id));
-  const exclude = new Set(ALL_QUESTIONS.filter((q) => q.category === "İklim & Hava" && !keepFresh.has(q.id)).map((q) => q.id));
+  const keepFresh = new Set(
+    ALL_QUESTIONS.filter((q) => q.category === "İklim & Hava")
+      .slice(0, 2)
+      .map((q) => q.id),
+  );
+  const exclude = new Set(
+    ALL_QUESTIONS.filter((q) => q.category === "İklim & Hava" && !keepFresh.has(q.id)).map((q) => q.id),
+  );
   const qs = sampleQuestions(8, ["İklim & Hava", "Süper Kahramanlar"], exclude);
   assert.equal(qs.length, 8);
   const m = countByCat(qs);

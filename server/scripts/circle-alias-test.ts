@@ -8,8 +8,13 @@ import { ALL_CIRCLE_PROMPTS, matchesCircleAnswer, normalizeCircleAnswer } from "
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 console.log("normalizeCircleAnswer:");

@@ -68,11 +68,7 @@ export function clientAddressKey(headers: Record<string, unknown>, remoteAddress
   const remote = remoteAddress ?? "unknown";
   const loopbackRemote = isLoopback(remote);
   const cloudflareIp = headers["cf-connecting-ip"];
-  if (
-    loopbackRemote
-    && typeof cloudflareIp === "string"
-    && /^[0-9a-fA-F:.]{2,64}$/.test(cloudflareIp)
-  ) {
+  if (loopbackRemote && typeof cloudflareIp === "string" && /^[0-9a-fA-F:.]{2,64}$/.test(cloudflareIp)) {
     return `cf:${cloudflareIp}`;
   }
   // Aynı makinedeki başka bir ters proxy (nginx/caddy, TUNNEL.md alternatifi)

@@ -42,20 +42,15 @@ const normalizePublicBaseUrl = (value: string | undefined) => {
   }
 };
 
-export const PUBLIC_BASE_URL = normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL)
-  || (IS_PRODUCTION ? "" : `http://localhost:${PORT}`);
-export const DISCORD_OAUTH_REDIRECT_URI = PUBLIC_BASE_URL
-  ? `${PUBLIC_BASE_URL}/auth/discord/callback`
-  : "";
+export const PUBLIC_BASE_URL =
+  normalizePublicBaseUrl(process.env.PUBLIC_BASE_URL) || (IS_PRODUCTION ? "" : `http://localhost:${PORT}`);
+export const DISCORD_OAUTH_REDIRECT_URI = PUBLIC_BASE_URL ? `${PUBLIC_BASE_URL}/auth/discord/callback` : "";
 
 const configuredOrigins = (process.env.ALLOWED_ORIGINS ?? "")
   .split(",")
   .map((origin) => normalizePublicBaseUrl(origin.trim()))
   .filter(Boolean);
-export const ALLOWED_ORIGINS = [...new Set([
-  ...configuredOrigins,
-  ...(PUBLIC_BASE_URL ? [PUBLIC_BASE_URL] : []),
-])];
+export const ALLOWED_ORIGINS = [...new Set([...configuredOrigins, ...(PUBLIC_BASE_URL ? [PUBLIC_BASE_URL] : [])])];
 
 export function isAllowedProductionOrigin(origin: string | undefined): boolean {
   if (!origin) return false;
@@ -68,8 +63,7 @@ export function isAllowedProductionOrigin(origin: string | undefined): boolean {
   }
 }
 
-export const SESSION_SECRET =
-  process.env.SESSION_SECRET ?? crypto.randomBytes(32).toString("hex");
+export const SESSION_SECRET = process.env.SESSION_SECRET ?? crypto.randomBytes(32).toString("hex");
 if (!process.env.SESSION_SECRET && !ALLOW_MOCK_AUTH) {
   log.warn("SESSION_SECRET tanımlı değil; her yeniden başlatmada oturumlar geçersiz olur.");
 }
@@ -80,7 +74,7 @@ if (IS_PRODUCTION) {
     !DISCORD_CLIENT_SECRET && "DISCORD_CLIENT_SECRET",
     !DISCORD_BOT_TOKEN && "DISCORD_BOT_TOKEN",
     !process.env.SESSION_SECRET && "SESSION_SECRET",
-    (!PUBLIC_BASE_URL.startsWith("https://")) && "PUBLIC_BASE_URL (https)",
+    !PUBLIC_BASE_URL.startsWith("https://") && "PUBLIC_BASE_URL (https)",
   ].filter(Boolean);
   if (ALLOW_MOCK_AUTH) {
     throw new Error("ALLOW_MOCK_AUTH cannot be enabled in production.");
@@ -187,15 +181,19 @@ export const GAME = {
 } as const;
 
 if (ALLOW_MOCK_AUTH) {
-  log.warn("ALLOW_MOCK_AUTH açık — Discord kimlik doğrulaması atlanıyor, sahte oyuncular ve botlar aktif. ÜRETİMDE ASLA KULLANMAYIN.");
+  log.warn(
+    "ALLOW_MOCK_AUTH açık — Discord kimlik doğrulaması atlanıyor, sahte oyuncular ve botlar aktif. ÜRETİMDE ASLA KULLANMAYIN.",
+  );
 } else {
   if (!DISCORD_CLIENT_SECRET) {
     log.warn(
       "Mock auth kapalı ve DISCORD_CLIENT_SECRET tanımsız — hiçbir istemci doğrulanamaz. " +
-        "Yerel geliştirme için ALLOW_MOCK_AUTH=1, üretim için Discord kimlik bilgilerini tanımlayın."
+        "Yerel geliştirme için ALLOW_MOCK_AUTH=1, üretim için Discord kimlik bilgilerini tanımlayın.",
     );
   }
   if (!DISCORD_BOT_TOKEN) {
-    log.warn("DISCORD_BOT_TOKEN tanımsız — Activity Instance doğrulaması yapılamayacağı için bağlantılar REDDEDİLİR (fail-closed).");
+    log.warn(
+      "DISCORD_BOT_TOKEN tanımsız — Activity Instance doğrulaması yapılamayacağı için bağlantılar REDDEDİLİR (fail-closed).",
+    );
   }
 }

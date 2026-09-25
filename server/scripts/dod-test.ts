@@ -32,18 +32,30 @@ interface Client {
 }
 
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(baseUrl, {
-    path: "/socket.io",
-    transports: ["websocket"],
-    auth: { roomId, devId, devName },
-  }), state: null, emotes: [], toasts: [] };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  const client: Client = {
+    socket: io(baseUrl, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+    emotes: [],
+    toasts: [],
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   client.socket.on(EV.EMOTE, (e: EmotePayload) => client.emotes.push(e));
   client.socket.on(EV.TOAST, (t: ToastPayload) => client.toasts.push(t));
   return client;
 }
 
-function waitFor(client: Client, predicate: (s: GameState) => boolean, label: string, timeoutMs = 15_000): Promise<GameState> {
+function waitFor(
+  client: Client,
+  predicate: (s: GameState) => boolean,
+  label: string,
+  timeoutMs = 15_000,
+): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (client.state && predicate(client.state)) return resolve(client.state);
     const timer = setTimeout(() => {
@@ -85,7 +97,9 @@ async function main() {
       try {
         const res = await fetch(`${baseUrl}/health`);
         if (res.ok) break;
-      } catch { /* henüz hazır değil */ }
+      } catch {
+        /* henüz hazır değil */
+      }
       await sleep(250);
       if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
@@ -106,12 +120,21 @@ async function main() {
     const guest = hostId === a.state!.youId ? b : a;
     host.socket.emit(EV.SET_MODE, { mode: "lightning" });
     await waitFor(guest, (s) => s.gameMode === "lightning", "mod değişimi host olmayana da yayınlandı");
-    assert(guest.state!.questionCount === 5, `mod değişince soru sayısı doğal değere döndü (${guest.state!.questionCount})`);
-    assert(guest.state!.players.every((p) => !p.ready), "mod değişince hazır onayları sıfırlandı");
+    assert(
+      guest.state!.questionCount === 5,
+      `mod değişince soru sayısı doğal değere döndü (${guest.state!.questionCount})`,
+    );
+    assert(
+      guest.state!.players.every((p) => !p.ready),
+      "mod değişince hazır onayları sıfırlandı",
+    );
     guest.socket.emit(EV.SET_MODE, { mode: "circle" });
     await sleep(300);
     assert(guest.state!.gameMode === "lightning", "host olmayanın mod değişikliği reddedildi");
-    assert(guest.toasts.some((t) => t.key === "err.modeHostOnly"), "ret anahtarla bildirildi");
+    assert(
+      guest.toasts.some((t) => t.key === "err.modeHostOnly"),
+      "ret anahtarla bildirildi",
+    );
     a.socket.emit(EV.READY, true);
     b.socket.emit(EV.READY, true);
     await waitFor(a, (s) => s.players.every((p) => p.ready), "mod sonrası herkes yeniden hazır");
@@ -129,11 +152,21 @@ async function main() {
     let scoringProven = false;
 
     for (let round = 0; round < 5; round++) {
-      const q = await waitFor(a, (s) => s.phase === "question" && s.round.index === round, `soru ${round + 1} açıldı`, 20_000);
+      const q = await waitFor(
+        a,
+        (s) => s.phase === "question" && s.round.index === round,
+        `soru ${round + 1} açıldı`,
+        20_000,
+      );
       assert(q.question !== null && q.question.choices.length === 4, `soru ${round + 1} payload'ı geçerli`);
       a.socket.emit(EV.ANSWER, 0);
       b.socket.emit(EV.ANSWER, 1);
-      const reveal = await waitFor(a, (s) => s.phase === "reveal" && s.round.index === round, `reveal ${round + 1}`, 12_000);
+      const reveal = await waitFor(
+        a,
+        (s) => s.phase === "reveal" && s.round.index === round,
+        `reveal ${round + 1}`,
+        12_000,
+      );
       assert(reveal.reveal !== null, `reveal ${round + 1} payload'ı var`);
       // Sabiti tekrar yazma: config tek kaynak. 3500'ü elle yazdığımız için
       // REVEAL_MS 3000'e çekilince test "yanlış" diye patlamıştı.
@@ -147,10 +180,15 @@ async function main() {
       const winners = picks[correctIndex];
       const scoredRight = winners.every((id) => (gains[id] ?? 0) > 0);
       const losersZero = Object.entries(gains).every(([id, gain]) => winners.includes(id) || gain === 0);
-      assert(scoredRight && losersZero, `reveal ${round + 1} puanlama tutarlı (${winners.length} doğru, kazanç: ${JSON.stringify(gains)})`);
+      assert(
+        scoredRight && losersZero,
+        `reveal ${round + 1} puanlama tutarlı (${winners.length} doğru, kazanç: ${JSON.stringify(gains)})`,
+      );
       if (winners.length) scoringProven = true;
     }
-    console.log(`  · bu maçta doğru cevap ${scoringProven ? "çıktı" : "çıkmadı"} (iki istemci 4 şıkkın 2'sini deniyor)`);
+    console.log(
+      `  · bu maçta doğru cevap ${scoringProven ? "çıktı" : "çıkmadı"} (iki istemci 4 şıkkın 2'sini deniyor)`,
+    );
     await waitFor(a, (s) => s.phase === "podium", "podium", 12_000);
     assert(a.state!.podium !== null && a.state!.podium.length === 2, "podyumda iki oyuncu");
     console.log("");
@@ -164,10 +202,18 @@ async function main() {
     await sleep(500);
     const bRejoin = connect("dod-mac", "player-bbbb-0002", "Baran");
     await waitFor(bRejoin, (s) => s.phase === "podium", "B podyuma geri döndü");
-    assert(!bRejoin.state!.players.find((p) => p.id === bRejoin.state!.youId)!.ready, "dönen oyuncunun ready'si sıfır (kurulum)");
+    assert(
+      !bRejoin.state!.players.find((p) => p.id === bRejoin.state!.youId)!.ready,
+      "dönen oyuncunun ready'si sıfır (kurulum)",
+    );
     const hostAfter = bRejoin.state!.hostId === bRejoin.state!.youId ? bRejoin : a;
     hostAfter.socket.emit(EV.PLAY_AGAIN);
-    await waitFor(a, (s) => s.phase === "countdown" || s.phase === "question", "hazır olmayan oyuncuya rağmen tekrar oyna çalıştı", 8_000);
+    await waitFor(
+      a,
+      (s) => s.phase === "countdown" || s.phase === "question",
+      "hazır olmayan oyuncuya rağmen tekrar oyna çalıştı",
+      8_000,
+    );
     assert(true, "podyumdan 'tekrar oyna' reconnect sonrası kilitlenmiyor");
 
     // Yeni başlayan bu maçın üstünden grace senaryosunu sürelim.
@@ -186,11 +232,21 @@ async function main() {
     // Reconnect reveal anına denk geldiyse kritik cevap senaryosunu atlama;
     // bir sonraki oynanabilir soruyu bekleyip iki istemciyle gerçekten cevapla.
     const playable = await waitFor(a, (s) => s.phase === "question", "reconnect sonrası oynanabilir soru", 25_000);
-    await waitFor(b2, (s) => s.phase === "question" && s.round.index === playable.round.index, "B aynı oynanabilir soruyu gördü", 5_000);
+    await waitFor(
+      b2,
+      (s) => s.phase === "question" && s.round.index === playable.round.index,
+      "B aynı oynanabilir soruyu gördü",
+      5_000,
+    );
     const currentRound = playable.round.index;
     a.socket.emit(EV.ANSWER, 0);
     b2.socket.emit(EV.ANSWER, 0);
-    await waitFor(a, (s) => s.phase === "reveal" && s.round.index === currentRound, "reconnect sonrası tur ilerledi", 12_000);
+    await waitFor(
+      a,
+      (s) => s.phase === "reveal" && s.round.index === currentRound,
+      "reconnect sonrası tur ilerledi",
+      12_000,
+    );
     assert(true, "B reconnect sonrası cevap verebildi");
     a.socket.emit(EV.LEAVE_GAME);
     b2.socket.emit(EV.LEAVE_GAME);
@@ -209,7 +265,10 @@ async function main() {
     await waitFor(c2, (s) => s.players.length === 2, "yeni C bağlandı");
     await sleep(400); // eski socket'in geç disconnect'i yeni bağlantıyı bozmamalı
     assert(d.state!.players.length === 2, "oyuncu çiftlenmedi, masada hâlâ 2 kişi");
-    assert(d.state!.players.every((p) => p.connected), "geç disconnect yeni bağlantıyı düşürmedi");
+    assert(
+      d.state!.players.every((p) => p.connected),
+      "geç disconnect yeni bağlantıyı düşürmedi",
+    );
     console.log("");
 
     // ── Senaryo 4: lobide kopma = anında silinme + koltuk geri kullanımı ─
@@ -239,7 +298,12 @@ async function main() {
     for (let round = 0; round < 5; round++) {
       await waitFor(f, (s) => s.phase === "question" && s.round.index === round, `bot turu ${round + 1}`, 20_000);
       f.socket.emit(EV.ANSWER, round % 4);
-      const rev = await waitFor(f, (s) => s.phase === "reveal" && s.round.index === round, `bot reveal ${round + 1}`, 12_000);
+      const rev = await waitFor(
+        f,
+        (s) => s.phase === "reveal" && s.round.index === round,
+        `bot reveal ${round + 1}`,
+        12_000,
+      );
       const bot = rev.players.find((p) => p.isBot)!;
       if (rev.reveal!.picks.flat().includes(bot.id)) botAnsweredRounds += 1;
     }
@@ -271,7 +335,10 @@ async function main() {
     assert(e.emotes.length === 1 && e.emotes[0].emote === "flame", "emote yayınlandı; spam ve geçersiz anahtar elendi");
     e.socket.emit(EV.TRANSFER_HOST, { targetId: c2.state!.youId }); // host değil → hata
     await sleep(300);
-    assert(e.toasts.some((t) => t.key === "err.transferHostOnly"), "host olmayanın devri reddedildi (anahtar geldi, düz metin değil)");
+    assert(
+      e.toasts.some((t) => t.key === "err.transferHostOnly"),
+      "host olmayanın devri reddedildi (anahtar geldi, düz metin değil)",
+    );
     const cId = c2.state!.youId;
     const eId = e.state!.youId;
     c2.socket.emit(EV.TRANSFER_HOST, { targetId: eId });
@@ -279,13 +346,19 @@ async function main() {
     const cKicked = new Promise<void>((resolve) => c2.socket.once("disconnect", () => resolve()));
     e.socket.emit(EV.KICK, { targetId: cId });
     await cKicked;
-    assert(c2.toasts.some((t) => t.key === "info.kicked"), "atılan oyuncu anahtarla bilgilendirildi");
+    assert(
+      c2.toasts.some((t) => t.key === "info.kicked"),
+      "atılan oyuncu anahtarla bilgilendirildi",
+    );
     await waitFor(e, (s) => s.players.length === 1, "C masadan atıldı");
     // Kick ban: atılan tek tıkla geri dönemez — yoksa kick boş bir jest olur.
     const c3 = connect("dod-takeover", "player-cccc-0003", "Ceren");
     await sleep(800);
     assert(e.state!.players.length === 1, "atılan oyuncu yeniden giremedi (5 dk ban)");
-    assert(c3.toasts.some((t) => t.key === "err.kicked"), "yasak anahtarla bildirildi");
+    assert(
+      c3.toasts.some((t) => t.key === "err.kicked"),
+      "yasak anahtarla bildirildi",
+    );
     c3.socket.disconnect();
     e.socket.emit(EV.LEAVE_GAME);
     await sleep(300);

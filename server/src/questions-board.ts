@@ -31,9 +31,12 @@ export function sampleBoardCells(categories: string[], seen: Set<string>, lastId
   const perCol = GAME.BOARD_VALUES.length;
   // Aday havuz: seçim varsa önce ondan, yetmezse genel katalogdan tamamla —
   // içerik sayısı BOARD_VALUES kadar olanlar uygun.
-  const selected = categories.filter((name) => CATEGORY_CATALOG.some((c) => c.name === name && c.classicCount >= perCol));
-  const rest = CATEGORY_CATALOG.filter((c) => c.classicCount >= perCol && !selected.includes(c.name))
-    .map((c) => c.name);
+  const selected = categories.filter((name) =>
+    CATEGORY_CATALOG.some((c) => c.name === name && c.classicCount >= perCol),
+  );
+  const rest = CATEGORY_CATALOG.filter((c) => c.classicCount >= perCol && !selected.includes(c.name)).map(
+    (c) => c.name,
+  );
   const candidates = [...selected, ...rest];
   const specCats: string[] = [];
   const cells: BoardCellSpec[] = [];

@@ -14,7 +14,7 @@ export function findFreePort(): Promise<number> {
         return;
       }
       const { port } = address;
-      probe.close((error) => error ? reject(error) : resolve(port));
+      probe.close((error) => (error ? reject(error) : resolve(port)));
     });
   });
 }

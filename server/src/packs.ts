@@ -17,7 +17,9 @@ export interface StoredPack extends QuestionPackMeta {
 
 // cwd tabanlı: geliştirmede server/, üretimde WORKDIR(/app/server) — ikisinde de
 // <cwd>/data/packs; volume'a denk gelir, dist içine yazıp kaybolmaz (PACKS_DIR ezilebilir).
-const PACKS_DIR = process.env.PACKS_DIR ? path.resolve(process.env.PACKS_DIR) : path.resolve(process.cwd(), "data", "packs");
+const PACKS_DIR = process.env.PACKS_DIR
+  ? path.resolve(process.env.PACKS_DIR)
+  : path.resolve(process.cwd(), "data", "packs");
 const packs = new Map<string, StoredPack>();
 
 export interface PackValidation {
@@ -83,7 +85,13 @@ export function parseCsvQuestions(content: string): Question[] {
   const rows = lines.map(parseCsvLine(delimiter));
   const header = rows[0].map((cell) => cell.trim().toLowerCase());
   const col = (name: string) => header.indexOf(name);
-  const index = { text: col("text"), textEn: col("texten"), category: col("category"), difficulty: col("difficulty"), correctIndex: col("correctindex") };
+  const index = {
+    text: col("text"),
+    textEn: col("texten"),
+    category: col("category"),
+    difficulty: col("difficulty"),
+    correctIndex: col("correctindex"),
+  };
   if (index.text < 0 || index.category < 0 || index.correctIndex < 0) {
     throw new Error("CSV başlığı en az text, category, correctIndex içermeli");
   }
@@ -121,12 +129,16 @@ function parseCsvLine(delimiter: string) {
       const ch = line[i];
       if (quoted) {
         if (ch === '"') {
-          if (line[i + 1] === '"') { current += '"'; i++; }
-          else quoted = false;
+          if (line[i + 1] === '"') {
+            current += '"';
+            i++;
+          } else quoted = false;
         } else current += ch;
       } else if (ch === '"') quoted = true;
-      else if (ch === delimiter) { cells.push(current); current = ""; }
-      else current += ch;
+      else if (ch === delimiter) {
+        cells.push(current);
+        current = "";
+      } else current += ch;
     }
     cells.push(current);
     return cells;
@@ -140,7 +152,8 @@ export function parseJsonQuestions(content: unknown): Question[] {
   return list.map((raw, i) => {
     const q = raw as Partial<Question>;
     const choices = Array.isArray(q.choices) ? q.choices.map(String) : [];
-    const choicesEn = Array.isArray(q.choicesEn) && q.choicesEn.every((c) => String(c).trim()) ? q.choicesEn.map(String) : [...choices];
+    const choicesEn =
+      Array.isArray(q.choicesEn) && q.choicesEn.every((c) => String(c).trim()) ? q.choicesEn.map(String) : [...choices];
     return {
       id: typeof q.id === "string" && q.id ? q.id : `q-${i + 1}`,
       category: String(q.category ?? ""),
@@ -157,7 +170,11 @@ export function parseJsonQuestions(content: unknown): Question[] {
 }
 
 function slugify(name: string): string {
-  const slug = name.toLocaleLowerCase("tr-TR").replace(/[^a-z0-9ğüşöçıi]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40);
+  const slug = name
+    .toLocaleLowerCase("tr-TR")
+    .replace(/[^a-z0-9ğüşöçıi]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
   return slug || "paket";
 }
 
@@ -236,7 +253,9 @@ export function deletePack(id: string): boolean {
   if (!packs.delete(id)) return false;
   try {
     fs.unlinkSync(path.join(PACKS_DIR, `${id}.json`));
-  } catch { /* dosya zaten yoksa da silinmiş sayılır */ }
+  } catch {
+    /* dosya zaten yoksa da silinmiş sayılır */
+  }
   return true;
 }
 

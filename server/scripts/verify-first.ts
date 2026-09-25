@@ -8,24 +8,43 @@ type Client = { socket: Socket; state: GameState | null };
 
 function connect(roomId: string, devId: string, devName: string): Client {
   const client: Client = {
-    socket: io(BASE, { path: "/socket.io", transports: ["websocket"], forceNew: true, auth: { roomId, devId, devName } }),
+    socket: io(BASE, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      forceNew: true,
+      auth: { roomId, devId, devName },
+    }),
     state: null,
   };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   return client;
 }
 function waitFor(c: Client, pred: (s: GameState) => boolean, label: string, timeoutMs = 15000): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (c.state && pred(c.state)) return resolve(c.state);
-    const timer = setTimeout(() => { c.socket.off(EV.STATE, h); reject(new Error(`zaman aşımı: ${label}`)); }, timeoutMs);
-    const h = (s: GameState) => { if (pred(s)) { clearTimeout(timer); c.socket.off(EV.STATE, h); resolve(s); } };
+    const timer = setTimeout(() => {
+      c.socket.off(EV.STATE, h);
+      reject(new Error(`zaman aşımı: ${label}`));
+    }, timeoutMs);
+    const h = (s: GameState) => {
+      if (pred(s)) {
+        clearTimeout(timer);
+        c.socket.off(EV.STATE, h);
+        resolve(s);
+      }
+    };
     c.socket.on(EV.STATE, h);
   });
 }
 
 async function main() {
   let ok = true;
-  const log = (pass: boolean, m: string) => { console.log(`${pass ? "✓" : "✗"} ${m}`); ok = ok && pass; };
+  const log = (pass: boolean, m: string) => {
+    console.log(`${pass ? "✓" : "✗"} ${m}`);
+    ok = ok && pass;
+  };
   const a = connect("first-test", "player-aaaa-0001", "Ayşe");
   const b = connect("first-test", "player-bbbb-0002", "Baran");
   try {
@@ -59,4 +78,7 @@ async function main() {
   console.log(ok ? "✓ En hızlı parmak doğru çalışıyor" : "✗ SORUN VAR");
   process.exit(ok ? 0 : 1);
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

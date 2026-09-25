@@ -35,4 +35,7 @@ for (let i = 0; i < count; i++) {
   sockets.push(socket);
 }
 
-setTimeout(() => { sockets.forEach((socket) => socket.disconnect()); process.exit(0); }, seconds * 1000);
+setTimeout(() => {
+  sockets.forEach((socket) => socket.disconnect());
+  process.exit(0);
+}, seconds * 1000);

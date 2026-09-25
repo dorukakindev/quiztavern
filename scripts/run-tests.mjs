@@ -87,14 +87,21 @@ for (const t of TESTS) {
       resolve({ code: code ?? (signal ? 128 : 1), timedOut: false, tail });
     });
   });
-  results.push({ name: t.name, ws: t.root ? "root" : t.ws, ...status, secs: ((Date.now() - started) / 1000).toFixed(1) });
+  results.push({
+    name: t.name,
+    ws: t.root ? "root" : t.ws,
+    ...status,
+    secs: ((Date.now() - started) / 1000).toFixed(1),
+  });
 }
 
 const passed = results.filter((r) => r.code === 0);
 const failed = results.filter((r) => r.code !== 0);
 console.log("\n════ test özeti ════");
 for (const r of results) {
-  console.log(`  ${r.code === 0 ? "✓" : "✗"} ${r.name.padEnd(30)} ${(r.ws ?? "").padEnd(7)} ${r.secs}s${r.timedOut ? " (zaman aşımı)" : ""}`);
+  console.log(
+    `  ${r.code === 0 ? "✓" : "✗"} ${r.name.padEnd(30)} ${(r.ws ?? "").padEnd(7)} ${r.secs}s${r.timedOut ? " (zaman aşımı)" : ""}`,
+  );
 }
 console.log(`════ ${passed.length} geçti, ${failed.length} kaldı ════`);
 if (failed.length) {

@@ -22,30 +22,37 @@
 ## FAZ 1 — Kritik buglar ve güvenlik (öncelik: 🔴)
 
 ### 1.1 [KESİN] Oturuma özel dosya repoda
+
 `SMOKE-DURUM.md` geçici tünel adreslerini ve Discord Client ID'yi içeriyor, dosyanın kendisi de "bu oturuma özeldir" diyor. Client ID gizli değil ama dosya repoda durmamalı.
+
 - Dosyayı sil, `.gitignore`'a `SMOKE-DURUM.md` ekle.
 - `gitleaks detect` (veya `trufflehog`) ile **tüm git geçmişini** tara. Herhangi bir `.env`, `CLIENT_SECRET`, `BOT_TOKEN`, `SESSION_SECRET` bulunursa: kullanıcıya bildir, secret'ı Discord Portal'da yenilemesini söyle.
 
 ### 1.2 [KESİN] Çember modu cevap eşleştirme riski (Türkçe karakterler + boşluklar)
+
 Çember cevapları `kızılırmak`, `çanakkale`, `tuzgölü`, `ziraatbankası` gibi Türkçe karakterli; EN tarafında da `bluemosque`, `lycianway`, `gesturalbrushwork` gibi boşlukları silinmiş çok kelimeli cevaplar var. Oyuncu "Blue Mosque", "KIZILIRMAK" veya "kizilirmak" yazarsa büyük ihtimalle yanlış sayılıyor.
+
 - Sunucuda tek bir `normalizeAnswer(text, lang)` fonksiyonu yaz:
   - TR için `toLocaleLowerCase('tr-TR')` (I→ı, İ→i sorunu), EN için `toLocaleLowerCase('en-US')`.
   - Boşluk, tire, kesme işareti, noktalama kaldır.
   - Karşılaştırmayı hem ham hem **diakritiksiz** hâl üzerinden yap (ı→i, ş→s, ğ→g, ü→u, ö→o, ç→c). EN oyuncusu `kizilirmak` yazabilmeli.
 - Veri şemasına opsiyonel `aliases: string[]` alanı ekle (ör. `blue mosque`, `sultan ahmed mosque`).
-- Birim testleri: `KIZILIRMAK`, `Kızılırmak`, `kizilirmak`, `Blue Mosque`, `blue-mosque`, `  bauhaus ` hepsi doğru sayılmalı.
+- Birim testleri: `KIZILIRMAK`, `Kızılırmak`, `kizilirmak`, `Blue Mosque`, `blue-mosque`, ` bauhaus` hepsi doğru sayılmalı.
 
 ### 1.3 [KESİN] Soru içerik hataları (benim-eklediklerim.txt'teki paketler)
-| id / girdi | Sorun | Düzeltme |
-|---|---|---|
-| Çember TR "K → koleksiyon" | İpucu bir *mekânı* (galeri) tarif ediyor; koleksiyon mekân değil | Harfi G, cevabı `galeri` yap (EN zaten `gallery`) |
-| Çember TR "Y → yazısalfırça" | Türkçede yerleşik bir terim değil, kimse bilemez | Girdiyi kaldır, yerine ör. `Y → yağlıboya` koy |
-| `turkiye-sultanahmet-mavi` | "Mavi Camii / Yeşil Camii…" dilbilgisi hatalı | Şıklar `Mavi Cami`, `Yeşil Cami`, `Beyaz Cami`, `Altın Cami` |
+
+| id / girdi                                      | Sorun                                                                                                                    | Düzeltme                                                                                                          |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Çember TR "K → koleksiyon"                      | İpucu bir _mekânı_ (galeri) tarif ediyor; koleksiyon mekân değil                                                         | Harfi G, cevabı `galeri` yap (EN zaten `gallery`)                                                                 |
+| Çember TR "Y → yazısalfırça"                    | Türkçede yerleşik bir terim değil, kimse bilemez                                                                         | Girdiyi kaldır, yerine ör. `Y → yağlıboya` koy                                                                    |
+| `turkiye-sultanahmet-mavi`                      | "Mavi Camii / Yeşil Camii…" dilbilgisi hatalı                                                                            | Şıklar `Mavi Cami`, `Yeşil Cami`, `Beyaz Cami`, `Altın Cami`                                                      |
 | `turkiye-antalya-turist` + çember "A → antalya" | Son yıllarda yabancı ziyaretçi sayısında İstanbul'un öne geçtiğini gösteren veriler var; "genellikle" ifadesi tartışmalı | Güncel resmî veriyle doğrula; belirsizse soruyu "havalimanı üzerinden en çok turist" gibi netleştir veya değiştir |
-| `turkiye-ziraatbankasi` | Osmanlı Bankası (1856) daha eski; "en eski" iddiası tartışılabilir | "Bugün faaliyette olan en eski Türk bankası" diye netleştir |
+| `turkiye-ziraatbankasi`                         | Osmanlı Bankası (1856) daha eski; "en eski" iddiası tartışılabilir                                                       | "Bugün faaliyette olan en eski Türk bankası" diye netleştir                                                       |
 
 ### 1.4 [KESİN] Otomatik soru doğrulayıcı yok
+
 Yukarıdaki hatalar elle yakalandı; gelecekte eklenecek paketler için `tools/validate-questions.ts` yaz ve `npm test`'e ekle. Kontroller:
+
 - `id` benzersiz; 4 şık var ve birbirinden farklı; doğru cevap şıklar arasında.
 - TR ve EN şık sayısı eşit; doğru cevabın **indeksi** iki dilde aynı.
 - Çember: `answer` normalize edilmiş hâli `letter` ile başlıyor (TR ve EN ayrı ayrı).
@@ -53,22 +60,29 @@ Yukarıdaki hatalar elle yakalandı; gelecekte eklenecek paketler için `tools/v
 - Uyarı (hata değil): cevap 20 karakterden uzunsa, boşluk silinmiş çok kelimeli cevaplarda `aliases` yoksa.
 
 ### 1.5 [DOĞRULA] Hile: doğru cevap istemciye erken gidiyor mu?
+
 Sunucu-otoriter mimari iddiası ancak şunlar sağlanıyorsa geçerli:
+
 - Soru yayınlanırken payload'da `correctIndex` / `answer` **yok**; sadece reveal anında gönderiliyor.
 - Cevap zaman damgası sunucuda alınıyor; süre dolduktan sonra gelen cevap reddediliyor; aynı oyuncu bir soruya ikinci kez cevap gönderemiyor.
 - Puan istemciden gelen hiçbir değere dayanmıyor.
-Her biri için sunucu testi ekle.
+  Her biri için sunucu testi ekle.
 
 ### 1.6 [DOĞRULA] Arayüzde sahte / sabit veriler
+
 Tasarım notlarında "24 oyuncu çevrimiçi", "6 açık masa", "24/32 oyuncu kayıtlı", "50.000 altın ödül havuzu", "Elif" (sıralamada 1.), "Safir Ligi", "+640 XP bu hafta" gibi değerler geçiyor. Discord Portal'daki maksimum katılımcı 8 iken 32 kişilik turnuva gösterilmesi bunların mock olduğunu düşündürüyor.
+
 - Tüm bu değerleri kodda ara. Gerçek veriye bağlı olmayanları ya gerçek veriye bağla ya da ekrandan kaldır / "Yakında" rozetiyle işaretle. Kullanıcıya sahte canlılık göstermek güven kırar.
 
 ### 1.7 [DOĞRULA] Kalıcılık
+
 XP, haftalık lig, görevler, seri (streak) ve sıralama sunucu yeniden başlayınca sıfırlanıyor mu? Bellek içiyse:
+
 - `better-sqlite3` (tek süreç, tek port mimarisine uygun) ile basit bir kalıcılık katmanı ekle: `users`, `match_results`, `quest_progress`, `weekly_league`.
 - Aktif maç durumu bellekte kalabilir; sadece maç sonuçları ve ilerleme yazılsın.
 
 ### 1.8 [KESİN] Belge tutarsızlıkları
+
 - `package.json` adı `quiz-orbit` → `quiztavern`.
 - README "7 paket test" diyor, `npm test` 9 paket çalıştırıyor → güncelle.
 - `SMOKE-TEST.md` "ALLOW_MOCK_AUTH satırını sil", `SMOKE-DURUM.md` "başına # koy" diyor → tek talimat: sil. Ayrıca `config.ts`'in `NODE_ENV=production` iken `ALLOW_MOCK_AUTH=1` görürse **başlamayı reddettiğini** test eden bir test ekle (fail-closed iddiasını kanıtlasın).
@@ -113,22 +127,22 @@ Her özellik ayrı PR olsun; her PR'da test + kısa ekran görüntüsü/gif.
 
 ## Uygulama sırası (PR listesi)
 
-| # | PR | Faz | Tahmini boyut |
-|---|---|---|---|
-| 1 | Keşif raporu + ARCHITECTURE.md | 0 | S |
-| 2 | SMOKE-DURUM kaldır, gitleaks taraması, belge tutarlılığı, paket adı | 1.1, 1.8 | S |
-| 3 | `normalizeAnswer` + aliases + testler | 1.2 | M |
-| 4 | Soru doğrulayıcı + içerik düzeltmeleri | 1.3, 1.4 | M |
-| 5 | Anti-hile doğrulama/düzeltme + testler | 1.5 | M |
-| 6 | Sahte verilerin temizlenmesi | 1.6 | M |
-| 7 | SQLite kalıcılık | 1.7 | L |
-| 8 | CI + reconnect/kapasite testleri + tekrar önleme | 2 | M |
-| 9 | Erişilebilirlik, klavye, ses | 3 | M |
-| 10 | implementation_plan.md animasyonları | 3 | M |
-| 11 | Soru bildirimi | 4.1 | S |
-| 12 | Günlük meydan okuma | 4.2 | M |
-| 13 | Discord paylaşımı | 4.3 | M |
-| 14 | Özel soru paketi | 4.4 | L |
+| #   | PR                                                                  | Faz      | Tahmini boyut |
+| --- | ------------------------------------------------------------------- | -------- | ------------- |
+| 1   | Keşif raporu + ARCHITECTURE.md                                      | 0        | S             |
+| 2   | SMOKE-DURUM kaldır, gitleaks taraması, belge tutarlılığı, paket adı | 1.1, 1.8 | S             |
+| 3   | `normalizeAnswer` + aliases + testler                               | 1.2      | M             |
+| 4   | Soru doğrulayıcı + içerik düzeltmeleri                              | 1.3, 1.4 | M             |
+| 5   | Anti-hile doğrulama/düzeltme + testler                              | 1.5      | M             |
+| 6   | Sahte verilerin temizlenmesi                                        | 1.6      | M             |
+| 7   | SQLite kalıcılık                                                    | 1.7      | L             |
+| 8   | CI + reconnect/kapasite testleri + tekrar önleme                    | 2        | M             |
+| 9   | Erişilebilirlik, klavye, ses                                        | 3        | M             |
+| 10  | implementation_plan.md animasyonları                                | 3        | M             |
+| 11  | Soru bildirimi                                                      | 4.1      | S             |
+| 12  | Günlük meydan okuma                                                 | 4.2      | M             |
+| 13  | Discord paylaşımı                                                   | 4.3      | M             |
+| 14  | Özel soru paketi                                                    | 4.4      | L             |
 
 ---
 

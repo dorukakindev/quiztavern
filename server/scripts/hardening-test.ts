@@ -42,7 +42,9 @@ await check("üretim CSP'si Discord çerçevesini korur ve yerel servis hedefler
 await check("oda kapatılınca bekleyen bot işi iptal edilir", async () => {
   const room = new Room("timer-test", () => undefined);
   let ran = false;
-  room.scheduleBotTask(() => { ran = true; }, 10);
+  room.scheduleBotTask(() => {
+    ran = true;
+  }, 10);
   room.dispose();
   await new Promise((resolve) => setTimeout(resolve, 25));
   assert.equal(ran, false);
@@ -51,8 +53,9 @@ await check("oda kapatılınca bekleyen bot işi iptal edilir", async () => {
 await check("sunucu mod başına kategori sınırını yetkili olarak uygular", () => {
   const room = new Room("category-limit", () => undefined);
   room.addPlayer({ id: "host", name: "Host", avatarUrl: null, socketId: "socket:host", isBot: false });
-  const classicNames = room.stateFor("host", true).availableCategories
-    .filter((category) => category.classicCount > 0)
+  const classicNames = room
+    .stateFor("host", true)
+    .availableCategories.filter((category) => category.classicCount > 0)
     .slice(0, 3)
     .map((category) => category.name);
   assert.equal(classicNames.length, 3);
@@ -67,7 +70,9 @@ await check("sunucu mod başına kategori sınırını yetkili olarak uygular", 
 
 await check("aynı ready değeri tekrar gönderilince state yayını üretilmez", () => {
   let broadcasts = 0;
-  const room = new Room("ready-noop", () => { broadcasts += 1; });
+  const room = new Room("ready-noop", () => {
+    broadcasts += 1;
+  });
   room.addPlayer({ id: "host", name: "Host", avatarUrl: null, socketId: "socket:host", isBot: false });
   const afterJoin = broadcasts;
   for (let i = 0; i < 1000; i += 1) room.setReady("host", false);
@@ -102,13 +107,11 @@ try {
   });
 
   await check("Discord isteğini süre dolunca iptal eder", async () => {
-    globalThis.fetch = async (_input, init) => new Promise<Response>((_resolve, reject) => {
-      init?.signal?.addEventListener("abort", () => reject(init.signal?.reason), { once: true });
-    });
-    await assert.rejects(
-      fetchDiscord("https://discord.test/hang", {}, { timeoutMs: 20, retries: 0 }),
-      /timed out/,
-    );
+    globalThis.fetch = async (_input, init) =>
+      new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => reject(init.signal?.reason), { once: true });
+      });
+    await assert.rejects(fetchDiscord("https://discord.test/hang", {}, { timeoutMs: 20, retries: 0 }), /timed out/);
   });
 } finally {
   globalThis.fetch = originalFetch;

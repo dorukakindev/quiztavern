@@ -13,18 +13,19 @@ const test = (name: string, run: () => void) => {
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
 type P = { score: number; stats: { total: number; correct: number }; orderAnswers: (number[] | null)[] };
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, P>;
-  qIndex: number;
-  phase: string;
-  orderQuestions: { id: string; events: { label: string; year: number; when: string }[] }[];
-  orderShuffle: number[];
-  orderGuesses: Map<string, number[]>;
-  questionStartedAt: number;
-  questionDeadline: number;
-  beginQuestion(): void;
-  reveal(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, P>;
+    qIndex: number;
+    phase: string;
+    orderQuestions: { id: string; events: { label: string; year: number; when: string }[] }[];
+    orderShuffle: number[];
+    orderGuesses: Map<string, number[]>;
+    questionStartedAt: number;
+    questionDeadline: number;
+    beginQuestion(): void;
+    reveal(): void;
+  };
 
 const timelineRoom = (id: string, ids: string[]) => {
   const room = new Room(id, () => {}, { minPlayers: 1 });
@@ -76,7 +77,8 @@ test("doğru sıra: her doğru pozisyon +100, tam isabet 400", () => {
   room.orderAnswer("a", sol); // tam isabet
   const wrong = [sol[1], sol[0], sol[2], sol[3]]; // 2 doğru pozisyon
   room.orderAnswer("b", wrong);
-  const a = inner.players.get("a")!, b = inner.players.get("b")!;
+  const a = inner.players.get("a")!,
+    b = inner.players.get("b")!;
   assert.equal(a.score, 4 * GAME.TIMELINE_PER_POS);
   assert.equal(b.score, 2 * GAME.TIMELINE_PER_POS);
   assert.equal(inner.phase, "reveal", "herkes dizince reveal");
@@ -87,7 +89,8 @@ test("cevap vermeyen 0 alır; istatistik doğru", () => {
   const inner = startRound(room);
   room.orderAnswer("a", solution(room));
   inner.reveal();
-  const a = inner.players.get("a")!, b = inner.players.get("b")!;
+  const a = inner.players.get("a")!,
+    b = inner.players.get("b")!;
   assert.equal(a.stats.correct, 1);
   assert.equal(b.stats.correct, 0);
   assert.equal(b.score, 0);

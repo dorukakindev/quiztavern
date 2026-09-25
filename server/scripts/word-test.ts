@@ -4,7 +4,7 @@
  */
 import { strict as assert } from "node:assert";
 import { Room } from "../src/rooms";
-import { GameError } from "../src/errors"
+import { GameError } from "../src/errors";
 import { GAME } from "../src/config";
 import { sampleWordPrompts } from "../src/circle";
 
@@ -17,7 +17,7 @@ function ready(room: Room, ...ids: string[]) {
 function stop(room: Room) {
   (room as unknown as { clearTimer(): void }).clearTimer();
 }
-const inner = (room: Room) => room as unknown as { beginQuestion(): void }
+const inner = (room: Room) => room as unknown as { beginQuestion(): void };
 function next(room: Room) {
   (room as unknown as { revealUntil: number }).revealUntil = 0;
   (room as unknown as { advanceFromReveal(): void }).advanceFromReveal();
@@ -27,8 +27,12 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 1) Yalnızca host mod seçebilir; word seçimi geçerli.
 {
   const room = new Room("w1", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a"));
-  assert.throws(() => room.setGameMode("a", "word"), (e: unknown) => e instanceof GameError && e.key === "err.modeHostOnly");
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
+  assert.throws(
+    () => room.setGameMode("a", "word"),
+    (e: unknown) => e instanceof GameError && e.key === "err.modeHostOnly",
+  );
   room.setGameMode("host", "word");
   assert.equal(stateOf(room, "a").gameMode, "word");
   stop(room);
@@ -37,7 +41,8 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 2) Maç word havuzundan beslenir: round.total = WORD_ROUNDS, word payload maskeli.
 {
   const room = new Room("w2", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -48,7 +53,10 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
   assert.ok(state.word, "word payload");
   assert.equal(state.question, null, "word'de klasik soru yok");
   assert.ok(state.word!.letters.length >= 4 && state.word!.letters.length <= 10);
-  assert.ok(state.word!.letters.every((ch) => ch === null), "tur başında tümü kapalı");
+  assert.ok(
+    state.word!.letters.every((ch) => ch === null),
+    "tur başında tümü kapalı",
+  );
   assert.equal(state.word!.value, state.word!.letters.length * GAME.WORD_LETTER_POINTS);
   assert.ok(state.word!.poolMs > 0 && state.word!.poolMs <= GAME.WORD_POOL_MS);
   stop(room);
@@ -57,7 +65,9 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 3) "harf al" tek harf açar ve değeri 100 düşürür.
 {
   const room = new Room("w3", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a")); room.addPlayer(player("c"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
+  room.addPlayer(player("c"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -77,15 +87,17 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 4) Doğru cevap o ANKİ değeri dondurur: sonra harf açılsa da erken cevaplayan korur.
 {
   const room = new Room("w4", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a")); room.addPlayer(player("c"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
+  room.addPlayer(player("c"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
   inner(room).beginQuestion();
   const prompt = (room as unknown as { currentWordPrompt(): { answer: string } }).currentWordPrompt();
-  room.wordAnswer("host", prompt.answer);       // hiç harf açılmadan
-  room.wordLetter("a");                          // sonra a harf ister
-  room.wordAnswer("a", prompt.answer);           // a 1 harf açıkken bilir
+  room.wordAnswer("host", prompt.answer); // hiç harf açılmadan
+  room.wordLetter("a"); // sonra a harf ister
+  room.wordAnswer("a", prompt.answer); // a 1 harf açıkken bilir
   room.reveal();
   const state = stateOf(room, "a");
   assert.equal(state.phase, "reveal");
@@ -101,7 +113,9 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 5) Yanlış cevap kilitler (tekrar yazamaz), puan almaz.
 {
   const room = new Room("w5", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a")); room.addPlayer(player("c"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
+  room.addPlayer(player("c"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -137,14 +151,20 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
   const others = ["a", "b", "c", "d", "e"];
   for (let i = 0; i < len * 2; i++) room.wordLetter(others[i % others.length]);
   const letters = stateOf(room, "a").word!.letters;
-  assert.equal(letters.filter(Boolean).length, Math.min(len - 1, others.length * GAME.WORD_LETTER_CAP), "en az bir harf kapalı kalır");
+  assert.equal(
+    letters.filter(Boolean).length,
+    Math.min(len - 1, others.length * GAME.WORD_LETTER_CAP),
+    "en az bir harf kapalı kalır",
+  );
   stop(room);
 }
 
 // 7) Ortak havuz tükenince maç kalan turları oynamadan biter.
 {
   const room = new Room("w7", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a")); room.addPlayer(player("c"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
+  room.addPlayer(player("c"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -160,7 +180,8 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 8) Maç ortasında katılan beklemede kalır; cevap yazamaz.
 {
   const room = new Room("w8", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -174,7 +195,8 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 9) İstemci ham cevabı görmez: letters maskesi, reveal öncesi answer alanı yok.
 {
   const room = new Room("w9", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
@@ -200,7 +222,8 @@ const stateOf = (room: Room, id: string) => room.stateFor(id, false);
 // 10) wordLetter/ wordAnswer diğer modlarda no-op.
 {
   const room = new Room("w10", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a"));
+  room.addPlayer(player("host"));
+  room.addPlayer(player("a"));
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "classic");
   inner(room).beginQuestion();

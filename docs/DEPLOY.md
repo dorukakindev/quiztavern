@@ -65,8 +65,8 @@ fly logs                                  # "server dinliyor" satırını gör
 Fly URL'i belli olduktan sonra Developer Portal'da:
 
 - **Activities → URL Mappings:** kök `/` → `https://quiztavern.fly.dev/`
-  + Vekil Yol `/api` → `quiztavern.fly.dev` (önek soyulup `/socket.io`
-  vb. istekler sunucuya düşer; kök eşleme bunu TEK BAŞINA karşılamaz).
+  - Vekil Yol `/api` → `quiztavern.fly.dev` (önek soyulup `/socket.io`
+    vb. istekler sunucuya düşer; kök eşleme bunu TEK BAŞINA karşılamaz).
 - **OAuth2 → Redirects:** `https://quiztavern.fly.dev/auth/discord/callback` ekle.
 - Eski cloudflared/tunnel mapping'lerini kaldır.
 
@@ -148,9 +148,10 @@ desteklemez (xp.db restart'ta sıfırlanır) — disk için starter plana çıkm
 ## Sonrası (iki platformda da aynı)
 
 Developer Portal'da URL'leri sabitle:
+
 - **Activities → URL Mappings:** kök `/` → servis URL'in
-  + Vekil Yol `/api` → `<servis-host>` (Discord `/api` önekini soyar;
-  socket.io ve auth uçları bu yoldan sunucuya ulaşır).
+  - Vekil Yol `/api` → `<servis-host>` (Discord `/api` önekini soyar;
+    socket.io ve auth uçları bu yoldan sunucuya ulaşır).
 - **OAuth2 → Redirects:** `https://<servis-url>/auth/discord/callback`.
 - Eski cloudflared/tunnel mapping'lerini kaldır.
 
@@ -192,6 +193,7 @@ atlanırsa Activity Discord'da SDK'ya bağlanamaz.
 ## 3. Alan adı + HTTPS
 
 Activity iframe'i HTTPS ister; seçenekler:
+
 - **DuckDNS (önerilen):** https://www.duckdns.org → GitHub/Google ile giriş →
   alt alan (ör. `quiztavern.duckdns.org`) → IP = public IP. Hesap bedava,
   Let's Encrypt uyumlu. `token`'ı da Devin'e ver (IP değişirse güncellemek için).
@@ -204,9 +206,9 @@ Activity iframe'i HTTPS ister; seçenekler:
 ## 4. Discord Portal (Railway/Render'dakiyle aynı)
 
 - **Activities → URL Mappings:** kök `/` → `https://<alan-adın>`
-  + Vekil Yol `/api` → `<alan-adın>` (Discord `/api` önekini soyup
-  `/socket.io` vb. istekleri sunucuya iletir; eksikse activity
-  'websocket error' ile düşer).
+  - Vekil Yol `/api` → `<alan-adın>` (Discord `/api` önekini soyup
+    `/socket.io` vb. istekleri sunucuya iletir; eksikse activity
+    'websocket error' ile düşer).
 - **OAuth2 → Redirects:** `https://<alan-adın>/auth/discord/callback`
 - Eski cloudflared mapping'lerini kaldır.
 - Doğrulama: `curl https://<alan-adın>/health` → `{"ok":true}`.

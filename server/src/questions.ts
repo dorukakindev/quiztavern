@@ -39,22 +39,16 @@ function load(): Question[] {
     if (typeof q.id !== "string" || !q.id) throw new Error(`${where}: id eksik`);
     if (seen.has(q.id)) throw new Error(`${where}: id tekrar ediyor`);
     seen.add(q.id);
-    if (typeof q.category !== "string" || !q.category)
-      throw new Error(`${where}: category eksik`);
-    if (typeof q.text !== "string" || q.text.length < 5)
-      throw new Error(`${where}: text eksik`);
-    if (!Array.isArray(q.choices) || q.choices.length !== 4)
-      throw new Error(`${where}: tam 4 şık olmalı`);
-    if (new Set(q.choices).size !== 4)
-      throw new Error(`${where}: şıklar birbirinden farklı olmalı`);
-    if (typeof q.textEn !== "string" || q.textEn.length < 5)
-      throw new Error(`${where}: textEn eksik`);
+    if (typeof q.category !== "string" || !q.category) throw new Error(`${where}: category eksik`);
+    if (typeof q.text !== "string" || q.text.length < 5) throw new Error(`${where}: text eksik`);
+    if (!Array.isArray(q.choices) || q.choices.length !== 4) throw new Error(`${where}: tam 4 şık olmalı`);
+    if (new Set(q.choices).size !== 4) throw new Error(`${where}: şıklar birbirinden farklı olmalı`);
+    if (typeof q.textEn !== "string" || q.textEn.length < 5) throw new Error(`${where}: textEn eksik`);
     if (!Array.isArray(q.choicesEn) || q.choicesEn.length !== 4)
       throw new Error(`${where}: tam 4 İngilizce şık olmalı`);
     if (!Number.isInteger(q.correctIndex) || q.correctIndex < 0 || q.correctIndex > 3)
       throw new Error(`${where}: correctIndex 0-3 arasında olmalı`);
-    if (!DIFFICULTIES.includes(q.difficulty))
-      throw new Error(`${where}: difficulty "kolay" | "orta" | "zor" olmalı`);
+    if (!DIFFICULTIES.includes(q.difficulty)) throw new Error(`${where}: difficulty "kolay" | "orta" | "zor" olmalı`);
     if (q.image !== undefined && (typeof q.image !== "string" || !q.image))
       throw new Error(`${where}: image verilmişse boş olmayan bir dosya adı olmalı`);
     if (q.imageCredit !== undefined && (typeof q.imageCredit !== "string" || !q.imageCredit))
@@ -165,7 +159,13 @@ function randomInt(min: number, max: number): number {
  *   kota n'e çekilir (resimli soru resimsizle harmanlanmaz). Kategori/zorluk
  *   filtresi resimli soru içermiyorsa tüm resimli havuza düşer.
  */
-export function sampleQuestions(n: number, categories: string[] = [], exclude: Set<string> = new Set(), difficulty: Difficulty | null = null, imageOnly = false): Question[] {
+export function sampleQuestions(
+  n: number,
+  categories: string[] = [],
+  exclude: Set<string> = new Set(),
+  difficulty: Difficulty | null = null,
+  imageOnly = false,
+): Question[] {
   let source = effectiveQuestionPool(categories, difficulty);
   if (imageOnly) {
     const pictured = source.filter((q) => q.image);
@@ -210,7 +210,11 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
         for (const sub of subpools) {
           if (remaining <= 0) break;
           const q = sub[key][queue].shift();
-          if (q) { out.push(q); remaining -= 1; progressed = true; }
+          if (q) {
+            out.push(q);
+            remaining -= 1;
+            progressed = true;
+          }
         }
         if (!progressed) break;
       }
@@ -265,7 +269,13 @@ export function questionPoolIds(categories: string[] = [], difficulty: Difficult
  * karşılar (bu, bir turun son 1-2 maçında en fazla birkaç erken tekrara yol
  * açabilir — sürekli/sistemik tekrardan çok daha iyi).
  */
-export function resetExhaustedSubpools(categories: string[], difficulty: Difficulty | null, seen: Set<string>, lastIds: Set<string>, _roundLimit: number): Set<string> {
+export function resetExhaustedSubpools(
+  categories: string[],
+  difficulty: Difficulty | null,
+  seen: Set<string>,
+  lastIds: Set<string>,
+  _roundLimit: number,
+): Set<string> {
   const source = effectiveQuestionPool(categories, difficulty);
   const pictureIds = new Set(source.filter((q) => q.image).map((q) => q.id));
   const textIds = new Set(source.filter((q) => !q.image).map((q) => q.id));

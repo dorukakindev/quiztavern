@@ -18,16 +18,31 @@ import {
 
 let passed = 0;
 function test(name: string, fn: () => void) {
-  try { fn(); passed += 1; console.log(`  ✓ ${name}`); }
-  catch (error) { console.error(`  ✗ ${name}`); throw error; }
+  try {
+    fn();
+    passed += 1;
+    console.log(`  ✓ ${name}`);
+  } catch (error) {
+    console.error(`  ✗ ${name}`);
+    throw error;
+  }
 }
 
 const player = (id: string) => ({ id, name: id, avatarUrl: null, socketId: `s-${id}`, isBot: false });
 const stop = (room: Room) => (room as unknown as { clearTimer(): void }).clearTimer();
-const readyAll = (room: Room) => { for (const id of room.players.keys()) room.setReady(id, true); };
+const readyAll = (room: Room) => {
+  for (const id of room.players.keys()) room.setReady(id, true);
+};
 const entry = (over: Partial<MatchFinishedEntry> = {}): MatchFinishedEntry => ({
-  userId: "u1", name: "u1", avatarUrl: null,
-  correct: 0, total: 5, bestStreak: 0, placement: 4, won: false, ...over,
+  userId: "u1",
+  name: "u1",
+  avatarUrl: null,
+  correct: 0,
+  total: 5,
+  bestStreak: 0,
+  placement: 4,
+  won: false,
+  ...over,
 });
 
 test("seviye eğrisi: 1→2 100, 2→3 300, 3→4 600 XP", () => {
@@ -109,7 +124,10 @@ test("sezon tablosu: aylık ayrı birikir, sıralama XP'ye göre", () => {
   const store = createXpStore(":memory:");
   const sep = new Date(Date.UTC(2026, 8, 20, 12, 0, 0));
   const oct = new Date(Date.UTC(2026, 9, 2, 12, 0, 0));
-  store.recordMatch([entry({ userId: "u1", correct: 2, placement: 1, won: true }), entry({ userId: "u2", correct: 1, placement: 2 })], sep);
+  store.recordMatch(
+    [entry({ userId: "u1", correct: 2, placement: 1, won: true }), entry({ userId: "u2", correct: 1, placement: 2 })],
+    sep,
+  );
   store.recordMatch([entry({ userId: "u2", correct: 5, placement: 1, won: true })], oct);
   const sepBoard = store.seasonBoard(5, sep);
   assert.equal(sepBoard.season, "2026-09");
@@ -133,23 +151,34 @@ test("oda entegrasyonu: finish() XP yazar, state rozet+kazanım+sezon taşır", 
   const room = new Room("r-xp", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(store);
   try {
-    room.join(player("host")); room.join(player("p2"));
+    room.join(player("host"));
+    room.join(player("p2"));
     room.addBot("BotCenk");
     readyAll(room);
     room.start("host", "classic");
     // host 2 soruyu doğru cevapladı (eligible turlar), p2 hiç oynamadı sayılsın diye total bırak.
     const host = room.players.get("host")!;
-    host.stats.total = 5; host.stats.correct = 2; host.stats.bestStreak = 2; host.score = 500;
+    host.stats.total = 5;
+    host.stats.correct = 2;
+    host.stats.bestStreak = 2;
+    host.score = 500;
     const p2 = room.players.get("p2")!;
-    p2.stats.total = 5; p2.stats.correct = 0; p2.score = 100;
+    p2.stats.total = 5;
+    p2.stats.correct = 0;
+    p2.score = 100;
     const bot = [...room.players.values()].find((p) => p.isBot)!;
-    bot.stats.total = 5; bot.stats.correct = 4; bot.score = 999; // bot XP alamaz
+    bot.stats.total = 5;
+    bot.stats.correct = 4;
+    bot.score = 999; // bot XP alamaz
     (room as unknown as { finish(): void }).finish();
     const state = room.stateFor("host", true);
     assert.equal(state.phase, "podium");
     // Sıralama: bot(999) 1., host(500) 2., p2(100) 3. — bot XP alamaz.
     const gains = state.xpGains!;
-    assert.equal(Object.keys(gains).some((id) => id.startsWith("bot:")), false);
+    assert.equal(
+      Object.keys(gains).some((id) => id.startsWith("bot:")),
+      false,
+    );
     assert.equal(gains.host.gained, 20 + 2 * 10 + 2 * 3 + 25); // taban + doğru + seri + 2.lik primi
     assert.equal(gains.p2.gained, 20 + 10); // taban + 3.lük primi
     // Rozet oyuncu kartına düştü; botun rozeti yok
@@ -166,7 +195,10 @@ test("oda entegrasyonu: finish() XP yazar, state rozet+kazanım+sezon taşır", 
     assert.equal(state.progress!.xp, gains.host.xp);
     assert.equal(state.seasonBoard!.season, seasonKey());
     assert.equal(state.seasonBoard!.entries[0].userId, "host"); // 71 > p2'nin 30'u
-  } finally { stop(room); store.close(); }
+  } finally {
+    stop(room);
+    store.close();
+  }
 });
 
 test("takım modu: galibiyet skor sırasına değil kazanan takıma yazılır", () => {
@@ -174,15 +206,20 @@ test("takım modu: galibiyet skor sırasına değil kazanan takıma yazılır", 
   const room = new Room("r-team", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(store);
   try {
-    room.join(player("a0")); room.join(player("b0"));
+    room.join(player("a0"));
+    room.join(player("b0"));
     readyAll(room);
     room.gameMode = "team";
     room.start("a0", "team");
-    const a = room.players.get("a0")!; const b = room.players.get("b0")!;
-    a.team = 0; b.team = 1;
-    a.stats.total = 5; b.stats.total = 5;
+    const a = room.players.get("a0")!;
+    const b = room.players.get("b0")!;
+    a.team = 0;
+    b.team = 1;
+    a.stats.total = 5;
+    b.stats.total = 5;
     // b0 maç içi en yüksek bireysel skor (placement 1) ama takımı kaybetti.
-    b.score = 900; a.score = 100;
+    b.score = 900;
+    a.score = 100;
     (room as unknown as { teamScores: [number, number] }).teamScores = [500, 400];
     (room as unknown as { finish(): void }).finish();
     const gains = room.stateFor("a0", true).xpGains!;
@@ -190,40 +227,62 @@ test("takım modu: galibiyet skor sırasına değil kazanan takıma yazılır", 
     assert.equal(gains.a0.gained, 20 + XP_WIN + 25);
     // b0: placement 1 ama takımı kaybetti, won=false → yalnız taban 20
     assert.equal(gains.b0.gained, 20);
-  } finally { stop(room); store.close(); }
+  } finally {
+    stop(room);
+    store.close();
+  }
 });
 
 test("depo kapalıyken oda değişmez: progress/xpGains/seasonBoard null", () => {
   const room = new Room("r-off", () => {}, { minPlayers: 1, questionCount: 5 });
   try {
-    room.join(player("solo")); readyAll(room);
+    room.join(player("solo"));
+    readyAll(room);
     room.start("solo", "classic");
     const state = room.stateFor("solo", true);
     assert.equal(state.progress, null);
     assert.equal(state.xpGains, null);
     assert.equal(state.seasonBoard, null);
     assert.equal(state.players[0].progress, undefined);
-  } finally { stop(room); }
+  } finally {
+    stop(room);
+  }
 });
 
 test("rozetler: ilk maçta temel başarımlar açılır ve yalnızca bir kez sayılır", () => {
   const store = createXpStore(":memory:");
   try {
     // 5/5 doğru + 5 seri + 1. bitiriş → ilkMac, ilkGalibiyet, seriAvcisi, podyum, tamIsabet
-    const gains = store.recordMatch([entry({
-      correct: 5, total: 5, bestStreak: 5, placement: 1, won: true,
-    })]).get("u1")!;
-    assert.deepEqual(gains.newBadges,
-      ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
+    const gains = store
+      .recordMatch([
+        entry({
+          correct: 5,
+          total: 5,
+          bestStreak: 5,
+          placement: 1,
+          won: true,
+        }),
+      ])
+      .get("u1")!;
+    assert.deepEqual(gains.newBadges, ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
     // Aynı sonuç ikinci maçta rozet döndürmez (kayıt kalıcı, tekrar yok).
-    const again = store.recordMatch([entry({
-      correct: 5, total: 5, bestStreak: 5, placement: 1, won: true,
-    })]).get("u1")!;
+    const again = store
+      .recordMatch([
+        entry({
+          correct: 5,
+          total: 5,
+          bestStreak: 5,
+          placement: 1,
+          won: true,
+        }),
+      ])
+      .get("u1")!;
     assert.equal(again.newBadges, undefined);
     // Snapshot'ta BADGE_DEFS sırasında listelenir.
-    assert.deepEqual(store.snapshot("u1")!.badges,
-      ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
-  } finally { store.close(); }
+    assert.deepEqual(store.snapshot("u1")!.badges, ["ilkMac", "ilkGalibiyet", "seriAvcisi", "podyum", "tamIsabet"]);
+  } finally {
+    store.close();
+  }
 });
 
 test("rozetler: kümülatif eşikler (maç sayısı + günlük seri) doğru anda açılır", () => {
@@ -241,7 +300,9 @@ test("rozetler: kümülatif eşikler (maç sayısı + günlük seri) doğru anda
     const g3 = store.recordMatch([entry({ correct: 1, placement: 2 })], new Date("2026-09-22T12:00:00Z")).get("u1")!;
     assert.ok(g3.newBadges!.includes("gunluk3"));
     assert.ok(!g3.newBadges!.includes("gunluk7"));
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("rozetler: koşul tutmayan maçta başarım yazılmaz", () => {
@@ -251,7 +312,9 @@ test("rozetler: koşul tutmayan maçta başarım yazılmaz", () => {
     const g = store.recordMatch([entry({ correct: 0, placement: 4, won: false })]).get("u1")!;
     assert.deepEqual(g.newBadges, ["ilkMac"]);
     assert.deepEqual(store.snapshot("u1")!.badges, ["ilkMac"]);
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("unvan: yalnız kazanılmış rozet takılabilir, null kaldırır, kalıcıdır", () => {
@@ -272,7 +335,9 @@ test("unvan: yalnız kazanılmış rozet takılabilir, null kaldırır, kalıcı
     assert.equal(store.setTitle("u1", null), true);
     assert.equal(store.title("u1"), null);
     assert.equal(store.setTitle("u1", null), true);
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("unvan: odaya yayınlanır, geçersiz seçim err.title fırlatır", () => {
@@ -300,8 +365,13 @@ test("unvan: odaya yayınlanır, geçersiz seçim err.title fırlatır", () => {
       plain.join(player("solo"));
       plain.setTitle("solo", "keskin");
       assert.equal(plain.stateFor("solo", true).players[0].title, "keskin");
-    } finally { stop(plain); }
-  } finally { stop(room); store.close(); }
+    } finally {
+      stop(plain);
+    }
+  } finally {
+    stop(room);
+    store.close();
+  }
 });
 
 test("badgeProgress: hedefli rozetler n/t taşır, kazanılan ve olay rozetleri düşer", () => {
@@ -323,7 +393,9 @@ test("badgeProgress: hedefli rozetler n/t taşır, kazanılan ve olay rozetleri 
     // Sıralama orana göre azalan: en yakın hedef önde.
     const ratios = snap.badgeProgress.map((p) => p.current / p.target);
     assert.ok(ratios.every((r, i) => i === 0 || ratios[i - 1] >= r));
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("backup: VACUUM INTO tutarlı kopya üretir; haftalık bakım dosyayı tutar", () => {
@@ -337,16 +409,25 @@ test("backup: VACUUM INTO tutarlı kopya üretir; haftalık bakım dosyayı tuta
       assert.ok(existsSync(dest));
       const copy = new Database(dest, { readonly: true });
       try {
-        const row = copy.prepare("SELECT user_id, xp, wins FROM players WHERE user_id = 'u1'").get() as
-          { user_id: string; xp: number; wins: number };
+        const row = copy.prepare("SELECT user_id, xp, wins FROM players WHERE user_id = 'u1'").get() as {
+          user_id: string;
+          xp: number;
+          wins: number;
+        };
         assert.equal(row.user_id, "u1");
         assert.equal(row.wins, 1);
         assert.ok(row.xp > 0);
-      } finally { copy.close(); }
+      } finally {
+        copy.close();
+      }
       // Haftalık bakım yolu: checkpoint+VACUUM sonra kopya yine tutarlı.
       store.backup(dest, true);
-    } finally { store.close(); }
-  } finally { rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }); }
+    } finally {
+      store.close();
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+  }
 });
 
 console.log(`\n[xp] sonuç: ${passed} geçti, 0 kaldı`);

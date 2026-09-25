@@ -10,17 +10,18 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number; stats: { total: number; correct: number } }>;
-  questions: { id: string; correctIndex: number }[];
-  qIndex: number;
-  roundLimit: number;
-  revealUntil: number;
-  buzzWinnerId: string | null;
-  beginQuestion(): void;
-  reveal(reason?: "timeout" | "allAnswered"): void;
-  advanceFromReveal(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, { score: number; stats: { total: number; correct: number } }>;
+    questions: { id: string; correctIndex: number }[];
+    qIndex: number;
+    roundLimit: number;
+    revealUntil: number;
+    buzzWinnerId: string | null;
+    beginQuestion(): void;
+    reveal(reason?: "timeout" | "allAnswered"): void;
+    advanceFromReveal(): void;
+  };
 const zilRoom = (id: string, ids: string[]) => {
   const room = new Room(id, () => {}, { minPlayers: 1 });
   for (const pid of ids) room.addPlayer({ ...user(pid), isBot: false });
@@ -143,7 +144,9 @@ test("Son insan izleyiciye geçerse oda kapanmaz, kaydı düşmez (B47)", () => 
   const room = zilRoom("z-orphan", ["a"]);
   startRound(room);
   let emptied = false;
-  room.setEmptiedHandler(() => { emptied = true; });
+  room.setEmptiedHandler(() => {
+    emptied = true;
+  });
   room.becomeSpectator("a");
   assert.equal(emptied, false, "oda açık kaldı");
   const spec = (room as unknown as { spectators: Map<string, unknown> }).spectators;
@@ -157,14 +160,13 @@ test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B4
   room.buzz("a");
   room.answer("a", (inner.questions[0].correctIndex + 1) % 4); // a: yanlış deneme → yanar
   room.buzz("b");
-  room.answer("b", inner.questions[0].correctIndex);           // b: doğru → kazanır
+  room.answer("b", inner.questions[0].correctIndex); // b: doğru → kazanır
   assert.equal(room.phase, "reveal");
   const gains = room.stateFor("c").reveal!.gains;
   assert.equal(gains["a"], -GAME.ZIL_PENALTY, "yanlış basan ceza");
   assert.ok(gains["b"] > 0, "kazanan değer aldı");
   assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
 });
-
 
 console.log(`zil-test: ${passed} geçti`);
 assert.equal(passed, 11);

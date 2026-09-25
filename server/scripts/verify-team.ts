@@ -15,19 +15,41 @@ import { EV, type GameState } from "../../shared/types";
 const PORT = 3105;
 const BASE = `http://localhost:${PORT}`;
 let ok = true;
-const log = (pass: boolean, m: string) => { console.log(`${pass ? "✓" : "✗"} ${m}`); ok = ok && pass; };
+const log = (pass: boolean, m: string) => {
+  console.log(`${pass ? "✓" : "✗"} ${m}`);
+  ok = ok && pass;
+};
 
 type Client = { socket: Socket; state: GameState | null };
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(BASE, { path: "/socket.io", transports: ["websocket"], forceNew: true, auth: { roomId, devId, devName } }), state: null };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  const client: Client = {
+    socket: io(BASE, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      forceNew: true,
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   return client;
 }
 function waitFor(c: Client, pred: (s: GameState) => boolean, label: string, timeoutMs = 15000): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (c.state && pred(c.state)) return resolve(c.state);
-    const timer = setTimeout(() => { c.socket.off(EV.STATE, h); reject(new Error(`zaman aşımı: ${label} (faz: ${c.state?.phase})`)); }, timeoutMs);
-    const h = (s: GameState) => { if (pred(s)) { clearTimeout(timer); c.socket.off(EV.STATE, h); resolve(s); } };
+    const timer = setTimeout(() => {
+      c.socket.off(EV.STATE, h);
+      reject(new Error(`zaman aşımı: ${label} (faz: ${c.state?.phase})`));
+    }, timeoutMs);
+    const h = (s: GameState) => {
+      if (pred(s)) {
+        clearTimeout(timer);
+        c.socket.off(EV.STATE, h);
+        resolve(s);
+      }
+    };
     c.socket.on(EV.STATE, h);
   });
 }
@@ -38,18 +60,24 @@ async function main() {
   const server = spawn("npx", ["tsx", "src/index.ts"], {
     cwd: fileURLToPath(new URL("..", import.meta.url)),
     env: { ...process.env, PORT: String(PORT), ALLOW_MOCK_AUTH: "1" },
-    stdio: ["ignore", "pipe", "pipe"], shell: process.platform === "win32",
+    stdio: ["ignore", "pipe", "pipe"],
+    shell: process.platform === "win32",
   });
   server.stderr.on("data", (d) => process.stderr.write(`[server] ${d}`));
   const killServer = () => {
     if (server.pid === undefined) return;
-    if (process.platform === "win32") spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
+    if (process.platform === "win32")
+      spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });
     else server.kill();
   };
 
   try {
     for (let i = 0; i < 80; i++) {
-      try { if ((await fetch(`${BASE}/health`)).ok) break; } catch { /* hazır değil */ }
+      try {
+        if ((await fetch(`${BASE}/health`)).ok) break;
+      } catch {
+        /* hazır değil */
+      }
       await sleep(250);
       if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
@@ -82,7 +110,10 @@ async function main() {
     const target = deryaBefore === 0 ? 1 : 0;
     nonHost.socket.emit(EV.SET_TEAM, { targetId: IDS[3], team: target });
     await sleep(400);
-    log(teamOf(a.state!, IDS[3]) === deryaBefore, `host olmayanın takım değişimi reddedildi (Derya ${deryaBefore} sabit)`);
+    log(
+      teamOf(a.state!, IDS[3]) === deryaBefore,
+      `host olmayanın takım değişimi reddedildi (Derya ${deryaBefore} sabit)`,
+    );
 
     // ── Maç: takımı dengele, oyna, podyumda takım alanı korunur ──
     host.socket.emit(EV.SET_TEAM, { targetId: IDS[1], team: boraTeam0 }); // 2v2'ye geri
@@ -93,9 +124,11 @@ async function main() {
     host.socket.emit(EV.START, { mode: "team" });
     await waitFor(a, (s) => s.phase === "question", "soru fazı");
 
-    clients.forEach((cl) => cl.socket.on(EV.STATE, (s: GameState) => {
-      if (s.phase === "question" && s.yourChoice === null) cl.socket.emit(EV.ANSWER, 0);
-    }));
+    clients.forEach((cl) =>
+      cl.socket.on(EV.STATE, (s: GameState) => {
+        if (s.phase === "question" && s.yourChoice === null) cl.socket.emit(EV.ANSWER, 0);
+      }),
+    );
     const podium = await waitFor(a, (s) => s.phase === "podium", "podyum", 40000);
     const allHaveTeam = podium.players.every((p) => p.team === 0 || p.team === 1);
     log(allHaveTeam, "podyumda tüm oyuncuların takımı korundu");
@@ -110,4 +143,7 @@ async function main() {
   console.log(ok ? "\n✓ Takım: otomatik denge, host değişimi, yetki, maç-boyu kalıcılık" : "\n✗ SORUN VAR");
   process.exit(ok ? 0 : 1);
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

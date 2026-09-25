@@ -1,10 +1,5 @@
 import crypto from "node:crypto";
-import {
-  DISCORD_BOT_TOKEN,
-  DISCORD_CLIENT_ID,
-  DISCORD_CLIENT_SECRET,
-  SESSION_SECRET,
-} from "./config";
+import { DISCORD_BOT_TOKEN, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, SESSION_SECRET } from "./config";
 import { fetchDiscord } from "./discord-http";
 import { log } from "./logger";
 
@@ -21,8 +16,7 @@ interface SessionPayload {
 
 const SESSION_TTL_MS = 6 * 3600_000;
 
-const hmac = (data: string) =>
-  crypto.createHmac("sha256", SESSION_SECRET).update(data).digest("base64url");
+const hmac = (data: string) => crypto.createHmac("sha256", SESSION_SECRET).update(data).digest("base64url");
 
 function signSession(payload: SessionPayload): string {
   const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
@@ -39,9 +33,7 @@ export function verifySession(token: string): SessionUser | null {
   const b = Buffer.from(expected);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return null;
   try {
-    const payload: SessionPayload = JSON.parse(
-      Buffer.from(data, "base64url").toString("utf-8")
-    );
+    const payload: SessionPayload = JSON.parse(Buffer.from(data, "base64url").toString("utf-8"));
     if (typeof payload.exp !== "number" || Date.now() > payload.exp) return null;
     return payload.user;
   } catch {
@@ -87,9 +79,7 @@ export async function exchangeCode(code: string, redirectUri?: string) {
     id: me.id,
     name: me.global_name || me.username,
     // cdn.discordapp.com Discord'un CSP istisnasındadır, Activity içinden yüklenebilir
-    avatarUrl: me.avatar
-      ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=64`
-      : null,
+    avatarUrl: me.avatar ? `https://cdn.discordapp.com/avatars/${me.id}/${me.avatar}.png?size=64` : null,
   };
 
   return {
@@ -116,7 +106,7 @@ let activeInstanceFetches = 0;
 async function fetchInstanceUsers(instanceId: string): Promise<Set<string> | null> {
   const res = await fetchDiscord(
     `https://discord.com/api/v10/applications/${DISCORD_CLIENT_ID}/activity-instances/${encodeURIComponent(instanceId)}`,
-    { headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` } }
+    { headers: { Authorization: `Bot ${DISCORD_BOT_TOKEN}` } },
   );
   if (res.status === 404) return null; // instance yok ya da kapanmış
   if (!res.ok) throw new Error(`activity-instances: ${res.status}`);
@@ -150,10 +140,7 @@ async function fetchInstanceUsersDeduplicated(instanceId: string): Promise<Set<s
   return request;
 }
 
-export async function verifyInstanceMembership(
-  instanceId: string,
-  userId: string
-): Promise<boolean> {
+export async function verifyInstanceMembership(instanceId: string, userId: string): Promise<boolean> {
   // Fail-closed: doğrulama yapılamıyorsa erişim de yok. Bot token'sız
   // "geç kabul et" davranışı, rastgele instanceId ile odaya sızma kapısıdır.
   if (!DISCORD_BOT_TOKEN || !DISCORD_CLIENT_ID) {
@@ -164,11 +151,7 @@ export async function verifyInstanceMembership(
   const negativeKey = `${instanceId}\u0000${userId}`;
   if ((negativeMembershipCache.get(negativeKey) ?? 0) > now) return false;
   const cached = instanceCache.get(instanceId);
-  if (
-    cached &&
-    now - cached.fetchedAt < INSTANCE_CACHE_MS &&
-    cached.users.has(userId)
-  ) {
+  if (cached && now - cached.fetchedAt < INSTANCE_CACHE_MS && cached.users.has(userId)) {
     return true;
   }
   try {

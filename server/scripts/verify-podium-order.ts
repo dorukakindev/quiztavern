@@ -12,19 +12,43 @@ import { EV, type GameState } from "../../shared/types";
 const PORT = 3499;
 const BASE = `http://localhost:${PORT}`;
 let ok = true;
-const log = (pass: boolean, m: string) => { console.log(`${pass ? "✓" : "✗"} ${m}`); ok = ok && pass; };
+const log = (pass: boolean, m: string) => {
+  console.log(`${pass ? "✓" : "✗"} ${m}`);
+  ok = ok && pass;
+};
 
 type Client = { socket: Socket; state: GameState | null; history: GameState[] };
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(BASE, { path: "/socket.io", transports: ["websocket"], forceNew: true, auth: { roomId, devId, devName } }), state: null, history: [] };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; client.history.push(s); });
+  const client: Client = {
+    socket: io(BASE, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      forceNew: true,
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+    history: [],
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+    client.history.push(s);
+  });
   return client;
 }
 function waitFor(c: Client, pred: (s: GameState) => boolean, label: string, timeoutMs = 15000): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (c.state && pred(c.state)) return resolve(c.state);
-    const timer = setTimeout(() => { c.socket.off(EV.STATE, h); reject(new Error(`zaman aşımı: ${label} (faz: ${c.state?.phase})`)); }, timeoutMs);
-    const h = (s: GameState) => { if (pred(s)) { clearTimeout(timer); c.socket.off(EV.STATE, h); resolve(s); } };
+    const timer = setTimeout(() => {
+      c.socket.off(EV.STATE, h);
+      reject(new Error(`zaman aşımı: ${label} (faz: ${c.state?.phase})`));
+    }, timeoutMs);
+    const h = (s: GameState) => {
+      if (pred(s)) {
+        clearTimeout(timer);
+        c.socket.off(EV.STATE, h);
+        resolve(s);
+      }
+    };
     c.socket.on(EV.STATE, h);
   });
 }
@@ -45,7 +69,11 @@ async function main() {
 
   try {
     for (let i = 0; i < 80; i++) {
-      try { if ((await fetch(`${BASE}/health`)).ok) break; } catch { /* hazır değil */ }
+      try {
+        if ((await fetch(`${BASE}/health`)).ok) break;
+      } catch {
+        /* hazır değil */
+      }
       await sleep(250);
       if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
@@ -79,8 +107,8 @@ async function main() {
     if (humanEntry && botEntry) {
       const humanIndex = finalScores.findIndex((p) => p.id === HUMAN);
       const botIndex = finalScores.findIndex((p) => p.id !== HUMAN);
-      const higherScoreIsFirst = humanEntry.score === botEntry.score
-        || (humanEntry.score > botEntry.score) === (humanIndex < botIndex);
+      const higherScoreIsFirst =
+        humanEntry.score === botEntry.score || humanEntry.score > botEntry.score === humanIndex < botIndex;
       log(higherScoreIsFirst, `yüksek skorlu önce (insan=${humanEntry.score}, bot=${botEntry.score})`);
     }
 
@@ -91,4 +119,7 @@ async function main() {
   console.log(ok ? "\n✓ Podyum sıralaması doğru" : "\n✗ SORUN VAR — podyum sıralaması bozuk");
   process.exit(ok ? 0 : 1);
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

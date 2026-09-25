@@ -10,7 +10,11 @@ import { io } from "socket.io-client";
 import { EV, type GameState } from "../../shared/types";
 
 const url = process.env.SERVER_URL || "http://localhost:3002";
-const socket = io(url, { path: "/socket.io", transports: ["websocket"], auth: { roomId: "verify-6b", devId: "verify-perf", devName: "Sen" } });
+const socket = io(url, {
+  path: "/socket.io",
+  transports: ["websocket"],
+  auth: { roomId: "verify-6b", devId: "verify-perf", devName: "Sen" },
+});
 
 let started = false;
 let lastQ = -1;
@@ -40,14 +44,17 @@ socket.on(EV.STATE, (state: GameState) => {
     const perfect = eligible >= 2 && correctCount === eligible;
     const iCorrect = myChoice === correctIndex;
     const allPicks = picks.flat();
-    const validPayload = picks.length === 4
-      && new Set(allPicks).size === allPicks.length
-      && allPicks.length <= eligible
-      && correctCount <= eligible
-      && (!perfect || iCorrect);
+    const validPayload =
+      picks.length === 4 &&
+      new Set(allPicks).size === allPicks.length &&
+      allPicks.length <= eligible &&
+      correctCount <= eligible &&
+      (!perfect || iCorrect);
     ok = ok && validPayload;
     revealCount++;
-    results.push(`tur ${lastQ + 1}: eligible=${eligible} doğruSeçen=${correctCount} benDoğru=${iCorrect} => perfect=${perfect}`);
+    results.push(
+      `tur ${lastQ + 1}: eligible=${eligible} doğruSeçen=${correctCount} benDoğru=${iCorrect} => perfect=${perfect}`,
+    );
   }
   if (state.phase === "podium") {
     console.log(results.join("\n"));
@@ -55,11 +62,21 @@ socket.on(EV.STATE, (state: GameState) => {
     const iCorrectRounds = results.filter((r) => r.includes("benDoğru=true")).length;
     console.log(`\nBEN DOĞRU olan tur: ${iCorrectRounds} | PERFECT olan tur: ${perfectRounds}`);
     const passed = ok && revealCount > 0;
-    console.log(passed ? "✓ Perfect türetmesini besleyen reveal payload'ları tutarlı." : "✗ Reveal payload'ında tutarsızlık bulundu.");
+    console.log(
+      passed
+        ? "✓ Perfect türetmesini besleyen reveal payload'ları tutarlı."
+        : "✗ Reveal payload'ında tutarsızlık bulundu.",
+    );
     socket.disconnect();
     process.exit(passed ? 0 : 1);
   }
 });
 
-socket.on("connect_error", (e) => { console.error("reddedildi:", e.message); process.exit(1); });
-setTimeout(() => { console.error("zaman aşımı"); process.exit(1); }, 120000);
+socket.on("connect_error", (e) => {
+  console.error("reddedildi:", e.message);
+  process.exit(1);
+});
+setTimeout(() => {
+  console.error("zaman aşımı");
+  process.exit(1);
+}, 120000);

@@ -13,23 +13,24 @@ const test = (name: string, run: () => void) => {
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
 type P = { score: number; stats: { total: number; correct: number }; answers: ({ correct: boolean } | null)[] };
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, P>;
-  phase: string;
-  qIndex: number;
-  boardCells: { value: number; used: boolean; question: Question }[];
-  boardCategories: string[];
-  boardPickerOrder: string[];
-  boardPickerPos: number;
-  boardAsked: Question[];
-  currentCell: number;
-  pickDeadline: number;
-  beginPick(): void;
-  beginQuestion(): void;
-  openCell(cell: number): void;
-  reveal(): void;
-  finish(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, P>;
+    phase: string;
+    qIndex: number;
+    boardCells: { value: number; used: boolean; question: Question }[];
+    boardCategories: string[];
+    boardPickerOrder: string[];
+    boardPickerPos: number;
+    boardAsked: Question[];
+    currentCell: number;
+    pickDeadline: number;
+    beginPick(): void;
+    beginQuestion(): void;
+    openCell(cell: number): void;
+    reveal(): void;
+    finish(): void;
+  };
 
 const boardRoom = (id: string, ids: string[]) => {
   const room = new Room(id, () => {}, { minPlayers: 1 });
@@ -136,7 +137,9 @@ test("pasif picker için süre dolunca sunucu rastgele açar (openCell)", () => 
 test("tüm hücreler kullanınca maç biter (podium)", () => {
   const room = boardRoom("b8", ["a"]);
   const inner = startPick(room);
-  inner.boardCells.forEach((c) => { c.used = true; });
+  inner.boardCells.forEach((c) => {
+    c.used = true;
+  });
   inner.boardAsked = inner.boardCells.map((c) => c.question);
   inner.phase = "reveal";
   inner.beginPick(); // kalan yok → finish()

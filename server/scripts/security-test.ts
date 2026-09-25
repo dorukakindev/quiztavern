@@ -16,8 +16,13 @@ const TEST_SECRET = "dod-test-session-secret";
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -33,8 +38,15 @@ function signSession(user: { id: string; name: string; avatarUrl: null }, exp: n
 function attempt(auth: Record<string, unknown>): Promise<{ ok: boolean; error?: string; code?: string }> {
   return new Promise((resolve) => {
     const socket = io(baseUrl, { path: "/socket.io", transports: ["websocket"], auth, reconnection: false });
-    const timer = setTimeout(() => { socket.disconnect(); resolve({ ok: false, error: "zaman aşımı" }); }, 5000);
-    socket.on("connect", () => { clearTimeout(timer); socket.disconnect(); resolve({ ok: true }); });
+    const timer = setTimeout(() => {
+      socket.disconnect();
+      resolve({ ok: false, error: "zaman aşımı" });
+    }, 5000);
+    socket.on("connect", () => {
+      clearTimeout(timer);
+      socket.disconnect();
+      resolve({ ok: true });
+    });
     socket.on("connect_error", (err) => {
       clearTimeout(timer);
       socket.disconnect();
@@ -79,12 +91,20 @@ async function main() {
   // Sunucu hiç açılmazsa gerçek sebep stdout/stderr'dadır — son satırları
   // hataya ekle (CI'da aksi halde "açılmadı" tek ipucu kalır).
   let serverLog = "";
-  server.stdout.on("data", (chunk) => { serverLog = (serverLog + chunk).slice(-4000); });
-  server.stderr.on("data", (chunk) => { serverLog = (serverLog + chunk).slice(-4000); });
+  server.stdout.on("data", (chunk) => {
+    serverLog = (serverLog + chunk).slice(-4000);
+  });
+  server.stderr.on("data", (chunk) => {
+    serverLog = (serverLog + chunk).slice(-4000);
+  });
 
   try {
     for (let i = 0; i < 80; i++) {
-      try { if ((await fetch(`${baseUrl}/health`)).ok) break; } catch { /* bekle */ }
+      try {
+        if ((await fetch(`${baseUrl}/health`)).ok) break;
+      } catch {
+        /* bekle */
+      }
       if (server.exitCode !== null) {
         throw new Error(`Sunucu açılmadan çıktı (kod=${server.exitCode}):\n${serverLog.trim() || "(çıktı yok)"}`);
       }
@@ -94,14 +114,20 @@ async function main() {
     const healthResponse = await fetch(`${baseUrl}/health`);
     const health = (await healthResponse.json()) as { ok: boolean; devMode?: boolean };
     assert(health.ok === true && health.devMode === undefined, "health yalnızca genel başarı bilgisini döndürüyor");
-    assert(healthResponse.headers.get("x-content-type-options") === "nosniff", "API nosniff güvenlik başlığı gönderiyor");
+    assert(
+      healthResponse.headers.get("x-content-type-options") === "nosniff",
+      "API nosniff güvenlik başlığı gönderiyor",
+    );
     assert(healthResponse.headers.get("referrer-policy") === "no-referrer", "API referrer bilgisini sızdırmıyor");
     assert(healthResponse.headers.get("x-powered-by") === null, "Express sürüm başlığı gizli");
     const authStatuses: number[] = [];
     for (let i = 0; i < 31; i += 1) {
       authStatuses.push((await fetch(`${baseUrl}/auth/discord`, { redirect: "manual" })).status);
     }
-    assert(authStatuses.slice(0, 30).every((status) => status !== 429), "auth limiti ilk 30 isteği handler'a geçiriyor");
+    assert(
+      authStatuses.slice(0, 30).every((status) => status !== 429),
+      "auth limiti ilk 30 isteği handler'a geçiriyor",
+    );
     assert(authStatuses[30] === 429, "auth limiti 31. isteği 429 ile reddediyor");
     console.log("");
 
@@ -112,17 +138,32 @@ async function main() {
     assert(!mock.ok && (mock.error ?? "").includes("oturumu gerekli"), `mock kimlik reddedildi (${mock.error})`);
 
     const forged = await attempt({ sessionToken: "c2FodGU.c2FodGVpbXph", instanceId: "inst-1" });
-    assert(!forged.ok && (forged.error ?? "").includes("oturumu gerekli"), `sahte imzalı token reddedildi (${forged.error})`);
+    assert(
+      !forged.ok && (forged.error ?? "").includes("oturumu gerekli"),
+      `sahte imzalı token reddedildi (${forged.error})`,
+    );
 
-    const wrongSecret = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000, "baska-secret"), instanceId: "inst-1" });
-    assert(!wrongSecret.ok && (wrongSecret.error ?? "").includes("oturumu gerekli"), `yanlış secret ile imzalı token reddedildi (${wrongSecret.error})`);
+    const wrongSecret = await attempt({
+      sessionToken: signSession(user, Date.now() + 3600_000, "baska-secret"),
+      instanceId: "inst-1",
+    });
+    assert(
+      !wrongSecret.ok && (wrongSecret.error ?? "").includes("oturumu gerekli"),
+      `yanlış secret ile imzalı token reddedildi (${wrongSecret.error})`,
+    );
 
     const expired = await attempt({ sessionToken: signSession(user, Date.now() - 1000), instanceId: "inst-1" });
-    assert(!expired.ok && (expired.error ?? "").includes("oturumu gerekli"), `süresi geçmiş token reddedildi (${expired.error})`);
+    assert(
+      !expired.ok && (expired.error ?? "").includes("oturumu gerekli"),
+      `süresi geçmiş token reddedildi (${expired.error})`,
+    );
     assert(expired.code === "AUTH_REQUIRED", "süresi geçmiş token makine-okunur AUTH_REQUIRED kodu döndürdü");
 
     const noInstance = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000) });
-    assert(!noInstance.ok && (noInstance.error ?? "").includes("instance"), `geçerli oturum ama instanceId'siz bağlantı reddedildi (${noInstance.error})`);
+    assert(
+      !noInstance.ok && (noInstance.error ?? "").includes("instance"),
+      `geçerli oturum ama instanceId'siz bağlantı reddedildi (${noInstance.error})`,
+    );
 
     const invalidInstance = await attempt({
       sessionToken: signSession({ ...user, id: "user-invalid-instance" }, Date.now() + 3600_000),
@@ -134,17 +175,30 @@ async function main() {
     );
 
     const badBotToken = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000), instanceId: "inst-1" });
-    assert(!badBotToken.ok && (badBotToken.error ?? "").includes("doğrulanamadı"), `geçersiz bot token ile instance doğrulaması fail-closed reddetti (${badBotToken.error})`);
+    assert(
+      !badBotToken.ok && (badBotToken.error ?? "").includes("doğrulanamadı"),
+      `geçersiz bot token ile instance doğrulaması fail-closed reddetti (${badBotToken.error})`,
+    );
 
-    const roomHijack = await attempt({ sessionToken: signSession(user, Date.now() + 3600_000), instanceId: "inst-1", roomId: "baskasinin-odasi" });
+    const roomHijack = await attempt({
+      sessionToken: signSession(user, Date.now() + 3600_000),
+      instanceId: "inst-1",
+      roomId: "baskasinin-odasi",
+    });
     assert(!roomHijack.ok, `roomId beyanı instance doğrulamasını aşamadı (${roomHijack.error})`);
 
     const rateUser = { id: "rate-user", name: "Rate", avatarUrl: null } as const;
     const rateToken = signSession(rateUser, Date.now() + 3600_000);
     const rateAttempts = [];
     for (let i = 0; i < 13; i += 1) rateAttempts.push(await attempt({ sessionToken: rateToken }));
-    assert(rateAttempts.slice(0, 12).every((result) => result.code === "INSTANCE_REQUIRED"), "kullanıcının ilk 12 handshake denemesi normal doğrulamaya ulaştı");
-    assert(rateAttempts[12].code === "RATE_LIMITED", "aynı kullanıcının 13. handshake denemesi Discord çağrısından önce sınırlandı");
+    assert(
+      rateAttempts.slice(0, 12).every((result) => result.code === "INSTANCE_REQUIRED"),
+      "kullanıcının ilk 12 handshake denemesi normal doğrulamaya ulaştı",
+    );
+    assert(
+      rateAttempts[12].code === "RATE_LIMITED",
+      "aynı kullanıcının 13. handshake denemesi Discord çağrısından önce sınırlandı",
+    );
   } finally {
     killServer();
   }

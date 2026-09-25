@@ -58,6 +58,7 @@ cloudflared tunnel --url http://localhost:3001
   (Not: Bu arayüzde "sıralama" derdi yoktur — kök ayrı bölümdedir ve vekil yol
   eşlemeleri ondan önce değerlendirilir. Doküman metnindeki "uzun önek üstte"
   uyarısı elle liste yazılan eski/başka akışlar içindir.)
+
 - Sunucu tünel URL'sini `client/.env` → `VITE_GAME_SERVER_URL`'e de yaz
   (https'li tam URL; tarayıcıdan Discord'suz test için kullanılır).
 - Discord'da bir ses kanalına gir → Aktiviteler (roket) → uygulamayı başlat.
@@ -90,7 +91,7 @@ cloudflared tunnel --url http://localhost:3001
   sorunu sanıp yanlış teşhis koyduk; VPN kapanınca IPv4/IPv6 ikisi de düzeldi.)
 - **Tünel PowerShell'den açılmalı.** Claude'un Bash kabuğu kum havuzunda ve dışa
   bağlantısı kısıtlı; `cloudflared` oradan `connectex: Erişim izinlerince izin
-  verilmeyen...` (WSAEACCES) hatası verir. PowerShell'den sorunsuz açılıyor.
+verilmeyen...` (WSAEACCES) hatası verir. PowerShell'den sorunsuz açılıyor.
 - Vite tünel host'unu reddederse: `client/vite.config.ts` → `server.allowedHosts`
   (zaten `.trycloudflare.com` ekli).
 - Discord istemcisi URL mapping değişikliğini hemen almayabilir → Discord'u

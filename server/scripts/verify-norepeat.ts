@@ -31,7 +31,9 @@ const bigDup = bigKeys.length - new Set(bigKeys).size;
 const uzayPoolSize = circlePoolKeys(["Uzay"]).length;
 const tiny = sampleCirclePrompts(20, ["Uzay"]);
 const tinyOk = tiny.length === Math.min(20, uzayPoolSize);
-console.log(`Çember maç-içi: filtresiz ${big.length} prompt, iç tekrar ${bigDup}; "Uzay" havuzu ${uzayPoolSize} prompt -> ${tiny.length} tur döndü (${tinyOk ? "doğru" : "YANLIŞ"})`);
+console.log(
+  `Çember maç-içi: filtresiz ${big.length} prompt, iç tekrar ${bigDup}; "Uzay" havuzu ${uzayPoolSize} prompt -> ${tiny.length} tur döndü (${tinyOk ? "doğru" : "YANLIŞ"})`,
+);
 
 // Çok maçlı birikim (rooms.ts start() mantığının aynısı). Resimli ve resimsiz
 // alt-havuzlar FARKLI BOYUTTA ve resim kotası (bkz. pictureQuota) resim
@@ -70,7 +72,9 @@ for (let m = 0; m < totalMatches; m++) {
   const unseenPicBefore = [...picIds].filter((id) => !seen.has(id)).length;
   const unseenTextBefore = [...textIds].filter((id) => !seen.has(id)).length;
   const ids = sampleQuestions(N, [], seen).map((q) => q.id);
-  ids.forEach((id) => { if (prevIds.has(id)) consecutiveMatchRepeats++; });
+  ids.forEach((id) => {
+    if (prevIds.has(id)) consecutiveMatchRepeats++;
+  });
   const picDrawn = ids.filter((id) => picIds.has(id));
   const textDrawn = ids.filter((id) => textIds.has(id));
   const picRepeats = picDrawn.filter((id) => seen.has(id)).length;
@@ -84,7 +88,9 @@ for (let m = 0; m < totalMatches; m++) {
 }
 console.log(`Birikim: havuz ${poolSize} (resim ${picIds.size}, metin ${textIds.size}), ${totalMatches} ardışık maç ->`);
 console.log(`  ardışık maç arası ortak soru: ${consecutiveMatchRepeats} (0 olmalı)`);
-console.log(`  beklenmeyen tekrar (taze yeterliyken tekrar VEYA açıktan fazla tekrar): ${unexpectedRepeatViolations} (0 olmalı)`);
+console.log(
+  `  beklenmeyen tekrar (taze yeterliyken tekrar VEYA açıktan fazla tekrar): ${unexpectedRepeatViolations} (0 olmalı)`,
+);
 
 // Klasik maç-İÇİ tekrar: havuzdan fazla istenince benzersiz döner (modulo değil),
 // maç kısalır ama aynı soru iki kez çıkmaz.

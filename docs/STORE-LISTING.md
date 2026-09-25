@@ -12,6 +12,7 @@ portalda TR + EN ayrı girilir; aşağıdakileri aynen kopyalayabilirsin.
 ## Description (uzun açıklama)
 
 **TR:**
+
 ```
 Triviara, Discord ses kanalında oynanan takımlı bilgi yarışmasıdır. Aktiviteyi
 aç, masana otur, soruları kapış — takım arkadaşlarınla aynı anda cevaplayın,
@@ -28,6 +29,7 @@ en hızlı doğrular daha çok puan alır.
 ```
 
 **EN:**
+
 ```
 Triviara is a team trivia game played inside a Discord voice channel. Open the
 activity, take a seat, race to answer — answer together with your teammates and
@@ -61,6 +63,7 @@ Canlı oyundan alınacak kareler (hepsi Activity içinde, Discord UI'sı görün
 ## Submission checklist (başvuru öncesi)
 
 Teknik (portal + kod):
+
 - [ ] Activity **kalıcı bir URL'de** canlı — Railway/Render deploy'u tamam
       (`docs/DEPLOY.md` §Railway/Render); `/health` `{"ok":true}` dönüyor.
 - [ ] Portal **Activities → URL Mappings** kök `/` → canlı URL (tünel yok).
@@ -73,6 +76,7 @@ Teknik (portal + kod):
 - [ ] Yukarıdaki TR+EN metinler + screenshot'lar girildi.
 
 Son kontrol (canlıda):
+
 - [ ] 2+ gerçek hesapla tam maç: lobi→soru→reveal→podyum→XP/rozet yazımı.
 - [ ] Reconnect: bir sekme kapat-aç, koltuk+skor korunuyor.
 - [ ] Bot'la dolu masa 8 kişi kapasite hatası vermeden tamamlanıyor.

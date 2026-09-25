@@ -6,8 +6,14 @@ import { createReportsStore } from "../src/reports";
 
 let passed = 0;
 function test(name: string, fn: () => void) {
-  try { fn(); passed += 1; console.log(`  ✓ ${name}`); }
-  catch (error) { console.error(`  ✗ ${name}`); throw error; }
+  try {
+    fn();
+    passed += 1;
+    console.log(`  ✓ ${name}`);
+  } catch (error) {
+    console.error(`  ✗ ${name}`);
+    throw error;
+  }
 }
 
 const entry = {

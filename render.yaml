@@ -5,25 +5,25 @@
 services:
   - type: web
     name: quiztavern
-    runtime: docker            # kökteki Dockerfile kullanılır (monorepo tek imaj)
-    plan: free                 # ücretsiz katman — uyur, ilk istek ~30 sn'de uyanır
+    runtime: docker # kökteki Dockerfile kullanılır (monorepo tek imaj)
+    plan: free # ücretsiz katman — uyur, ilk istek ~30 sn'de uyanır
     healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
       # PORT'u Render kendisi enjekte eder; sunucu process.env.PORT'u okur.
       - key: DISCORD_CLIENT_ID
-        sync: false            # ilk deploy'da dashboard'da sorulur
+        sync: false # ilk deploy'da dashboard'da sorulur
       - key: VITE_DISCORD_CLIENT_ID
-        sync: false            # DISCORD_CLIENT_ID ile aynı değer — imaja build-arg olarak gömülür
+        sync: false # DISCORD_CLIENT_ID ile aynı değer — imaja build-arg olarak gömülür
       - key: DISCORD_CLIENT_SECRET
         sync: false
       - key: DISCORD_BOT_TOKEN
         sync: false
       - key: SESSION_SECRET
-        generateValue: true    # Render güvenli rastgele değer üretir
+        generateValue: true # Render güvenli rastgele değer üretir
       - key: PUBLIC_BASE_URL
-        sync: false            # https://<servis>.onrender.com — deploy sonrası adı görünce yaz
+        sync: false # https://<servis>.onrender.com — deploy sonrası adı görünce yaz
       # ALLOW_MOCK_AUTH kesinlikle eklenmez.
     # ── Kalıcı SQLite (xp.db, daily.db, question-reports.db) ────────────────
     # Ücretsiz planda disk YOK: render disk eklemek planı "starter"a yükseltir.
