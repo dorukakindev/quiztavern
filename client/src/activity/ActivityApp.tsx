@@ -1403,11 +1403,31 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   // arka plan tıklaması kapatır. Yanıt kısayollarıyla çakışmasın diye açıkken
   // dialog rolü taşır (kısayol dinleyicisi dialog varsa erken çıkıyor).
   const [lightbox, setLightbox] = useState<{ src: string; credit?: string } | null>(null)
+  const lightboxRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!lightbox) return
-    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setLightbox(null) }
+    const root = lightboxRef.current
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    // Odak dialoga alınır ve Tab/Shift+Tab içinde döner — klavye kullanıcısı
+    // arka plandaki cevap düğmelerine kaçamaz; kapanınca odak geri verilir.
+    const focusables = () =>
+      root ? [...root.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')].filter((el) => !el.hasAttribute('disabled')) : []
+    focusables()[0]?.focus()
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setLightbox(null); return }
+      if (event.key !== 'Tab') return
+      const els = focusables()
+      if (els.length === 0) return
+      const first = els[0]
+      const last = els[els.length - 1]
+      if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault() }
+      else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault() }
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      previouslyFocused?.focus()
+    }
   }, [lightbox])
 
   // Tavern kartları (joker): yalnız Klasik/Takım, soru fazında, cevaptan önce,
@@ -1764,7 +1784,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
         : <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} frozen={false} />}
       <RevealProgress beats={beats} />
     </aside></div>
-    {lightbox && <div className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
+    {lightbox && <div ref={lightboxRef} className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
       <figure className="qt-lightbox-card" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="qt-lightbox-close" onClick={() => setLightbox(null)} aria-label={t('game.imageClose')}><Icon name="close" /></button>
         <img src={lightbox.src} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} />
