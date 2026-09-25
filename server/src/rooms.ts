@@ -2058,8 +2058,10 @@ export class Room {
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
         gain = correct ? Math.round(base + speed * speedRatio) : 0;
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
-        // düşer; yanlış basan puan kaybeder (§6.1 "yanlışsa −puan").
-        if (this.gameMode === "zil") gain = correct ? this.zilValue() : -GAME.ZIL_PENALTY;
+        // düşer; ceza YALNIZ gerçekten basıp kaybedene (yanlış ya da süresi
+        // dolan deneme → buzzFailed). Hiç basmayan oyuncu turu 0 ile bitirir —
+        // katılmamak denemeyi cezalandırmakla aynı sayılamaz (B48).
+        if (this.gameMode === "zil") gain = correct ? this.zilValue() : (this.buzzFailed.has(player.id) ? -GAME.ZIL_PENALTY : 0);
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
         if (this.gameMode === "board") gain = correct ? this.boardCells[this.currentCell]?.value ?? 0 : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
