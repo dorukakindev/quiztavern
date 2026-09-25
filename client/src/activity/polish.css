@@ -706,13 +706,18 @@
 
 /* Lobide barmen baykuş: köşede küçük maskot. */
 .qt-lobby-owl {
-  position: absolute;
+  /* fixed: lobi daralıp kaydırılınca kabuk kenarında sert kesilmiyordu —
+    kaza gibi görünüyordu. Viewport'a sabitlenip alt kenar gradient'le
+    yumuşatılır: bilinçli bir "peek" durur. */
+  position: fixed;
   right: 14px;
   bottom: 10px;
   width: clamp(58px, 8.5vw, 108px);
   opacity: 0.94;
   pointer-events: none;
   filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5));
+  -webkit-mask-image: linear-gradient(180deg, #000 62%, transparent 97%);
+  mask-image: linear-gradient(180deg, #000 62%, transparent 97%);
   z-index: 1;
 }
 @media (max-height: 430px) {
@@ -2442,4 +2447,64 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(159, 182, 198, 0.6);
+}
+
+/* ---- Lobi cila turu (ekran 3) ----
+   Disk: amblem altina secili mod + kategori ozeti — en buyuk alan bos kalmaz.
+   Kompakt yorungede meta diskin disina tasmasin diye gizlenir. */
+.qt-orbit__meta {
+  display: grid;
+  gap: 1px;
+  justify-items: center;
+  max-width: 86%;
+  pointer-events: none;
+}
+.qt-orbit__meta b {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #dff2f8;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+.qt-orbit__meta span {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #7fa8bc;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.qt-orbit.is-compact .qt-orbit__meta {
+  display: none;
+}
+
+/* 'Diger modlar' karti: kose chevron'u acilir paneli ima eder. */
+.qt-mode-card {
+  position: relative;
+}
+.qt-mode-card__chev {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  color: #7fb7c9;
+  opacity: 0.85;
+  transition:
+    rotate var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease);
+}
+.qt-mode-card--other .qt-mode-card__chev {
+  rotate: 90deg; /* chevron asagi bakar: 'daha fazlasi acilir' */
+}
+.qt-mode-card--other.is-selected .qt-mode-card__chev {
+  color: #f0bd58;
+}
+.qt-mode-card__chev svg {
+  width: 12px;
+  height: 12px;
 }

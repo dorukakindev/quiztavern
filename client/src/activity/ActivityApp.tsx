@@ -919,6 +919,11 @@ function ModePicker({
           )}
         </i>
         <b>{triggerLabel}</b>
+        {/* Köşedeki chevron 'daha fazla seçenek' anlamını taşır — Klasik/Çember
+          kartlarından ayrışır, tıklanabilir olduğu belli olur. */}
+        <i className="qt-mode-card__chev" aria-hidden="true">
+          <Icon name="chevron" />
+        </i>
       </button>
       {open &&
         createPortal(
@@ -2662,12 +2667,15 @@ function ActivityLobby({
           <div className="qt-orbit__shadow" aria-hidden="true" />
           <div className="qt-orbit__ring" aria-hidden="true" />
           <div className="qt-orbit__ring-inner" aria-hidden="true" />
-          {/* Disk boş: yalnızca galaksi. Mod ve meta zaten "MASA AYARLARI"
-            panelinde yazıyordu (fazlalık); hazır sayısı ise başlat butonunun
-            altına taşındı — orada bir işe yarıyor, butonun neden pasif
-            olduğunu söylüyor. */}
+          {/* Disk: mod amblemi + altında seçili mod/kategori özeti — sayfanın
+            en büyük alanı boş kalmamalı (tasarım incelemesi). Hazır sayısı
+            başlat butonunun altında kalır. */}
           <div className="qt-orbit__disc">
             <ModeTableScene mode={mode} />
+            <div className="qt-orbit__meta" aria-hidden="true">
+              <b>{t(MODE_KEYS[modeKeyOf(mode)].name)}</b>
+              <span>{categorySummaryLabel}</span>
+            </div>
           </div>
           <OrbitSeats
             state={state}
