@@ -735,6 +735,10 @@ export class Room {
    *  hile olur — kapanır. */
   private predictOpen(): boolean {
     if (this.phase === "countdown") return true;
+    // Blitz'te tüm maç tek "question" fazı ve qIndex hep 0 — genel kural
+    // pencereyi 60 sn açık bırakırdı; son saniyede lidere oynamak bedava
+    // XP olur (B49). Blitz'te tahmin yalnız geri sayımda kabul edilir.
+    if (this.gameMode === "blitz") return false;
     return (this.phase === "question" || this.phase === "bet") && this.qIndex === 0;
   }
 
