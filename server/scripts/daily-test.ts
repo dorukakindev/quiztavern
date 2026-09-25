@@ -261,4 +261,31 @@ test("günlük sonrası masa sıfırlanırsa bayat mod sonraki maça sızmasın 
   }
 });
 
+test("günlük maça sonradan oturanın günlük hakkı ⬜'lerle yanmaz", () => {
+  const room = new Room("r-late-daily", () => {}, { minPlayers: 1, questionCount: 10 });
+  try {
+    room.join(player("solo"));
+    readyAll(room);
+    let entries: { userId: string; pattern: string; score: number; day: number }[] = [];
+    room.onDailyFinished = (list) => {
+      entries = list;
+    };
+    room.start("solo", "classic", { daily: true, completed: () => false });
+    // Maç ortasında katılan oyuncu eligibleFrom > 0 alır (sıradaki turdan oynar).
+    const internals = room as unknown as { phase: string; qIndex: number; finish(): void };
+    internals.phase = "question";
+    internals.qIndex = 2;
+    room.join(player("late"));
+    internals.finish();
+    assert.deepEqual(
+      entries.map((entry) => entry.userId),
+      ["solo"],
+    ); // geç katılan kaydedilmez → hakkı yanmaz
+    const state = room.stateFor("late", true);
+    assert.equal(state.daily?.pattern, null);
+  } finally {
+    stop(room);
+  }
+});
+
 console.log(`\n[daily] sonuç: ${passed} geçti, 0 kaldı`);

@@ -372,9 +372,18 @@ function Avatar({ player, compact = false, mode }: { player: PublicPlayer; compa
       className={`qt-avatar ${playerColorClass(player, mode)} ${compact ? "qt-avatar--compact" : ""} ${frame ? `is-frame-${frame}` : ""}`}
       title={player.name}
     >
-      {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
+      <AvatarImage url={player.avatarUrl} name={player.name} />
     </div>
   );
+}
+
+/** Kırık avatar resmi → ismin baş harfi. Büyük harf görüntüleyenin diline
+ *  göre üretilir (TR'de i→İ, EN'de i→I). url değişince yeniden dener. */
+function AvatarImage({ url, name }: { url: string | null; name: string }) {
+  const { language } = useI18n();
+  const [brokenUrl, setBrokenUrl] = useState<string | null>(null);
+  if (url && brokenUrl !== url) return <img src={url} alt="" onError={() => setBrokenUrl(url)} />;
+  return <>{name.slice(0, 1).toLocaleUpperCase(language === "en" ? "en-US" : "tr-TR")}</>;
 }
 
 /**
@@ -1480,7 +1489,7 @@ function OrbitSeats({
               : {})}
           >
             <div className={`qt-seat__token ${player.progress?.league ? `is-frame-${player.progress.league}` : ""}`}>
-              {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
+              <AvatarImage url={player.avatarUrl} name={player.name} />
               {isHost && <Icon name="crown" weight="fill" className="qt-seat__crown" />}
               {player.captain && (
                 <Icon name="star" weight="fill" className="qt-seat__captain" aria-label={t("team.captain")} />
@@ -2266,10 +2275,15 @@ function ActivityLobby({
   useEffect(() => {
     if (isDesktopSettings && settingsPanelRef.current) settingsPanelRef.current.open = true;
   }, [isDesktopSettings]);
+  // Uyumlu seti sunucunun seçimiyle karşılaştır: uzunluk eşitliği farklı
+  // kategorileri yakalayamazdı (ör. [Tarih]→[Spor]); anahtarlar üzerinden
+  // karşılaştırma hem bunu düzeltir hem her yayında efektin koşmasını keser.
+  const selectedKey = selectedCategories.join("\u0000");
+  const serverSelectionKey = (state?.categorySelection ?? []).join("\u0000");
   useEffect(() => {
-    if (!state || !isHost || selectedCategories.length === state.categorySelection.length) return;
+    if (!isHost || selectedKey === serverSelectionKey) return;
     onSetCategories(selectedCategories);
-  }, [isHost, mode, onSetCategories, selectedCategories, state]);
+  }, [isHost, onSetCategories, selectedCategories, selectedKey, serverSelectionKey]);
   const toggleCategory = (name: string) => {
     if (!isHost) return;
     const selectedNow = state?.categorySelection || [];
@@ -2936,6 +2950,13 @@ function GameBoard({
   // tıklanabilir (sunucu tarafı da oyuncu+soru başına tek rapor tutar).
   const [reported, setReported] = useState(false);
   useEffect(() => setReported(false), [state.round.index]);
+
+  // Sıradaki turun görseli reveal sırasında arka planda iner: soru açıldığında
+  // sayaç görsel yüklemesini beklemeden başlar (sunucu nextImage'ı yollar).
+  useEffect(() => {
+    const next = state.reveal?.nextImage;
+    if (next) new Image().src = `/questions/${next}`;
+  }, [state.reveal?.nextImage]);
 
   // Resimli soru lightbox'ı: görsele tıkla → büyük önizle + kredi; ESC ya da
   // arka plan tıklaması kapatır. Yanıt kısayollarıyla çakışmasın diye açıkken
@@ -3749,7 +3770,8 @@ function GameBoard({
                         <img
                           className="qt-question-image"
                           src={`/questions/${shown.image}`}
-                          alt=""
+                          alt={t("game.imageAlt")}
+                          fetchPriority="high"
                           style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: "scale(1.08)" } : undefined}
                         />
                       </button>
@@ -3903,7 +3925,7 @@ function GameBoard({
                           onAnswer(index);
                         }}
                         style={{ "--i": index } as CSSProperties}
-                        key={choice}
+                        key={index}
                       >
                         <b>{"ABCD"[index]}</b>
                         <span className="qt-answer__text">{choice}</span>
@@ -4050,7 +4072,7 @@ function GameBoard({
             </button>
             <img
               src={lightbox.src}
-              alt=""
+              alt={t("game.imageAlt")}
               style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: "scale(1.08)" } : undefined}
             />
             {lightbox.credit && (
@@ -4753,6 +4775,9 @@ function PodiumRanking({
   const reduced = usePrefersReducedMotion();
   const winnerScore = useCountUp(winner?.score ?? 0, reduced);
   const isHost = state.youId === state.hostId;
+  // Yarışma sıralaması: eşit puan = eşit sıra (500/500 → iki #1, sonraki #3).
+  const podiumScores = (state.podium ?? []).map((player) => player.score);
+  const rankOf = (score: number) => 1 + podiumScores.filter((other) => other > score).length;
   // Takım modu: birincil sonuç TAKIM toplamıdır; bireysel kazanan "MVP" olarak kalır.
   const isTeam = state.gameMode === "team";
   const [teamA, teamB] = state.teamScores;
@@ -4799,7 +4824,7 @@ function PodiumRanking({
             <div
               className={`qt-avatar qt-podium-winner ${colorClass(winner.id)} ${winner.league ? `is-frame-${winner.league} qt-winner--${winner.league}` : ""}`}
             >
-              {winner.avatarUrl ? <img src={winner.avatarUrl} alt="" /> : winner.name.slice(0, 1).toUpperCase()}
+              <AvatarImage url={winner.avatarUrl} name={winner.name} />
             </div>
             <b title={winner.name}>
               {winner.name}
@@ -4823,9 +4848,9 @@ function PodiumRanking({
               className={`${player.id === state.youId ? "is-you" : ""} ${speakingIds?.has(player.id) ? "is-speaking" : ""}`}
               style={{ "--row-delay": `${index * 90}ms` } as CSSProperties}
             >
-              <b>#{index + 2}</b>
+              <b>#{rankOf(player.score)}</b>
               <div className={`qt-avatar ${colorClass(player.id)} ${player.league ? `is-frame-${player.league}` : ""}`}>
-                {player.avatarUrl ? <img src={player.avatarUrl} alt="" /> : player.name.slice(0, 1).toUpperCase()}
+                <AvatarImage url={player.avatarUrl} name={player.name} />
               </div>
               <span title={player.name}>
                 {player.name}
@@ -5601,7 +5626,7 @@ export function ActivityApp() {
     }
     if (phase === "lobby") activity.setPresence(i18n.t("presence.lobby"));
     else if (phase === "podium") activity.setPresence(i18n.t("presence.podium"));
-    else activity.setPresence(i18n.t("presence.playing", { current: roundIndex ?? 0, total: roundTotal ?? 0 }));
+    else activity.setPresence(i18n.t("presence.playing", { current: (roundIndex ?? 0) + 1, total: roundTotal ?? 0 }));
   }, [activity.identity.isDiscord, activity.setPresence, phase, roundIndex, roundTotal, spectating, i18n]);
   // Reaktif SFX: rakip eylemleri de sesle duyulur — zil kazanımı, pano hücresi
   // açılışı (pick→question), eliminasyon, gelen emote. Her olay BİR kez;

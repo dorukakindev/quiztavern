@@ -417,6 +417,9 @@ export interface RevealPayload {
   fact?: string;
   /** İngilizce arayüz için fact çevirisi. */
   factEn?: string;
+  /** Sıradaki tur görselliyse görsel dosya adı: istemci reveal sırasında önden
+   *  indirir, soru açıldığında sayaç görsel yüklenirken boşa akmaz. */
+  nextImage?: string;
   /** Yakın Tahmin: gerçek değer + tahmin dağılımı + kazanan(lar). */
   numeric?: NumericRevealPayload;
 }
