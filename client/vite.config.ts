@@ -29,6 +29,10 @@ export default defineConfig({
     },
   },
   build: {
+    // clientErrors stack'lerinde satır numaraları anlamlı olsun — 'hidden'
+    // .map dosyalarını üretir ama bundle'a referans koymaz (§7.5).
+    sourcemap: 'hidden',
+    target: 'es2022',
     rollupOptions: {
       output: {
         // Nadiren değişen büyük bağımlılıkları ayrı chunk'a al: tarayıcı
