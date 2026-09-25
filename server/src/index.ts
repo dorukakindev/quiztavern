@@ -84,10 +84,22 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 const QT_ADMIN_TOKEN = process.env.QT_ADMIN_TOKEN ?? "";
 const esc = (v: string) => v.replace(/[&<>"']/g, (c) => `&#${c.codePointAt(0)};`);
 
-app.get(["/admin/reports", "/api/admin/reports"], (req, res) => {
+/** Sabit-zamanlı token kıyası: `===` kısa devre yapar ve süre farkıyla
+ *  token'ın doğru önek uzunluğunu sızdırır. */
+const tokenEqual = (a: string, b: string) => {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+};
+
+app.get(["/admin/reports", "/api/admin/reports"],
+  createRateLimitMiddleware({ limit: 10, windowMs: 60_000 }),
+  (req, res) => {
   if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "QT_ADMIN_TOKEN ayarlanmadı." });
   const auth = req.headers.authorization ?? "";
-  if (auth !== `Bearer ${QT_ADMIN_TOKEN}`) return res.status(401).json({ error: "Yetkisiz." });
+  if (!auth.startsWith("Bearer ") || !tokenEqual(auth.slice(7), QT_ADMIN_TOKEN)) {
+    return res.status(401).json({ error: "Yetkisiz." });
+  }
   const rows = reports.list();
   if (!req.accepts("html")) return res.json({ reports: rows });
   const trs = rows.map((r) => `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`).join("");
@@ -120,7 +132,7 @@ function packRequestUser(req: import("express").Request): SessionUser | null {
   const auth = req.headers.authorization ?? "";
   if (auth.startsWith("Bearer ")) {
     const token = auth.slice("Bearer ".length);
-    if (QT_ADMIN_TOKEN && token === QT_ADMIN_TOKEN) {
+    if (QT_ADMIN_TOKEN && tokenEqual(token, QT_ADMIN_TOKEN)) {
       return { id: "admin", name: "admin", avatarUrl: null };
     }
     const session = verifySession(token);
