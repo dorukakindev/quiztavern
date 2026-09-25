@@ -102,13 +102,13 @@ export async function deletePack(id: string, auth: PackAuth): Promise<boolean> {
   }
 }
 
-export async function uploadPack(args: { name: string; content: string; format: 'json' | 'csv'; token?: string }): Promise<PackUploadResult> {
+export async function uploadPack(args: { name: string; content: string; format: 'json' | 'csv'; auth: PackAuth }): Promise<PackUploadResult> {
   try {
     const res = await fetch(PACKS_URL, {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        ...(args.token ? { authorization: `Bearer ${args.token}` } : {}),
+        ...authHeaders(args.auth),
       },
       body: JSON.stringify({
         name: args.name,
