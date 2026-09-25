@@ -472,11 +472,10 @@ export class Room {
     this.advanceIfEveryoneBet();
   }
 
-  /** Gerçek (bot olmayan) oyuncu kalmadıysa turu temizler. İZLEYİCİ varsa oda
-   *  boş lobiye döner (izleyiciler kalır; sonra "Oyna" ile masayı canlandırabilir),
-   *  izleyici de yoksa oda tamamen kapanır. Bir şey yaptıysa true döner. */
-  private handleNoPlayersLeft(): boolean {
-    if ([...this.players.values()].some((candidate) => !candidate.isBot)) return false;
+  /** Maç/oyuncu durumunu boş lobiye döndürür. İkiz metotlar tek yerden beslenir
+   *  — aksi halde biri güncellenip diğeri bayatlardı (orderGuesses'in ikizde
+   *  temizlenmemesi bu sürüklenmenin kanıtı). */
+  private resetToLobby() {
     this.clearTimer();
     this.clearBotTimers();
     this.clearAllGrace();
@@ -500,6 +499,14 @@ export class Room {
     this.dailyResults = new Map();
     this.xpGains = new Map();
     this.clearLastMatch();
+  }
+
+  /** Gerçek (bot olmayan) oyuncu kalmadıysa turu temizler. İZLEYİCİ varsa oda
+   *  boş lobiye döner (izleyiciler kalır; sonra "Oyna" ile masayı canlandırabilir),
+   *  izleyici de yoksa oda tamamen kapanır. Bir şey yaptıysa true döner. */
+  private handleNoPlayersLeft(): boolean {
+    if ([...this.players.values()].some((candidate) => !candidate.isBot)) return false;
+    this.resetToLobby();
     if (this.spectators.size === 0) this.onEmptied?.();
     else this.broadcast();
     return true;
@@ -508,28 +515,7 @@ export class Room {
   /** Ne oyuncu ne izleyici kaldıysa odayı kapatır (izleyici disconnect yolu). */
   private closeIfEmpty(): boolean {
     if (this.spectators.size > 0 || [...this.players.values()].some((candidate) => !candidate.isBot)) return false;
-    this.clearTimer();
-    this.clearBotTimers();
-    this.clearAllGrace();
-    this.players.clear();
-    this.hostId = null;
-    this.phase = "lobby";
-    this.qIndex = 0;
-    this.lastReveal = null;
-    this.lastCircleReveal = null;
-    this.lastWordReveal = null;
-    this.lastNumericReveal = null;
-    this.lastTimelineReveal = null;
-    this.numericGuesses.clear();
-    this.lastBlitzSummary = null;
-    this.teamScores = [0, 0];
-    this.podiumSnapshot = null;
-    this.fastestFingerSnapshot = undefined;
-    this.momentsSnapshot = null;
-    this.dailyMatch = false;
-    this.dailyResults = new Map();
-    this.xpGains = new Map();
-    this.clearLastMatch();
+    this.resetToLobby();
     this.onEmptied?.();
     return true;
   }
