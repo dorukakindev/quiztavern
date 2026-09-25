@@ -39,7 +39,7 @@ const play = (r: Room, answers: Record<string, number>) => {
 console.log('Takım oylaması/kaptan regresyonları')
 
 test('Oybirliği doğru takım cevabı +TEAM_VOTE_PTS (gain toplamı değil)', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
   const correct = play(r, { a: 0, b: 0, c: 0, d: 0 })
   // hepsi 0'a oy verdi; 0 doğruysa her takım +100
   const expected = correct === 0 ? GAME.TEAM_VOTE_PTS : 0
@@ -48,7 +48,7 @@ test('Oybirliği doğru takım cevabı +TEAM_VOTE_PTS (gain toplamı değil)', (
 })
 
 test('Eşitlikte kaptan (düşük seat) seçimi takım cevabı olur', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r } = teamRoom(['a', 'b', 'c', 'd']) // inner yok — bu testte inner2 kullanılır
   // Takım0: a(seat0,kaptan) + c. Takım1: b + d.
   const inner2 = internals(r)
   inner2.beginQuestion()
@@ -64,7 +64,7 @@ test('Eşitlikte kaptan (düşük seat) seçimi takım cevabı olur', () => {
 })
 
 test('Eşitlikte kaptan yanılırsa takım puanı yok', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
   inner.beginQuestion()
   const cq = r.currentQuestion()!
   const wrong = (cq.correctIndex + 1) % 4
@@ -76,7 +76,7 @@ test('Eşitlikte kaptan yanılırsa takım puanı yok', () => {
 })
 
 test('Kişisel skorlar oylamadan bağımsız işler', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
   inner.beginQuestion()
   const cq = r.currentQuestion()!
   const wrong = (cq.correctIndex + 1) % 4
@@ -88,7 +88,7 @@ test('Kişisel skorlar oylamadan bağımsız işler', () => {
 })
 
 test('Oy vermeyen takım puan almaz', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
   inner.beginQuestion()
   const cq = r.currentQuestion()!
   // takım0 (a,b) cevap vermez; takım1 (c,d) oybirliği doğru
@@ -110,7 +110,7 @@ test('Kaptan rozeti stateFor\'ta işaretlenir', () => {
 })
 
 test('Kaptan ayrılırsa yeni kaptan seat sırasına göre seçilir', () => {
-  const { r } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
   inner.players.get('a')!.connected = false
   const state = r.stateFor('c', true)
   assert.equal(state.players.find((p) => p.id === 'c')!.captain, true)
