@@ -16,9 +16,9 @@ import type { IconProps as PhosphorProps, IconWeight } from '@phosphor-icons/rea
 import {
   ArrowClockwise, ArrowRight, ArrowUUpLeft, Atom, Bank, Barbell, Bomb, BookOpenText, Bone, Brain, Buildings, CalendarCheck, Car, CaretDown, Cards, CastleTurret, Clock,
   CardsThree, ChartLineUp, Check, CloudSun, CoatHanger, Coins, Columns, Cpu, Crown, Detective, Dna, DotsThreeOutline, Eye, FilmSlate, Fire,
-  Flag, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
+  Flag, FlagBanner, Flask, FlowerLotus, FlyingSaucer, ForkKnife, GameController, Gear, Ghost, GlobeHemisphereWest, GlobeSimple,
   HandsClapping, Headset, Heart, Heartbeat, Horse, Info, Lightbulb, Lightning, Lock, MathOperations, Medal, MicrophoneStage, MusicNotes,
-  MusicNotesSimple, NumberSquareTwo, Palette, PawPrint, Percent, Planet, Popcorn, Question, Quotes, Robot, Scroll, ShieldCheck, ShieldStar, Shuffle, SignOut,
+  MusicNotesSimple, NumberSquareTwo, Palette, PawPrint, Percent, Planet, Plant, Popcorn, Question, Quotes, Robot, Scroll, ShieldCheck, ShieldStar, Shuffle, SignOut,
   SlidersHorizontal, Scales, Skull, Smiley, SmileyWink, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Target, Television,
   Leaf, TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
 } from '@phosphor-icons/react'
@@ -139,6 +139,7 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
   'İcatlar': Gear,
   'Yapay Zeka': Robot,
   'Okyanuslar': Waves,
+  'Bayraklar & Başkentler': FlagBanner,
   'Antik Uygarlıklar': Bank,
   'Bitkiler': Leaf,
   'Olimpiyatlar': Medal,

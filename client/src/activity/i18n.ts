@@ -1183,6 +1183,7 @@ export const STRINGS: Record<ActivityLanguage, Record<StringKey, string>> = { tr
  */
 const CATEGORY_LABELS_EN: Record<string, string> = {
   'Anime': 'Anime',
+  'Bayraklar & Başkentler': 'Flags & Capitals',
   'Bilim': 'Science',
   'Bilim Kurgu': 'Science Fiction',
   'Biyoloji': 'Biology',
