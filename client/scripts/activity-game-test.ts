@@ -77,7 +77,7 @@ test("reveal kararları renkten bağımsız ✓/✗ rozeti + desenle işaretleni
 });
 
 test("kategori modalı seçilileri en başta listeler", () => {
-  assert.match(activitySource, /const ordered = q \? filtered : \[\.\.\.filtered\]\.sort/);
+  assert.match(activitySource, /const ordered = q\s*\?\s*filtered\s*:\s*\[\.\.\.filtered\]\.sort/);
   assert.match(activitySource, /\{ordered\.map\(\(category\)/);
 });
 
@@ -90,8 +90,8 @@ test("bekleyen oyuncunun Çember girişi ve Enter gönderimi kilitlidir", () => 
   assert.equal(circleAnswerIsLocked({ answered: false, revealing: false, spectator: false, waiting: true }), true);
   assert.equal(circleAnswerIsLocked({ answered: false, revealing: false, spectator: false, waiting: false }), false);
   assert.match(activitySource, /disabled=\{circleLocked\}/);
-  assert.match(activitySource, /event\.key === 'Enter'.*!circleLocked/);
-  assert.match(activitySource, /waiting \? t\('game\.waitingNextRound'\)/);
+  assert.match(activitySource, /event\.key === ["']Enter["'].*!circleLocked/);
+  assert.match(activitySource, /waiting \?\s*\(\s*t\(["']game\.waitingNextRound["']/);
 });
 
 test("Çember inputu yeni ve oynanabilir turda odağı alır", () => {
@@ -128,7 +128,7 @@ test("menü ok/Home/End gezinmesi sarar", () => {
 });
 
 test("host menüsü ilk öğeye odaklanır ve odağı tetikleyiciye döndürür", () => {
-  assert.match(activitySource, /querySelector<HTMLButtonElement>\('\[role="menuitem"\]'\)\?\.focus\(\)/);
+  assert.match(activitySource, /querySelector<HTMLButtonElement>\(["']\[role="menuitem"\]["']\)\?\.focus\(\)/);
   assert.match(activitySource, /trigger\.isConnected\) trigger\.focus\(\)/);
 });
 
@@ -144,63 +144,63 @@ test("soru ve lobi hareket imzaları bağlıdır", () => {
   assert.match(activitySource, /aria-pressed=\{selected === index\}/);
   assert.match(activitySource, /className="qt-score-flight"/);
   assert.match(activitySource, /className="qt-sr-only"/);
-  assert.match(activitySource, /'--timer-angle': `\$\{1 - visibleRatio\}turn`/);
+  assert.match(activitySource, /["']--timer-angle["']: `\$\{1 - visibleRatio\}turn`/);
   assert.doesNotMatch(activityCss, /var\(--letter-i\)/);
   assert.match(activitySource, /<ModeTableScene mode=\{mode\}/);
-  assert.match(activitySource, /justJoined\[seat\] \? 'is-joining'/);
+  assert.match(activitySource, /justJoined\[seat\] \? ["']is-joining["']/);
   assert.match(activityCss, /@keyframes qtScoreFlight/);
   assert.match(activityCss, /@keyframes qtSeatSit/);
 });
 
 test("yerel socket aynı origin ve taşıma fallbackini kullanır", () => {
   assert.match(realtimeSource, /VITE_GAME_SERVER_URL \|\| window\.location\.origin/);
-  assert.match(realtimeSource, /transports: \['polling', 'websocket'\]/);
+  assert.match(realtimeSource, /transports: \[["']polling["'], ["']websocket["']\]/);
   assert.match(realtimeSource, /tryAllTransports: true/);
 });
 
 test("dar ekran katmanlari icerigi kapatmaz", () => {
   assert.match(activitySource, /const showSpectatorBar =/);
-  assert.match(activitySource, /showSpectatorBar \? 'has-spectator-bar' : ''/);
+  assert.match(activitySource, /showSpectatorBar \? ["']has-spectator-bar["'] : ["']["']/);
   assert.match(activityCss, /\.qt-spectator-bar \{[^}]*translate: -50% 0;/);
-  assert.match(activityCss, /\.qt-activity-root\.has-spectator-bar > \.qt-activity \{ padding-bottom:/);
+  assert.match(activityCss, /\.qt-activity-root\.has-spectator-bar > \.qt-activity \{\s*padding-bottom:/);
   assert.match(activityCss, /\.qt-mode-list \{[^}]*repeat\(3, minmax\(0, 1fr\)\)/);
-  assert.match(activityCss, /\.qt-difficulty-row \{ grid-template-columns: repeat\(4, minmax\(0, 1fr\)\); \}/);
+  assert.match(activityCss, /\.qt-difficulty-row \{\s*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);\s*\}/);
   assert.match(
     activityCss,
     /@media \(max-width: 560px\) and \(orientation: portrait\)[\s\S]*?\.qt-game \{[^}]*calc\(86px \+ var\(--qt-saib\)\)/,
   );
-  assert.match(activityCss, /\.qt-question-image \{ max-width: min\(100%, 210px\); max-height: 140px; \}/);
+  assert.match(activityCss, /\.qt-question-image \{\s*max-width: min\(100%, 210px\);\s*max-height: 140px;\s*\}/);
 });
 
 test("socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar", () => {
   // Gerçek Discord gözlemi: socket io.use reddedince istemci sonsuz iskelette
   // kalıyordu. Artık offline + state'siz durumda hata ekranı gösterilmeli ve
   // OAuth'u baştan kurmayan socket yeniden bağlantısı kullanılmalı.
-  assert.match(activitySource, /game\.status === 'offline'/);
-  assert.match(activitySource, /i18n\.t\('boot\.unreachable'\)/);
+  assert.match(activitySource, /game\.status === ["']offline["']/);
+  assert.match(activitySource, /i18n\.t\(["']boot\.unreachable["']\)/);
   assert.match(activitySource, /onClick=\{game\.reconnectNow\}/);
   assert.match(realtimeSource, /connectionError/);
-  assert.match(realtimeSource, /data\?\.code === 'string'/);
-  assert.match(realtimeSource, /reconnectNow:.*socket\.connect\(\)/);
+  assert.match(realtimeSource, /data\?\.code === ["']string["']/);
+  assert.match(realtimeSource, /reconnectNow:[\s\S]*?socket\.connect\(\)/);
 });
 
 test("özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıdır", () => {
   // FAZ 4.4 — masa ayarı socket'e bağlı, liste /api/question-packs'ten çekilir.
-  assert.match(realtimeSource, /setPack: \(packId: string \| null\).*EV\.SET_PACK, \{ packId \}\)/);
+  assert.match(realtimeSource, /setPack: \(packId: string \| null\)[\s\S]*?EV\.SET_PACK, \{ packId \}\)/);
   assert.match(activitySource, /onSetPack=\{game\.setPack\}/);
   assert.match(activitySource, /state\?\.pack\?\.id === pack\.id/);
   assert.match(activitySource, /PackUploadForm/);
-  assert.match(activitySource, /t\('pack\.label'\)/);
-  assert.match(activityCss, /\.qt-pack-form \{ display: grid; gap: 8px;/);
-  assert.match(i18nSource, /'pack\.pasteCsv':/);
-  assert.match(i18nSource, /'err\.packHostOnly':/);
+  assert.match(activitySource, /t\(["']pack\.label["']\)/);
+  assert.match(activityCss, /\.qt-pack-form \{\s*display: grid;\s*gap: 8px;/);
+  assert.match(i18nSource, /["']pack\.pasteCsv["']:/);
+  assert.match(i18nSource, /["']err\.packHostOnly["']:/);
 });
 
 test("günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen", () => {
   // Host başlat panelinde ikincil buton → START { daily: true } yayımı.
   assert.match(activitySource, /className="qt-button qt-daily-start"/);
   assert.match(activitySource, /onStartDaily=\{game\.startDaily\}/);
-  assert.match(realtimeSource, /startDaily:.*EV\.START, \{ daily: true \}/);
+  assert.match(realtimeSource, /startDaily:[\s\S]*?EV\.START, \{ daily: true \}/);
   // Podyum özeti: state.daily.pattern varsa DailyShare render edilir.
   assert.match(activitySource, /state\.daily\?\.pattern && <DailyShare/);
   assert.match(activitySource, /navigator\.clipboard\.writeText\(text\)/);
@@ -212,8 +212,8 @@ test("günlük meydan okuma: lobide buton + podyumda kopyalanabilir desen", () =
 
 test('podyum "Kanala paylaş": shareLink sonuç kartı + davet fallback', () => {
   // Buton yalnız Discord içinde ve kazanan varken görünür; metin i18n'den.
-  assert.match(activitySource, /isDiscord && onShare && winner && <button className="qt-button qt-podium-share"/);
-  assert.match(activitySource, /onShare\(t\('share\.message'/);
+  assert.match(activitySource, /winner && \(\s*<button\s+className="qt-button qt-podium-share"/);
+  assert.match(activitySource, /onShare\(\s*t\(["']share\.message["']/);
   assert.match(bridgeSource, /shareLink\(\{ message \}\)/);
   // shareLink reddedilirse davet diyaloğuna düşülür; ikisi de yoksa false.
   assert.match(bridgeSource, /openInviteDialog/);
@@ -230,20 +230,20 @@ test('"bu soru hatalı" bayrağı yalnız reveal\'da ve klasik modda görünür'
 });
 
 test("cevap bekleyen oyuncu kartı soru/bahis fazında pulse alır", () => {
-  assert.match(activitySource, /'is-awaiting' : ''/);
-  assert.match(activitySource, /state\.phase === 'question' \|\| state\.phase === 'bet'\) && !player\.answered/);
-  assert.match(activityCss, /\.qt-player-card\.is-awaiting \{ animation: qtAwaitPulse/);
+  assert.match(activitySource, /["']is-awaiting["'] : ["']["']/);
+  assert.match(activitySource, /state\.phase === ["']question["'] \|\| state\.phase === ["']bet["']\) && !player\.answered/);
+  assert.match(activityCss, /\.qt-player-card\.is-awaiting \{\s*animation: qtAwaitPulse/);
   assert.match(activityCss, /@keyframes qtAwaitPulse/);
   // Kilitleyen kart pulse'ı bırakıp is-locked sabit görünüme geçer.
-  assert.match(activitySource, /player\.answered \? 'is-locked' : ''/);
+  assert.match(activitySource, /player\.answered \? ["']is-locked["'] : ["']["']/);
 });
 
 test("faz geçişleri ortak giriş animasyonunu paylaşır ve reduced-motion kapsar", () => {
-  assert.match(activityCss, /\.qt-lobby-shell, \.qt-start-countdown, \.qt-game-grid \{ animation: qtFadeIn/);
+  assert.match(activityCss, /\.qt-lobby-shell,\s*\.qt-start-countdown,\s*\.qt-game-grid \{\s*animation: qtFadeIn/);
   // Yeni animasyonlar prefers-reduced-motion altında anlık geçişe döner.
   assert.match(
     activityCss,
-    /prefers-reduced-motion: reduce[\s\S]*?\.qt-player-card\.is-awaiting[\s\S]*?\.qt-game-grid \{ animation: none !important; \}/,
+    /prefers-reduced-motion: reduce[\s\S]*?\.qt-player-card\.is-awaiting[\s\S]*?\.qt-game-grid \{\s*animation: none !important;\s*\}/,
   );
 });
 
@@ -269,7 +269,7 @@ test("lig çerçevesi progress.league'e bağlı: avatar, koltuk, podyum + reduce
     /prefers-reduced-motion: reduce[\s\S]*?\.qt-avatar\.is-frame-efsane[\s\S]*?animation: none !important/,
   );
   // Kazanılmamış oyuncu çerçevesizdir — koşul `progress?.league` varlığına bağlı.
-  assert.match(activitySource, /frame \? `is-frame-\$\{frame\}` : ''/);
+  assert.match(activitySource, /frame \? `is-frame-\$\{frame\}` : ["']["']/);
 });
 
 test("reveal trivia notu: fact alanı doğru cevabın altında, dile göre gösterilir", () => {
@@ -279,8 +279,8 @@ test("reveal trivia notu: fact alanı doğru cevabın altında, dile göre göst
   assert.match(activitySource, /state\.reveal\.factEn \? state\.reveal\.factEn : state\.reveal\.fact/);
   assert.match(activitySource, /qt-reveal-fact/);
   assert.match(polishCss, /\.qt-reveal-fact \{/);
-  assert.match(i18nSource, /'reveal\.factTitle': 'Biliyor muydun\?'/);
-  assert.match(i18nSource, /'reveal\.factTitle': 'Did you know\?'/);
+  assert.match(i18nSource, /["']reveal\.factTitle["']: ["']Biliyor muydun\?["']/);
+  assert.match(i18nSource, /["']reveal\.factTitle["']: ["']Did you know\?["']/);
   // fact yalnızca reveal'da görünür — soru fazında cevap sızıntısı olmaz.
   assert.match(activitySource, /beats\.active && state\.reveal\?\.fact/);
 });
