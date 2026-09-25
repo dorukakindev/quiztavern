@@ -469,6 +469,7 @@ export type ToastKey =
   | "err.cardUsed"
   | "err.cardEmpty"
   | "err.invalidInput"
+  | "err.lateAnswer"
   | "err.predictPhase"
   | "err.predictFailed"
   | "err.kicked"

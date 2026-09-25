@@ -1416,12 +1416,21 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   useEffect(() => { setFreezePick(false) }, [state.round.index])
   const correctIndex = state.reveal?.correctIndex
   const selected = state.yourChoice
-  const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting })
+  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline
+  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs
+  // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
+  // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
+  const sfxNow = useServerNow(state.serverNow, 250)
+  const secLeft = deadline ? Math.max(0, Math.ceil((deadline - sfxNow) / 1000)) : 99
+  // Süre sunucu saatine göre doldu: şıklar/kutu kilitlensin — sunucu geç
+  // cevabı zaten yutar (err.lateAnswer toast'ı düşer), basılı tutan buton yanıltır.
+  const expired = !!deadline && secLeft === 0
+  const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const numericLocked = circleAnswerIsLocked({ answered: state.yourNumericGuess !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
   const cardsEnabled = (state.gameMode === 'classic' || state.gameMode === 'team') && state.phase === 'question' && !waiting && !youAreSpectator
   const cardLocked = !cardsEnabled || selected !== null || state.yourCardUsed !== null || state.yourCards <= 0 || beats.active
-  const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
-  const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
-  const numericLocked = circleAnswerIsLocked({ answered: state.yourNumericGuess !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
   // Ondalık virgülle de yazılabilir — gönderimde noktaya çevrilir.
   const numericParsed = Number(circleAnswer.trim().replace(',', '.'))
   const numericReady = circleAnswer.trim() !== '' && Number.isFinite(numericParsed)
@@ -1445,21 +1454,15 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   // Cevap dağılımı (5a): kaç kişi hangi şıkkı seçti. picks[index] = o şıkkı
   // seçenlerin id listesi. Yüzde tabanı = cevap verenlerin toplamı ("%60 B dedi").
   const totalPicks = (state.reveal?.picks ?? []).reduce((sum, ids) => sum + ids.length, 0)
-  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline
-  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs
   const accent = categoryAccent(isCircle ? shownCircle?.category : isWord ? shownWord?.category : shown?.category)
   const playerById = (id: string) => state.players.find((item) => item.id === id)
 
-  // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
-  // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
-  const sfxNow = useServerNow(state.serverNow, 250)
   // Bulanık Resim: görsel soru süresi boyunca netleşir. Oran sunucu saatinden
   // türer (sfxNow), transform:scale kenar sızdırmazlığı için blur'le birlikte
   // azalır. Reveal'da (faz=question değil) görsel tamamen net.
   const blurRemain = state.gameMode === 'blur' && state.phase === 'question' && deadline && durationMs
     ? Math.max(0, Math.min(1, (deadline - sfxNow) / durationMs)) : 0
   const blurPx = Math.round(blurRemain * 18 * 10) / 10
-  const secLeft = deadline ? Math.max(0, Math.ceil((deadline - sfxNow) / 1000)) : 99
   const sfxRef = useRef({ revealed: false, gained: false, tick: -1 })
   useEffect(() => {
     const s = sfxRef.current

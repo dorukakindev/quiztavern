@@ -34,8 +34,10 @@ export function questionIsLocked(input: {
   revealing: boolean
   spectator: boolean
   waiting: boolean
+  /** Süre sunucu saatine göre doldu — sunucu artık yutar, butonlar kilitlensin. */
+  expired?: boolean
 }): boolean {
-  return input.selected !== null || input.revealing || input.spectator || input.waiting
+  return input.selected !== null || input.revealing || input.spectator || input.waiting || !!input.expired
 }
 
 export function circleAnswerIsLocked(input: {
@@ -43,8 +45,9 @@ export function circleAnswerIsLocked(input: {
   revealing: boolean
   spectator: boolean
   waiting: boolean
+  expired?: boolean
 }): boolean {
-  return input.answered || input.revealing || input.spectator || input.waiting
+  return input.answered || input.revealing || input.spectator || input.waiting || !!input.expired
 }
 
 export function circleInputShouldFocus(input: { hasPrompt: boolean; locked: boolean }): boolean {
