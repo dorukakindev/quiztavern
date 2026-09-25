@@ -13,18 +13,28 @@ const test = (name: string, run: () => void) => {
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
 type Claim = { truth: boolean; claim: string; text: string } | null;
-type P = { score: number; stats: { total: number; correct: number }; blitzIdx: number; blitzStreak: number; blitzCorrect: number; blitzScore: number; blitzClaim: Claim; blitzTrail: { choice: number }[] };
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, P>;
-  qIndex: number;
-  phase: string;
-  questions: { id: string; correctIndex: number; choices: string[] }[];
-  questionStartedAt: number;
-  questionDeadline: number;
-  lastReveal: { correctIndex: number; gains: Record<string, number> } | null;
-  beginQuestion(): void;
-  reveal(): void;
+type P = {
+  score: number;
+  stats: { total: number; correct: number };
+  blitzIdx: number;
+  blitzStreak: number;
+  blitzCorrect: number;
+  blitzScore: number;
+  blitzClaim: Claim;
+  blitzTrail: { choice: number }[];
 };
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, P>;
+    qIndex: number;
+    phase: string;
+    questions: { id: string; correctIndex: number; choices: string[] }[];
+    questionStartedAt: number;
+    questionDeadline: number;
+    lastReveal: { correctIndex: number; gains: Record<string, number> } | null;
+    beginQuestion(): void;
+    reveal(): void;
+  };
 
 const blitzRoom = (id: string, ids: string[]) => {
   const room = new Room(id, () => {}, { minPlayers: 1 });

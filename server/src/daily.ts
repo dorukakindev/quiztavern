@@ -22,7 +22,9 @@ export function dailyDateKey(now: Date = new Date()): string {
 
 /** Epoch'tan bu yana kaçıncı gün (1'den başlar): `Triviara #42` yazısında kullanılır. */
 export function dailyDayNumber(now: Date = new Date()): number {
-  return Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - DAILY_EPOCH_MS) / 86_400_000) + 1;
+  return (
+    Math.floor((Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - DAILY_EPOCH_MS) / 86_400_000) + 1
+  );
 }
 
 function seededRandom(seed: number) {
@@ -38,7 +40,10 @@ function seededRandom(seed: number) {
 
 function hashKey(key: string): number {
   let h = 2166136261;
-  for (let i = 0; i < key.length; i++) { h ^= key.charCodeAt(i); h = Math.imul(h, 16777619); }
+  for (let i = 0; i < key.length; i++) {
+    h ^= key.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
   return h >>> 0;
 }
 
@@ -57,11 +62,13 @@ export function dailyQuestions(now: Date = new Date(), pool: Question[] = ALL_QU
 
 /** Wordle tarzı sonuç satırı: doğru 🟩, yanlış şık 🟥, cevapsız tur ⬜. */
 export function dailyPattern(answers: (number | null)[], questions: Question[]): string {
-  return questions.map((question, i) => {
-    const answer = answers[i];
-    if (answer === null || answer === undefined) return "⬜";
-    return answer === question.correctIndex ? "🟩" : "🟥";
-  }).join("");
+  return questions
+    .map((question, i) => {
+      const answer = answers[i];
+      if (answer === null || answer === undefined) return "⬜";
+      return answer === question.correctIndex ? "🟩" : "🟥";
+    })
+    .join("");
 }
 
 export function dailyShareText(day: number, pattern: string): string {
@@ -116,17 +123,27 @@ export function createDailyStore(file: string): DailyStore {
   const insert = db.prepare(`INSERT OR IGNORE INTO daily_results (day, user_id, name, pattern, score, completed_at)
     VALUES (@day, @userId, @name, @pattern, @score, @completedAt)`);
   const exists = db.prepare("SELECT 1 FROM daily_results WHERE user_id = ? AND day = ?");
-  const selectAll = db.prepare("SELECT id, day, user_id AS userId, name, pattern, score, completed_at AS completedAt FROM daily_results ORDER BY id");
+  const selectAll = db.prepare(
+    "SELECT id, day, user_id AS userId, name, pattern, score, completed_at AS completedAt FROM daily_results ORDER BY id",
+  );
   const leadersQuery = db.prepare(`SELECT user_id AS userId, name, pattern, score FROM daily_results
     WHERE day = ? ORDER BY score DESC, completed_at ASC, user_id ASC LIMIT ?`);
-  const myRow = db.prepare("SELECT score, completed_at AS completedAt FROM daily_results WHERE user_id = ? AND day = ?");
+  const myRow = db.prepare(
+    "SELECT score, completed_at AS completedAt FROM daily_results WHERE user_id = ? AND day = ?",
+  );
   const rankAhead = db.prepare(`SELECT COUNT(*) + 1 AS rank FROM daily_results
     WHERE day = ? AND (score > @score OR (score = @score AND completed_at < @completedAt))`);
   const daysOf = db.prepare("SELECT day FROM daily_results WHERE user_id = ?");
   return {
-    has(userId, day) { return exists.get(userId, day) !== undefined; },
-    record(entry) { insert.run({ ...entry, completedAt: Date.now() }); },
-    list() { return selectAll.all() as (DailyResultEntry & { id: number; completedAt: number })[]; },
+    has(userId, day) {
+      return exists.get(userId, day) !== undefined;
+    },
+    record(entry) {
+      insert.run({ ...entry, completedAt: Date.now() });
+    },
+    list() {
+      return selectAll.all() as (DailyResultEntry & { id: number; completedAt: number })[];
+    },
     leaders(day, limit) {
       const rows = leadersQuery.all(day, limit) as Omit<DailyBoardEntry, "rank">[];
       return rows.map((row, i) => ({ rank: i + 1, ...row }));
@@ -142,7 +159,9 @@ export function createDailyStore(file: string): DailyStore {
       while (days.has(cursor)) cursor -= 1;
       return day - 1 - cursor + (days.has(day) ? 1 : 0);
     },
-    close() { db.close(); },
+    close() {
+      db.close();
+    },
   };
 }
 

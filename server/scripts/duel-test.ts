@@ -12,16 +12,17 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string, name = id) => ({ id, name, avatarUrl: null, socketId: `s-${id}` });
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number; eligibleFrom: number; stats: { total: number } }>;
-  questions: { id: string; correctIndex: number }[];
-  qIndex: number;
-  roundLimit: number;
-  revealUntil: number;
-  beginQuestion(): void;
-  reveal(reason?: "timeout" | "allAnswered"): void;
-  advanceFromReveal(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, { score: number; eligibleFrom: number; stats: { total: number } }>;
+    questions: { id: string; correctIndex: number }[];
+    qIndex: number;
+    roundLimit: number;
+    revealUntil: number;
+    beginQuestion(): void;
+    reveal(reason?: "timeout" | "allAnswered"): void;
+    advanceFromReveal(): void;
+  };
 const addPlayer = (room: Room, id: string) => {
   room.addPlayer({ ...user(id), isBot: false });
 };
@@ -36,7 +37,14 @@ const fakeStore = {
   questionStats: () => new Map(),
   bonusXp(entry: { userId: string; amount: number }) {
     calls.push({ userId: entry.userId, amount: entry.amount });
-    return { gained: entry.amount, xp: entry.amount, level: 1, league: "acemi" as const, leveledUp: false, leagueChanged: false };
+    return {
+      gained: entry.amount,
+      xp: entry.amount,
+      level: 1,
+      league: "acemi" as const,
+      leveledUp: false,
+      leagueChanged: false,
+    };
   },
   title: () => null,
   setTitle: () => true,
@@ -123,7 +131,10 @@ test("Masadaki izleyici tahmin yapabilir; podyumda +XP yazar", () => {
     inner.advanceFromReveal();
   }
   assert.equal(room.phase, "podium");
-  assert.ok(calls.some((c) => c.userId === "c" && c.amount === GAME.PREDICT_XP), "doğru tahmine XP yazılmadı");
+  assert.ok(
+    calls.some((c) => c.userId === "c" && c.amount === GAME.PREDICT_XP),
+    "doğru tahmine XP yazılmadı",
+  );
 });
 
 test("Podyum yalnız düellocuları listeler", () => {

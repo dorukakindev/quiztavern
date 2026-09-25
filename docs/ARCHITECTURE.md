@@ -5,11 +5,11 @@ Tek instance = tek masa. İstemci yalnızca görüntü + input; tüm oyun karar�
 
 ## Yığın
 
-| Katman | Teknoloji | Konum |
-|---|---|---|
-| İstemci | Vite + React 19 + TS, `@discord/embedded-app-sdk` | `client/` |
-| Sunucu | Express 5 (statik + `/api`), Socket.IO 4 | `server/` |
-| Paylaşılan sözleşme | Tek tip dosyası: fazlar, event'ler, payload'lar | `shared/types.ts` |
+| Katman              | Teknoloji                                         | Konum             |
+| ------------------- | ------------------------------------------------- | ----------------- |
+| İstemci             | Vite + React 19 + TS, `@discord/embedded-app-sdk` | `client/`         |
+| Sunucu              | Express 5 (statik + `/api`), Socket.IO 4          | `server/`         |
+| Paylaşılan sözleşme | Tek tip dosyası: fazlar, event'ler, payload'lar   | `shared/types.ts` |
 
 - `client/index.html` → `activity-main.tsx` → `activity/ActivityApp.tsx` (tek ekran,
   fazlara göre render). `client/src/_legacy/` eski standalone uygulama — build'e girmez.

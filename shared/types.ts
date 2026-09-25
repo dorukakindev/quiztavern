@@ -18,7 +18,14 @@ export type Phase = "lobby" | "countdown" | "bet" | "pick" | "question" | "revea
  *  `word` (Kelime Oyunu): 4→10 harfli kelime turları; "harf al" ortak bir
  *  harfi açar ama soru değerini düşürür (kalan harf × 100). Maç tek bir ortak
  *  zaman havuzundan beslenir — havuz bitince oyun biter. */
-export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "team" | "elim"
+export type GameMode =
+  | "quiz"
+  | "classic"
+  | "lightning"
+  | "circle"
+  | "bet"
+  | "team"
+  | "elim"
   | "blur"
   | "word"
   | "duel"
@@ -49,21 +56,141 @@ export interface ModeContract {
 }
 
 export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
-  quiz:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
-  classic:  { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: true,  usesLives: false },
-  lightning:{ choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
-  circle:   { choiceAnswers: false, questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
-  bet:      { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
-  team:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: true,  usesLives: false },
-  elim:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: true },
-  blur:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
-  word:     { choiceAnswers: false, questionCountEditable: false, packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
-  duel:     { choiceAnswers: true,  questionCountEditable: false, packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
-  zil:      { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
-  numeric:  { choiceAnswers: false, questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
-  blitz:    { choiceAnswers: true,  questionCountEditable: false, packCompatible: true,  writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
-  timeline: { choiceAnswers: false, questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
-  board:    { choiceAnswers: true,  questionCountEditable: false, packCompatible: false, writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
+  quiz: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  classic: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: true,
+    usesLives: false,
+  },
+  lightning: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  circle: {
+    choiceAnswers: false,
+    questionCountEditable: true,
+    packCompatible: false,
+    writerCompatible: false,
+    feedsCalibration: false,
+    usesCards: false,
+    usesLives: false,
+  },
+  bet: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: false,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  team: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: true,
+    usesLives: false,
+  },
+  elim: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: true,
+  },
+  blur: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: false,
+    writerCompatible: false,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  word: {
+    choiceAnswers: false,
+    questionCountEditable: false,
+    packCompatible: false,
+    writerCompatible: false,
+    feedsCalibration: false,
+    usesCards: false,
+    usesLives: false,
+  },
+  duel: {
+    choiceAnswers: true,
+    questionCountEditable: false,
+    packCompatible: true,
+    writerCompatible: true,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  zil: {
+    choiceAnswers: true,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: false,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
+  numeric: {
+    choiceAnswers: false,
+    questionCountEditable: true,
+    packCompatible: true,
+    writerCompatible: false,
+    feedsCalibration: false,
+    usesCards: false,
+    usesLives: false,
+  },
+  blitz: {
+    choiceAnswers: true,
+    questionCountEditable: false,
+    packCompatible: true,
+    writerCompatible: false,
+    feedsCalibration: false,
+    usesCards: false,
+    usesLives: false,
+  },
+  timeline: {
+    choiceAnswers: false,
+    questionCountEditable: true,
+    packCompatible: false,
+    writerCompatible: false,
+    feedsCalibration: false,
+    usesCards: false,
+    usesLives: false,
+  },
+  board: {
+    choiceAnswers: true,
+    questionCountEditable: false,
+    packCompatible: false,
+    writerCompatible: false,
+    feedsCalibration: true,
+    usesCards: false,
+    usesLives: false,
+  },
 };
 
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
@@ -137,14 +264,29 @@ export interface ProgressBadge {
 export const BADGE_KEYS = [
   "haftaSampiyonu",
   "kategoriUstasi",
-  "ilkMac", "onMac", "elliMac",
-  "ilkGalibiyet", "onGalibiyet",
-  "keskin", "kartalGoz",
-  "seriAvcisi", "alev",
-  "gunluk3", "gunluk7",
-  "podyum", "tamIsabet",
-  "ligKalfa", "ligUsta", "ligEfsane",
-  "tekeTek", "zilUstasi", "kahin", "kronolog", "panoFatihi", "sozcu", "blitzci",
+  "ilkMac",
+  "onMac",
+  "elliMac",
+  "ilkGalibiyet",
+  "onGalibiyet",
+  "keskin",
+  "kartalGoz",
+  "seriAvcisi",
+  "alev",
+  "gunluk3",
+  "gunluk7",
+  "podyum",
+  "tamIsabet",
+  "ligKalfa",
+  "ligUsta",
+  "ligEfsane",
+  "tekeTek",
+  "zilUstasi",
+  "kahin",
+  "kronolog",
+  "panoFatihi",
+  "sozcu",
+  "blitzci",
 ] as const;
 export type BadgeKey = (typeof BADGE_KEYS)[number];
 

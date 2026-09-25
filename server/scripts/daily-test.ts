@@ -4,17 +4,33 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Room } from "../src/rooms";
-import { createDailyStore, dailyDateKey, dailyDayNumber, dailyPattern, dailyQuestions, dailyShareText, DAILY_QUESTION_COUNT } from "../src/daily";
+import {
+  createDailyStore,
+  dailyDateKey,
+  dailyDayNumber,
+  dailyPattern,
+  dailyQuestions,
+  dailyShareText,
+  DAILY_QUESTION_COUNT,
+} from "../src/daily";
 
 let passed = 0;
 function test(name: string, fn: () => void) {
-  try { fn(); passed += 1; console.log(`  ✓ ${name}`); }
-  catch (error) { console.error(`  ✗ ${name}`); throw error; }
+  try {
+    fn();
+    passed += 1;
+    console.log(`  ✓ ${name}`);
+  } catch (error) {
+    console.error(`  ✗ ${name}`);
+    throw error;
+  }
 }
 
 const player = (id: string) => ({ id, name: id, avatarUrl: null, socketId: `s-${id}`, isBot: false });
 const stop = (room: Room) => (room as unknown as { clearTimer(): void }).clearTimer();
-const readyAll = (room: Room) => { for (const id of room.players.keys()) room.setReady(id, true); };
+const readyAll = (room: Room) => {
+  for (const id of room.players.keys()) room.setReady(id, true);
+};
 
 test("aynı gün aynı sorular: tarih tohumu deterministiktir", () => {
   const day = new Date(Date.UTC(2026, 8, 22, 12, 0, 0));
@@ -23,9 +39,18 @@ test("aynı gün aynı sorular: tarih tohumu deterministiktir", () => {
   const c = dailyQuestions(new Date(Date.UTC(2026, 8, 22, 23, 59, 59))); // aynı UTC günü
   const next = dailyQuestions(new Date(Date.UTC(2026, 8, 23, 0, 0, 1)));
   assert.equal(a.length, DAILY_QUESTION_COUNT);
-  assert.deepEqual(a.map((q) => q.id), b.map((q) => q.id));
-  assert.deepEqual(a.map((q) => q.id), c.map((q) => q.id));
-  assert.notDeepEqual(a.map((q) => q.id), next.map((q) => q.id));
+  assert.deepEqual(
+    a.map((q) => q.id),
+    b.map((q) => q.id),
+  );
+  assert.deepEqual(
+    a.map((q) => q.id),
+    c.map((q) => q.id),
+  );
+  assert.notDeepEqual(
+    a.map((q) => q.id),
+    next.map((q) => q.id),
+  );
   assert.equal(new Set(a.map((q) => q.id)).size, a.length); // tekrar yok
 });
 
@@ -52,7 +77,13 @@ test("desen: doğru 🟩, yanlış 🟥, cevapsız ⬜", () => {
   const questions = dailyQuestions(new Date());
   const answers = questions.map((q) => q.correctIndex);
   assert.equal(dailyPattern(answers, questions), "🟩".repeat(questions.length));
-  const mixed = [questions[0].correctIndex, (questions[1].correctIndex + 1) % 4, null, questions[3].correctIndex, 0] as (number | null)[];
+  const mixed = [
+    questions[0].correctIndex,
+    (questions[1].correctIndex + 1) % 4,
+    null,
+    questions[3].correctIndex,
+    0,
+  ] as (number | null)[];
   mixed[4] = questions[4].correctIndex === 0 ? 1 : 0;
   assert.equal(dailyPattern(mixed, questions), "🟩🟥⬜🟩🟥");
 });
@@ -74,7 +105,8 @@ test("depo: kullanıcı+gün tek kayıt; has() tekrar kapısını sürer", () =>
 test("günlük maç: 5 soru, klasik kurallar, state.daily taşınır", () => {
   const room = new Room("r-daily", () => {}, { minPlayers: 1, questionCount: 10 });
   try {
-    room.join(player("host")); room.join(player("p2"));
+    room.join(player("host"));
+    room.join(player("p2"));
     readyAll(room);
     room.gameMode = "lightning"; // günlük mod seçimini ezer: klasik kurallar
     room.start("host", "lightning", { daily: true, completed: () => false });
@@ -85,37 +117,55 @@ test("günlük maç: 5 soru, klasik kurallar, state.daily taşınır", () => {
     assert.deepEqual(state.daily, { day: dailyDayNumber(), pattern: null });
     assert.equal(state.round.total, DAILY_QUESTION_COUNT);
     // Aynı gün üretilen set ile maç soruları birebir aynı.
-    assert.deepEqual(room.questions.map((q) => q.id), dailyQuestions().map((q) => q.id));
-  } finally { stop(room); }
+    assert.deepEqual(
+      room.questions.map((q) => q.id),
+      dailyQuestions().map((q) => q.id),
+    );
+  } finally {
+    stop(room);
+  }
 });
 
 test("bugün tamamlayan oyuncu izleyiciye iner; herkes tamamladıysa err.dailyDone", () => {
   const room = new Room("r-done", () => {}, { minPlayers: 1, questionCount: 10 });
   try {
-    room.join(player("host")); room.join(player("p2")); room.join(player("p3"));
+    room.join(player("host"));
+    room.join(player("p2"));
+    room.join(player("p3"));
     readyAll(room);
     room.start("host", "classic", { daily: true, completed: (id) => id === "p2" });
     const state = room.stateFor("p2", true);
     assert.equal(state.youAreSpectator, true);
-    assert.equal(state.players.some((p) => p.id === "p2"), false);
+    assert.equal(
+      state.players.some((p) => p.id === "p2"),
+      false,
+    );
     stop(room);
 
     // Tamamen tamamlanmış masa başlatamaz.
     const room2 = new Room("r-alldone", () => {}, { minPlayers: 1, questionCount: 10 });
     try {
-      room2.join(player("a")); readyAll(room2);
+      room2.join(player("a"));
+      readyAll(room2);
       assert.throws(() => room2.start("a", "classic", { daily: true, completed: () => true }), /err\.dailyDone/);
       assert.equal(room2.players.has("a"), true); // hata fırlatınca koltuk yerinde kalır
-    } finally { stop(room2); }
-  } finally { stop(room); }
+    } finally {
+      stop(room2);
+    }
+  } finally {
+    stop(room);
+  }
 });
 
 test("maç sonu desenleri üretilir ve onDailyFinished kancası ateşlenir", () => {
   const room = new Room("r-finish", () => {}, { minPlayers: 1, questionCount: 10 });
   try {
-    room.join(player("solo")); readyAll(room);
+    room.join(player("solo"));
+    readyAll(room);
     let entries: { userId: string; pattern: string; score: number; day: number }[] = [];
-    room.onDailyFinished = (list) => { entries = list; };
+    room.onDailyFinished = (list) => {
+      entries = list;
+    };
     room.start("solo", "classic", { daily: true, completed: () => false });
     assert.equal(entries.length, 0); // henüz podyum yok
     // Tur geçmişi answers dizisinde birikir: 0. soru doğru, 1. yanlış.
@@ -130,7 +180,9 @@ test("maç sonu desenleri üretilir ve onDailyFinished kancası ateşlenir", () 
     assert.equal([...entries[0].pattern].length, DAILY_QUESTION_COUNT);
     const state = room.stateFor("solo", true);
     assert.equal(state.daily?.pattern, entries[0].pattern);
-  } finally { stop(room); }
+  } finally {
+    stop(room);
+  }
 });
 
 test("lider tablosu: skor sırası, kendi sırası ve seri", () => {
@@ -142,7 +194,10 @@ test("lider tablosu: skor sırası, kendi sırası ve seri", () => {
     store.record({ day, userId: "c", name: "Cem", pattern: "🟥🟥⬜🟩🟥", score: 100 });
     const leaders = store.leaders(day, 5);
     assert.equal(leaders.length, 3);
-    assert.deepEqual(leaders.map((row) => row.userId), ["a", "b", "c"]);
+    assert.deepEqual(
+      leaders.map((row) => row.userId),
+      ["a", "b", "c"],
+    );
     assert.equal(leaders[0].rank, 1);
     assert.equal(leaders[0].name, "Ayşe");
     assert.equal(store.userRank("b", day), 2);
@@ -161,7 +216,9 @@ test("lider tablosu: skor sırası, kendi sırası ve seri", () => {
     store.record({ day: day - 2, userId: "d", name: "Derin", pattern: "🟩🟩🟩🟩🟩", score: 200 });
     assert.equal(store.streak("d", day), 2);
     assert.equal(store.streak("yok", day), 0);
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("eski şema: name sütunu olmayan veritabanı ALTER ile geçirilir", () => {
@@ -170,7 +227,9 @@ test("eski şema: name sütunu olmayan veritabanı ALTER ile geçirilir", () => 
   raw.exec(`CREATE TABLE daily_results (id INTEGER PRIMARY KEY AUTOINCREMENT, day INTEGER NOT NULL,
     user_id TEXT NOT NULL, pattern TEXT NOT NULL, score INTEGER NOT NULL, completed_at INTEGER NOT NULL,
     UNIQUE (user_id, day))`);
-  raw.prepare("INSERT INTO daily_results (day, user_id, pattern, score, completed_at) VALUES (1, 'x', '🟩', 10, 1)").run();
+  raw
+    .prepare("INSERT INTO daily_results (day, user_id, pattern, score, completed_at) VALUES (1, 'x', '🟩', 10, 1)")
+    .run();
   raw.close();
   const store = createDailyStore(tmp);
   try {
@@ -178,22 +237,28 @@ test("eski şema: name sütunu olmayan veritabanı ALTER ile geçirilir", () => 
     store.record({ day: 2, userId: "x", name: "Yeni", pattern: "🟩", score: 5 });
     assert.equal(store.leaders(2, 1)[0].name, "Yeni");
     assert.equal(store.leaders(1, 1)[0].name, ""); // eski kayıtta boş ad
-  } finally { store.close(); }
+  } finally {
+    store.close();
+  }
 });
 
 test("günlük sonrası masa sıfırlanırsa bayat mod sonraki maça sızmasın (B50)", () => {
   const room = new Room("r-stale-mode", () => {}, { minPlayers: 1, questionCount: 10 });
   try {
-    room.join(player("host")); readyAll(room);
+    room.join(player("host"));
+    readyAll(room);
     room.gameMode = "elim"; // günlük öncesi masa modu
     room.start("host", "elim", { daily: true, completed: () => false });
     assert.equal(room.gameMode, "classic"); // günlük klasik oynar
     // Masadaki son insan gider → oda lobiye sıfırlanır.
     (room as unknown as { resetToLobby(): void }).resetToLobby();
-    room.join(player("newbie")); room.setReady("newbie", true);
+    room.join(player("newbie"));
+    room.setReady("newbie", true);
     room.start("newbie", "zil");
     assert.equal(room.gameMode, "zil"); // bayat "elim" zorlanmaz
-  } finally { stop(room); }
+  } finally {
+    stop(room);
+  }
 });
 
 console.log(`\n[daily] sonuç: ${passed} geçti, 0 kaldı`);

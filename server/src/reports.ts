@@ -57,7 +57,9 @@ export function createReportsStore(file: string): QuestionReportsStore {
   const insert = db.prepare(`INSERT OR IGNORE INTO question_reports
     (room_id, user_id, user_name, question_id, question_text, category, note, reported_at)
     VALUES (@roomId, @userId, @userName, @questionId, @questionText, @category, @note, @reportedAt)`);
-  const selectAll = db.prepare("SELECT id, room_id AS roomId, user_id AS userId, user_name AS userName, question_id AS questionId, question_text AS questionText, category, note, reported_at AS reportedAt FROM question_reports ORDER BY id");
+  const selectAll = db.prepare(
+    "SELECT id, room_id AS roomId, user_id AS userId, user_name AS userName, question_id AS questionId, question_text AS questionText, category, note, reported_at AS reportedAt FROM question_reports ORDER BY id",
+  );
   const suppressed = db.prepare(
     "SELECT question_id FROM question_reports GROUP BY question_id HAVING COUNT(DISTINCT user_id) >= ?",
   );
@@ -75,10 +77,14 @@ export function createReportsStore(file: string): QuestionReportsStore {
       });
       return { ok: true, duplicate: result.changes === 0 };
     },
-    list() { return selectAll.all() as QuestionReportRow[]; },
+    list() {
+      return selectAll.all() as QuestionReportRow[];
+    },
     suppressedQuestionIds(minReporters = 3) {
       return new Set((suppressed.all(minReporters) as { question_id: string }[]).map((row) => row.question_id));
     },
-    close() { db.close(); },
+    close() {
+      db.close();
+    },
   };
 }

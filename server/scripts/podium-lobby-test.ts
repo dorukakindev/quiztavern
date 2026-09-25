@@ -32,17 +32,28 @@ interface Client {
 }
 
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(baseUrl, {
-    path: "/socket.io",
-    transports: ["websocket"],
-    auth: { roomId, devId, devName },
-  }), state: null, toasts: [] };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  const client: Client = {
+    socket: io(baseUrl, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+    toasts: [],
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   client.socket.on(EV.TOAST, (t: ToastPayload) => client.toasts.push(t));
   return client;
 }
 
-function waitFor(client: Client, predicate: (s: GameState) => boolean, label: string, timeoutMs = 15_000): Promise<GameState> {
+function waitFor(
+  client: Client,
+  predicate: (s: GameState) => boolean,
+  label: string,
+  timeoutMs = 15_000,
+): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (client.state && predicate(client.state)) return resolve(client.state);
     const timer = setTimeout(() => {
@@ -83,7 +94,9 @@ async function main() {
       try {
         const res = await fetch(`${baseUrl}/health`);
         if (res.ok) break;
-      } catch { /* henüz hazır değil */ }
+      } catch {
+        /* henüz hazır değil */
+      }
       await sleep(250);
       if (i === 79) throw new Error("Sunucu 20 sn içinde açılmadı.");
     }
@@ -128,7 +141,10 @@ async function main() {
     // ── B de dönünce inResults boşalır ─────────────────────────────────
     b.socket.emit(EV.RETURN_TO_LOBBY);
     await waitFor(b, (s) => s.phase === "lobby" && s.lastMatch === null, "B de lobiye döndü");
-    assert(b.state!.players.every((p) => p.inResults !== true), "sonuçlarda kalan yok");
+    assert(
+      b.state!.players.every((p) => p.inResults !== true),
+      "sonuçlarda kalan yok",
+    );
 
     // ── Lobiden yeni maç başlatılabilir (B1'in amacı) ─────────────────
     a.socket.emit(EV.READY, true);

@@ -10,15 +10,16 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number; stats: { total: number; correct: number } }>;
-  numericQuestions: { id: string; answer: number }[];
-  numericGuesses: Map<string, number>;
-  qIndex: number;
-  questionDeadline: number;
-  beginQuestion(): void;
-  reveal(reason?: "timeout" | "allAnswered"): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, { score: number; stats: { total: number; correct: number } }>;
+    numericQuestions: { id: string; answer: number }[];
+    numericGuesses: Map<string, number>;
+    qIndex: number;
+    questionDeadline: number;
+    beginQuestion(): void;
+    reveal(reason?: "timeout" | "allAnswered"): void;
+  };
 const numericRoom = (id: string, ids: string[]) => {
   const room = new Room(id, () => {}, { minPlayers: 1 });
   for (const pid of ids) room.addPlayer({ ...user(pid), isBot: false });
@@ -135,7 +136,9 @@ test("süresi geçmiş cevap: reveal + err.lateAnswer toast'ı", () => {
   const room = numericRoom("n-late", ["a"]);
   const inner = startRound(room);
   const toasts: string[] = [];
-  room.setToastHandler((playerId, key) => { if (playerId === "a") toasts.push(key) });
+  room.setToastHandler((playerId, key) => {
+    if (playerId === "a") toasts.push(key);
+  });
   inner.questionDeadline = Date.now() - 1; // süre doldu, timer henüz ateşlenmemiş
   room.numericAnswer("a", 42);
   assert.equal(room.phase, "reveal");
@@ -147,7 +150,7 @@ test("maç özeti incelemesi numeric'te tur geçmişi taşır (B51)", () => {
   const room = numericRoom("n-review", ["a", "b"]);
   const inner = startRound(room);
   const answer = inner.numericQuestions[0].answer;
-  room.numericAnswer("a", answer);      // tam isabet → kazanan
+  room.numericAnswer("a", answer); // tam isabet → kazanan
   room.numericAnswer("b", answer + 40); // kaybeden
   assert.equal(room.phase, "reveal");
   const fin = room as unknown as {

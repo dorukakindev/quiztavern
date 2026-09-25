@@ -35,7 +35,8 @@ function load(): NumericQuestion[] {
     if (typeof q.unit !== "string" || !q.unit) throw new Error(`${where}: unit eksik`);
     if (typeof q.unitEn !== "string" || !q.unitEn) throw new Error(`${where}: unitEn eksik`);
     if (typeof q.answer !== "number" || !Number.isFinite(q.answer)) throw new Error(`${where}: answer sayı olmalı`);
-    if (!(["kolay", "orta", "zor"] as const).includes(q.difficulty)) throw new Error(`${where}: difficulty "${q.difficulty}" geçersiz`);
+    if (!(["kolay", "orta", "zor"] as const).includes(q.difficulty))
+      throw new Error(`${where}: difficulty "${q.difficulty}" geçersiz`);
   });
   return raw as NumericQuestion[];
 }

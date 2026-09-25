@@ -23,10 +23,7 @@ const warn = (msg: string) => warnings.push(msg);
 // Tanımlı kategori evreni: EXTRA_CATEGORIES (içeriksiz de gösterilenler) ∪
 // istemcinin EN etiket sözlüğü. Dışında kalan ad büyük ihtimalle yazım hatası
 // veya EN etiketi/ikonu eksik yeni kategori.
-const i18nSource = fs.readFileSync(
-  fileURLToPath(new URL("../client/src/activity/i18n.ts", import.meta.url)),
-  "utf-8",
-);
+const i18nSource = fs.readFileSync(fileURLToPath(new URL("../client/src/activity/i18n.ts", import.meta.url)), "utf-8");
 const enLabelBlock = i18nSource.match(/CATEGORY_LABELS_EN[^{]*\{([\s\S]*?)\}/);
 const EN_LABEL_NAMES = new Set([...(enLabelBlock?.[1].matchAll(/'([^']+)':/g) ?? [])].map((m) => m[1]));
 const DEFINED_CATEGORIES = new Set<string>([...EXTRA_CATEGORIES, ...EN_LABEL_NAMES]);
@@ -43,7 +40,9 @@ for (const q of ALL_QUESTIONS) {
 
   if (!DIFFICULTIES.includes(q.difficulty)) err(`${where}: difficulty "${q.difficulty}" geçersiz`);
   if (!DEFINED_CATEGORIES.has(q.category)) {
-    warn(`${where}: kategori "${q.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin (yazım hatası olabilir)`);
+    warn(
+      `${where}: kategori "${q.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin (yazım hatası olabilir)`,
+    );
   }
 
   if (q.choices.length !== 4 || q.choicesEn.length !== 4) err(`${where}: TR ve EN şık sayısı 4 olmalı`);
@@ -88,7 +87,9 @@ for (const p of ALL_CIRCLE_PROMPTS) {
 
   if (!DIFFICULTIES.includes(p.difficulty)) err(`${where}: difficulty "${p.difficulty}" geçersiz`);
   if (!DEFINED_CATEGORIES.has(p.category)) {
-    warn(`${where}: kategori "${p.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin (yazım hatası olabilir)`);
+    warn(
+      `${where}: kategori "${p.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin (yazım hatası olabilir)`,
+    );
   }
 
   // İpucu boşluk/uzunluk: boş ipucu ya da cevabı neredeyse tekrarlayan kısa ipucu.
@@ -166,7 +167,9 @@ for (const q of ALL_ORDER) {
 }
 
 // ── Rapor ───────────────────────────────────────────────────────────────────
-console.log(`[validate] ${ALL_QUESTIONS.length} klasik, ${ALL_CIRCLE_PROMPTS.length} çember, ${ALL_NUMERIC.length} sayısal, ${ALL_ORDER.length} çizelge denetlendi`);
+console.log(
+  `[validate] ${ALL_QUESTIONS.length} klasik, ${ALL_CIRCLE_PROMPTS.length} çember, ${ALL_NUMERIC.length} sayısal, ${ALL_ORDER.length} çizelge denetlendi`,
+);
 for (const w of warnings) console.warn(`  ⚠ ${w}`);
 if (errors.length) {
   for (const e of errors) console.error(`  ✗ ${e}`);

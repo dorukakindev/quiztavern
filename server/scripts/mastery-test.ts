@@ -23,7 +23,9 @@ try {
   assert.ok(store.snapshot("u")!.categoryMastery.includes("Tarih"));
 
   // 3. İkinci kategori ustalaşınca liste büyür; rozet zaten var (tekrar çıkmaz).
-  store.recordMatch([{ ...base, userId: "u", correct: 60, total: 60, perCategory: [{ category: "Coğrafya", correct: 60 }] }]);
+  store.recordMatch([
+    { ...base, userId: "u", correct: 60, total: 60, perCategory: [{ category: "Coğrafya", correct: 60 }] },
+  ]);
   assert.deepEqual(store.categoryMastery("u"), ["Coğrafya", "Tarih"]);
 
   // 4. Farklı oyuncunun sayacı bağımsız.
@@ -34,7 +36,15 @@ try {
   assert.deepEqual(store.categoryMastery("u"), ["Coğrafya", "Tarih"]);
 
   // 6. Eşik: tam MASTERY_CORRECT yeter.
-  store.recordMatch([{ ...base, userId: "v", correct: GAME.MASTERY_CORRECT, total: GAME.MASTERY_CORRECT, perCategory: cat(GAME.MASTERY_CORRECT) }]);
+  store.recordMatch([
+    {
+      ...base,
+      userId: "v",
+      correct: GAME.MASTERY_CORRECT,
+      total: GAME.MASTERY_CORRECT,
+      perCategory: cat(GAME.MASTERY_CORRECT),
+    },
+  ]);
   assert.deepEqual(store.categoryMastery("v"), ["Tarih"]);
 
   // 7. 0 doğru yazılmaz (boş satır kirliliği).

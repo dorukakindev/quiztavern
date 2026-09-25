@@ -25,8 +25,13 @@ import {
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 function makeSdk(guildId: string | null = "guild-1") {
@@ -82,8 +87,14 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const sdk = makeSdk("guild-1");
   const calls: string[] = [];
   sdk._updateCommandMocks({
-    openInviteDialog: async () => { calls.push("dialog"); return {}; },
-    shareLink: async () => { calls.push("share"); return { success: true }; },
+    openInviteDialog: async () => {
+      calls.push("dialog");
+      return {};
+    },
+    shareLink: async () => {
+      calls.push("share");
+      return { success: true };
+    },
   });
   const ok = await inviteWithFallback(sdk as never, "gel");
   assert(ok && calls.join(",") === "dialog", `guild'de native diyalog yeter (${calls.join(",")})`);
@@ -94,8 +105,14 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const sdk = makeSdk("guild-1");
   const calls: string[] = [];
   sdk._updateCommandMocks({
-    openInviteDialog: async () => { calls.push("dialog"); throw new Error("no perm"); },
-    shareLink: async () => { calls.push("share"); return { success: true }; },
+    openInviteDialog: async () => {
+      calls.push("dialog");
+      throw new Error("no perm");
+    },
+    shareLink: async () => {
+      calls.push("share");
+      return { success: true };
+    },
   });
   const ok = await inviteWithFallback(sdk as never, "gel");
   assert(ok && calls.join(",") === "dialog,share", `red sonrası shareLink fallback (${calls.join(",")})`);
@@ -105,7 +122,9 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
 {
   const sdk = makeSdk("guild-1");
   sdk._updateCommandMocks({
-    openInviteDialog: async () => { throw new Error("no perm"); },
+    openInviteDialog: async () => {
+      throw new Error("no perm");
+    },
     shareLink: async () => ({ success: false }),
   });
   const ok = await inviteWithFallback(sdk as never, "gel");
@@ -117,8 +136,14 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const sdk = makeSdk(null);
   const calls: string[] = [];
   sdk._updateCommandMocks({
-    openInviteDialog: async () => { calls.push("dialog"); return {}; },
-    shareLink: async () => { calls.push("share"); return { success: true }; },
+    openInviteDialog: async () => {
+      calls.push("dialog");
+      return {};
+    },
+    shareLink: async () => {
+      calls.push("share");
+      return { success: true };
+    },
   });
   const ok = await inviteWithFallback(sdk as never, "gel");
   assert(ok && calls.join(",") === "share", `DM'de shareLink (${calls.join(",")})`);
@@ -128,7 +153,9 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
 {
   const sdk = makeSdk();
   let current = new Set<string>();
-  const unsub = subscribeSpeaking(sdk as never, (ids) => { current = ids });
+  const unsub = subscribeSpeaking(sdk as never, (ids) => {
+    current = ids;
+  });
   sdk.emitEvent("SPEAKING_START", { user_id: "u1", channel_id: "channel-1" });
   sdk.emitEvent("SPEAKING_START", { user_id: "u2", channel_id: "channel-1" });
   assert(current.has("u1") && current.has("u2"), `konuşanlar işaretlenir (${[...current]})`);
@@ -145,13 +172,18 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const calls: string[] = [];
   sdk._updateCommandMocks({
     setActivity: async (args: { activity: { details?: string; state?: string } }) => {
-      calls.push(`${args.activity.details}/${args.activity.state}`); return { type: 0, name: "Triviara" };
+      calls.push(`${args.activity.details}/${args.activity.state}`);
+      return { type: 0, name: "Triviara" };
     },
   });
   updatePresence(sdk as never, "Masada bekliyor");
   await new Promise((r) => setTimeout(r, 0));
   assert(calls[0] === "Triviara/Masada bekliyor", `presence taşındı (${calls[0]})`);
-  sdk._updateCommandMocks({ setActivity: async () => { throw new Error("INVALID_COMMAND") } });
+  sdk._updateCommandMocks({
+    setActivity: async () => {
+      throw new Error("INVALID_COMMAND");
+    },
+  });
   updatePresence(sdk as never, "yine de sessiz");
   await new Promise((r) => setTimeout(r, 0));
   assert(true, "INVALID_COMMAND akışı bozmaz");
@@ -162,7 +194,10 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const sdk = makeSdk();
   const logs: string[] = [];
   sdk._updateCommandMocks({
-    captureLog: async (args: { level: string; message: string }) => { logs.push(`${args.level}:${args.message}`); return {}; },
+    captureLog: async (args: { level: string; message: string }) => {
+      logs.push(`${args.level}:${args.message}`);
+      return {};
+    },
   });
   captureClientLog(sdk as never, "boom");
   await new Promise((r) => setTimeout(r, 0));

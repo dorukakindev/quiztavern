@@ -11,8 +11,13 @@ import { BADGE_KEYS } from "../../shared/types";
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 const keys = Object.keys(STRINGS.tr) as StringKey[];
@@ -25,7 +30,10 @@ const trKeys = new Set(Object.keys(STRINGS.tr));
 const enKeys = new Set(Object.keys(STRINGS.en));
 const onlyTr = [...trKeys].filter((k) => !enKeys.has(k));
 const onlyEn = [...enKeys].filter((k) => !trKeys.has(k));
-assert(onlyTr.length === 0 && onlyEn.length === 0, `anahtar kümeleri eşit${onlyTr.length ? ` (yalnız TR: ${onlyTr})` : ""}${onlyEn.length ? ` (yalnız EN: ${onlyEn})` : ""}`);
+assert(
+  onlyTr.length === 0 && onlyEn.length === 0,
+  `anahtar kümeleri eşit${onlyTr.length ? ` (yalnız TR: ${onlyTr})` : ""}${onlyEn.length ? ` (yalnız EN: ${onlyEn})` : ""}`,
+);
 
 // 2) Hiçbir çeviri boş değil
 const empty = keys.filter((k) => !STRINGS.tr[k].trim() || !STRINGS.en[k].trim());
@@ -33,14 +41,25 @@ assert(empty.length === 0, `boş çeviri yok${empty.length ? ` (${empty})` : ""}
 
 // 3) Yer tutucu paritesi — sessiz veri kaybının tek savunması
 const mismatched = keys.filter((k) => placeholders(STRINGS.tr[k]) !== placeholders(STRINGS.en[k]));
-assert(mismatched.length === 0, `yer tutucular iki dilde aynı${mismatched.length ? ` (uyuşmayan: ${mismatched})` : ""}`);
+assert(
+  mismatched.length === 0,
+  `yer tutucular iki dilde aynı${mismatched.length ? ` (uyuşmayan: ${mismatched})` : ""}`,
+);
 
 // 4) Çevrilmemiş kalıntı: iki dil de aynıysa şüpheli (marka/kısaltma hariç)
 const sameBoth = keys.filter((k) => STRINGS.tr[k] === STRINGS.en[k]);
 // reveal.betLost: değeri "−{points}" (sadece eksi + sayı) — dile bağımsız, kasıtlı aynı.
 // team.mvp: "MVP" evrensel kısaltma; reveal.betLost: "−{points}" dile bağımsız. Kasıtlı aynı.
 // bet.allBoost: "×2.5" çarpan işareti — dile bağımsız, kasıtlı aynı.
-const allowedSame = new Set<string>(["brand.name", "category.mixed", "err.invalidTarget", "reveal.betLost", "team.mvp", "podium.xpGain", "bet.allBoost"]);
+const allowedSame = new Set<string>([
+  "brand.name",
+  "category.mixed",
+  "err.invalidTarget",
+  "reveal.betLost",
+  "team.mvp",
+  "podium.xpGain",
+  "bet.allBoost",
+]);
 const suspicious = sameBoth.filter((k) => !allowedSame.has(k));
 assert(suspicious.length === 0, `çevrilmemiş kalıntı yok${suspicious.length ? ` (${suspicious})` : ""}`);
 
@@ -75,7 +94,10 @@ const badgeMissing = BADGE_KEYS.flatMap((b) => {
     STRINGS.en[hint] ? null : `${hint} (en)`,
   ].filter(Boolean) as string[];
 });
-assert(badgeMissing.length === 0, `her rozetin adı ve hint'i iki dilde tam${badgeMissing.length ? ` (${badgeMissing})` : ""}`);
+assert(
+  badgeMissing.length === 0,
+  `her rozetin adı ve hint'i iki dilde tam${badgeMissing.length ? ` (${badgeMissing})` : ""}`,
+);
 
 console.log(`\n[i18n] sonuç: ${passed} geçti, ${failed} kaldı`);
 process.exit(failed ? 1 : 0);

@@ -17,7 +17,17 @@ import {
 } from "./config";
 import { exchangeCode, verifyInstanceMembership, verifySession, type SessionUser } from "./auth";
 import { Room } from "./rooms";
-import { BADGE_KEYS, CARD_TYPES, EMOTE_KEYS, EV, type BadgeKey, type CardType, type EmoteKey, type ToastKey, type ToastPayload } from "../../shared/types";
+import {
+  BADGE_KEYS,
+  CARD_TYPES,
+  EMOTE_KEYS,
+  EV,
+  type BadgeKey,
+  type CardType,
+  type EmoteKey,
+  type ToastKey,
+  type ToastPayload,
+} from "../../shared/types";
 import { GameError, toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
@@ -26,7 +36,17 @@ import { createReportsStore } from "./reports";
 import { createDailyStore, dailyBoard, dailyDayNumber } from "./daily";
 import { setQuestionCalibration, setSuppressedQuestions } from "./questions";
 import { createXpStore } from "./xp";
-import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
+import {
+  addPack,
+  deletePack,
+  getPack,
+  listPacks,
+  parseCsvQuestions,
+  parseJsonQuestions,
+  updatePack,
+  validatePackQuestions,
+  type StoredPack,
+} from "./packs";
 
 const app = express();
 app.disable("x-powered-by");
@@ -38,7 +58,9 @@ app.use(["/question-packs", "/api/question-packs"], createRateLimitMiddleware({ 
 const httpServer = createServer(app);
 // "Bu soru hatalı" bildirimleri tek kalıcı dosyaya yazar; test ve
 // taşıma için REPORTS_DB_PATH ile yol ezilebilir.
-const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(process.cwd(), "data", "question-reports.db"));
+const reports = createReportsStore(
+  process.env.REPORTS_DB_PATH ?? resolve(process.cwd(), "data", "question-reports.db"),
+);
 // Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 // Kalıcı ilerleme (XP/seviye/lig/sezon/seri) tek dosyada; XP_DB_PATH ile ezilebilir.
@@ -49,8 +71,11 @@ const xpStore = createXpStore(xpDbPath);
 // VACUUM INTO ile tutarlı yazılır; Pazar günleri ana dosyaya da bakım yapılır.
 const xpBackupPath = resolve(dirname(xpDbPath), "xp-backup.db");
 const runXpBackup = () => {
-  try { xpStore.backup(xpBackupPath, new Date().getUTCDay() === 0); }
-  catch (backupError) { log.warn({ err: backupError }, "xp.db yedekleme başarısız"); }
+  try {
+    xpStore.backup(xpBackupPath, new Date().getUTCDay() === 0);
+  } catch (backupError) {
+    log.warn({ err: backupError }, "xp.db yedekleme başarısız");
+  }
 };
 const xpBackupTimer = setInterval(runXpBackup, 24 * 60 * 60 * 1000);
 xpBackupTimer.unref();
@@ -85,7 +110,13 @@ const OAUTH_STATE_COOKIE = "qt-oauth-state";
 function cookieValue(header: string | undefined, name: string) {
   if (!header) return "";
   const prefix = `${name}=`;
-  return header.split(";").map((item) => item.trim()).find((item) => item.startsWith(prefix))?.slice(prefix.length) ?? "";
+  return (
+    header
+      .split(";")
+      .map((item) => item.trim())
+      .find((item) => item.startsWith(prefix))
+      ?.slice(prefix.length) ?? ""
+  );
 }
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
@@ -110,12 +141,20 @@ const CLIENT_ERROR_SIG_MAX = 500;
 function recordClientError(type: string, message: string) {
   const key = `${type}::${message.slice(0, 120)}`;
   const hit = clientErrorStats.get(key);
-  if (hit) { hit.count += 1; hit.lastAt = Date.now(); return; }
+  if (hit) {
+    hit.count += 1;
+    hit.lastAt = Date.now();
+    return;
+  }
   if (clientErrorStats.size >= CLIENT_ERROR_SIG_MAX) {
     // Sınırsız bellek büyümesini önle: en eski imzayı düşür.
     let oldestKey: string | null = null;
     let oldest = Infinity;
-    for (const [k, v] of clientErrorStats) if (v.lastAt < oldest) { oldest = v.lastAt; oldestKey = k; }
+    for (const [k, v] of clientErrorStats)
+      if (v.lastAt < oldest) {
+        oldest = v.lastAt;
+        oldestKey = k;
+      }
     if (oldestKey) clientErrorStats.delete(oldestKey);
   }
   clientErrorStats.set(key, { type, message: message.slice(0, 200), count: 1, lastAt: Date.now() });
@@ -124,26 +163,38 @@ function topClientErrors(limit = 10) {
   return [...clientErrorStats.values()].sort((a, b) => b.count - a.count || b.lastAt - a.lastAt).slice(0, limit);
 }
 
-app.get(["/admin/reports", "/api/admin/reports"],
+app.get(
+  ["/admin/reports", "/api/admin/reports"],
   createRateLimitMiddleware({ limit: 10, windowMs: 60_000 }),
   (req, res) => {
-  if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "QT_ADMIN_TOKEN ayarlanmadı." });
-  const auth = req.headers.authorization ?? "";
-  if (!auth.startsWith("Bearer ") || !tokenEqual(auth.slice(7), QT_ADMIN_TOKEN)) {
-    return res.status(401).json({ error: "Yetkisiz." });
-  }
-  const rows = reports.list();
-  const errs = topClientErrors();
-  if (!req.accepts("html")) return res.json({ reports: rows, clientErrors: errs });
-  const trs = rows.map((r) => `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`).join("");
-  const ers = errs.map((e) => `<tr><td>${e.count}</td><td>${esc(e.type)}</td><td>${esc(e.message)}</td><td>${new Date(e.lastAt).toISOString()}</td></tr>`).join("");
-  res.type("html").send(`<!doctype html><meta charset="utf-8"><title>Yönetici paneli</title>
+    if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "QT_ADMIN_TOKEN ayarlanmadı." });
+    const auth = req.headers.authorization ?? "";
+    if (!auth.startsWith("Bearer ") || !tokenEqual(auth.slice(7), QT_ADMIN_TOKEN)) {
+      return res.status(401).json({ error: "Yetkisiz." });
+    }
+    const rows = reports.list();
+    const errs = topClientErrors();
+    if (!req.accepts("html")) return res.json({ reports: rows, clientErrors: errs });
+    const trs = rows
+      .map(
+        (r) =>
+          `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`,
+      )
+      .join("");
+    const ers = errs
+      .map(
+        (e) =>
+          `<tr><td>${e.count}</td><td>${esc(e.type)}</td><td>${esc(e.message)}</td><td>${new Date(e.lastAt).toISOString()}</td></tr>`,
+      )
+      .join("");
+    res.type("html").send(`<!doctype html><meta charset="utf-8"><title>Yönetici paneli</title>
 <style>body{font-family:system-ui;margin:24px;background:#0c1420;color:#dbe7f0}table{border-collapse:collapse;width:100%;margin-bottom:32px}td,th{border:1px solid #335;padding:6px 10px;font-size:13px;text-align:left;vertical-align:top}th{background:#16283c}</style>
 <h1>Soru bildirimleri (${rows.length})</h1>
 <table><tr><th>#</th><th>Tarih</th><th>Kategori</th><th>Soru</th><th>Not</th><th>Bildiren</th></tr>${trs}</table>
 <h2>İstemci hataları — en sık 10</h2>
 <table><tr><th>Adet</th><th>Tür</th><th>Mesaj</th><th>Son görülme</th></tr>${ers}</table>`);
-});
+  },
+);
 
 // ── Özel soru paketleri (FAZ 4.4) ─────────────────────────────────────────
 // Discord proxy'si /api önekini soyduğu için her iki yol da kayıtlı.
@@ -190,15 +241,18 @@ function canManagePack(user: SessionUser | null, pack: StoredPack): boolean {
   return ALLOW_MOCK_AUTH && pack.createdBy === "dev" && user.id.startsWith("dev:");
 }
 
-function parsePackBody(body: unknown): { name: string; questions: ReturnType<typeof parseJsonQuestions> } | { error: string; status: number } {
+function parsePackBody(
+  body: unknown,
+): { name: string; questions: ReturnType<typeof parseJsonQuestions> } | { error: string; status: number } {
   const b = body as { name?: unknown; format?: unknown; content?: unknown } | undefined;
   const name = typeof b?.name === "string" ? b.name.trim() : "";
   if (!name) return { error: "name eksik.", status: 400 };
   let questions;
   try {
-    questions = b?.format === "csv"
-      ? parseCsvQuestions(String(b?.content ?? ""))
-      : parseJsonQuestions(b?.format === "text" ? JSON.parse(String(b?.content ?? "")) : b?.content);
+    questions =
+      b?.format === "csv"
+        ? parseCsvQuestions(String(b?.content ?? ""))
+        : parseJsonQuestions(b?.format === "text" ? JSON.parse(String(b?.content ?? "")) : b?.content);
   } catch (error) {
     return { error: `İçerik ayrıştırılamadı: ${error instanceof Error ? error.message : error}`, status: 400 };
   }
@@ -208,7 +262,8 @@ function parsePackBody(body: unknown): { name: string; questions: ReturnType<typ
 app.post(PACK_PATHS, (req, res) => {
   const user = packRequestUser(req);
   if (!user) {
-    if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "Paket yükleme kapalı (Discord oturumu ya da QT_ADMIN_TOKEN gerekli)." });
+    if (!QT_ADMIN_TOKEN)
+      return res.status(503).json({ error: "Paket yükleme kapalı (Discord oturumu ya da QT_ADMIN_TOKEN gerekli)." });
     return res.status(401).json({ error: "Yetkisiz — oturum ya da geçerli yönetici belirteci gerekli." });
   }
   const parsed = parsePackBody(req.body);
@@ -261,13 +316,13 @@ app.post(
   createRateLimitMiddleware({ limit: 30, windowMs: 60_000 }),
   (req, res) => {
     const body = req.body as { type?: unknown; message?: unknown; stack?: unknown; url?: unknown } | undefined;
-    const clip = (v: unknown, max: number) =>
-      typeof v === "string" ? v.slice(0, max) : undefined;
+    const clip = (v: unknown, max: number) => (typeof v === "string" ? v.slice(0, max) : undefined);
     // Raporlar log'a yazıyor — URL query'sinde (Discord proxy parametreleri,
     // kanal/sunucu id'leri) veya stack'te token benzeri diziler sızmasın.
     const redact = (v: unknown, max: number) => {
       const s = clip(v, max);
-      return s === undefined ? undefined
+      return s === undefined
+        ? undefined
         : s.replace(/[?&][^\s?&]*=[^\s?&]+/g, "[q]").replace(/[A-Za-z0-9_-]{24,}/g, "[redacted]");
     };
     const errType = clip(body?.type, 40) ?? "?";
@@ -289,7 +344,8 @@ app.post(
 
 app.get("/auth/discord", (_req, res) => {
   if (!DISCORD_CLIENT_ID) return res.status(503).json({ error: "Discord OAuth henüz yapılandırılmadı." });
-  if (!DISCORD_OAUTH_REDIRECT_URI) return res.status(503).json({ error: "PUBLIC_BASE_URL is required for browser OAuth." });
+  if (!DISCORD_OAUTH_REDIRECT_URI)
+    return res.status(503).json({ error: "PUBLIC_BASE_URL is required for browser OAuth." });
   const state = crypto.randomBytes(32).toString("base64url");
   res.cookie(OAUTH_STATE_COOKIE, state, {
     httpOnly: true,
@@ -312,8 +368,12 @@ app.get("/auth/discord/callback", async (req, res) => {
   const state = typeof req.query.state === "string" ? req.query.state : "";
   const expectedState = cookieValue(req.headers.cookie, OAUTH_STATE_COOKIE);
   res.clearCookie(OAUTH_STATE_COOKIE, { path: "/auth/discord" });
-  if (!state || !expectedState || state.length !== expectedState.length
-    || !crypto.timingSafeEqual(Buffer.from(state), Buffer.from(expectedState))) {
+  if (
+    !state ||
+    !expectedState ||
+    state.length !== expectedState.length ||
+    !crypto.timingSafeEqual(Buffer.from(state), Buffer.from(expectedState))
+  ) {
     return res.status(400).json({ error: "Discord OAuth state validation failed." });
   }
   try {
@@ -343,9 +403,7 @@ app.post(["/auth/activity/token", "/api/auth/activity/token"], async (req, res) 
 
 if (IS_PRODUCTION) {
   const moduleDir = dirname(fileURLToPath(import.meta.url));
-  const serverRoot = basename(dirname(moduleDir)) === "dist"
-    ? resolve(moduleDir, "../..")
-    : resolve(moduleDir, "..");
+  const serverRoot = basename(dirname(moduleDir)) === "dist" ? resolve(moduleDir, "../..") : resolve(moduleDir, "..");
   const clientDist = resolve(serverRoot, "../client/dist");
   const clientIndex = resolve(clientDist, "index.html");
   if (!existsSync(clientIndex)) {
@@ -357,17 +415,21 @@ if (IS_PRODUCTION) {
     res.setHeader("Cache-Control", "public, max-age=3600");
     res.sendFile(resolve(clientDist, req.path === "/terms" ? "terms.html" : "privacy.html"));
   });
-  app.use(express.static(clientDist, {
-    index: "index.html",
-    setHeaders: (res, path) => {
-      res.setHeader(
-        "Cache-Control",
-        path.endsWith("index.html") ? "no-cache" : path.includes(`${resolve(clientDist, "assets")}`)
-          ? "public, max-age=31536000, immutable"
-          : "public, max-age=3600",
-      );
-    },
-  }));
+  app.use(
+    express.static(clientDist, {
+      index: "index.html",
+      setHeaders: (res, path) => {
+        res.setHeader(
+          "Cache-Control",
+          path.endsWith("index.html")
+            ? "no-cache"
+            : path.includes(`${resolve(clientDist, "assets")}`)
+              ? "public, max-age=31536000, immutable"
+              : "public, max-age=3600",
+        );
+      },
+    }),
+  );
   // React istemci rotaları doğrudan açıldığında index'e düşer; API benzeri
   // bilinmeyen yollar ise HTML 200 yerine gerçek 404 olarak kalır.
   app.get("/{*splat}", (req, res, next) => {
@@ -389,8 +451,10 @@ app.use((req, res) => {
 app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (res.headersSent) return;
   log.error({ err }, "işlenmemiş istek hatası");
-  const status = err instanceof Error && "status" in err && typeof err.status === "number" && err.status >= 400 && err.status < 600
-    ? err.status : 500;
+  const status =
+    err instanceof Error && "status" in err && typeof err.status === "number" && err.status >= 400 && err.status < 600
+      ? err.status
+      : 500;
   res.status(status).json({ error: status === 500 ? "Sunucu hatası." : "İstek hatası." });
 });
 
@@ -404,8 +468,11 @@ function getRoom(roomId: string) {
     room.setDailyBoardProvider((userId) => dailyBoard(dailyStore, dailyDayNumber(), userId));
     room.onDailyFinished = (entries) => {
       for (const entry of entries) {
-        try { dailyStore.record(entry); }
-        catch (error) { console.error("[daily] günlük sonuç kaydedilemedi:", error); }
+        try {
+          dailyStore.record(entry);
+        } catch (error) {
+          console.error("[daily] günlük sonuç kaydedilemedi:", error);
+        }
       }
     };
     room.setEmptiedHandler(() => {
@@ -458,22 +525,21 @@ io.use(async (socket, next) => {
   // iframe'i sunucuya same-origin bağlandığından header gelmez (undefined) ve
   // bu durum geçerli bağlantıdır. Header varsa izinli origin olmalı.
   const origin = socket.handshake.headers.origin;
-  if (
-    IS_PRODUCTION
-    && typeof origin === "string"
-    && origin.length > 0
-    && !isAllowedProductionOrigin(origin)
-  ) {
+  if (IS_PRODUCTION && typeof origin === "string" && origin.length > 0 && !isAllowedProductionOrigin(origin)) {
     return deny("ORIGIN_DENIED", "Socket origin is not allowed.");
   }
-  const auth = socket.handshake.auth as { sessionToken?: string; devName?: string; devId?: string; instanceId?: string };
+  const auth = socket.handshake.auth as {
+    sessionToken?: string;
+    devName?: string;
+    devId?: string;
+    instanceId?: string;
+  };
   const session = auth.sessionToken ? verifySession(auth.sessionToken) : null;
   let user: SessionUser | null = session;
   if (!user && ALLOW_MOCK_AUTH) {
     const name = (auth.devName || "Sen").slice(0, 24);
-    const stableId = typeof auth.devId === "string" && /^[a-zA-Z0-9_-]{8,80}$/.test(auth.devId)
-      ? auth.devId
-      : socket.id;
+    const stableId =
+      typeof auth.devId === "string" && /^[a-zA-Z0-9_-]{8,80}$/.test(auth.devId) ? auth.devId : socket.id;
     user = { id: `dev:${stableId}`, name, avatarUrl: null };
   }
   if (!user) return deny("AUTH_REQUIRED", "Discord oturumu gerekli.");
@@ -482,10 +548,7 @@ io.use(async (socket, next) => {
   }
   if (!ALLOW_MOCK_AUTH) {
     // instanceId zorunlu: gönderilmezse doğrulama "atlanmış" olmaz, bağlantı reddedilir.
-    if (
-      typeof auth.instanceId !== "string"
-      || !/^[A-Za-z0-9_-]{1,128}$/.test(auth.instanceId)
-    ) {
+    if (typeof auth.instanceId !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(auth.instanceId)) {
       return deny("INSTANCE_REQUIRED", "Activity instance bilgisi eksik.");
     }
     if (!(await verifyInstanceMembership(auth.instanceId, user.id))) {
@@ -504,9 +567,12 @@ io.use(async (socket, next) => {
 
 io.on("connection", (socket) => {
   const user = socket.data.user as SessionUser;
-  const roomId = typeof socket.data.roomId === "string"
-    ? socket.data.roomId
-    : typeof socket.handshake.auth.roomId === "string" ? socket.handshake.auth.roomId : "ana-lobi";
+  const roomId =
+    typeof socket.data.roomId === "string"
+      ? socket.data.roomId
+      : typeof socket.handshake.auth.roomId === "string"
+        ? socket.handshake.auth.roomId
+        : "ana-lobi";
   const room = getRoom(roomId);
   // Oyuncu ya da izleyici olarak katıl: koltuk varsa oyuncu, masa doluysa (8)
   // reddetmek yerine izleyici. previousSocketId eski bağlantıyı düşürmek için.
@@ -514,7 +580,8 @@ io.on("connection", (socket) => {
   try {
     joined = room.join({ ...user, socketId: socket.id, isBot: false });
   } catch (error) {
-    const t = toToast(error, "err.joinFailed"); toast(socket.id, t.key, t.params);
+    const t = toToast(error, "err.joinFailed");
+    toast(socket.id, t.key, t.params);
     socket.disconnect();
     return;
   }
@@ -537,22 +604,26 @@ io.on("connection", (socket) => {
   // Üyelik yalnız handshake anında sonsuza kadar geçerli sayılmaz. Oturum süresi
   // veya Activity üyeliği biterse en geç bu pencere içinde socket düşer.
   let membershipCheckRunning = false;
-  const membershipTimer = !ALLOW_MOCK_AUTH ? setInterval(() => {
-    if (membershipCheckRunning || !socket.connected) return;
-    membershipCheckRunning = true;
-    void (async () => {
-      const sessionToken = socket.data.sessionToken as string | undefined;
-      const instanceId = socket.data.instanceId as string | undefined;
-      if (!sessionToken || !verifySession(sessionToken)) {
-        socket.emit(EV.AUTH_REQUIRED);
-        socket.disconnect(true);
-        return;
-      }
-      if (!instanceId || !(await verifyInstanceMembership(instanceId, user.id))) {
-        socket.disconnect(true);
-      }
-    })().finally(() => { membershipCheckRunning = false; });
-  }, 60_000) : null;
+  const membershipTimer = !ALLOW_MOCK_AUTH
+    ? setInterval(() => {
+        if (membershipCheckRunning || !socket.connected) return;
+        membershipCheckRunning = true;
+        void (async () => {
+          const sessionToken = socket.data.sessionToken as string | undefined;
+          const instanceId = socket.data.instanceId as string | undefined;
+          if (!sessionToken || !verifySession(sessionToken)) {
+            socket.emit(EV.AUTH_REQUIRED);
+            socket.disconnect(true);
+            return;
+          }
+          if (!instanceId || !(await verifyInstanceMembership(instanceId, user.id))) {
+            socket.disconnect(true);
+          }
+        })().finally(() => {
+          membershipCheckRunning = false;
+        });
+      }, 60_000)
+    : null;
   membershipTimer?.unref();
 
   socket.on(EV.EMOTE, (payload: unknown) => {
@@ -572,7 +643,8 @@ io.on("connection", (socket) => {
     try {
       room.setGameMode(user.id, (payload as { mode?: unknown } | undefined)?.mode);
     } catch (error) {
-      const t = toToast(error, "err.modeFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.modeFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -581,7 +653,8 @@ io.on("connection", (socket) => {
       const data = payload as { targetId?: unknown; team?: unknown } | undefined;
       room.setTeam(user.id, data?.targetId, data?.team);
     } catch (error) {
-      const t = toToast(error, "err.teamFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.teamFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -589,7 +662,8 @@ io.on("connection", (socket) => {
     try {
       room.shuffleTeams(user.id);
     } catch (error) {
-      const t = toToast(error, "err.teamFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.teamFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -601,7 +675,8 @@ io.on("connection", (socket) => {
         io.sockets.sockets.get(kickedSocketId)?.disconnect(true);
       }
     } catch (error) {
-      const t = toToast(error, "err.kickFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.kickFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -609,7 +684,8 @@ io.on("connection", (socket) => {
     try {
       room.transferHost(user.id, (payload as { targetId?: unknown } | undefined)?.targetId);
     } catch (error) {
-      const t = toToast(error, "err.transferFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.transferFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -620,7 +696,8 @@ io.on("connection", (socket) => {
     try {
       room.becomePlayer({ ...user, socketId: socket.id });
     } catch (error) {
-      const t = toToast(error, "err.tableFull"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.tableFull");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -643,12 +720,15 @@ io.on("connection", (socket) => {
       // (setQuestionStartedHandler, yukarıda). Elle çağrı round 0'da çifte setTimeout
       // kurup botları tasarımdan erken cevaplatıyordu.
     } catch (error) {
-      const t = toToast(error, "err.startFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.startFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.ANSWER, (choice: unknown) => room.answer(user.id, Number(choice)));
   socket.on(EV.BUZZ, () => room.buzz(user.id));
-  socket.on(EV.CIRCLE_ANSWER, (answer: unknown) => room.answerCircle(user.id, typeof answer === "string" ? answer : ""));
+  socket.on(EV.CIRCLE_ANSWER, (answer: unknown) =>
+    room.answerCircle(user.id, typeof answer === "string" ? answer : ""),
+  );
   socket.on(EV.WORD_ANSWER, (answer: unknown) => room.wordAnswer(user.id, typeof answer === "string" ? answer : ""));
   socket.on(EV.NUMERIC_ANSWER, (value: unknown) => room.numericAnswer(user.id, Number(value)));
   socket.on(EV.ORDER_ANSWER, (order: unknown) => room.orderAnswer(user.id, order));
@@ -658,11 +738,15 @@ io.on("connection", (socket) => {
   socket.on(EV.USE_CARD, (payload: unknown) => {
     try {
       const body = (payload ?? {}) as { type?: unknown; targetId?: unknown };
-      const type = typeof body.type === "string" && (CARD_TYPES as readonly string[]).includes(body.type) ? body.type as CardType : null;
+      const type =
+        typeof body.type === "string" && (CARD_TYPES as readonly string[]).includes(body.type)
+          ? (body.type as CardType)
+          : null;
       if (!type) throw new GameError("err.invalidInput");
       room.useCard(user.id, type, typeof body.targetId === "string" ? body.targetId : undefined);
     } catch (error) {
-      const t = toToast(error, "err.cardFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.cardFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.ADD_BOT, () => {
@@ -673,7 +757,8 @@ io.on("connection", (socket) => {
       // onQuestionStarted onu her soruda zaten zamanlar. (Maç ortasında eklenirse
       // o anki soruyu atlar, sıradakinden oynar — kabul edilebilir.)
     } catch (error) {
-      const t = toToast(error, "err.botFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.botFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.READY, (payload: unknown) => {
@@ -683,49 +768,56 @@ io.on("connection", (socket) => {
     try {
       room.setQuestionCount(user.id, (payload as { count?: unknown } | undefined)?.count);
     } catch (error) {
-      const t = toToast(error, "err.countFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.countFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_DIFFICULTY, (payload: unknown) => {
     try {
       room.setDifficulty(user.id, (payload as { difficulty?: unknown } | undefined)?.difficulty ?? null);
     } catch (error) {
-      const t = toToast(error, "err.difficultyFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.difficultyFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_THEME, (payload: unknown) => {
     try {
       room.setTableTheme(user.id, (payload as { theme?: unknown } | undefined)?.theme);
     } catch (error) {
-      const t = toToast(error, "err.themeFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.themeFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_QUESTION_TIME, (payload: unknown) => {
     try {
       room.setQuestionTime(user.id, (payload as { ms?: unknown } | undefined)?.ms ?? null);
     } catch (error) {
-      const t = toToast(error, "err.timeFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.timeFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_SPEED_BONUS, (payload: unknown) => {
     try {
       room.setTableFlag(user.id, "speedBonus", (payload as { value?: unknown } | undefined)?.value);
     } catch (error) {
-      const t = toToast(error, "err.settingFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.settingFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_IMAGE_ONLY, (payload: unknown) => {
     try {
       room.setTableFlag(user.id, "imageOnly", (payload as { value?: unknown } | undefined)?.value);
     } catch (error) {
-      const t = toToast(error, "err.settingFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.settingFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SET_CATEGORIES, (payload: unknown) => {
     try {
       room.setCategories(user.id, payload);
     } catch (error) {
-      const t = toToast(error, "err.categoryFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.categoryFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
 
@@ -733,21 +825,24 @@ io.on("connection", (socket) => {
     try {
       room.setPack(user.id, (payload as { packId?: unknown } | undefined)?.packId);
     } catch (error) {
-      const t = toToast(error, "err.packFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.packFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.SUBMIT_QUESTION, (payload: unknown) => {
     try {
       room.submitQuestion(user.id, payload);
     } catch (error) {
-      const t = toToast(error, "err.questionInvalid"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.questionInvalid");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.DELETE_QUESTION, () => {
     try {
       room.removeQuestion(user.id);
     } catch (error) {
-      const t = toToast(error, "err.questionInvalid"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.questionInvalid");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.LEAVE_GAME, () => {
@@ -760,15 +855,18 @@ io.on("connection", (socket) => {
     try {
       room.voteRematch(user.id);
     } catch (error) {
-      const t = toToast(error, "err.rematchPhase"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.rematchPhase");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.PREDICT, (payload: unknown) => {
-    const targetId = typeof payload === "object" && payload !== null ? (payload as { targetId?: unknown }).targetId : undefined;
+    const targetId =
+      typeof payload === "object" && payload !== null ? (payload as { targetId?: unknown }).targetId : undefined;
     try {
       room.predict(user.id, targetId);
     } catch (error) {
-      const t = toToast(error, "err.predictFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.predictFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.PLAY_AGAIN, () => {
@@ -776,7 +874,8 @@ io.on("connection", (socket) => {
     try {
       room.start(user.id, room.gameMode);
     } catch (error) {
-      const t = toToast(error, "err.startFailed"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.startFailed");
+      toast(socket.id, t.key, t.params);
     }
   });
   socket.on(EV.QUESTION_REPORT, (payload: unknown) => {
@@ -784,9 +883,12 @@ io.on("connection", (socket) => {
     // sahte question_id ile tablo kirletilemez. Yalnız aktif oyun fazında
     // kabul edilir; Çember'in Question'ı yoktur (currentQuestion null döner).
     const question = room.phase !== "lobby" && room.phase !== "podium" ? room.currentQuestion() : null;
-    if (!question) { toast(socket.id, "report.failed"); return; }
-    const note = typeof (payload as { note?: unknown } | undefined)?.note === "string"
-      ? (payload as { note: string }).note : "";
+    if (!question) {
+      toast(socket.id, "report.failed");
+      return;
+    }
+    const note =
+      typeof (payload as { note?: unknown } | undefined)?.note === "string" ? (payload as { note: string }).note : "";
     try {
       const { duplicate } = reports.report({
         roomId: room.id,
@@ -808,12 +910,12 @@ io.on("connection", (socket) => {
   // kazanılmış-rozet kontrolüyle sağlanır (kazanılmamış rozet takılamaz).
   socket.on(EV.SET_TITLE, (payload: unknown) => {
     const raw = (payload as { title?: unknown } | undefined)?.title;
-    const title = typeof raw === "string" && (BADGE_KEYS as readonly string[]).includes(raw)
-      ? (raw as BadgeKey) : null;
+    const title = typeof raw === "string" && (BADGE_KEYS as readonly string[]).includes(raw) ? (raw as BadgeKey) : null;
     try {
       room.setTitle(user.id, title);
     } catch (error) {
-      const t = toToast(error, "err.title"); toast(socket.id, t.key, t.params);
+      const t = toToast(error, "err.title");
+      toast(socket.id, t.key, t.params);
     }
   });
   // socket.id koşulu: eski bağlantının geç gelen disconnect'i yeni bağlantıyı düşüremez.
@@ -845,7 +947,11 @@ function shutdown(signal: NodeJS.Signals) {
     // SQLite bağlantılarını kapat: WAL checkpoint'i ve buffer flush'ı ancak
     // düzgün close() ile garanti edilir — kapatılmazsa son yazılar kaybolabilir.
     for (const store of [xpStore, dailyStore, reports]) {
-      try { store.close(); } catch (closeError) { log.warn({ err: closeError }, "store kapatma hatası"); }
+      try {
+        store.close();
+      } catch (closeError) {
+        log.warn({ err: closeError }, "store kapatma hatası");
+      }
     }
     if (error) {
       log.error({ err: error }, "kapanış hatası");

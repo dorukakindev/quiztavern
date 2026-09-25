@@ -6,12 +6,12 @@ Discord içinde çalışan, çok oyunculu, sunucu-otoriter bir quiz oyunu. İste
 
 ## İçerik
 
-| Yol | Açıklama |
-| --- | --- |
-| `client/` | Discord Activity arayüzü (Vite, React 19, TypeScript) |
-| `server/` | Yetkili oyun sunucusu (Express 5, Socket.IO 4) |
-| `shared/` | İstemci+sunucu ortak tip ve sabitler (`shared/types.ts`) |
-| `deploy/` | Cloudflare Tunnel ile yayınlama rehberi (`deploy/TUNNEL.md`) |
+| Yol              | Açıklama                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| `client/`        | Discord Activity arayüzü (Vite, React 19, TypeScript)          |
+| `server/`        | Yetkili oyun sunucusu (Express 5, Socket.IO 4)                 |
+| `shared/`        | İstemci+sunucu ortak tip ve sabitler (`shared/types.ts`)       |
+| `deploy/`        | Cloudflare Tunnel ile yayınlama rehberi (`deploy/TUNNEL.md`)   |
 | `client/public/` | Statik varlıklar — yasal sayfalar dahil (`/privacy`, `/terms`) |
 
 ## Gereksinimler

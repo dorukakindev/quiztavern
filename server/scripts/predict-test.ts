@@ -4,15 +4,15 @@ import { Room } from "../src/rooms.js";
 import type { XpGain } from "@quiztavern/shared";
 
 const stop = (room: Room) => (room as unknown as { clearTimer: () => void }).clearTimer();
-const internals = (room: Room) => room as unknown as {
-  qIndex: number;
-  revealUntil: number;
-};
-const beginQuestion = (room: Room) =>
-  (room as unknown as { beginQuestion: () => void }).beginQuestion();
-const reveal = (room: Room) => (room as unknown as { reveal: (reason: "timeout" | "allAnswered") => void }).reveal("allAnswered");
-const advanceFromReveal = (room: Room) =>
-  (room as unknown as { advanceFromReveal: () => void }).advanceFromReveal();
+const internals = (room: Room) =>
+  room as unknown as {
+    qIndex: number;
+    revealUntil: number;
+  };
+const beginQuestion = (room: Room) => (room as unknown as { beginQuestion: () => void }).beginQuestion();
+const reveal = (room: Room) =>
+  (room as unknown as { reveal: (reason: "timeout" | "allAnswered") => void }).reveal("allAnswered");
+const advanceFromReveal = (room: Room) => (room as unknown as { advanceFromReveal: () => void }).advanceFromReveal();
 const addPlayer = (room: Room, id: string) => {
   room.addPlayer({ id, name: `Oyuncu ${id}`, avatarUrl: null, socketId: `s-${id}`, isBot: false });
   room.setReady(id, true);
@@ -41,7 +41,14 @@ const fakeStore = {
   questionStats: () => [],
   bonusXp(entry: { userId: string; amount: number }) {
     calls.push({ userId: entry.userId, amount: entry.amount });
-    return { gained: entry.amount, xp: entry.amount, level: 1, league: "acemi" as const, leveledUp: false, leagueChanged: false };
+    return {
+      gained: entry.amount,
+      xp: entry.amount,
+      level: 1,
+      league: "acemi" as const,
+      leveledUp: false,
+      leagueChanged: false,
+    };
   },
   title: () => null,
   setTitle: () => true,
@@ -51,7 +58,8 @@ const fakeStore = {
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(fakeStore as never);
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   assert.equal(room.phase, "countdown");
@@ -65,7 +73,8 @@ const fakeStore = {
 // 2. İlk soruda (qIndex 0) pencere hâlâ açık.
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   beginQuestion(room);
@@ -79,7 +88,8 @@ const fakeStore = {
 // 3. İlk reveal'den sonra pencere kapalı — geç tahmin hile olur.
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   beginQuestion(room);
@@ -95,7 +105,8 @@ const fakeStore = {
   calls.length = 0;
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(fakeStore as never);
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   room.predict("b", "a");
@@ -112,7 +123,9 @@ const fakeStore = {
   calls.length = 0;
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(fakeStore as never);
-  addPlayer(room, "a"); addPlayer(room, "b"); addPlayer(room, "c");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
+  addPlayer(room, "c");
   room.start("a", "classic");
   room.becomeSpectator("b");
   room.predict("b", "c"); // c değil a kazanır
@@ -124,7 +137,8 @@ const fakeStore = {
 // 6. Oyuncu tahmin edemez; izleyici olmayan id de edemez.
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.predict("a", "b"); // oyuncu — sessizce yok sayılır
   room.predict("ghost", "a"); // odada yok — yok sayılır
@@ -135,7 +149,8 @@ const fakeStore = {
 // 7. Masaya oturunca tahmin düşer (artık oyuncu).
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   room.predict("b", "a");
@@ -148,7 +163,8 @@ const fakeStore = {
 {
   const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
   room.setProgressStore(fakeStore as never);
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.start("a", "classic");
   room.becomeSpectator("b");
   room.predict("b", "a");
@@ -164,9 +180,11 @@ const fakeStore = {
 //    olduğu için genel kural pencereyi maç sonuna dek açık bırakırdı (B49).
 {
   const room = new Room("r", () => {}, { minPlayers: 1 });
-  addPlayer(room, "a"); addPlayer(room, "b");
+  addPlayer(room, "a");
+  addPlayer(room, "b");
   room.setGameMode("a", "blitz");
-  room.setReady("a", true); room.setReady("b", true); // setGameMode ready'leri sıfırlar
+  room.setReady("a", true);
+  room.setReady("b", true); // setGameMode ready'leri sıfırlar
   room.start("a", "blitz");
   room.becomeSpectator("b");
   assert.equal(room.phase, "countdown");

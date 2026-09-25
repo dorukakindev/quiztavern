@@ -5,7 +5,10 @@ import { sampleCirclePrompts } from "../src/circle";
 import type { Difficulty } from "../../shared/types";
 
 let ok = true;
-const log = (pass: boolean, m: string) => { console.log(`${pass ? "✓" : "✗"} ${m}`); ok = ok && pass; };
+const log = (pass: boolean, m: string) => {
+  console.log(`${pass ? "✓" : "✗"} ${m}`);
+  ok = ok && pass;
+};
 
 for (const d of ["kolay", "orta", "zor"] as Difficulty[]) {
   const qs = sampleQuestions(20, [], new Set(), d);

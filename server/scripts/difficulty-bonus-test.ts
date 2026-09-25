@@ -11,13 +11,14 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number }>;
-  questions: Question[];
-  qIndex: number;
-  reveal(reason?: "timeout" | "allAnswered"): void;
-  beginQuestion(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<string, { score: number }>;
+    questions: Question[];
+    qIndex: number;
+    reveal(reason?: "timeout" | "allAnswered"): void;
+    beginQuestion(): void;
+  };
 
 const fake = (difficulty: Difficulty): Question => ({
   id: `q-${difficulty}`,
@@ -77,4 +78,4 @@ console.log(`\n[difficulty-bonus] sonuç: ${passed} geçti, 0 kaldı`);
 
 // Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
 // testler bittiğinde çık.
-process.exit(0)
+process.exit(0);

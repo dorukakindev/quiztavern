@@ -14,11 +14,11 @@
 
 ## 0. Gerçek Build ve Test Sonuçları
 
-| Komut | Sonuç | Not |
-|---|---|---|
-| `npm ci` | ✅ | 223 paket |
-| `npm run build` (server + client) | ✅ | `tsc --noEmit` + esbuild + vite; tip hatası yok |
-| `npm test` (33 paket) | ⚠️ | İki **test altyapısı** hatası zinciri kırıyor (B19, B20); kalan 31 paketin tüm assertion'ları geçiyor |
+| Komut                             | Sonuç | Not                                                                                                   |
+| --------------------------------- | ----- | ----------------------------------------------------------------------------------------------------- |
+| `npm ci`                          | ✅    | 223 paket                                                                                             |
+| `npm run build` (server + client) | ✅    | `tsc --noEmit` + esbuild + vite; tip hatası yok                                                       |
+| `npm test` (33 paket)             | ⚠️    | İki **test altyapısı** hatası zinciri kırıyor (B19, B20); kalan 31 paketin tüm assertion'ları geçiyor |
 
 - `npm test` boşluk içeren repo yolundan (ör. `…\quiz en yeni\quiztavern`) koşulduğunda `test:dod` aşamasında **ENOENT ile çöker** — nedeni B19.
 - Boşluksuz yoldan koşulduğunda **yalnızca** `test:admin-reports` son temizlikte **EPERM** ile çöker (B20); 9 assertion'ının tamamı geçer.
@@ -27,12 +27,12 @@
 
 **v3 ek doğrulamaları (ikinci tam geçiş):**
 
-| Komut / deney | Sonuç |
-|---|---|
-| `node server/dist/src/index.js` (prod bundle boot) | ❌ **ENOENT** — `dist/data/questions-numeric.json` eksik (B45); `dist/data/` altında yalnız `questions.json` |
-| Geçici `Room` harness'i (mock `ProgressStore`, gerçek `start`/`finish`) | B46 (blitz: 2 cevap→30 "yanlış" kayıt; çember: 20 kullanılmayan soru; elim: 3 turluk maç→20 asked), B47 (orphan), B48 (−200'e düşen basmayanlar), B49 (blitz'te geç predict kabulü), B50 (bayat `elim` modu zorlanır), B51 (numeric review boş), B53 (duel `roundLimit=15`) — hepsi yeniden üretildi; betik koşudan sonra silindi |
-| `blitz/numeric/zil/elim/duel/predict/board/word/timeline` test paketleri | ✅ tümü geçer — mevcut paket bu yeni bulguları kapsamıyor |
-| **v4:** Geçici `Room` harness'i (dar havuz + yazar + pano/zil senaryoları) | B59 (`questions.length=14`, 5 delik `[5,6,8,10,12]`, delik turda `beginQuestion` → **podium**), B60 (ayrılan picker hâlâ `pickerId`; başkasının `pickCell`'i yutulur), B61 (zil kazananı izleyiciye geçince `buzzWinnerId` takılı kalır, kimse basamaz) — hepsi yeniden üretildi; betik koşudan sonra silindi |
+| Komut / deney                                                              | Sonuç                                                                                                                                                                                                                                                                                                                             |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `node server/dist/src/index.js` (prod bundle boot)                         | ❌ **ENOENT** — `dist/data/questions-numeric.json` eksik (B45); `dist/data/` altında yalnız `questions.json`                                                                                                                                                                                                                      |
+| Geçici `Room` harness'i (mock `ProgressStore`, gerçek `start`/`finish`)    | B46 (blitz: 2 cevap→30 "yanlış" kayıt; çember: 20 kullanılmayan soru; elim: 3 turluk maç→20 asked), B47 (orphan), B48 (−200'e düşen basmayanlar), B49 (blitz'te geç predict kabulü), B50 (bayat `elim` modu zorlanır), B51 (numeric review boş), B53 (duel `roundLimit=15`) — hepsi yeniden üretildi; betik koşudan sonra silindi |
+| `blitz/numeric/zil/elim/duel/predict/board/word/timeline` test paketleri   | ✅ tümü geçer — mevcut paket bu yeni bulguları kapsamıyor                                                                                                                                                                                                                                                                         |
+| **v4:** Geçici `Room` harness'i (dar havuz + yazar + pano/zil senaryoları) | B59 (`questions.length=14`, 5 delik `[5,6,8,10,12]`, delik turda `beginQuestion` → **podium**), B60 (ayrılan picker hâlâ `pickerId`; başkasının `pickCell`'i yutulur), B61 (zil kazananı izleyiciye geçince `buzzWinnerId` takılı kalır, kimse basamaz) — hepsi yeniden üretildi; betik koşudan sonra silindi                     |
 
 ---
 
@@ -105,10 +105,11 @@ return CATEGORY_LABELS_EN[name] ?? name              // ← EN arayüzde "Orta �
 - **KANIT:** dedup yalnız TR cevaba bakar:
 
 ```ts
-answers.add(normalizeCircleAnswer(p.answer))   // answerEn kontrol EDİLMİYOR
+answers.add(normalizeCircleAnswer(p.answer)); // answerEn kontrol EDİLMİYOR
 ```
 
 Veride **52 farklı `answerEn` değeri birden fazla kayıtta geçiyor** (×4 tekrar: `gravity`, `bias`; ×3: `desert`, `camera`, `cat`, `zipper`, `fandom`, `victory`, `neutron`, `token`, `cloud`; ×2: 41 grup — `checkpoint`, `survival`, `match`, `weapon`, `ice`, `telescope`, `referee`, `epoch`, `hemingway`, `pulsar`, `quasar`…).
+
 - **Senaryo:** Espor kategorisinde `galibiyet → "victory"` ve `zafer → "victory"` dedup anahtarları farklı olduğundan **aynı maçta birlikte düşebilir**; EN arayüzdeki oyuncu aynı cevabı iki kez görür/yazar. TR'de 104 farklı cevap birden fazla kayıtta olsa da maç içi TR dedup bunu engelliyor — sorun yalnız EN tarafında.
 - **Düzeltme:** dedup setine `normalizeCircleAnswer(p.answerEn ?? "")` de ekle (1 satır). `tools/validate-questions.ts`'a `answerEn` duplicate uyarısı ekle.
 
@@ -163,6 +164,7 @@ const hint = `${t(`badge.${badge}.hint` as StringKey)} · ${t(selected ? 'title.
 ```
 
 `as StringKey` cast'i tip denetimini bypass ettiği için derleyici bunu göremez; `translate()` bilinmeyen anahtar için `undefined` döner.
+
 - **Senaryo:** Haftalık turnuvayı kazanan oyuncunun rozet seçici satırında ve podyum "Yeni rozet!" kutusunda tooltip **"undefined · Unvan olarak tak"** olarak görünür. Diğer 19 rozetin tamamında `.hint` var; yalnız bu rozet `.desc` kullanıyor.
 - **Düzeltme:** TR+EN için `badge.haftaSampiyonu.desc` → `badge.haftaSampiyonu.hint` (veya `.hint` ekle). Savunma olarak: `translate()`'a eksik anahtar fallback'i ve `client/scripts/i18n-test.ts`'e `BADGE_KEYS × .hint` kesişim assertion'ı ekle.
 
@@ -199,7 +201,12 @@ useEffect(() => {
 // questions.ts sampleQuestions — TR/EN şıkları aynı permütasyonla taşınır:
 return pool.slice(0, n).map((q) => {
   const order = shuffle([0, 1, 2, 3]);
-  return { ...q, choices: order.map((k) => q.choices[k]), choicesEn: order.map((k) => q.choicesEn[k]), correctIndex: order.indexOf(q.correctIndex) };
+  return {
+    ...q,
+    choices: order.map((k) => q.choices[k]),
+    choicesEn: order.map((k) => q.choicesEn[k]),
+    correctIndex: order.indexOf(q.correctIndex),
+  };
 });
 ```
 
@@ -207,10 +214,10 @@ Buna karşılık `dailyQuestions()` yalnız **soru sırasını** gün-tohumlu ka
 
 Veri tarafında `correctIndex` dağılımı ağır çarpık (2357 soru, gerçek sayım):
 
-| Şık konumu | 0 | 1 | 2 | 3 |
-|---|---|---|---|---|
-| Soru sayısı | 1152 | 774 | 309 | 122 |
-| Oran | **%48,9** | %32,8 | %13,1 | %5,2 |
+| Şık konumu  | 0         | 1     | 2     | 3    |
+| ----------- | --------- | ----- | ----- | ---- |
+| Soru sayısı | 1152      | 774   | 309   | 122  |
+| Oran        | **%48,9** | %32,8 | %13,1 | %5,2 |
 
 - **Senaryo (a) Günlük:** Günlük maç skorlu, günde bir kez ve lider tablosuna işlenen bir mod; doğru cevap neredeyse yarısıyla 1. şıkta. Hiç bilmeyen bir oyuncu hep 1. şıkkı işaretleyerek beklenen ~2,45/5 doğruluğa ulaşır (rastgele seçim ~1,25). Aynı 5 soru gün boyunca herkese aynı düzende geldiği için avantaj tüm gün geçerlidir — skor adaleti bozulur.
 - **Senaryo (b) Paket/yazar:** Paket ve yazar soruları yazarın girdiği düzende sunulur; yazarın konum alışkanlığı ve aynı paketin tekrar oynanmasında konum hafızası (hangi soruda cevabın kaçıncı şıkta olduğu) sömürülebilir.
@@ -260,11 +267,12 @@ this.spectators.set(id, { ... });          // ← hiç çalışmaz
 - **KANIT:**
 
 ```ts
-const correct = player.choice === question.correctIndex;   // choice=null → false
+const correct = player.choice === question.correctIndex; // choice=null → false
 if (this.gameMode === "zil") gain = correct ? this.zilValue() : -GAME.ZIL_PENALTY;
 ```
 
 Döngü yalnız zil kazananını değil **tüm uygun oyuncuları** geziyor; basmayanların `choice`'ı `null` → `!correct` → herkes −200. Yanındaki yorum "yanlış basan puan kaybeder (§6.1)" diyor — kod "bas(a)mayan da kaybeder" yapıyor.
+
 - **Yeniden üretildi:** 2 oyunculu zil maçı, kimse basmadan reveal → iki skor da `−200` (yalnızca hiçbir şey yapmadan). B11 "skor negatife düşebilir" diyordu; gerçek hacim çok daha kötü: **10 turluk maçta hiç basmayan oyuncu −2000'e iner**, masa geneli her tur kan kaybeder.
 - **Senaryo:** Pasif/dikkatli oyuncu stratejisi hiç basmamakken bile ceza yiyor; `zilFailed`'e girmemiş oyuncu ile yanlış cevap veren aynı cezayı alıyor — deneme cesaretini cezalandırmak yerine katılmamayı da cezalandırıyor (tasarım belgesiyle çelişiyor).
 - **Düzeltme:** `gain`'i `player.choice === null && !buzzFailed.has(player.id)` için `0` yap (cezayı yalnız gerçekten basıp yanlış bilene uygula); B11 ile birlikte `player.score = Math.max(0, player.score + gain)` klampini de ekle. Regresyon: "zil'de hiç basmayan oyuncu turu 0 ile bitirir" testi.
@@ -323,7 +331,7 @@ Döngü yalnız zil kazananını değil **tüm uygun oyuncuları** geziyor; basm
 ### B17. `/admin/reports` ucunda hız sınırı yok ve token karşılaştırması timing-safe değil
 
 - **Dosya:** `server/src/index.ts:84-88`
-- **KANIT:** `app.use("/auth", createRateLimitMiddleware(...))` yalnız `/auth` önekini kapsar; `/admin` için limiter yok. `if (auth !== \`Bearer ${QT_ADMIN_TOKEN}\`)` — `!==` karşılaştırması zaman sızıntısına açıktır. Bu token aynı zamanda paket yükleme hakkı da verir (`index.ts:118-121`).
+- **KANIT:** `app.use("/auth", createRateLimitMiddleware(...))` yalnız `/auth` önekini kapsar; `/admin` için limiter yok. `if (auth !== \`Bearer ${QT_ADMIN_TOKEN}\`)`—`!==` karşılaştırması zaman sızıntısına açıktır. Bu token aynı zamanda paket yükleme hakkı da verir (`index.ts:118-121`).
 - **Senaryo:** Zayıf `QT_ADMIN_TOKEN` ile sınırsız kaba kuvvet denemesi yapılabilir.
 - **Düzeltme:** `/admin` yoluna `createRateLimitMiddleware({ limit: 10, windowMs: 60_000 })` ekle; karşılaştırmayı uzunluk kontrolü + `crypto.timingSafeEqual` ile yap.
 
@@ -343,6 +351,7 @@ cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
 ```
 
 `URL.pathname` boşluğu `%20` olarak kodlar → cwd `...quiz%20en%20yeni/...` olur (var olmayan dizin) → `spawn(process.execPath, ...)` aldatıcı `spawn ...node.exe ENOENT` hatası atar. Bir üstteki satırdaki `tsxCli` doğru şekilde `fileURLToPath` ile çözülüyor — cwd aynı düzeltmeden yoksun.
+
 - **Yeniden üretildi:** `npm test`, `…\quiz en yeni\quiztavern` yolunda `test:dod` aşamasında bu hatayla çöktü; aynı repo boşluksuz yola kopyalanınca 33 paketin tamamı koştu.
 - **Düzeltme:** Tüm `cwd:` atamalarında `fileURLToPath(new URL("..", import.meta.url))` kullan.
 
@@ -415,6 +424,7 @@ private predictOpen(): boolean {
 ```
 
 Blitz tüm maç boyunca tek `question` fazında ve `qIndex === 0`'da kalır → pencere 60 saniyenin **tamamında** açık. Klasik modda pencere yalnız 1. turu kapsar; blitz'te "ilk tur" = "tüm maç".
+
 - **Yeniden üretildi:** Blitz maçında 5 ifade cevaplandıktan (açık skor farkı oluştuktan) sonra izleyici `predict` çağrısı **kabul edildi**.
 - **Senaryo:** İzleyici 55. saniyeye kadar bekler, `blitz` canlı akışında lideri görür, onu tahmin eder → `GAME.PREDICT_XP` garanti. Tahmin özelliğinin "oynamış bilgiyle tahmin hiledir" gerekçesi (718-720 yorumu) blitz'te tamamen boşa çıkıyor.
 - **Düzeltme:** `predictOpen`'da `this.gameMode === "blitz"` için erken kapan: ya hiç açma ya da ilk ~10 sn'den sonra kapat (`questionStartedAt + sabit` kontrolü). Aynı durum timeline/numeric'in ilk turunda da kısmen geçerli (tur cevapları pencere açıkken görünür) — pencereyi "ilk reveal'a kadar" olarak tanımlamak hepsini kapatır.
@@ -461,11 +471,12 @@ masa modu 'elim' → günlük başlar (modeBeforeDaily='elim') → tüm insanlar
 
 ```ts
 const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
-const slots = shuffleIdx(this.roundLimit).slice(0, count);   // ← roundLimit = İSTENEN sayı (örn. 15)
-this.questions[slots[i]] = pool[poolIdx];                    //     ama questions.length = havuz (örn. 5)
+const slots = shuffleIdx(this.roundLimit).slice(0, count); // ← roundLimit = İSTENEN sayı (örn. 15)
+this.questions[slots[i]] = pool[poolIdx]; //     ama questions.length = havuz (örn. 5)
 ```
 
 `slots` aralığı `questionCount`'a göre üretilir; `sampleQuestions`/`samplePackQuestions` dar havuzda kısa döner (benzersiz çekim — `questions.ts:171` `pool.slice(0, n)`). `slot >= questions.length`'e yazım diziyi seyrek büyütür: aradaki indeksler `undefined` kalır ve `roundLimit` şişmiş `length`'e çekilir.
+
 - **Yeniden üretildi (harness):** `Otomobil|zor` havuzu (5 soru) + `questionCount=15` + 4 yazar → `questions.length=14`, tanımlı 9, delik `[5,6,8,10,12]` → `qIndex=5`'te `beginQuestion()` → faz `countdown → podium`: **maç ilk delikte bitiyor**. Delikler yalnız gerçek havuzun sonunda açıldığı için çökme olmaz (guard'lı), ama deliğin ötesine düşen yazılmış sorular **asla sorulmaz** ve `round.total` (örn. "14") gerçek tur sayısından büyük görünür. Slot havuz içine düşerse de gerçek soru ezilir (o soru `seen`'e yazılmış ama hiç sorulmamış sayılır).
 - **Senaryo:** Küçük paket (min 1 soru) veya dar kategori+zorluk filtresi + lobide soru yazan oyuncu → yazar kendi sorusunu hiç göremez, sayaç "5/14" gibi tutarsız kalır, maç havuz bitiminde beklenenden farklı sinyalle kapanır.
 - **Düzeltme:** Enjeksiyonu `roundLimit` yeniden hesabından SONRAYA taşı ya da `slots`'u `this.questions.length` üzerinden üret (`shuffleIdx(this.questions.length)`); alternatif olarak yazılmış soruları `splice` ile değiştirme yerine slota atarken `Math.min(slot, questions.length-1)` sınırı koy. Regresyon: 3 soruluk paket + 1 yazar + count 15.
@@ -481,29 +492,29 @@ this.questions[slots[i]] = pool[poolIdx];                    //     ama question
 
 ## 4. ⚪ Düşük Bulgu
 
-| # | Bulgu | Dosya:satır | Not |
-|---|---|---|---|
-| B28 | `ROOM_TTL_MS` tanımlı ama hiç kullanılmıyor | `server/src/config.ts:179` | Yalnız izleyicisi takılı kalan odalar süresiz yaşar; idle sweep ya da kaldırma |
-| B29 | Blitz'te `firstAnswerId` yalnız DOĞRU cevapta set edilir | `server/src/rooms.ts:1371` | "En hızlı parmak" göstergesiyle tutarsız |
-| B30 | `answer()`'da deadline-sonrası reveal tetikleme oyuncu doğrulamasından önce | `server/src/rooms.ts:1242` | İzleyici de reveal'ı ~ms'ler erken tetikleyebilir; zararsız, kod düzeni |
-| B31 | Boş çalışma zamanı DB'si `server/data/question-reports.db` repoya commit edilmiş | `git ls-files server/data/` | `.gitignore` satırı (`server/data/`) sonradan eklendi; tracked dosya kalmış. Rapor geldiğinde worktree kirlenir |
-| B32 | `predict-test` mock'unda `recordQuestionStats` yok → hata log'u | `server/scripts/predict-test.ts` (mock) + `rooms.ts:2352` | Test geçer ama 3 hata log'u basar; mock'u tamamla |
-| B33 | `discord-http.ts` retry döngüsünde erişilemez `throw` | `server/src/discord-http.ts:52` | Ölü kod |
-| B34 | `socketIpLimiter` 60 bağlantı/dk/IP — NAT arkası toplu red | `server/src/index.ts:60` | Bilgi notu; çok kullanıcılı tek IP senaryosu |
-| B35 | Toast dışı emit'lerde `socket.connected` koruması yok | `client/src/lib/realtime.ts` | Kopukken socket.io tamponlar; yeniden bağlanınca bayat ayar gider |
-| B36 | `leaveGame(thenRejoin)` disconnect gelmezse takılır | `client/src/lib/realtime.ts` | El yolu var (`rejoinGame`); zaman aşımı garantisi ekle |
-| B37 | `GameSkeleton` ekran okuyucu için tamamen sessiz (`aria-hidden`) | `client/src/activity/ActivityApp.tsx:2161` | `role="status"` + görsel olmayan "Yükleniyor" |
-| B38 | `model-viewer` chunk'u 1.02 MB (build uyarısı) | `client/vite.config.ts` | Lazy `import()` ile ilk yükleme küçültülür |
-| B39 | `handleNoPlayersLeft`/`closeIfEmpty` ~30 satır kopya | `server/src/rooms.ts:463-525` | B13 ile aynı düzeltme |
-| B42 | 149 görsel dosyası hiçbir soru tarafından referans edilmiyor — **7,5 MB / 25 MB (%30 ölü ağırlık)** | `client/public/questions/` (sayım: 315 referanslı, 465 dosya) | Paketlerde görsel alanı yok (istemsiz "asset paleti" değil); ya silin ya da paket görsel seçici olarak belgelendir |
-| B43 | `fact` (reveal trivia) alanı yalnız 22/2357 soruda (%0,9) | `server/data/questions.json` | Özellik neredeyse kullanılmıyor; içerik hedefi koy |
-| B44 | En uzun soru metni 263 karakter (`ai4-chineseroom`) | `server/data/questions.json` | Dar mobil ekranda taşma/okunabilirlik testi yap |
-| B54 | Blitz'te başlık "Soru 1/30", podyum özeti "30 soru" der | `rooms.ts:1180-1184` (roundLimit=BLITZ_POOL) + `ActivityApp.tsx:1471,2111` | `round.total` havuz boyutunu yansıtıyor; tek 60 sn'lik pencere için yanıltıcı — blitz'te tur sayacı gösterme ya da `blitzAnswered` kullan |
-| B55 | `checkRematchTrigger` içinde ölü kod: `rematchVotes.clear()` sonrası `rematchVotes.values().next().value` hep `undefined` | `rooms.ts:765-766` | Fallback ilk bağlı insana düştüğü için işlevsel zarar yok; satırı sil ya da `by`'ı clear'dan önce oku |
-| B56 | Yazar soruları `category:"community"` — katalogda yok → çip ham "community" yazar, ikon jenerik "?"ye düşer | `rooms.ts:995` + `icons.tsx:93`, `i18n.ts:1114` | `CATEGORY_ICONS`/`CATEGORY_LABELS_EN`'e "community" ekle ya da yazara kategori seçtir |
-| B57 | `uploadPack` (metin yapıştırma yolu) `auth`'da yalnız `token` gönderir; `devId` yok → mock modda paket yükleme 401'e düşer | `client/src/activity/packs.ts:105-118` + `ActivityApp.tsx:829` | `PackAuth`'u buraya da bağla (yalnız dev/mock etkilenir) |
-| B58 | Pano'da `lastQuestionIds` hep boş — `sampleBoardCells`'in "son maç hariç" koruması etkisiz | `rooms.ts:1154-1159` (board'da `questions=[]` → boş set) + `questions-board.ts:46` | Alt-havuz tükenince önceki panonun soruları hemen tekrar düşebilir; `boardAsked` id'lerini `lastQuestionIds`'e taşı |
-| B61 | Zil kazananı cevap penceresinde "İzleyici ol"ursa zil ~5 sn takılır — `becomeSpectator` `zilFailWinner`'ı çağırmıyor (`removePlayer`/`markDisconnected` çağırıyor) | `rooms.ts:551-566` (eksik) vs `449`, `413` | Yeniden üretildi: kazanan izleyiciye geçti → `buzzWinnerId` takılı → kimse basamaz; `zilTimer` (ZIL_ANSWER_MS=5 sn) dolunca kendini kurtarır. `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` satırı |
+| #   | Bulgu                                                                                                                                                              | Dosya:satır                                                                        | Not                                                                                                                                                                                                                  |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| B28 | `ROOM_TTL_MS` tanımlı ama hiç kullanılmıyor                                                                                                                        | `server/src/config.ts:179`                                                         | Yalnız izleyicisi takılı kalan odalar süresiz yaşar; idle sweep ya da kaldırma                                                                                                                                       |
+| B29 | Blitz'te `firstAnswerId` yalnız DOĞRU cevapta set edilir                                                                                                           | `server/src/rooms.ts:1371`                                                         | "En hızlı parmak" göstergesiyle tutarsız                                                                                                                                                                             |
+| B30 | `answer()`'da deadline-sonrası reveal tetikleme oyuncu doğrulamasından önce                                                                                        | `server/src/rooms.ts:1242`                                                         | İzleyici de reveal'ı ~ms'ler erken tetikleyebilir; zararsız, kod düzeni                                                                                                                                              |
+| B31 | Boş çalışma zamanı DB'si `server/data/question-reports.db` repoya commit edilmiş                                                                                   | `git ls-files server/data/`                                                        | `.gitignore` satırı (`server/data/`) sonradan eklendi; tracked dosya kalmış. Rapor geldiğinde worktree kirlenir                                                                                                      |
+| B32 | `predict-test` mock'unda `recordQuestionStats` yok → hata log'u                                                                                                    | `server/scripts/predict-test.ts` (mock) + `rooms.ts:2352`                          | Test geçer ama 3 hata log'u basar; mock'u tamamla                                                                                                                                                                    |
+| B33 | `discord-http.ts` retry döngüsünde erişilemez `throw`                                                                                                              | `server/src/discord-http.ts:52`                                                    | Ölü kod                                                                                                                                                                                                              |
+| B34 | `socketIpLimiter` 60 bağlantı/dk/IP — NAT arkası toplu red                                                                                                         | `server/src/index.ts:60`                                                           | Bilgi notu; çok kullanıcılı tek IP senaryosu                                                                                                                                                                         |
+| B35 | Toast dışı emit'lerde `socket.connected` koruması yok                                                                                                              | `client/src/lib/realtime.ts`                                                       | Kopukken socket.io tamponlar; yeniden bağlanınca bayat ayar gider                                                                                                                                                    |
+| B36 | `leaveGame(thenRejoin)` disconnect gelmezse takılır                                                                                                                | `client/src/lib/realtime.ts`                                                       | El yolu var (`rejoinGame`); zaman aşımı garantisi ekle                                                                                                                                                               |
+| B37 | `GameSkeleton` ekran okuyucu için tamamen sessiz (`aria-hidden`)                                                                                                   | `client/src/activity/ActivityApp.tsx:2161`                                         | `role="status"` + görsel olmayan "Yükleniyor"                                                                                                                                                                        |
+| B38 | `model-viewer` chunk'u 1.02 MB (build uyarısı)                                                                                                                     | `client/vite.config.ts`                                                            | Lazy `import()` ile ilk yükleme küçültülür                                                                                                                                                                           |
+| B39 | `handleNoPlayersLeft`/`closeIfEmpty` ~30 satır kopya                                                                                                               | `server/src/rooms.ts:463-525`                                                      | B13 ile aynı düzeltme                                                                                                                                                                                                |
+| B42 | 149 görsel dosyası hiçbir soru tarafından referans edilmiyor — **7,5 MB / 25 MB (%30 ölü ağırlık)**                                                                | `client/public/questions/` (sayım: 315 referanslı, 465 dosya)                      | Paketlerde görsel alanı yok (istemsiz "asset paleti" değil); ya silin ya da paket görsel seçici olarak belgelendir                                                                                                   |
+| B43 | `fact` (reveal trivia) alanı yalnız 22/2357 soruda (%0,9)                                                                                                          | `server/data/questions.json`                                                       | Özellik neredeyse kullanılmıyor; içerik hedefi koy                                                                                                                                                                   |
+| B44 | En uzun soru metni 263 karakter (`ai4-chineseroom`)                                                                                                                | `server/data/questions.json`                                                       | Dar mobil ekranda taşma/okunabilirlik testi yap                                                                                                                                                                      |
+| B54 | Blitz'te başlık "Soru 1/30", podyum özeti "30 soru" der                                                                                                            | `rooms.ts:1180-1184` (roundLimit=BLITZ_POOL) + `ActivityApp.tsx:1471,2111`         | `round.total` havuz boyutunu yansıtıyor; tek 60 sn'lik pencere için yanıltıcı — blitz'te tur sayacı gösterme ya da `blitzAnswered` kullan                                                                            |
+| B55 | `checkRematchTrigger` içinde ölü kod: `rematchVotes.clear()` sonrası `rematchVotes.values().next().value` hep `undefined`                                          | `rooms.ts:765-766`                                                                 | Fallback ilk bağlı insana düştüğü için işlevsel zarar yok; satırı sil ya da `by`'ı clear'dan önce oku                                                                                                                |
+| B56 | Yazar soruları `category:"community"` — katalogda yok → çip ham "community" yazar, ikon jenerik "?"ye düşer                                                        | `rooms.ts:995` + `icons.tsx:93`, `i18n.ts:1114`                                    | `CATEGORY_ICONS`/`CATEGORY_LABELS_EN`'e "community" ekle ya da yazara kategori seçtir                                                                                                                                |
+| B57 | `uploadPack` (metin yapıştırma yolu) `auth`'da yalnız `token` gönderir; `devId` yok → mock modda paket yükleme 401'e düşer                                         | `client/src/activity/packs.ts:105-118` + `ActivityApp.tsx:829`                     | `PackAuth`'u buraya da bağla (yalnız dev/mock etkilenir)                                                                                                                                                             |
+| B58 | Pano'da `lastQuestionIds` hep boş — `sampleBoardCells`'in "son maç hariç" koruması etkisiz                                                                         | `rooms.ts:1154-1159` (board'da `questions=[]` → boş set) + `questions-board.ts:46` | Alt-havuz tükenince önceki panonun soruları hemen tekrar düşebilir; `boardAsked` id'lerini `lastQuestionIds`'e taşı                                                                                                  |
+| B61 | Zil kazananı cevap penceresinde "İzleyici ol"ursa zil ~5 sn takılır — `becomeSpectator` `zilFailWinner`'ı çağırmıyor (`removePlayer`/`markDisconnected` çağırıyor) | `rooms.ts:551-566` (eksik) vs `449`, `413`                                         | Yeniden üretildi: kazanan izleyiciye geçti → `buzzWinnerId` takılı → kimse basamaz; `zilTimer` (ZIL_ANSWER_MS=5 sn) dolunca kendini kurtarır. `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` satırı |
 
 ---
 
@@ -527,15 +538,15 @@ Kod okumasının yanı sıra üç veri dosyasının tamamı betimsel analizle ta
 
 **Doğrulanan temizlikler (bulgu değil, güvence):**
 
-| Kontrol | Sonuç |
-|---|---|
-| Eksik görsel dosyası | **0** — 315 referanslı görselin tamamı `client/public/questions/` altında mevcut |
-| `textEn == text` (çevrilmemiş metin) | **0** / 2357 |
-| Aynı soru metni | 17 grup, **tamamı farklı görselli** (bilinçli logo sorusu deseni — validator gürültüsü, B40'taki uyarı dışında) |
+| Kontrol                                 | Sonuç                                                                                                                                                                                                                                    |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Eksik görsel dosyası                    | **0** — 315 referanslı görselin tamamı `client/public/questions/` altında mevcut                                                                                                                                                         |
+| `textEn == text` (çevrilmemiş metin)    | **0** / 2357                                                                                                                                                                                                                             |
+| Aynı soru metni                         | 17 grup, **tamamı farklı görselli** (bilinçli logo sorusu deseni — validator gürültüsü, B40'taki uyarı dışında)                                                                                                                          |
 | `choicesEn == choices` (EN şık kopyası) | 1039 kayıt — **çeviri hatası değil:** neredeyse tamamı özel ad/sayı/yıl (`Martin Scorsese`, `1977`, `Pixar`); Türkçe karakter içeren yalnız 22 kayıt ve onlar da özel ad (`İsmet İnönü`, `Nevşehir`, `Jörmungandr` — EN'de aynı yazılır) |
-| Timeline çözümü | `orderSolution()` diziden değil **yıldan türetilir** (`rooms.ts:1342-1345`) — 2 soruda (`ord-004`, `ord-008`) events dizisi kronolojik sıralı değil ama çözüm doğru; `year` tekrarı yükleyicide engelli |
-| Determinizm | Günlük seed'i UTC gün anahtarından; Fisher-Yates deterministik — aynı gün herkese aynı 5 soru |
-| Zorluk dağılımı | kolay 817 / orta 948 / zor 592 — dengeli |
+| Timeline çözümü                         | `orderSolution()` diziden değil **yıldan türetilir** (`rooms.ts:1342-1345`) — 2 soruda (`ord-004`, `ord-008`) events dizisi kronolojik sıralı değil ama çözüm doğru; `year` tekrarı yükleyicide engelli                                  |
+| Determinizm                             | Günlük seed'i UTC gün anahtarından; Fisher-Yates deterministik — aynı gün herkese aynı 5 soru                                                                                                                                            |
+| Zorluk dağılımı                         | kolay 817 / orta 948 / zor 592 — dengeli                                                                                                                                                                                                 |
 
 **Veri bulguları (yukarıdaki bulgulara kanıt):**
 
@@ -551,43 +562,43 @@ Kod okumasının yanı sıra üç veri dosyasının tamamı betimsel analizle ta
 
 Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzeltme önerisiyle yer alıyor. Kalanların durumu:
 
-| Eski # | İddia | Hüküm | Kanıt özeti |
-|---|---|---|---|
-| 1 | 30+ circle letter/answer uyumsuz | ❌ **ÇÜRÜTÜLDÜ** | Türkçe locale ile 0 uyumsuz; İ/ı başlayan 29 kayıtın tamamı kurallı |
-| 2 | Duplicate circle cevapları | ⚠️ Kısmen | 104 grup var ama maç içi TR dedup oyunu kırmıyor (gerçek sorun EN tarafı: B3) |
-| 3 | handleNoPlayersLeft connected kontrolü | ❌ ÇÜRÜTÜLDÜ | Kopan oyuncu bilinçli sayılır — 30 sn reconnect grace tasarımı; önerilen düzeltme grace'i bozardı |
-| 4, 5 | useEffect/klavye listener temizliği | ❌ ÇÜRÜTÜLDÜ | Tüm listener/interval cleanup'lı; tek istisna 0 ms'lik kozmetik `setTimeout` |
-| 6 | sdkReady yarışı | ❌ Büyük ölçüde çürütüldü | Tekil `sessionPromise` + `connectOnce`; kalan küçük yarış B24 |
-| 7 | Reconnect bellek sızıntısı | ❌ ÇÜRÜTÜLDÜ | 7 dinleyicinin tamamı `off` + `disconnect` |
-| 8 | revealIfEveryoneAnswered yarış durumu | ❌ ÇÜRÜTÜLDÜ | Tüm akış senkron, faz-korumalı; Node tek thread — çift reveal imkânsız. (Ama blitz erken reveal B6'da gerçek) |
-| 9, 10, 11 | pictureQuota/bot süresi | ❌ ÇÜRÜTÜLDÜ | `botDelay` her zaman aktif sürenin %80'inin altında; `pictureQuota` belgelendiği gibi |
-| 12 | XP transaction yok | ⚠️ Kısmen | `recordMatch` atomik; yalnız `bonusXp` açık (B15) |
-| 13 | Timezone | ❌ ÇÜRÜTÜLDÜ | Tüm tarih anahtarları tutarlı UTC (ay/ISO hafta/gün) |
-| 14 | OAuth CSRF | ❌ ÇÜRÜTÜLDÜ | 32 bayt state + httpOnly cookie + `timingSafeEqual` (`index.ts:232-256`) |
-| 15 | Membership TTL | ❌ ÇÜRÜTÜLDÜ | 45 sn pozitif / 10 sn negatif cache + budama |
-| 16 | Rate limiter bellek | ❌ ÇÜRÜTÜLDÜ | `maxEntries` + her 256 işlemde prune + evict |
-| 17 | Pack upload limiti | ❌ ÇÜRÜTÜLDÜ | `express.json 256kb` + 20/dk + 422 şema doğrulama |
-| 18 | CSV enjeksiyon | ❌ Geçersiz | CSV yalnız import; export ucu yok |
-| 19 | i18n eksik çeviri | ❌ ÇÜRÜTÜLDÜ | `en: Record<StringKey, string>` tip sözleşmesi eksik çeviriyi derleme hatası yapar; TR/EN kümeleri birebir. Tek gerçek açık: `haftaSampiyonu.hint` (B7) |
-| 21 | Reconnect sonsuz bekleme | ❌ ÇÜRÜTÜLDÜ | Overlay'de expired durumu + iki çıkış butonu |
-| 23 | clientErrors hassas veri | ⚠️ Kısmen | Token yok; ham URL kalıntısı (B27) |
-| 24 | WebGL context kaybı | ✅ Doğrulandı | B23 |
-| 25 | SFX autoplay | ✅ Doğrulandı (kısmen) | B22 |
-| 26 | seededRandom determinizmi | ❌ ÇÜRÜTÜLDÜ | Seed UTC gün anahtarından; Fisher-Yates deterministik |
-| 27 | Pack ID collision | ❌ ÇÜRÜTÜLDÜ | `crypto.randomUUID()` + slugify çakışma son eki |
-| 28 | Kick sonrası reconnect | ❌ ÇÜRÜTÜLDÜ | `kickedUntil` 5 dk ban, tüm giriş yollarında uygulanıyor (test'le de doğrulandı) |
-| 29 | BootCurtain sonsuz animasyon | ❌ ÇÜRÜTÜLDÜ | 1500 ms → fade → unmount, temizlikli |
-| 30 | seasonKey | ❌ ÇÜRÜTÜLDÜ | UTC ay; geçişler tutarlı |
-| 31 | Eksik kategori ikonu | ⚠️ Çürütüldü AMA… | Mevcut 48 kategorinin ikonu tam; **sonradan eklenen 5 kategoride gerçekten eksik** (B2) |
-| 32 | Botlar aynı cevabı verir | ❌ ÇÜRÜTÜLDÜ | Her bot bağımsız `0.45` doğruluk + rastgele yanlış şık |
-| 33 | Galaxy animasyonu | ❌ ÇÜRÜTÜLDÜ | `prefers-reduced-motion` desteği mevcut |
-| 34 | Graceful shutdown | ⚠️ Kısmen | io/http kapanışı var; DB close yok (B16) |
-| 35 | Discord retry-after | ❌ ÇÜRÜTÜLDÜ | `retry-after` + `x-ratelimit-reset-after` + 5 sn tavan + 10 sn timeout |
-| 36 | dominantDifficulty | ❌ ÇÜRÜTÜLDÜ | Tally + karşılaştırma doğru |
-| 37 | Focus trap | ⚠️ Kısmen | 6 modal'da `useFocusTrap` var; yalnız lightbox eksik (B25) |
-| 38 | Report rate limit | ❌ ÇÜRÜTÜLDÜ | Per-socket 80 olay/5 sn + `UNIQUE(user_id, question_id)` |
-| 39 | Question ID benzersizliği | ❌ ÇÜRÜTÜLDÜ | Yükleyici duplicate id'de sunucuyu açtırmıyor |
-| 40 | Podyum ses stacking | ⚠️ Bilgi | Kısa zarflar; kasıtlı katmanlama |
+| Eski #    | İddia                                  | Hüküm                     | Kanıt özeti                                                                                                                                             |
+| --------- | -------------------------------------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1         | 30+ circle letter/answer uyumsuz       | ❌ **ÇÜRÜTÜLDÜ**          | Türkçe locale ile 0 uyumsuz; İ/ı başlayan 29 kayıtın tamamı kurallı                                                                                     |
+| 2         | Duplicate circle cevapları             | ⚠️ Kısmen                 | 104 grup var ama maç içi TR dedup oyunu kırmıyor (gerçek sorun EN tarafı: B3)                                                                           |
+| 3         | handleNoPlayersLeft connected kontrolü | ❌ ÇÜRÜTÜLDÜ              | Kopan oyuncu bilinçli sayılır — 30 sn reconnect grace tasarımı; önerilen düzeltme grace'i bozardı                                                       |
+| 4, 5      | useEffect/klavye listener temizliği    | ❌ ÇÜRÜTÜLDÜ              | Tüm listener/interval cleanup'lı; tek istisna 0 ms'lik kozmetik `setTimeout`                                                                            |
+| 6         | sdkReady yarışı                        | ❌ Büyük ölçüde çürütüldü | Tekil `sessionPromise` + `connectOnce`; kalan küçük yarış B24                                                                                           |
+| 7         | Reconnect bellek sızıntısı             | ❌ ÇÜRÜTÜLDÜ              | 7 dinleyicinin tamamı `off` + `disconnect`                                                                                                              |
+| 8         | revealIfEveryoneAnswered yarış durumu  | ❌ ÇÜRÜTÜLDÜ              | Tüm akış senkron, faz-korumalı; Node tek thread — çift reveal imkânsız. (Ama blitz erken reveal B6'da gerçek)                                           |
+| 9, 10, 11 | pictureQuota/bot süresi                | ❌ ÇÜRÜTÜLDÜ              | `botDelay` her zaman aktif sürenin %80'inin altında; `pictureQuota` belgelendiği gibi                                                                   |
+| 12        | XP transaction yok                     | ⚠️ Kısmen                 | `recordMatch` atomik; yalnız `bonusXp` açık (B15)                                                                                                       |
+| 13        | Timezone                               | ❌ ÇÜRÜTÜLDÜ              | Tüm tarih anahtarları tutarlı UTC (ay/ISO hafta/gün)                                                                                                    |
+| 14        | OAuth CSRF                             | ❌ ÇÜRÜTÜLDÜ              | 32 bayt state + httpOnly cookie + `timingSafeEqual` (`index.ts:232-256`)                                                                                |
+| 15        | Membership TTL                         | ❌ ÇÜRÜTÜLDÜ              | 45 sn pozitif / 10 sn negatif cache + budama                                                                                                            |
+| 16        | Rate limiter bellek                    | ❌ ÇÜRÜTÜLDÜ              | `maxEntries` + her 256 işlemde prune + evict                                                                                                            |
+| 17        | Pack upload limiti                     | ❌ ÇÜRÜTÜLDÜ              | `express.json 256kb` + 20/dk + 422 şema doğrulama                                                                                                       |
+| 18        | CSV enjeksiyon                         | ❌ Geçersiz               | CSV yalnız import; export ucu yok                                                                                                                       |
+| 19        | i18n eksik çeviri                      | ❌ ÇÜRÜTÜLDÜ              | `en: Record<StringKey, string>` tip sözleşmesi eksik çeviriyi derleme hatası yapar; TR/EN kümeleri birebir. Tek gerçek açık: `haftaSampiyonu.hint` (B7) |
+| 21        | Reconnect sonsuz bekleme               | ❌ ÇÜRÜTÜLDÜ              | Overlay'de expired durumu + iki çıkış butonu                                                                                                            |
+| 23        | clientErrors hassas veri               | ⚠️ Kısmen                 | Token yok; ham URL kalıntısı (B27)                                                                                                                      |
+| 24        | WebGL context kaybı                    | ✅ Doğrulandı             | B23                                                                                                                                                     |
+| 25        | SFX autoplay                           | ✅ Doğrulandı (kısmen)    | B22                                                                                                                                                     |
+| 26        | seededRandom determinizmi              | ❌ ÇÜRÜTÜLDÜ              | Seed UTC gün anahtarından; Fisher-Yates deterministik                                                                                                   |
+| 27        | Pack ID collision                      | ❌ ÇÜRÜTÜLDÜ              | `crypto.randomUUID()` + slugify çakışma son eki                                                                                                         |
+| 28        | Kick sonrası reconnect                 | ❌ ÇÜRÜTÜLDÜ              | `kickedUntil` 5 dk ban, tüm giriş yollarında uygulanıyor (test'le de doğrulandı)                                                                        |
+| 29        | BootCurtain sonsuz animasyon           | ❌ ÇÜRÜTÜLDÜ              | 1500 ms → fade → unmount, temizlikli                                                                                                                    |
+| 30        | seasonKey                              | ❌ ÇÜRÜTÜLDÜ              | UTC ay; geçişler tutarlı                                                                                                                                |
+| 31        | Eksik kategori ikonu                   | ⚠️ Çürütüldü AMA…         | Mevcut 48 kategorinin ikonu tam; **sonradan eklenen 5 kategoride gerçekten eksik** (B2)                                                                 |
+| 32        | Botlar aynı cevabı verir               | ❌ ÇÜRÜTÜLDÜ              | Her bot bağımsız `0.45` doğruluk + rastgele yanlış şık                                                                                                  |
+| 33        | Galaxy animasyonu                      | ❌ ÇÜRÜTÜLDÜ              | `prefers-reduced-motion` desteği mevcut                                                                                                                 |
+| 34        | Graceful shutdown                      | ⚠️ Kısmen                 | io/http kapanışı var; DB close yok (B16)                                                                                                                |
+| 35        | Discord retry-after                    | ❌ ÇÜRÜTÜLDÜ              | `retry-after` + `x-ratelimit-reset-after` + 5 sn tavan + 10 sn timeout                                                                                  |
+| 36        | dominantDifficulty                     | ❌ ÇÜRÜTÜLDÜ              | Tally + karşılaştırma doğru                                                                                                                             |
+| 37        | Focus trap                             | ⚠️ Kısmen                 | 6 modal'da `useFocusTrap` var; yalnız lightbox eksik (B25)                                                                                              |
+| 38        | Report rate limit                      | ❌ ÇÜRÜTÜLDÜ              | Per-socket 80 olay/5 sn + `UNIQUE(user_id, question_id)`                                                                                                |
+| 39        | Question ID benzersizliği              | ❌ ÇÜRÜTÜLDÜ              | Yükleyici duplicate id'de sunucuyu açtırmıyor                                                                                                           |
+| 40        | Podyum ses stacking                    | ⚠️ Bilgi                  | Kısa zarflar; kasıtlı katmanlama                                                                                                                        |
 
 **Not:** Eski rapor "server/data klasörü yok, build kırılır" iddiası da (ara analizde ortaya çıkmıştı) **yanlıştır** — `git ls-files server/data/` dosyaların izlendiğini gösterir; `npm ci && npm run build` bu klon üzerinden başarıyla koştu. Tek gerçek kalıntı B31'deki boş `question-reports.db`.
 
@@ -623,56 +634,56 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 
 ### Faz 0 — Dağıtım engelleyici (hemen, önce her şey)
 
-| Sıra | Bulgu | Değişiklik | Tahmini çaba |
-|---|---|---|---|
-| 0.1 | **B45 prod bundle veri eksikliği** | `build.ts`'te `server/data/*.json`'ların tamamını `dist/data/`'ya kopyala; CI'a "prod boot smoke test" (`node dist/src/index.js` ayağa kalkıyor mu) ekle | 30 dk |
+| Sıra | Bulgu                              | Değişiklik                                                                                                                                               | Tahmini çaba |
+| ---- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 0.1  | **B45 prod bundle veri eksikliği** | `build.ts`'te `server/data/*.json`'ların tamamını `dist/data/`'ya kopyala; CI'a "prod boot smoke test" (`node dist/src/index.js` ayağa kalkıyor mu) ekle | 30 dk        |
 
 > Bu tek satırlık ihmal mevcut `main`'i production'da **hiç açılmaz** yapıyor; diğer tüm düzeltmeler dağıtılamaz durumda.
 
 ### Faz 1 — Oyun doğruluğu (hemen; hepsi küçük, lokal düzeltmeler)
 
-| Sıra | Bulgu | Dosya | Değişiklik | Tahmini çaba |
-|---|---|---|---|---|
-| 1.1 | B1 orderGuesses | `rooms.ts` | `beginQuestion`'a 1 satır `clear()` + `closeIfEmpty`'ye 1 satır; timeline testine 2 turlu senaryo | 15 dk |
-| 1.2 | B4 duel countdown | `rooms.ts` | `addPlayer` eligibleFrom koşuluna duel+countdown dalı | 15 dk |
-| 1.3 | B5 elim countdown | `rooms.ts` | Aynı dalda `lives: GAME.ELIM_LIVES` (ya da roundLimit dışarı) | 15 dk |
-| 1.4 | B6 blitz erken reveal | `rooms.ts` | `revealIfEveryoneAnswered` başına blitz guard | 5 dk |
-| 1.5 | B7 hint anahtarı | `i18n.ts` | `.desc` → `.hint` (tr+en); i18n testine badge kesişimi | 15 dk |
-| 1.6 | B2 kategori ikon/EN | `icons.tsx`, `i18n.ts` | 5 ikon + 5 EN etiket | 30 dk |
-| 1.7 | B3 answerEn dedup | `circle.ts` | dedup setine 1 satır; validatora uyarı | 15 dk |
-| 1.8 | B8 klavye kısayolu | `ActivityApp.tsx` | Guard genişlet + `removedChoices` deps'e | 15 dk |
-| 1.9 | B9 deadline kilidi | `gameLogic.ts`, `rooms.ts` | İstemciye deadline koşulu; sunucuya `err.lateAnswer` | 1 sa |
-| 1.10 | B40 şık karıştırma kapsamı | `daily.ts`, `packs.ts`, `rooms.ts` | `sampleQuestions`'taki remap'i `shuffleChoices(q, rnd?)` yardımcısına çıkar; günlükte gün-tohumlu deterministik, paket/yazarda rastgele uygula | 45 dk |
-| 1.11 | B47 izleyici yetimi | `rooms.ts` | `becomeSpectator`'da `spectators.set`'i `handleNoPlayersLeft`'ten önce yap | 15 dk |
-| 1.12 | B48 zil ceza kapsamı | `rooms.ts` | `gain` hesabına `choice===null && !buzzFailed` → `0` dalı; B11 ile aynı PR | 15 dk |
-| 1.13 | B52 word kazanç göstergesi | `ActivityApp.tsx` | `YourGain`/`PipCard`/SFX zincirine `?? state.wordReveal?.gains` | 15 dk |
-| 1.14 | B51 numeric review | `rooms.ts` | `buildReview`'a numeric dalı + tur bazlı tahmin kaydı (`numericAnswers[qIndex]`) | 45 dk |
-| 1.15 | B49 blitz predict | `rooms.ts` | `predictOpen`'a blitz için erken-kapan koşulu | 15 dk |
-| 1.16 | B50 modeBeforeDaily | `rooms.ts` | İki sıfırlama yoluna `modeBeforeDaily = null` (B13 `resetToLobby` ile birleşir) | 10 dk |
-| 1.17 | B53 soru sayısı çipleri | `ActivityApp.tsx`, `rooms.ts` | Mod başına geçerli değer listesi; duel'de kontrolü gizle + sunucuda reddet | 30 dk |
-| 1.18 | B59 seyrek enjeksiyon | `rooms.ts` | `slots`'u `this.questions.length` üzerinden üret (ya da enjeksiyonu `roundLimit` yeniden hesabının altına taşı) + "küçük paket + yazar" regresyon testi | 30 dk |
-| 1.19 | B60 pano seçici sırası | `rooms.ts` | `boardPickerId`'yi `eligiblePlayers` üzerinden canlı hesapla (ya da katılım/ayrılmada sırayı süz) | 30 dk |
-| 1.20 | B61 zil kazananı izleyici | `rooms.ts` | `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` (removePlayer ile aynı satır) | 10 dk |
+| Sıra | Bulgu                      | Dosya                              | Değişiklik                                                                                                                                              | Tahmini çaba |
+| ---- | -------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 1.1  | B1 orderGuesses            | `rooms.ts`                         | `beginQuestion`'a 1 satır `clear()` + `closeIfEmpty`'ye 1 satır; timeline testine 2 turlu senaryo                                                       | 15 dk        |
+| 1.2  | B4 duel countdown          | `rooms.ts`                         | `addPlayer` eligibleFrom koşuluna duel+countdown dalı                                                                                                   | 15 dk        |
+| 1.3  | B5 elim countdown          | `rooms.ts`                         | Aynı dalda `lives: GAME.ELIM_LIVES` (ya da roundLimit dışarı)                                                                                           | 15 dk        |
+| 1.4  | B6 blitz erken reveal      | `rooms.ts`                         | `revealIfEveryoneAnswered` başına blitz guard                                                                                                           | 5 dk         |
+| 1.5  | B7 hint anahtarı           | `i18n.ts`                          | `.desc` → `.hint` (tr+en); i18n testine badge kesişimi                                                                                                  | 15 dk        |
+| 1.6  | B2 kategori ikon/EN        | `icons.tsx`, `i18n.ts`             | 5 ikon + 5 EN etiket                                                                                                                                    | 30 dk        |
+| 1.7  | B3 answerEn dedup          | `circle.ts`                        | dedup setine 1 satır; validatora uyarı                                                                                                                  | 15 dk        |
+| 1.8  | B8 klavye kısayolu         | `ActivityApp.tsx`                  | Guard genişlet + `removedChoices` deps'e                                                                                                                | 15 dk        |
+| 1.9  | B9 deadline kilidi         | `gameLogic.ts`, `rooms.ts`         | İstemciye deadline koşulu; sunucuya `err.lateAnswer`                                                                                                    | 1 sa         |
+| 1.10 | B40 şık karıştırma kapsamı | `daily.ts`, `packs.ts`, `rooms.ts` | `sampleQuestions`'taki remap'i `shuffleChoices(q, rnd?)` yardımcısına çıkar; günlükte gün-tohumlu deterministik, paket/yazarda rastgele uygula          | 45 dk        |
+| 1.11 | B47 izleyici yetimi        | `rooms.ts`                         | `becomeSpectator`'da `spectators.set`'i `handleNoPlayersLeft`'ten önce yap                                                                              | 15 dk        |
+| 1.12 | B48 zil ceza kapsamı       | `rooms.ts`                         | `gain` hesabına `choice===null && !buzzFailed` → `0` dalı; B11 ile aynı PR                                                                              | 15 dk        |
+| 1.13 | B52 word kazanç göstergesi | `ActivityApp.tsx`                  | `YourGain`/`PipCard`/SFX zincirine `?? state.wordReveal?.gains`                                                                                         | 15 dk        |
+| 1.14 | B51 numeric review         | `rooms.ts`                         | `buildReview`'a numeric dalı + tur bazlı tahmin kaydı (`numericAnswers[qIndex]`)                                                                        | 45 dk        |
+| 1.15 | B49 blitz predict          | `rooms.ts`                         | `predictOpen`'a blitz için erken-kapan koşulu                                                                                                           | 15 dk        |
+| 1.16 | B50 modeBeforeDaily        | `rooms.ts`                         | İki sıfırlama yoluna `modeBeforeDaily = null` (B13 `resetToLobby` ile birleşir)                                                                         | 10 dk        |
+| 1.17 | B53 soru sayısı çipleri    | `ActivityApp.tsx`, `rooms.ts`      | Mod başına geçerli değer listesi; duel'de kontrolü gizle + sunucuda reddet                                                                              | 30 dk        |
+| 1.18 | B59 seyrek enjeksiyon      | `rooms.ts`                         | `slots`'u `this.questions.length` üzerinden üret (ya da enjeksiyonu `roundLimit` yeniden hesabının altına taşı) + "küçük paket + yazar" regresyon testi | 30 dk        |
+| 1.19 | B60 pano seçici sırası     | `rooms.ts`                         | `boardPickerId`'yi `eligiblePlayers` üzerinden canlı hesapla (ya da katılım/ayrılmada sırayı süz)                                                       | 30 dk        |
+| 1.20 | B61 zil kazananı izleyici  | `rooms.ts`                         | `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` (removePlayer ile aynı satır)                                                           | 10 dk        |
 
 ### Faz 2 — Sağlamlık ve geliştirici deneyimi
 
-| Sıra | Bulgu | Değişiklik |
-|---|---|---|
-| 2.1 | B19 test cwd | 7 betikte `fileURLToPath` (tek PR, mekanik) |
-| 2.2 | B20 admin-reports temizlik | `exit` bekleme / `maxRetries` |
-| 2.3 | B15 bonusXp | `db.transaction` sarmalı |
-| 2.4 | B16 shutdown DB close | `finish()` içinde 3 `close()` |
-| 2.5 | B17 admin rate limit | Limiter + `timingSafeEqual` |
-| 2.6 | B18 hata işleyici | Global JSON error handler |
-| 2.7 | B10 wordLetter limiti | Oyuncu başına 1 harf / maliyet tasarım kararı |
-| 2.8 | B11 zil clamp | `Math.max(0, ...)` |
-| 2.9 | B12 boardPickerOrder | Atamayı sıfırlama döngüsünden sonra yap |
-| 2.10 | B13/B39 ikiz fonksiyonlar | Tek `resetToLobby()` |
-| 2.11 | B14 answer mod filtresi | Geçerli mod `Set`'i |
-| 2.12 | B21 Fly volume | Entrypoint chown+su veya doküman |
+| Sıra | Bulgu                            | Değişiklik                                                                                                                                                                                                                 |
+| ---- | -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.1  | B19 test cwd                     | 7 betikte `fileURLToPath` (tek PR, mekanik)                                                                                                                                                                                |
+| 2.2  | B20 admin-reports temizlik       | `exit` bekleme / `maxRetries`                                                                                                                                                                                              |
+| 2.3  | B15 bonusXp                      | `db.transaction` sarmalı                                                                                                                                                                                                   |
+| 2.4  | B16 shutdown DB close            | `finish()` içinde 3 `close()`                                                                                                                                                                                              |
+| 2.5  | B17 admin rate limit             | Limiter + `timingSafeEqual`                                                                                                                                                                                                |
+| 2.6  | B18 hata işleyici                | Global JSON error handler                                                                                                                                                                                                  |
+| 2.7  | B10 wordLetter limiti            | Oyuncu başına 1 harf / maliyet tasarım kararı                                                                                                                                                                              |
+| 2.8  | B11 zil clamp                    | `Math.max(0, ...)`                                                                                                                                                                                                         |
+| 2.9  | B12 boardPickerOrder             | Atamayı sıfırlama döngüsünden sonra yap                                                                                                                                                                                    |
+| 2.10 | B13/B39 ikiz fonksiyonlar        | Tek `resetToLobby()`                                                                                                                                                                                                       |
+| 2.11 | B14 answer mod filtresi          | Geçerli mod `Set`'i                                                                                                                                                                                                        |
+| 2.12 | B21 Fly volume                   | Entrypoint chown+su veya doküman                                                                                                                                                                                           |
 | 2.13 | **B46 kalibrasyon zehirlenmesi** | `finish()` istatistik döngüsünü mod farkındalıklı yap: blitz→`blitzTrail`, çember/kelime→`typed[]`, pano→`boardAsked`; elim'de ölü/oynanmamış turları hariç tut. Etkisi geniş (kalibrasyon verisi) ama kod lokal — ~1-2 sa |
-| 2.14 | B46/çember havuz yakması | Çember için `this.questions` örneklemesini atla (`[]` yap) — `seen`'e boşa yazmayı keser ve 2.13'ün bir yanını otomatik kapatır |
-| 2.15 | B58 pano `lastQuestionIds` | `boardAsked` id'lerini maç sonunda `lastQuestionIds`'e taşı |
+| 2.14 | B46/çember havuz yakması         | Çember için `this.questions` örneklemesini atla (`[]` yap) — `seen`'e boşa yazmayı keser ve 2.13'ün bir yanını otomatik kapatır                                                                                            |
+| 2.15 | B58 pano `lastQuestionIds`       | `boardAsked` id'lerini maç sonunda `lastQuestionIds`'e taşı                                                                                                                                                                |
 
 ### Faz 3 — İçerik kalitesi ve cila
 
@@ -696,4 +707,4 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 
 ---
 
-*Rapor tarihi: 2026-02-24 · Analiz: kodun tamamının üç tam geçişle okunması + `npm ci`/`build`/`test` koşuları + `Room`-harness doğrulama betikleri (v3 + v4) + prod bundle boot denemesi (Node 25.6.1, Windows) · Hiçbir kaynak kod değiştirilmedi.*
+_Rapor tarihi: 2026-02-24 · Analiz: kodun tamamının üç tam geçişle okunması + `npm ci`/`build`/`test` koşuları + `Room`-harness doğrulama betikleri (v3 + v4) + prod bundle boot denemesi (Node 25.6.1, Windows) · Hiçbir kaynak kod değiştirilmedi._

@@ -24,13 +24,13 @@ import type {
  */
 
 // ── Ekonomi sabitleri ────────────────────────────────────────────────────
-export const XP_MATCH_BASE = 20;        // maçı tamamlayana katılım ödülü
+export const XP_MATCH_BASE = 20; // maçı tamamlayana katılım ödülü
 export const XP_PER_CORRECT = 10;
-export const XP_STREAK_POINT = 3;       // maç içi en iyi seri başına (10'a kadar)
-export const XP_WIN = 50;               // maçı kazanma (tekli) veya takım galibiyeti
-export const XP_RUNNER_UP = 25;         // 2.
-export const XP_THIRD = 10;             // 3.
-export const XP_LEVEL_STEP = 100;       // seviye atlama maliyeti her adımda bu kadar artar
+export const XP_STREAK_POINT = 3; // maç içi en iyi seri başına (10'a kadar)
+export const XP_WIN = 50; // maçı kazanma (tekli) veya takım galibiyeti
+export const XP_RUNNER_UP = 25; // 2.
+export const XP_THIRD = 10; // 3.
+export const XP_LEVEL_STEP = 100; // seviye atlama maliyeti her adımda bu kadar artar
 
 /** Lig eşikleri toplam XP üzerinden — büyükten küçüğe sıralı tutulur. */
 export const LEAGUE_THRESHOLDS: readonly { key: LeagueKey; minXp: number }[] = [
@@ -113,7 +113,7 @@ interface BadgeStats {
  *  sayaç + hedef. `bestCategory` istisnadır — kategori doğrularının en
  *  büyüğü BadgeStats'te yok, snapshot'ta ayrıca doldurulur. */
 interface BadgeGoal {
-  stat: keyof BadgeStats | 'bestCategory';
+  stat: keyof BadgeStats | "bestCategory";
   target: number;
 }
 
@@ -124,14 +124,17 @@ interface BadgeDef {
   goal?: BadgeGoal;
 }
 
-const leagueMinXp = (key: LeagueKey) =>
-  LEAGUE_THRESHOLDS.find((tier) => tier.key === key)?.minXp ?? 0;
+const leagueMinXp = (key: LeagueKey) => LEAGUE_THRESHOLDS.find((tier) => tier.key === key)?.minXp ?? 0;
 
 /** shared/types.ts BADGE_KEYS ile birebir aynı anahtar kümesi — tip denetimi
  *  katar üstünden değil, eksik/fazla anahtar derlemede yakalanır. */
 export const BADGE_DEFS: readonly BadgeDef[] = [
   { key: "haftaSampiyonu", earned: (s) => s.lastWeekChamp },
-  { key: "kategoriUstasi", earned: (s) => s.masteryCount >= 1, goal: { stat: "bestCategory", target: GAME.MASTERY_CORRECT } },
+  {
+    key: "kategoriUstasi",
+    earned: (s) => s.masteryCount >= 1,
+    goal: { stat: "bestCategory", target: GAME.MASTERY_CORRECT },
+  },
   { key: "ilkMac", earned: (s) => s.matches >= 1, goal: { stat: "matches", target: 1 } },
   { key: "onMac", earned: (s) => s.matches >= 10, goal: { stat: "matches", target: 10 } },
   { key: "elliMac", earned: (s) => s.matches >= 50, goal: { stat: "matches", target: 50 } },
@@ -154,7 +157,11 @@ export const BADGE_DEFS: readonly BadgeDef[] = [
   { key: "tamIsabet", earned: (_s, e) => e.total >= 5 && e.correct === e.total },
   { key: "ligKalfa", earned: (s) => s.xp >= leagueMinXp("kalfa"), goal: { stat: "xp", target: leagueMinXp("kalfa") } },
   { key: "ligUsta", earned: (s) => s.xp >= leagueMinXp("usta"), goal: { stat: "xp", target: leagueMinXp("usta") } },
-  { key: "ligEfsane", earned: (s) => s.xp >= leagueMinXp("efsane"), goal: { stat: "xp", target: leagueMinXp("efsane") } },
+  {
+    key: "ligEfsane",
+    earned: (s) => s.xp >= leagueMinXp("efsane"),
+    goal: { stat: "xp", target: leagueMinXp("efsane") },
+  },
 ];
 
 /** Odanın maç sonunda ilettiği tek oyuncu özeti. `total` = eligible olduğu tur. */
@@ -318,24 +325,18 @@ export function createXpStore(file: string): XpStore {
   const seasonRow = db.prepare("SELECT xp FROM season_points WHERE user_id = ? AND season = ?");
   const earnedBadgeRows = db.prepare("SELECT badge FROM achievements WHERE user_id = ?");
   const setPlayerTitle = db.prepare("UPDATE players SET title = ? WHERE user_id = ?");
-  const insertBadge = db.prepare(
-    "INSERT OR IGNORE INTO achievements (user_id, badge, earned_at) VALUES (?, ?, ?)",
-  );
+  const insertBadge = db.prepare("INSERT OR IGNORE INTO achievements (user_id, badge, earned_at) VALUES (?, ?, ?)");
   const upsertCategoryCorrect = db.prepare(`INSERT INTO category_correct (user_id, category, correct)
     VALUES (@userId, @category, @correct)
     ON CONFLICT(user_id, category) DO UPDATE SET correct = correct + @correct`);
   const masteryRows = db.prepare(
     "SELECT category FROM category_correct WHERE user_id = ? AND correct >= ? ORDER BY category",
   );
-  const bestCategoryRow = db.prepare(
-    "SELECT MAX(correct) AS best FROM category_correct WHERE user_id = ?",
-  );
+  const bestCategoryRow = db.prepare("SELECT MAX(correct) AS best FROM category_correct WHERE user_id = ?");
   const upsertQuestionStats = db.prepare(`INSERT INTO question_stats (question_id, asked, correct)
     VALUES (@questionId, @asked, @correct)
     ON CONFLICT(question_id) DO UPDATE SET asked = asked + @asked, correct = correct + @correct`);
-  const questionStatsAll = db.prepare(
-    "SELECT question_id AS questionId, asked, correct FROM question_stats",
-  );
+  const questionStatsAll = db.prepare("SELECT question_id AS questionId, asked, correct FROM question_stats");
 
   const knownBadges = new Set(BADGE_DEFS.map((def) => def.key));
   /** Kazanılmış rozetler — BADGE_DEFS sırasında, tanınmayan (eski/yanlış) key'ler atılır. */
@@ -355,9 +356,7 @@ export function createXpStore(file: string): XpStore {
   }
 
   function badgesFor(userId: string): BadgeKey[] {
-    const owned = new Set(
-      (earnedBadgeRows.all(userId) as { badge: string }[]).map((row) => row.badge as BadgeKey),
-    );
+    const owned = new Set((earnedBadgeRows.all(userId) as { badge: string }[]).map((row) => row.badge as BadgeKey));
     return BADGE_DEFS.map((def) => def.key).filter((key) => owned.has(key) && knownBadges.has(key));
   }
 
@@ -371,19 +370,19 @@ export function createXpStore(file: string): XpStore {
     const level = levelFor(row.xp);
     const season = seasonKey(now);
     const seasonXp = (seasonRow.get(userId, season) as { xp: number } | undefined)?.xp ?? 0;
-    const rankRow = seasonXp > 0
-      ? (seasonRank.get(season, userId, season) as { rank: number }).rank
-      : null;
+    const rankRow = seasonXp > 0 ? (seasonRank.get(season, userId, season) as { rank: number }).rank : null;
     const badges = badgesFor(userId);
     const owned = new Set(badges);
     const stats: Record<string, number> = {
-      xp: row.xp, matches: row.matches, wins: row.wins,
-      correctTotal: row.correct_total, bestStreak: row.best_streak,
+      xp: row.xp,
+      matches: row.matches,
+      wins: row.wins,
+      correctTotal: row.correct_total,
+      bestStreak: row.best_streak,
       streakDays: row.streak_days,
       bestCategory: (bestCategoryRow.get(userId) as { best: number | null }).best ?? 0,
     };
-    const badgeProgress: BadgeProgress[] = BADGE_DEFS
-      .filter((def) => def.goal && !owned.has(def.key))
+    const badgeProgress: BadgeProgress[] = BADGE_DEFS.filter((def) => def.goal && !owned.has(def.key))
       .map((def) => {
         const goal = def.goal!;
         return { key: def.key, current: Math.min(stats[goal.stat] ?? 0, goal.target), target: goal.target };
@@ -431,9 +430,8 @@ export function createXpStore(file: string): XpStore {
           const oldLeague = leagueFor(oldXp);
           const xp = oldXp + gained;
           // Günlük seri: bugün zaten sayıldıysa koru; dün oynadıysa +1; yoksa 1'den başla.
-          const streakDays = row?.last_day === today
-            ? row.streak_days
-            : row?.last_day === yesterday ? row.streak_days + 1 : 1;
+          const streakDays =
+            row?.last_day === today ? row.streak_days : row?.last_day === yesterday ? row.streak_days + 1 : 1;
           upsertPlayer.run({
             userId: entry.userId,
             name: entry.name,
@@ -450,7 +448,8 @@ export function createXpStore(file: string): XpStore {
           upsertSeason.run({ userId: entry.userId, season, xp: gained, name: entry.name });
           upsertWeekly.run({ userId: entry.userId, week: weekKey(now), xp: gained, name: entry.name });
           for (const item of entry.perCategory ?? []) {
-            if (item.correct > 0) upsertCategoryCorrect.run({ userId: entry.userId, category: item.category, correct: item.correct });
+            if (item.correct > 0)
+              upsertCategoryCorrect.run({ userId: entry.userId, category: item.category, correct: item.correct });
           }
           const level = levelFor(xp);
           const league = leagueFor(xp);
@@ -464,14 +463,13 @@ export function createXpStore(file: string): XpStore {
             bestStreak: Math.max(row?.best_streak ?? 0, entry.bestStreak),
             streakDays,
             masteryCount: categoryMastery(entry.userId).length,
-            lastWeekChamp: (weeklyWinner.get(prevWeekKey(now)) as { userId: string } | undefined)?.userId === entry.userId,
+            lastWeekChamp:
+              (weeklyWinner.get(prevWeekKey(now)) as { userId: string } | undefined)?.userId === entry.userId,
           };
-          const owned = new Set(
-            (earnedBadgeRows.all(entry.userId) as { badge: string }[]).map((r) => r.badge),
+          const owned = new Set((earnedBadgeRows.all(entry.userId) as { badge: string }[]).map((r) => r.badge));
+          const newBadges = BADGE_DEFS.filter((def) => !owned.has(def.key) && def.earned(stats, entry)).map(
+            (def) => def.key,
           );
-          const newBadges = BADGE_DEFS
-            .filter((def) => !owned.has(def.key) && def.earned(stats, entry))
-            .map((def) => def.key);
           for (const badge of newBadges) {
             insertBadge.run(entry.userId, badge, now.getTime());
           }
@@ -502,7 +500,10 @@ export function createXpStore(file: string): XpStore {
       // haftalık toplamları birbirinden ayrılmaz (grantMatch'in writeAll kalıbı).
       db.transaction(() => {
         upsertPlayer.run({
-          userId, name, avatarUrl, xp,
+          userId,
+          name,
+          avatarUrl,
+          xp,
           matches: row?.matches ?? 0,
           wins: row?.wins ?? 0,
           correctTotal: row?.correct_total ?? 0,
@@ -575,6 +576,8 @@ export function createXpStore(file: string): XpStore {
       db.exec(`VACUUM INTO '${tmp.replace(/'/g, "''")}'`);
       renameSync(tmp, dest);
     },
-    close() { db.close(); },
+    close() {
+      db.close();
+    },
   };
 }

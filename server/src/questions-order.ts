@@ -45,7 +45,8 @@ function load(): OrderQuestion[] {
       if (typeof e.when !== "string" || !e.when) throw new Error(`${ew}: when eksik`);
       if (typeof e.whenEn !== "string" || !e.whenEn) throw new Error(`${ew}: whenEn eksik`);
     });
-    if (!(["kolay", "orta", "zor"] as const).includes(q.difficulty)) throw new Error(`${where}: difficulty "${q.difficulty}" geçersiz`);
+    if (!(["kolay", "orta", "zor"] as const).includes(q.difficulty))
+      throw new Error(`${where}: difficulty "${q.difficulty}" geçersiz`);
   });
   return raw as OrderQuestion[];
 }

@@ -12,15 +12,33 @@ for (const p of ALL_CIRCLE_PROMPTS) {
     errors++;
   }
   const key = `${p.category}|${p.answer}`;
-  if (seen.has(key)) { console.log(`✗ TEKRAR anahtar: ${key}`); errors++; }
+  if (seen.has(key)) {
+    console.log(`✗ TEKRAR anahtar: ${key}`);
+    errors++;
+  }
   seen.add(key);
   byCat.set(p.category, (byCat.get(p.category) ?? 0) + 1);
-  if (p.answer !== p.answer.toLocaleLowerCase("tr-TR")) { console.log(`✗ küçük harf değil: ${p.answer}`); errors++; }
-  if (/\s/.test(p.answer)) { console.log(`✗ boşluk içeriyor: ${p.answer}`); errors++; }
+  if (p.answer !== p.answer.toLocaleLowerCase("tr-TR")) {
+    console.log(`✗ küçük harf değil: ${p.answer}`);
+    errors++;
+  }
+  if (/\s/.test(p.answer)) {
+    console.log(`✗ boşluk içeriyor: ${p.answer}`);
+    errors++;
+  }
 }
 console.log(`Toplam: ${ALL_CIRCLE_PROMPTS.length} prompt`);
-console.log("Dağılım:", [...byCat.entries()].sort().map(([c, n]) => `${c}:${n}`).join(", "));
+console.log(
+  "Dağılım:",
+  [...byCat.entries()]
+    .sort()
+    .map(([c, n]) => `${c}:${n}`)
+    .join(", "),
+);
 const thin = [...byCat.entries()].filter(([, n]) => n < 3);
-if (thin.length) { console.log("⚠ 3'ten az:", thin); errors++; }
+if (thin.length) {
+  console.log("⚠ 3'ten az:", thin);
+  errors++;
+}
 console.log(errors === 0 ? "✓ Harf-cevap tutarlı, tekrar yok, kategoriler yeterli" : `✗ ${errors} HATA`);
 process.exit(errors === 0 ? 0 : 1);

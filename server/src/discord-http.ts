@@ -5,13 +5,9 @@ const MAX_RETRY_DELAY_MS = 5_000;
 const wait = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 function retryDelayMs(response: Response): number {
-  const raw = response.headers.get("retry-after")
-    ?? response.headers.get("x-ratelimit-reset-after")
-    ?? "1";
+  const raw = response.headers.get("retry-after") ?? response.headers.get("x-ratelimit-reset-after") ?? "1";
   const seconds = Number(raw);
-  return Number.isFinite(seconds)
-    ? Math.max(0, Math.min(MAX_RETRY_DELAY_MS, seconds * 1000))
-    : 1000;
+  return Number.isFinite(seconds) ? Math.max(0, Math.min(MAX_RETRY_DELAY_MS, seconds * 1000)) : 1000;
 }
 
 /**

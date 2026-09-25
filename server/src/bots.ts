@@ -1,16 +1,7 @@
 import { GAME } from "./config";
 import type { Room } from "./rooms";
 
-export const BOT_NAMES = [
-  "RoboKedi",
-  "Baykuş",
-  "Profesör",
-  "Turbo",
-  "Fındık",
-  "Atom",
-  "Kaptan",
-  "Sincap",
-];
+export const BOT_NAMES = ["RoboKedi", "Baykuş", "Profesör", "Turbo", "Fındık", "Atom", "Kaptan", "Sincap"];
 
 /**
  * Oyuncu-başı deterministik beceri: her botun isabet oranı id'sinden türetilir,
@@ -82,7 +73,7 @@ export function scheduleBotAnswers(room: Room): void {
         const claim = (p as unknown as { blitzClaim: { truth: boolean } | null }).blitzClaim;
         if (!claim) return;
         const knows = Math.random() < botSkill(p.id) + 0.2;
-        room.answer(p.id, knows ? (claim.truth ? 0 : 1) : (claim.truth ? 1 : 0));
+        room.answer(p.id, knows ? (claim.truth ? 0 : 1) : claim.truth ? 1 : 0);
         room.scheduleBotTask(step, 1_200 + Math.random() * 1_800);
       };
       room.scheduleBotTask(step, 500 + Math.random() * 900);
@@ -102,7 +93,8 @@ export function scheduleBotAnswers(room: Room): void {
         const order = sol.slice();
         const swaps = Math.random() < 0.35 ? 2 : 1; // 1-2 çaprazlama = 0-2 yanlış pozisyon
         for (let k = 0; k < swaps; k++) {
-          const a = Math.floor(Math.random() * order.length), b = Math.floor(Math.random() * order.length);
+          const a = Math.floor(Math.random() * order.length),
+            b = Math.floor(Math.random() * order.length);
           [order[a], order[b]] = [order[b], order[a]];
         }
         room.orderAnswer(p.id, order);
@@ -121,9 +113,10 @@ export function scheduleBotAnswers(room: Room): void {
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule) return;
         // %15 tam isabet, gerisi cevabın ±%5–40'ı civarında.
-        const guess = Math.random() < 0.15
-          ? n.answer
-          : n.answer * (1 + (Math.random() - 0.5) * 0.8) + (Math.random() - 0.5) * Math.max(1, n.answer * 0.05);
+        const guess =
+          Math.random() < 0.15
+            ? n.answer
+            : n.answer * (1 + (Math.random() - 0.5) * 0.8) + (Math.random() - 0.5) * Math.max(1, n.answer * 0.05);
         room.numericAnswer(p.id, Math.round(guess * 100) / 100);
       }, delay);
     }
@@ -140,27 +133,30 @@ export function scheduleBotAnswers(room: Room): void {
     // Joker kartı (Klasik/Takım): elinde kart olan bot bazen cevabından hemen
     // önce oynar. Yarış durumları (kart harcanmış, hedef cevaplamış) yutulur.
     if ((room.gameMode === "classic" || room.gameMode === "team") && p.cards > 0 && Math.random() < 0.35) {
-      room.scheduleBotTask(() => {
-        if (room.qIndex !== roundAtSchedule) return;
-        try {
-          const roll = Math.random();
-          if (roll < 0.45) {
-            room.useCard(p.id, "fifty");
-          } else if (roll < 0.75) {
-            room.useCard(p.id, "double");
-          } else if (roll < 0.9) {
-            room.useCard(p.id, "shield");
-          } else {
-            const targets = [...room.players.values()].filter(
-              (t) => t.id !== p.id && t.connected && t.eligibleFrom <= room.qIndex && t.choice === null,
-            );
-            if (targets.length === 0) return;
-            room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);
+      room.scheduleBotTask(
+        () => {
+          if (room.qIndex !== roundAtSchedule) return;
+          try {
+            const roll = Math.random();
+            if (roll < 0.45) {
+              room.useCard(p.id, "fifty");
+            } else if (roll < 0.75) {
+              room.useCard(p.id, "double");
+            } else if (roll < 0.9) {
+              room.useCard(p.id, "shield");
+            } else {
+              const targets = [...room.players.values()].filter(
+                (t) => t.id !== p.id && t.connected && t.eligibleFrom <= room.qIndex && t.choice === null,
+              );
+              if (targets.length === 0) return;
+              room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);
+            }
+          } catch {
+            // Bot yarış durumunu yoksayar.
           }
-        } catch {
-          // Bot yarış durumunu yoksayar.
-        }
-      }, Math.max(300, delay - 400));
+        },
+        Math.max(300, delay - 400),
+      );
     }
     room.scheduleBotTask(() => {
       if (room.qIndex !== roundAtSchedule) return; // bayat zamanlayıcı

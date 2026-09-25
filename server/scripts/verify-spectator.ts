@@ -7,22 +7,44 @@ const BASE = process.env.SERVER_URL ?? "http://localhost:3002";
 type Client = { socket: Socket; state: GameState | null };
 
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(BASE, { path: "/socket.io", transports: ["websocket"], forceNew: true, auth: { roomId, devId, devName } }), state: null };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  const client: Client = {
+    socket: io(BASE, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      forceNew: true,
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   return client;
 }
 function waitFor(c: Client, pred: (s: GameState) => boolean, label: string, timeoutMs = 12000): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (c.state && pred(c.state)) return resolve(c.state);
-    const timer = setTimeout(() => { c.socket.off(EV.STATE, h); reject(new Error(`zaman aşımı: ${label}`)); }, timeoutMs);
-    const h = (s: GameState) => { if (pred(s)) { clearTimeout(timer); c.socket.off(EV.STATE, h); resolve(s); } };
+    const timer = setTimeout(() => {
+      c.socket.off(EV.STATE, h);
+      reject(new Error(`zaman aşımı: ${label}`));
+    }, timeoutMs);
+    const h = (s: GameState) => {
+      if (pred(s)) {
+        clearTimeout(timer);
+        c.socket.off(EV.STATE, h);
+        resolve(s);
+      }
+    };
     c.socket.on(EV.STATE, h);
   });
 }
 
 async function main() {
   let ok = true;
-  const log = (pass: boolean, m: string) => { console.log(`${pass ? "✓" : "✗"} ${m}`); ok = ok && pass; };
+  const log = (pass: boolean, m: string) => {
+    console.log(`${pass ? "✓" : "✗"} ${m}`);
+    ok = ok && pass;
+  };
   const a = connect("spec-test", "player-aaaa-0001", "Ayşe");
   const b = connect("spec-test", "player-bbbb-0002", "Baran");
   await waitFor(a, (s) => s.players.length === 2, "iki oyuncu");
@@ -35,7 +57,10 @@ async function main() {
   log(s1.youAreSpectator === true, "A.youAreSpectator = true");
   log(s1.players.length === 1, `koltukta 1 oyuncu kaldı (geldi: ${s1.players.length})`);
   log(s1.spectatorCount === 1, `spectatorCount = 1 (geldi: ${s1.spectatorCount})`);
-  log(s1.players.some((p) => p.id === b.state!.youId), "kalan oyuncu B");
+  log(
+    s1.players.some((p) => p.id === b.state!.youId),
+    "kalan oyuncu B",
+  );
   // B tarafında da tutarlı
   await waitFor(b, (s) => s.players.length === 1 && s.spectatorCount === 1, "B senkron");
   log(b.state!.hostId === b.state!.youId, "host A'dan B'ye geçti");
@@ -48,7 +73,8 @@ async function main() {
   log(s2.players.length === 2, `koltukta 2 oyuncu (geldi: ${s2.players.length})`);
   log(s2.spectatorCount === 0, `spectatorCount = 0 (geldi: ${s2.spectatorCount})`);
 
-  a.socket.disconnect(); b.socket.disconnect();
+  a.socket.disconnect();
+  b.socket.disconnect();
 
   // Asıl senaryo: masa dolu (8) -> 9. kişi reddedilmez, izleyici olur.
   const full: Client[] = [];
@@ -64,4 +90,7 @@ async function main() {
   console.log(ok ? "✓ İzleyici modu geçişleri doğru" : "✗ SORUN VAR");
   process.exit(ok ? 0 : 1);
 }
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

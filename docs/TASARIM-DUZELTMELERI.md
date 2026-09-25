@@ -9,6 +9,7 @@ dosyasında; her bloğun yanında hangi sorunu neden düzelttiği yazıyor.
 ## Sıkışma / kayma / taşma düzeltmeleri
 
 **Lobi**
+
 - Masaüstünde sağ panel ekranın üst kenarına yapışıyor ve alttan kesiliyordu. Sol panel de alttaki ses/müzik/dil düğmelerinin üstüne biniyordu. Artık iki panel de ekrana sığıyor ve içerik fazlaysa kendi içinde kayıyor.
 - "Günlük Meydan Okuma" iki satıra kırılıp paneldeki en iri öğe oluyordu. Artık tek satır.
 - "Diğer m…" kesiliyordu, "Karışık" çipi kutusundan taşıyordu. İkisi de düzeldi.
@@ -17,6 +18,7 @@ dosyasında; her bloğun yanında hangi sorunu neden düzelttiği yazıyor.
 - Dar ekranda tepedeki koltuk kesiliyordu, ses/dil düğmeleri de sayfanın en altında kayboluyordu. Düğmeler sol üste taşındı.
 
 **Oyun ekranı**
+
 - "İzleyici ol / Masadan ayrıl" 1024px'te iki satıra kırılıyordu. Artık hiç kırılmıyor; dar ekranda "Masadan ayrıl" yalnız ikon olarak görünüyor.
 - Oyuncu şeridinde isim, rozet ve durum üç satıra diziliyor, durum "Düşünü…" diye kesiliyordu.
 - Reveal'de yüzde etiketi ✓/✗ rozetinin üstüne biniyor, oy veren avatarlar bir alttaki şıkkı örtüyordu. İkisi artık tek rozet olarak kartın alt kenarında duruyor. Kimsenin seçmediği şıkta "%0" gösterilmiyor.
@@ -25,12 +27,14 @@ dosyasında; her bloğun yanında hangi sorunu neden düzelttiği yazıyor.
 - Bildirim (toast) emoji çubuğunu örtüyordu. Artık üst ortada çıkıyor.
 
 **Podyum / Özet / İnceleme**
+
 - Sekmeler her sekmede farklı yükseklikte duruyordu (69 → 88 → 126px). Artık tepede sabit.
 - 1024×600 ve 844×390'da kart ekrandan taşıyordu. Satırlar sıkılaştı ve gerekirse sayfa kayıyor.
 - 3B karakter geç yüklenince podyum aşağı kayıyordu ve üstte siyah bir yükleme şeridi görünüyordu. Karakter artık sabit bir alanda açılıyor. Alçak ekranda hiç yüklenmiyor (yaklaşık 3 MB tasarruf).
 - Özet ekranında kategori çubukları XP kutusuna yapışıktı. İncelemede "senin cevabın" satırında yanlış ikon (çıkış) vardı.
 
 ## Hatalar
+
 - Reveal sırasında cevap vermeyen oyuncular "Düşünüyor" görünüyordu. Artık "Cevapsız / No answer" yazıyor.
 - İngilizce arayüzde yüzde "%60" yazılıyordu. Artık "60%" (`formatPercent`).
 - CSP `wasm-unsafe-eval` içermediği için podyumda model-viewer her açılışta konsola WebAssembly hatası basıyordu.

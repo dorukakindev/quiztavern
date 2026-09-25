@@ -22,8 +22,13 @@ const TEST_SECRET = "origin-gate-session-secret";
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -35,7 +40,10 @@ function signSession(user: { id: string; name: string; avatarUrl: null }, exp: n
 }
 
 /** Bağlantı dener; Origin istenirse extraHeaders ile handshake'e eklenir. */
-function attempt(auth: Record<string, unknown>, origin?: string): Promise<{ ok: boolean; code?: string; error?: string }> {
+function attempt(
+  auth: Record<string, unknown>,
+  origin?: string,
+): Promise<{ ok: boolean; code?: string; error?: string }> {
   return new Promise((resolve) => {
     const socket = io(baseUrl, {
       path: "/socket.io",
@@ -44,8 +52,15 @@ function attempt(auth: Record<string, unknown>, origin?: string): Promise<{ ok: 
       reconnection: false,
       extraHeaders: origin ? { Origin: origin } : undefined,
     });
-    const timer = setTimeout(() => { socket.disconnect(); resolve({ ok: false, error: "zaman aşımı" }); }, 5000);
-    socket.on("connect", () => { clearTimeout(timer); socket.disconnect(); resolve({ ok: true }); });
+    const timer = setTimeout(() => {
+      socket.disconnect();
+      resolve({ ok: false, error: "zaman aşımı" });
+    }, 5000);
+    socket.on("connect", () => {
+      clearTimeout(timer);
+      socket.disconnect();
+      resolve({ ok: true });
+    });
     socket.on("connect_error", (err) => {
       clearTimeout(timer);
       socket.disconnect();
@@ -79,13 +94,23 @@ async function main() {
     stdio: ["ignore", "pipe", "pipe"],
   });
   let serverLog = "";
-  server.stdout.on("data", (chunk) => { serverLog += chunk; });
-  server.stderr.on("data", (chunk) => { serverLog += chunk; });
-  const killServer = () => { if (server.exitCode === null) server.kill(); };
+  server.stdout.on("data", (chunk) => {
+    serverLog += chunk;
+  });
+  server.stderr.on("data", (chunk) => {
+    serverLog += chunk;
+  });
+  const killServer = () => {
+    if (server.exitCode === null) server.kill();
+  };
 
   try {
     for (let i = 0; i < 160; i++) {
-      try { if ((await fetch(`${baseUrl}/health`)).ok) break; } catch { /* bekle */ }
+      try {
+        if ((await fetch(`${baseUrl}/health`)).ok) break;
+      } catch {
+        /* bekle */
+      }
       await sleep(250);
       if (i === 159) throw new Error("Sunucu 40 sn içinde açılmadı.");
     }
@@ -97,17 +122,24 @@ async function main() {
     console.log("\nOrigin geçidi:");
     // Origin yok + geçerli oturum + geçerli-BİÇİMLİ instance: origin geçidini
     // aşıp INSTANCE_DENIED'a varmalı (bot token sahte → fail-closed ret).
-    const noOrigin = await attempt(
-      { sessionToken: signSession(nextUser(), Date.now() + 3600_000), instanceId: "inst-a1" },
+    const noOrigin = await attempt({
+      sessionToken: signSession(nextUser(), Date.now() + 3600_000),
+      instanceId: "inst-a1",
+    });
+    assert(
+      !noOrigin.ok && noOrigin.code === "INSTANCE_DENIED",
+      `Origin'siz geçerli istek origin geçidini aştı (kod=${noOrigin.code})`,
     );
-    assert(!noOrigin.ok && noOrigin.code === "INSTANCE_DENIED", `Origin'siz geçerli istek origin geçidini aştı (kod=${noOrigin.code})`);
 
     // İzinli discordsays origin → aynı kapıya ulaşmalı.
     const goodOrigin = await attempt(
       { sessionToken: signSession(nextUser(), Date.now() + 3600_000), instanceId: "inst-a2" },
       "https://1551970908233531442.discordsays.com",
     );
-    assert(!goodOrigin.ok && goodOrigin.code === "INSTANCE_DENIED", `*.discordsays.com origin geçti (kod=${goodOrigin.code})`);
+    assert(
+      !goodOrigin.ok && goodOrigin.code === "INSTANCE_DENIED",
+      `*.discordsays.com origin geçti (kod=${goodOrigin.code})`,
+    );
 
     // Yabancı origin → ORIGIN_DENIED.
     const evil = await attempt(
@@ -123,15 +155,30 @@ async function main() {
     console.log("\nKimlik katmanları Origin'sizken de korunuyor:");
     // Origin yok + token yok → AUTH_REQUIRED (origin düzeltmesi auth'u atlamaz).
     const noAuth = await attempt({});
-    assert(!noAuth.ok && noAuth.code === "AUTH_REQUIRED", `Origin'siz + token'sız → AUTH_REQUIRED (kod=${noAuth.code})`);
+    assert(
+      !noAuth.ok && noAuth.code === "AUTH_REQUIRED",
+      `Origin'siz + token'sız → AUTH_REQUIRED (kod=${noAuth.code})`,
+    );
 
     // Origin yok + geçerli token + bozuk instance biçimi → INSTANCE_REQUIRED.
-    const badShape = await attempt({ sessionToken: signSession(nextUser(), Date.now() + 3600_000), instanceId: "invalid/instance" });
-    assert(!badShape.ok && badShape.code === "INSTANCE_REQUIRED", `bozuk instance biçimi → INSTANCE_REQUIRED (kod=${badShape.code})`);
+    const badShape = await attempt({
+      sessionToken: signSession(nextUser(), Date.now() + 3600_000),
+      instanceId: "invalid/instance",
+    });
+    assert(
+      !badShape.ok && badShape.code === "INSTANCE_REQUIRED",
+      `bozuk instance biçimi → INSTANCE_REQUIRED (kod=${badShape.code})`,
+    );
 
     // Origin yok + geçerli token + doğrulanamayan instance → INSTANCE_DENIED.
-    const denied = await attempt({ sessionToken: signSession(nextUser(), Date.now() + 3600_000), instanceId: "inst-a4" });
-    assert(!denied.ok && denied.code === "INSTANCE_DENIED", `doğrulanamayan instance → INSTANCE_DENIED (kod=${denied.code})`);
+    const denied = await attempt({
+      sessionToken: signSession(nextUser(), Date.now() + 3600_000),
+      instanceId: "inst-a4",
+    });
+    assert(
+      !denied.ok && denied.code === "INSTANCE_DENIED",
+      `doğrulanamayan instance → INSTANCE_DENIED (kod=${denied.code})`,
+    );
   } finally {
     killServer();
   }

@@ -46,7 +46,13 @@ export const EXTRA_CATEGORIES = [
 export const CATEGORY_CATALOG: CategoryOption[] = (() => {
   const counts = new Map<string, CategoryOption & { diffTally: Record<Difficulty, number> }>();
   const ensure = (name: string) => {
-    const current = counts.get(name) ?? { name, classicCount: 0, circleCount: 0, difficulty: null, diffTally: { kolay: 0, orta: 0, zor: 0 } };
+    const current = counts.get(name) ?? {
+      name,
+      classicCount: 0,
+      circleCount: 0,
+      difficulty: null,
+      diffTally: { kolay: 0, orta: 0, zor: 0 },
+    };
     counts.set(name, current);
     return current;
   };
@@ -66,7 +72,8 @@ export const CATEGORY_CATALOG: CategoryOption[] = (() => {
   // EN ÇOK etiketlenen seviye ("baskın zorluk"). İçerik yoksa null (kilitli kart).
   for (const entry of counts.values()) {
     const { kolay, orta, zor } = entry.diffTally;
-    entry.difficulty = kolay + orta + zor === 0 ? null : kolay >= orta && kolay >= zor ? "kolay" : orta >= zor ? "orta" : "zor";
+    entry.difficulty =
+      kolay + orta + zor === 0 ? null : kolay >= orta && kolay >= zor ? "kolay" : orta >= zor ? "orta" : "zor";
   }
   return [...counts.values()]
     .sort((a, b) => a.name.localeCompare(b.name, "tr"))

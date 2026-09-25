@@ -32,17 +32,28 @@ interface Client {
 }
 
 function connect(roomId: string, devId: string, devName: string): Client {
-  const client: Client = { socket: io(baseUrl, {
-    path: "/socket.io",
-    transports: ["websocket"],
-    auth: { roomId, devId, devName },
-  }), state: null, toasts: [] };
-  client.socket.on(EV.STATE, (s: GameState) => { client.state = s; });
+  const client: Client = {
+    socket: io(baseUrl, {
+      path: "/socket.io",
+      transports: ["websocket"],
+      auth: { roomId, devId, devName },
+    }),
+    state: null,
+    toasts: [],
+  };
+  client.socket.on(EV.STATE, (s: GameState) => {
+    client.state = s;
+  });
   client.socket.on(EV.TOAST, (t: ToastPayload) => client.toasts.push(t));
   return client;
 }
 
-function waitFor(client: Client, predicate: (s: GameState) => boolean, label: string, timeoutMs = 15_000): Promise<GameState> {
+function waitFor(
+  client: Client,
+  predicate: (s: GameState) => boolean,
+  label: string,
+  timeoutMs = 15_000,
+): Promise<GameState> {
   return new Promise((resolve, reject) => {
     if (client.state && predicate(client.state)) return resolve(client.state);
     const timer = setTimeout(() => {
@@ -63,26 +74,52 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ── Birim katmanı ──────────────────────────────────────────────────────────
 async function unitTests() {
-  const { parseCsvQuestions, parseJsonQuestions, validatePackQuestions, samplePackQuestions } = await import("../src/packs");
+  const { parseCsvQuestions, parseJsonQuestions, validatePackQuestions, samplePackQuestions } =
+    await import("../src/packs");
 
   console.log("Birim — ayrıştırma + doğrulama");
-  const csv = "text,category,difficulty,c1,c2,c3,c4,correctIndex\nTürkiye'nin başkenti?,Coğrafya,kolay,Ankara,İzmir,Bursa,Adana,0\nHangisi bir meyvedir?,Genel,orta,Elma,Ütü,Vapur,Duvar,0";
+  const csv =
+    "text,category,difficulty,c1,c2,c3,c4,correctIndex\nTürkiye'nin başkenti?,Coğrafya,kolay,Ankara,İzmir,Bursa,Adana,0\nHangisi bir meyvedir?,Genel,orta,Elma,Ütü,Vapur,Duvar,0";
   const fromCsv = parseCsvQuestions(csv);
   assert(fromCsv.length === 2, "CSV: 2 soru ayrıştı");
   assert(fromCsv[0].choicesEn[0] === "Ankara", "CSV: boş EN şıkları TR'den kopyalandı");
   assert(fromCsv[0].difficulty === "kolay", "CSV: difficulty alındı");
 
-  const fromJson = parseJsonQuestions([{ text: "Test sorusu?", category: "Genel", choices: ["A", "B", "C", "D"], correctIndex: 1, difficulty: "zor" }]);
+  const fromJson = parseJsonQuestions([
+    { text: "Test sorusu?", category: "Genel", choices: ["A", "B", "C", "D"], correctIndex: 1, difficulty: "zor" },
+  ]);
   assert(fromJson[0].id === "q-1", "JSON: eksik id üretildi");
   assert(fromJson[0].choicesEn.length === 4, "JSON: eksik EN şıkları TR'den kopyalandı");
 
   const bad = parseJsonQuestions([
-    { id: "a", text: "Soru?", category: "Genel", choices: ["A", "B", "C", "D"], choicesEn: ["A", "B", "C", "D"], correctIndex: 7, difficulty: "kolay" },
-    { id: "a", text: "Soru?", category: "Genel", choices: ["A", "B", "C", "D"], choicesEn: ["A", "B", "C", "D"], correctIndex: 0, difficulty: "kolay" },
+    {
+      id: "a",
+      text: "Soru?",
+      category: "Genel",
+      choices: ["A", "B", "C", "D"],
+      choicesEn: ["A", "B", "C", "D"],
+      correctIndex: 7,
+      difficulty: "kolay",
+    },
+    {
+      id: "a",
+      text: "Soru?",
+      category: "Genel",
+      choices: ["A", "B", "C", "D"],
+      choicesEn: ["A", "B", "C", "D"],
+      correctIndex: 0,
+      difficulty: "kolay",
+    },
   ]);
   const { errors } = validatePackQuestions(bad);
-  assert(errors.some((e) => e.includes("correctIndex")), "doğrulama: correctIndex>3 hata");
-  assert(errors.some((e) => e.includes("tekrar")), "doğrulama: tekrar eden id hata");
+  assert(
+    errors.some((e) => e.includes("correctIndex")),
+    "doğrulama: correctIndex>3 hata",
+  );
+  assert(
+    errors.some((e) => e.includes("tekrar")),
+    "doğrulama: tekrar eden id hata",
+  );
   assert(validatePackQuestions(fromCsv).errors.length === 0, "doğrulama: temiz CSV hatasız geçti");
   assert(validatePackQuestions([]).errors.length > 0, "doğrulama: boş paket hata");
 
@@ -94,15 +131,21 @@ async function unitTests() {
 
   // Şık karıştırma: doğru metin korunur ve pozisyon çekilişten çekilişe değişir.
   const mono = Array.from({ length: 4 }, (_, i) => ({
-    id: `mono-${i}`, text: `Mono soru ${i}?`, textEn: `Mono q ${i}?`,
-    category: "K", difficulty: "kolay" as const,
-    choices: ["doğru", "y1", "y2", "y3"], choicesEn: ["right", "w1", "w2", "w3"], correctIndex: 0,
+    id: `mono-${i}`,
+    text: `Mono soru ${i}?`,
+    textEn: `Mono q ${i}?`,
+    category: "K",
+    difficulty: "kolay" as const,
+    choices: ["doğru", "y1", "y2", "y3"],
+    choicesEn: ["right", "w1", "w2", "w3"],
+    correctIndex: 0,
   }));
   const idxSet = new Set<number>();
-  for (let r = 0; r < 8; r++) samplePackQuestions(4, mono, new Set()).forEach((q) => {
-    assert(q.choices[q.correctIndex] === "doğru", "şık karıştırma: doğru metin korunur");
-    idxSet.add(q.correctIndex);
-  });
+  for (let r = 0; r < 8; r++)
+    samplePackQuestions(4, mono, new Set()).forEach((q) => {
+      assert(q.choices[q.correctIndex] === "doğru", "şık karıştırma: doğru metin korunur");
+      idxSet.add(q.correctIndex);
+    });
   assert(idxSet.size > 1, "şık karıştırma: doğru hep aynı pozisyonda kalmaz");
 }
 
@@ -114,8 +157,12 @@ async function main() {
   const { rmSync, readdirSync } = await import("node:fs");
   const packsDir = fileURLToPath(new URL("../src/../data/packs", import.meta.url));
   try {
-    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`, { force: true, maxRetries: 5, retryDelay: 200 });
-  } catch { /* dizin henüz yok */ }
+    for (const file of readdirSync(packsDir))
+      if (file.startsWith("test-paketi") || file.startsWith("editor-paketi"))
+        rmSync(`${packsDir}/${file}`, { force: true, maxRetries: 5, retryDelay: 200 });
+  } catch {
+    /* dizin henüz yok */
+  }
 
   const port = await findFreePort();
   baseUrl = `http://127.0.0.1:${port}`;
@@ -133,7 +180,9 @@ async function main() {
       try {
         const res = await fetch(`${baseUrl}/health`);
         if (res.ok) break;
-      } catch { /* henüz hazır değil */ }
+      } catch {
+        /* henüz hazır değil */
+      }
       await sleep(250);
       if (i === 39) throw new Error("Sunucu 10 sn içinde açılmadı.");
     }
@@ -143,10 +192,24 @@ async function main() {
     const badRes = await fetch(`${baseUrl}/api/question-packs`, {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ name: "bozuk", format: "json", content: [{ id: "x", text: "s?", category: "Genel", choices: ["A", "B"], choicesEn: ["A", "B"], correctIndex: 9, difficulty: "kolay" }] }),
+      body: JSON.stringify({
+        name: "bozuk",
+        format: "json",
+        content: [
+          {
+            id: "x",
+            text: "s?",
+            category: "Genel",
+            choices: ["A", "B"],
+            choicesEn: ["A", "B"],
+            correctIndex: 9,
+            difficulty: "kolay",
+          },
+        ],
+      }),
     });
     assert(badRes.status === 422, "bozuk paket 422 döndü");
-    const badBody = await badRes.json() as { errors?: string[] };
+    const badBody = (await badRes.json()) as { errors?: string[] };
     assert(Array.isArray(badBody.errors) && badBody.errors.length > 0, "422 gövdesi hata listesi taşıyor");
 
     const packQuestions = Array.from({ length: 6 }, (_, i) => ({
@@ -165,19 +228,23 @@ async function main() {
       body: JSON.stringify({ name: "Test Paketi", format: "json", content: packQuestions }),
     });
     assert(okRes.status === 201, "geçerli paket 201 döndü");
-    const okBody = await okRes.json() as { pack?: { id: string; count: number } };
+    const okBody = (await okRes.json()) as { pack?: { id: string; count: number } };
     const packId = okBody.pack?.id ?? "";
     assert(packId === "test-paketi" || /^test-paketi-\d+$/.test(packId), `paket slug id üretildi (${packId})`);
 
     const listRes = await fetch(`${baseUrl}/api/question-packs`);
-    const listBody = await listRes.json() as { packs: { id: string; count: number }[] };
-    assert(listBody.packs.some((p) => p.id === packId && p.count === 6), "GET listesi paketi gösteriyor");
+    const listBody = (await listRes.json()) as { packs: { id: string; count: number }[] };
+    assert(
+      listBody.packs.some((p) => p.id === packId && p.count === 6),
+      "GET listesi paketi gösteriyor",
+    );
 
     // ── Editör CRUD'u: sahiplik x-dev-id ile, tam içerik yalnız sahibe ──────
     console.log("\nHTTP — editör CRUD + sahiplik");
     const editorAuth = { "content-type": "application/json", "x-dev-id": "editor-user-001" };
     const ownedRes = await fetch(`${baseUrl}/api/question-packs`, {
-      method: "POST", headers: editorAuth,
+      method: "POST",
+      headers: editorAuth,
       body: JSON.stringify({ name: "Editör Paketi", format: "json", content: packQuestions }),
     });
     assert(ownedRes.status === 201, "oturumlu (dev-id) yükleme 201 döndü");
@@ -186,37 +253,57 @@ async function main() {
 
     const anonGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`);
     assert(anonGet.status === 403, "kimliksiz GET /:id reddedildi (403)");
-    const strangerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { headers: { "x-dev-id": "baska-kullanici" } });
+    const strangerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      headers: { "x-dev-id": "baska-kullanici" },
+    });
     assert(strangerGet.status === 403, "başkasının paketi GET /:id reddedildi (403)");
-    const ownerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { headers: { "x-dev-id": "editor-user-001" } });
+    const ownerGet = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      headers: { "x-dev-id": "editor-user-001" },
+    });
     assert(ownerGet.status === 200, "sahip GET /:id 200 döndü");
-    const ownerBody = await ownerGet.json() as { pack?: { questions?: { correctIndex: number }[] } };
+    const ownerBody = (await ownerGet.json()) as { pack?: { questions?: { correctIndex: number }[] } };
     assert(ownerBody.pack?.questions?.[0]?.correctIndex === 0, "sahip tam içeriği (correctIndex) aldı");
 
     const strangerPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
-      method: "PUT", headers: { "content-type": "application/json", "x-dev-id": "baska-kullanici" },
+      method: "PUT",
+      headers: { "content-type": "application/json", "x-dev-id": "baska-kullanici" },
       body: JSON.stringify({ name: "Çalıntı", format: "json", content: packQuestions }),
     });
     assert(strangerPut.status === 403, "başkasının paketi PUT reddedildi (403)");
     const ownerPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
-      method: "PUT", headers: editorAuth,
+      method: "PUT",
+      headers: editorAuth,
       body: JSON.stringify({ name: "Editör Paketi v2", format: "json", content: packQuestions.slice(0, 3) }),
     });
     assert(ownerPut.status === 200, "sahip PUT 200 döndü");
-    const putBody = await ownerPut.json() as { pack?: { name: string; count: number } };
-    assert(putBody.pack?.name === "Editör Paketi v2" && putBody.pack?.count === 3, "PUT adı ve soru sayısını güncelledi");
+    const putBody = (await ownerPut.json()) as { pack?: { name: string; count: number } };
+    assert(
+      putBody.pack?.name === "Editör Paketi v2" && putBody.pack?.count === 3,
+      "PUT adı ve soru sayısını güncelledi",
+    );
     const badPut = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
-      method: "PUT", headers: editorAuth,
-      body: JSON.stringify({ name: "Bozuk", format: "json", content: [{ id: "x", text: "s?", category: "G", choices: ["A", "B"], correctIndex: 9, difficulty: "kolay" }] }),
+      method: "PUT",
+      headers: editorAuth,
+      body: JSON.stringify({
+        name: "Bozuk",
+        format: "json",
+        content: [{ id: "x", text: "s?", category: "G", choices: ["A", "B"], correctIndex: 9, difficulty: "kolay" }],
+      }),
     });
     assert(badPut.status === 422, "bozuk PUT gövdesi 422 döndü");
 
-    const strangerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { method: "DELETE", headers: { "x-dev-id": "baska-kullanici" } });
+    const strangerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      method: "DELETE",
+      headers: { "x-dev-id": "baska-kullanici" },
+    });
     assert(strangerDel.status === 403, "başkasının paketi DELETE reddedildi (403)");
-    const ownerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, { method: "DELETE", headers: { "x-dev-id": "editor-user-001" } });
+    const ownerDel = await fetch(`${baseUrl}/api/question-packs/${ownedId}`, {
+      method: "DELETE",
+      headers: { "x-dev-id": "editor-user-001" },
+    });
     assert(ownerDel.status === 204, "sahip DELETE 204 döndü");
     const afterDel = await fetch(`${baseUrl}/api/question-packs`);
-    const afterDelBody = await afterDel.json() as { packs: { id: string }[] };
+    const afterDelBody = (await afterDel.json()) as { packs: { id: string }[] };
     assert(!afterDelBody.packs.some((p) => p.id === ownedId), "silinen paket listede yok");
 
     // Socket: host paketi seçer → state.pack; start soruları paketten çeker.
@@ -228,16 +315,25 @@ async function main() {
 
     guest.socket.emit(EV.SET_PACK, { packId });
     await sleep(400);
-    assert(guest.toasts.some((t) => t.key === "err.packHostOnly") || host.toasts.some((t) => t.key === "err.packHostOnly"), "host olmayan SET_PACK reddedildi");
+    assert(
+      guest.toasts.some((t) => t.key === "err.packHostOnly") || host.toasts.some((t) => t.key === "err.packHostOnly"),
+      "host olmayan SET_PACK reddedildi",
+    );
 
     host.socket.emit(EV.SET_PACK, { packId: "olmayan-paket" });
     await sleep(400);
-    assert(host.toasts.some((t) => t.key === "err.packUnknown"), "bilinmeyen paket err.packUnknown döndü");
+    assert(
+      host.toasts.some((t) => t.key === "err.packUnknown"),
+      "bilinmeyen paket err.packUnknown döndü",
+    );
 
     host.socket.emit(EV.SET_PACK, { packId });
     await waitFor(host, (s) => s.pack?.id === packId, "state.pack paketi gösteriyor");
     assert(host.state!.pack!.name === "Test Paketi", "paket adı yayınlandı");
-    assert(host.state!.players.every((p) => !p.isBot || p.ready === false) , "paket değişince hazırlar sıfırlandı (bot hariç)");
+    assert(
+      host.state!.players.every((p) => !p.isBot || p.ready === false),
+      "paket değişince hazırlar sıfırlandı (bot hariç)",
+    );
 
     host.socket.emit(EV.SET_QUESTION_COUNT, { count: 5 });
     await waitFor(host, (s) => s.questionCount === 5, "soru sayısı 5");

@@ -17,8 +17,13 @@ import { findFreePort } from "./test-port";
 let passed = 0;
 let failed = 0;
 function assert(cond: boolean, label: string) {
-  if (cond) { passed += 1; console.log(`  ✓ ${label}`); }
-  else { failed += 1; console.error(`  ✗ ${label}`); }
+  if (cond) {
+    passed += 1;
+    console.log(`  ✓ ${label}`);
+  } else {
+    failed += 1;
+    console.error(`  ✗ ${label}`);
+  }
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -37,7 +42,9 @@ async function startServer(env: Record<string, string>) {
     try {
       const res = await fetch(`${baseUrl}/health`);
       if (res.ok) return { server, baseUrl };
-    } catch { /* henüz hazır değil */ }
+    } catch {
+      /* henüz hazır değil */
+    }
     await sleep(250);
     if (i === 39) throw new Error("Sunucu 10 sn içinde açılmadı.");
   }
@@ -66,18 +73,23 @@ const dbPath = join(tmp, "reports.db");
     const { createReportsStore } = await import("../src/reports");
     const store = createReportsStore(dbPath);
     store.report({
-      roomId: "ana-lobi", userId: "u1", userName: "<b>Devin</b>",
-      questionId: "tarih-001", questionText: "İstanbul <fetih> sorusu?",
-      category: "Tarih", note: "şıklar <img> karışık",
+      roomId: "ana-lobi",
+      userId: "u1",
+      userName: "<b>Devin</b>",
+      questionId: "tarih-001",
+      questionText: "İstanbul <fetih> sorusu?",
+      category: "Tarih",
+      note: "şıklar <img> karışık",
     });
     store.close();
 
     // İstemci hata özeti (§7.17): aynı imza iki kez, bir farklı imza.
-    const postErr = (message: string) => fetch(`${baseUrl}/client-errors`, {
-      method: "post",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ type: "unhandledrejection", message, url: "https://x.test/activity" }),
-    });
+    const postErr = (message: string) =>
+      fetch(`${baseUrl}/client-errors`, {
+        method: "post",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ type: "unhandledrejection", message, url: "https://x.test/activity" }),
+      });
     assert((await postErr("ResizeObserver loop limit exceeded")).status === 204, "client-errors POST → 204");
     await postErr("ResizeObserver loop limit exceeded");
     await postErr("Socket kapandı");
@@ -92,10 +104,18 @@ const dbPath = join(tmp, "reports.db");
       headers: { authorization: "Bearer gizli-token-123", accept: "application/json" },
     });
     assert(jsonRes.status === 200, "doğru Bearer → 200 (JSON)");
-    const body = await jsonRes.json() as { reports: Array<{ questionId: string; note: string }>; clientErrors: Array<{ count: number; message: string }> };
+    const body = (await jsonRes.json()) as {
+      reports: Array<{ questionId: string; note: string }>;
+      clientErrors: Array<{ count: number; message: string }>;
+    };
     assert(Array.isArray(body.reports) && body.reports.length === 1, "JSON: 1 rapor döndü");
     assert(body.reports[0].questionId === "tarih-001", "JSON: rapor içeriği doğru");
-    assert(body.clientErrors.length === 2 && body.clientErrors[0].count === 2 && body.clientErrors[0].message === "ResizeObserver loop limit exceeded", "JSON: hata özeti en sık 2× imza ile başlıyor");
+    assert(
+      body.clientErrors.length === 2 &&
+        body.clientErrors[0].count === 2 &&
+        body.clientErrors[0].message === "ResizeObserver loop limit exceeded",
+      "JSON: hata özeti en sık 2× imza ile başlıyor",
+    );
 
     const htmlRes = await fetch(`${baseUrl}/api/admin/reports`, {
       headers: { authorization: "Bearer gizli-token-123", accept: "text/html" },

@@ -10,12 +10,16 @@ const test = (name: string, run: () => void) => {
 };
 
 const user = (id: string, isBot: boolean) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}`, isBot });
-const internals = (room: Room) => room as unknown as {
-  players: Map<string, { score: number; choice: number | null; fiftyRemoved: number[]; frozen: boolean; cards: number }>;
-  questions: Question[];
-  qIndex: number;
-  beginQuestion(): void;
-};
+const internals = (room: Room) =>
+  room as unknown as {
+    players: Map<
+      string,
+      { score: number; choice: number | null; fiftyRemoved: number[]; frozen: boolean; cards: number }
+    >;
+    questions: Question[];
+    qIndex: number;
+    beginQuestion(): void;
+  };
 
 const fake: Question = {
   id: "q-1",
@@ -84,4 +88,4 @@ console.log(`\n[bot-cards] sonuç: ${passed} geçti, 0 kaldı`);
 
 // Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
 // testler bittiğinde çık.
-process.exit(0)
+process.exit(0);
