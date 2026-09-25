@@ -94,6 +94,15 @@ export function AmbientShader() {
 
     let frame = 0
     let alive = true
+    // GPU reseti/arka-plan geçişinde context ölür: döngüyü durdurmazsak
+    // INVALID_OPERATION üretmeye devam eder. preventDefault ile restore'a izin
+    // verilir; geri gelirse canvas görünmez kalır (donmuş kare) ama döngü durur.
+    const onContextLost = (event: Event) => {
+      event.preventDefault()
+      alive = false
+      cancelAnimationFrame(frame)
+    }
+    canvas.addEventListener('webglcontextlost', onContextLost)
     const render = (now: number) => {
       if (!alive || document.hidden) return
       gl.viewport(0, 0, canvas.width, canvas.height)
@@ -112,6 +121,7 @@ export function AmbientShader() {
       alive = false
       cancelAnimationFrame(frame)
       document.removeEventListener('visibilitychange', onVisibilityChange)
+      canvas.removeEventListener('webglcontextlost', onContextLost)
       resizeObserver?.disconnect()
       window.removeEventListener('resize', resize)
       gl.deleteBuffer(buffer)
