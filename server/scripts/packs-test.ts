@@ -122,7 +122,7 @@ async function main() {
   console.log("\n[packs] sunucu başlatılıyor…");
   const tsxCli = fileURLToPath(new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url));
   const server = spawn(process.execPath, [tsxCli, "src/index.ts"], {
-    cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+    cwd: fileURLToPath(new URL("..", import.meta.url)),
     env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", ALLOW_MOCK_AUTH: "1" },
     stdio: ["ignore", "pipe", "pipe"],
   });
