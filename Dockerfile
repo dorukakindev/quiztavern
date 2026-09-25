@@ -45,11 +45,16 @@ COPY --from=build /app/server/dist ./server/dist
 COPY --from=build /app/client/dist ./client/dist
 
 # SQLite veri dizini (xp.db, daily.db, question-reports.db) — Fly volume
-# /app/server/data'ya bağlanır; süreç root olmayan kullanıcıyla çalışır.
+# /app/server/data'ya bağlanır. Süreç root olmayan kullanıcıyla çalışır ama
+# ayrıcalık düşürme ENTRYPOINT'te yapılır: mount sahibi host'tan geldiği için
+# build-time chown mount tarafından gölgelenir; root'a ait bir volume'da
+# non-root kullanıcı EACCES ile çökerdi (entrypoint her açılışta chown'lar).
 RUN useradd --system --uid 1001 quiztavern \
  && mkdir -p /app/server/data \
  && chown -R quiztavern:quiztavern /app/server/data
-USER quiztavern
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["docker-entrypoint.sh"]
 
 WORKDIR /app/server
 EXPOSE 8080
