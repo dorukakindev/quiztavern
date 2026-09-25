@@ -80,8 +80,19 @@ function shuffle<T>(items: T[]): T[] {
   return pool;
 }
 
-/** Kategori + zorluk filtresini uygular. Zorluk seçili ama o havuz boşsa (dar
- *  kategori+zorluk kombinasyonu) kategori havuzuna düşer — maç boş kalmasın. */
+/** Tek bir sorunun şık sırasını karıştırır; doğru index yeni yerine taşınır.
+ *  Standart havuz, özel paket, oyuncu-yazarı ve günlük soruların hepsi bundan
+ *  geçer — verideki pozisyon eğriliği (ilk şık ağırlığı) oyuna sızmasın. */
+export function shuffleChoices(q: Question): Question {
+  const order = shuffle([0, 1, 2, 3]);
+  return {
+    ...q,
+    choices: order.map((k) => q.choices[k]),
+    choicesEn: order.map((k) => q.choicesEn[k]),
+    correctIndex: order.indexOf(q.correctIndex),
+  };
+}
+
 /** §6.3 zorluk kalibrasyonu: istatistiğe göre etiketi düzeltilen sorular.
  *  question_id → kalibre zorluk. Server açılışında ve her maç sonrası tazelenir. */
 const calibrated = new Map<string, Difficulty>();
@@ -119,6 +130,8 @@ export function effectiveDifficulty(q: Question): Difficulty {
   return calibrated.get(q.id) ?? q.difficulty;
 }
 
+/** Kategori + zorluk filtresini uygular. Zorluk seçili ama o havuz boşsa (dar
+ *  kategori+zorluk kombinasyonu) kategori havuzuna düşer — maç boş kalmasın. */
 function effectiveQuestionPool(categories: string[], difficulty: Difficulty | null): Question[] {
   // Bildirilen sorular havuzdan düşer; havuz tamamen boşalarsa fallback olarak
   // ham havuza döner (soru hatası maçı hiç kilitlemesin).
@@ -214,15 +227,7 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   // kategori/zorluk) maç kısalır ama aynı soru iki kez çıkmaz — eski modulo
   // tek-kategoride tekrar ediyordu. Çağıran gerçek uzunluğu sonuç.length'ten okur
   // (rooms: klasik roundLimit = questions.length). Çemberle aynı davranış.
-  return pool.slice(0, n).map((q) => {
-    const order = shuffle([0, 1, 2, 3]);
-    return {
-      ...q,
-      choices: order.map((k) => q.choices[k]),
-      choicesEn: order.map((k) => q.choicesEn[k]),
-      correctIndex: order.indexOf(q.correctIndex),
-    };
-  });
+  return pool.slice(0, n).map(shuffleChoices);
 }
 
 /** Verilen kategori+zorluk için etkin havuzdaki TÜM soru id'leri (sampleQuestions

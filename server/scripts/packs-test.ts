@@ -91,6 +91,19 @@ async function unitTests() {
   const seen = new Set(fromCsv.map((q) => q.id));
   const resampled = samplePackQuestions(2, fromCsv, seen);
   assert(resampled.length === 2, "örnekleme: hepsi görülmüşse yine de doldurur");
+
+  // Şık karıştırma: doğru metin korunur ve pozisyon çekilişten çekilişe değişir.
+  const mono = Array.from({ length: 4 }, (_, i) => ({
+    id: `mono-${i}`, text: `Mono soru ${i}?`, textEn: `Mono q ${i}?`,
+    category: "K", difficulty: "kolay" as const,
+    choices: ["doğru", "y1", "y2", "y3"], choicesEn: ["right", "w1", "w2", "w3"], correctIndex: 0,
+  }));
+  const idxSet = new Set<number>();
+  for (let r = 0; r < 8; r++) samplePackQuestions(4, mono, new Set()).forEach((q) => {
+    assert(q.choices[q.correctIndex] === "doğru", "şık karıştırma: doğru metin korunur");
+    idxSet.add(q.correctIndex);
+  });
+  assert(idxSet.size > 1, "şık karıştırma: doğru hep aynı pozisyonda kalmaz");
 }
 
 // ── HTTP + socket katmanı ──────────────────────────────────────────────────

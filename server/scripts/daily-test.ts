@@ -29,6 +29,18 @@ test("aynı gün aynı sorular: tarih tohumu deterministiktir", () => {
   assert.equal(new Set(a.map((q) => q.id)).size, a.length); // tekrar yok
 });
 
+test("şık karıştırma: soru seti aynı, doğru pozisyon oda bazında değişir", () => {
+  const day = new Date(Date.UTC(2026, 8, 22, 12, 0, 0));
+  const positions = new Set<number>();
+  for (let r = 0; r < 8; r++) dailyQuestions(day).forEach((q) => positions.add(q.correctIndex));
+  assert.ok(positions.size > 1, "aynı günde tekrar çekim doğruyu farklı şığa taşımalı");
+  // Karıştırma index'leri yeniden eşler — her şık hâlâ metnin kendisi.
+  dailyQuestions(day).forEach((q) => {
+    assert.ok(q.choices[q.correctIndex] && q.choices[q.correctIndex].length > 0, "doğru şık geçerli");
+    assert.equal(q.choices.length, 4);
+  });
+});
+
 test("gün numarası epoch'tan sayılır ve paylaşım metni biçimli", () => {
   assert.equal(dailyDayNumber(new Date(Date.UTC(2026, 0, 1, 0, 0, 0))), 1);
   assert.equal(dailyDayNumber(new Date(Date.UTC(2026, 8, 22, 10, 0, 0))), 265);

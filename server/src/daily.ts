@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { mkdirSync } from "node:fs";
 import { dirname } from "node:path";
-import { ALL_QUESTIONS, type Question } from "./questions";
+import { ALL_QUESTIONS, shuffleChoices, type Question } from "./questions";
 import type { DailyBoard, DailyBoardEntry } from "../../shared/types";
 
 /**
@@ -50,7 +50,9 @@ export function dailyQuestions(now: Date = new Date(), pool: Question[] = ALL_QU
     const j = Math.floor(rnd() * (i + 1));
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
-  return shuffled.slice(0, Math.min(DAILY_QUESTION_COUNT, shuffled.length));
+  // Soru kümesi herkes için aynı kalır ama şık sırası oda bazında karışır —
+  // "bugünkü cevaplar A,C,B" paylaşımı başka masada işe yaramaz.
+  return shuffled.slice(0, Math.min(DAILY_QUESTION_COUNT, shuffled.length)).map(shuffleChoices);
 }
 
 /** Wordle tarzı sonuç satırı: doğru 🟩, yanlış şık 🟥, cevapsız tur ⬜. */

@@ -2,7 +2,7 @@ import { GAME } from "./config";
 import { GameError } from "./errors";
 import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
-import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, type Question } from "./questions";
+import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, shuffleChoices, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
 import { sampleOrderQuestions, type OrderQuestion } from "./questions-order";
 import { sampleBoardCells, type BoardCellSpec } from "./questions-board";
@@ -1172,7 +1172,9 @@ export class Room {
         if (count > 0) {
           const slots = shuffleIdx(this.roundLimit).slice(0, count);
           shuffleIdx(pool.length).slice(0, count).forEach((poolIdx, i) => {
-            this.questions[slots[i]] = pool[poolIdx];
+            // Şık sırası da karışır — yazan "doğru hep ilk sırada" diye
+            // arkadaşına pozisyonla cevabı işaret edemesin.
+            this.questions[slots[i]] = shuffleChoices(pool[poolIdx]);
           });
         }
       }
