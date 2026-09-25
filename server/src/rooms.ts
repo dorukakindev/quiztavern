@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { CIRCLE_COUNTS, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
+import { CIRCLE_COUNTS, COUNTLESS_MODES, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, shuffleChoices, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
@@ -852,8 +852,8 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
-    // Düello hep 7 soru — host'a sayı seçtirilmez (QUESTION_COUNTS dışı olduğu
-    // için setQuestionCount zaten reddeder).
+    // Düello hep 7 soru — host'a sayı seçtirilmez (COUNTLESS_MODES; lobi çipi
+    // gizli + setQuestionCount reddeder).
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "zil") this.questionCount = 10;
     if (mode === "numeric") this.questionCount = 10;
@@ -921,6 +921,9 @@ export class Room {
   setQuestionCount(playerId: string, count: unknown): void {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.countHostOnly");
+    // Soru sayısı ayarı anlamsız modlar (duel=7 sabit; word/blitz/board sayıyı
+    // yok sayar) — istemcide çip gizli, burada da reddedilir.
+    if (COUNTLESS_MODES.includes(this.gameMode)) throw new GameError("err.countMode");
     // Çember'de aynı alan tur sayısını taşır: 10/15/20.
     const valid = this.gameMode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS;
     if (!(valid as readonly number[]).includes(count as number)) throw new GameError("err.countInvalid");
