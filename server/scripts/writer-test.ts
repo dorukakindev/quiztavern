@@ -1,6 +1,7 @@
 import { strict as assert } from 'node:assert'
 import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
+import { questionPoolIds } from '../src/questions'
 
 let passed = 0
 const test = (name: string, run: () => void) => {
@@ -127,5 +128,21 @@ test('İkinci gönderim üzerine yazar; masadan çıkınca kayıt düşer', () =
   assert.equal(r.stateFor('b', true).writers.length, 0)
 })
 
+test('Dar havuzda yazar slotu dizi sınırını aşmaz — delik yok (B59)', () => {
+  // Slotlar roundLimit'ten örnekleniyordu; questions dar havuzda kısa kalınca
+  // slot ≥ length yazımı sparse delik açar ve maç ilk delikte biterdi.
+  const r = new Room('w-thin', () => {}, { minPlayers: 1, questionCount: 15 })
+  for (const pid of ['a', 'b', 'c', 'd']) { r.addPlayer(player(pid, `P${pid}`)); }
+  // Görülmemiş yalnız 2 soru kalsın — questions.length=2 < roundLimit=15.
+  const seen = (r as unknown as { seenQuestionIds: Set<string> }).seenQuestionIds
+  for (const id of questionPoolIds().slice(2)) seen.add(id)
+  for (const pid of ['a', 'b', 'c', 'd']) { r.setReady(pid, true); r.submitQuestion(pid, good({ text: `yazar ${pid} sorusu uzun metin` })) }
+  r.start('a', 'classic')
+  const inner = internals(r)
+  assert.equal(inner.questions.length, inner.questions.filter(Boolean).length, 'sparse delik yok')
+  const written = inner.questions.filter((q) => String(q.id).startsWith('written-'))
+  assert.ok(written.length >= 1, 'yazar sorusu dizide')
+})
+
 console.log(`writer-test: ${passed} geçti`)
-assert.equal(passed, 9)
+assert.equal(passed, 10)

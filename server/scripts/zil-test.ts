@@ -128,6 +128,29 @@ test("Lobi dışı fazlarda basmak yutulur", () => {
   assert.equal(internals(room).buzzWinnerId, null);
 });
 
+test("Kazanan izleyiciye geçince zil takılmaz — denemesi yanar (B61)", () => {
+  const room = zilRoom("z-spectate", ["a", "b", "c"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.becomeSpectator("a"); // kazanan pencerede izleyiciye geçti
+  assert.equal(inner.buzzWinnerId, null, "zil takılı kalmadı");
+  assert.equal(room.phase, "question", "zil yeniden açıldı");
+  room.buzz("b"); // masa bekletilmeden devam eder
+  assert.equal(inner.buzzWinnerId, "b");
+});
+
+test("Son insan izleyiciye geçerse oda kapanmaz, kaydı düşmez (B47)", () => {
+  const room = zilRoom("z-orphan", ["a"]);
+  startRound(room);
+  let emptied = false;
+  room.setEmptiedHandler(() => { emptied = true; });
+  room.becomeSpectator("a");
+  assert.equal(emptied, false, "oda açık kaldı");
+  const spec = (room as unknown as { spectators: Map<string, unknown> }).spectators;
+  assert.ok(spec.has("a"), "izleyici kayıtlı");
+  assert.equal(room.phase, "lobby", "masa boş lobiye döndü");
+});
+
 test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B48)", () => {
   const room = zilRoom("z-passive", ["a", "b", "c"]);
   const inner = startRound(room);
@@ -142,6 +165,7 @@ test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B4
   assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
 });
 
+
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 9);
+assert.equal(passed, 11);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

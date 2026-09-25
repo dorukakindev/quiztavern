@@ -1235,6 +1235,7 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Olimpiyatlar': 'Olympics',
   'Orta Çağ': 'Middle Ages',
   'İklim & Hava': 'Weather & Climate',
+  'Topluluk': 'Community',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
@@ -1247,7 +1248,13 @@ export function categoryLabel(language: ActivityLanguage, name: string): string 
 export type Translate = (key: StringKey, params?: Record<string, string | number>) => string
 
 export function translate(language: ActivityLanguage, key: StringKey, params?: Record<string, string | number>): string {
-  const template = STRINGS[language][key]
+  const template = STRINGS[language][key] as string | undefined
+  if (template === undefined) {
+    // Eksik anahtar sessizce "undefined" diye render edilmesin — dev'de
+    // console.warn görünür, prod'da anahtar düz metin düşer (§7.12).
+    if (import.meta.env.DEV) console.warn(`[i18n] eksik anahtar: ${language}.${String(key)}`)
+    return String(key)
+  }
   if (!params) return template
   return template.replace(/\{(\w+)\}/g, (match, name: string) => (name in params ? String(params[name]) : match))
 }
