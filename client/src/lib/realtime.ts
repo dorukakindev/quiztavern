@@ -187,172 +187,179 @@ export function useRealtimeGame(roomId = "ana-lobi", identity?: ActivityRealtime
     return () => window.clearTimeout(timer);
   }, [message]);
 
-  return {
-    state,
-    status,
-    message,
-    connectionError,
-    emotes,
-    droppedAt,
-    dismissMessage: () => setMessage(null),
-    sendEmote: (emote: EmoteKey) => {
-      if (socket.connected) socket.emit(EV.EMOTE, { emote });
-    },
-    reconnectNow: () => {
-      if (!socket.connected) {
-        setStatus("connecting");
-        setConnectionError(null);
-        socket.connect();
-      }
-    },
-    start: (mode: GameMode = "quiz") => {
-      if (socket.connected) socket.emit(EV.START, { mode });
-    },
-    startDaily: () => {
-      if (socket.connected) socket.emit(EV.START, { daily: true });
-    },
-    answer: (choice: number) => {
-      if (socket.connected) socket.emit(EV.ANSWER, choice);
-    },
-    buzz: () => {
-      if (socket.connected) socket.emit(EV.BUZZ);
-    },
-    answerCircle: (answer: string) => {
-      if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer);
-    },
-    answerWord: (answer: string) => {
-      if (socket.connected) socket.emit(EV.WORD_ANSWER, answer);
-    },
-    answerNumeric: (value: number) => {
-      if (socket.connected) socket.emit(EV.NUMERIC_ANSWER, value);
-    },
-    answerOrder: (order: number[]) => {
-      if (socket.connected) socket.emit(EV.ORDER_ANSWER, order);
-    },
-    pickCell: (cell: number) => {
-      if (socket.connected) socket.emit(EV.PICK_CELL, cell);
-    },
-    wordLetter: () => {
-      if (socket.connected) socket.emit(EV.WORD_LETTER);
-    },
-    placeBet: (amount: number) => {
-      if (socket.connected) socket.emit(EV.BET, amount);
-    },
-    playAgain: () => {
-      if (socket.connected) socket.emit(EV.PLAY_AGAIN);
-    },
-    addBot: () => {
-      if (socket.connected) socket.emit(EV.ADD_BOT);
-    },
-    ready: (value: boolean) => {
-      if (socket.connected) socket.emit(EV.READY, value);
-    },
-    setCategories: (categories: string[]) => {
-      if (socket.connected) socket.emit(EV.SET_CATEGORIES, categories);
-    },
-    setQuestionCount: (count: number) => {
-      if (socket.connected) socket.emit(EV.SET_QUESTION_COUNT, { count });
-    },
-    setDifficulty: (difficulty: Difficulty | null) => {
-      if (socket.connected) socket.emit(EV.SET_DIFFICULTY, { difficulty });
-    },
-    setPack: (packId: string | null) => {
-      if (socket.connected) socket.emit(EV.SET_PACK, { packId });
-    },
-    setTableTheme: (theme: TableTheme) => {
-      if (socket.connected) socket.emit(EV.SET_THEME, { theme });
-    },
-    submitQuestion: (q: WrittenQuestionInput) => {
-      if (socket.connected) socket.emit(EV.SUBMIT_QUESTION, q);
-    },
-    deleteQuestion: () => {
-      if (socket.connected) socket.emit(EV.DELETE_QUESTION);
-    },
-    setQuestionTime: (ms: number | null) => {
-      if (socket.connected) socket.emit(EV.SET_QUESTION_TIME, { ms });
-    },
-    setSpeedBonus: (value: boolean) => {
-      if (socket.connected) socket.emit(EV.SET_SPEED_BONUS, { value });
-    },
-    setImageOnly: (value: boolean) => {
-      if (socket.connected) socket.emit(EV.SET_IMAGE_ONLY, { value });
-    },
-    setMode: (mode: GameMode) => {
-      if (socket.connected) socket.emit(EV.SET_MODE, { mode });
-    },
-    setTeam: (targetId: string, team: number) => {
-      if (socket.connected) socket.emit(EV.SET_TEAM, { targetId, team });
-    },
-    shuffleTeams: () => {
-      if (socket.connected) socket.emit(EV.TEAM_SHUFFLE);
-    },
-    useCard: (type: CardType, targetId?: string) => {
-      if (socket.connected) socket.emit(EV.USE_CARD, { type, ...(targetId ? { targetId } : {}) });
-    },
-    // Host araçları. Yetki ve ban süresi SUNUCUDA (rooms.ts kick/transferHost);
-    // burası yalnızca hedefi bildirir. Reddedilirse sunucu toast döndürür.
-    kick: (targetId: string) => {
-      if (socket.connected) socket.emit(EV.KICK, { targetId });
-    },
-    transferHost: (targetId: string) => {
-      if (socket.connected) socket.emit(EV.TRANSFER_HOST, { targetId });
-    },
-    // İzleyici modu: koltuğu bırak (izle) / boş koltuğa otur (oyna). Karar sunucuda.
-    spectate: () => {
-      if (socket.connected) socket.emit(EV.SPECTATE);
-    },
-    takeSeat: () => {
-      if (socket.connected) socket.emit(EV.TAKE_SEAT);
-    },
-    reportQuestion: (note?: string) => {
-      if (socket.connected) socket.emit(EV.QUESTION_REPORT, { note });
-    },
-    /** İzleyici: maç başında kazananı tahmin et (pencere: geri sayım + ilk tur). */
-    predict: (targetId: string) => {
-      if (socket.connected) socket.emit(EV.PREDICT, { targetId });
-    },
-    // Unvan tak/kaldır (null = kaldır) — kazanılmış rozetlerden biri olmalı.
-    setTitle: (title: BadgeKey | null) => {
-      if (socket.connected) socket.emit(EV.SET_TITLE, { title });
-    },
-    /**
-     * Kapatmayı SUNUCU yapar (LEAVE_GAME handler'ı removePlayer'dan sonra
-     * socket.disconnect(true) çağırıyor). Burada emit'in hemen ardından
-     * disconnect() çağırmak yarış yaratıyordu: olay sunucuya varmadan bağlantı
-     * kopunca sunucu bunu "ayrıldı" değil "bağlantısı gitti" sayıp 30 sn grace
-     * başlatıyor, oyuncu odada kalıyor ve geri bağlanınca koşan maça dönüyordu.
-     *
-     * thenRejoin: masada başka insan yoksa sunucu odayı siler; kopmayı BEKLEYİP
-     * yeniden bağlanmak taze bir lobi verir ("ana sayfaya dön" beklentisi).
-     */
-    leaveGame: (thenRejoin = false) => {
-      intentionalLeave.current = true;
-      if (thenRejoin) {
-        let rejoined = false;
-        socket.once("disconnect", () => {
-          rejoined = true;
-          window.setTimeout(() => socket.connect(), 60);
-        });
-        // Sunucu disconnect(true)'yu gönderemezse (kopuk transport, proxy
-        // kaybı) istemci sonsuza kadar beklemez: 2 sn içinde kopma gelmediyse
-        // kendisi kapatır; once-handler yine rejoin'i çalıştırır. Sunucu
-        // zaten kestiyse timer no-op'tur.
-        window.setTimeout(() => {
-          if (!rejoined && socket.connected) socket.disconnect();
-        }, 2000);
-      }
-      // Kopukken emit kasıtlı olarak korumasız bırakılır: tamponlanan
-      // LEAVE_GAME yeniden bağlanınca sunucuya ulaşır ve koltuğu temizler.
-      socket.emit(EV.LEAVE_GAME);
-    },
-    /** Podyumdan lobiye dön: odada kalır, sahiplik değişmez (sunucu: Room.returnToLobby). */
-    returnToLobby: () => {
-      if (socket.connected) socket.emit(EV.RETURN_TO_LOBBY);
-    },
-    /** Podyumda rövanş oyu — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
-    rematch: () => {
-      if (socket.connected) socket.emit(EV.REMATCH);
-    },
-    rejoinGame: () => socket.connect(),
-  };
+  // Aksiyonlar ve dönüş nesnesi memo'lu: her render'da yeni nesne üretmek,
+  // bağımlılıklarına game.* koyan efektlerin her yayında yeniden koşmasına
+  // yol açıyordu (kategori senkron emit'i gibi). Aksiyonlar yalnız socket'e
+  // kapanır; veri alanları değişince nesne tazelenir.
+  return useMemo(
+    () => ({
+      state,
+      status,
+      message,
+      connectionError,
+      emotes,
+      droppedAt,
+      dismissMessage: () => setMessage(null),
+      sendEmote: (emote: EmoteKey) => {
+        if (socket.connected) socket.emit(EV.EMOTE, { emote });
+      },
+      reconnectNow: () => {
+        if (!socket.connected) {
+          setStatus("connecting");
+          setConnectionError(null);
+          socket.connect();
+        }
+      },
+      start: (mode: GameMode = "quiz") => {
+        if (socket.connected) socket.emit(EV.START, { mode });
+      },
+      startDaily: () => {
+        if (socket.connected) socket.emit(EV.START, { daily: true });
+      },
+      answer: (choice: number) => {
+        if (socket.connected) socket.emit(EV.ANSWER, choice);
+      },
+      buzz: () => {
+        if (socket.connected) socket.emit(EV.BUZZ);
+      },
+      answerCircle: (answer: string) => {
+        if (socket.connected) socket.emit(EV.CIRCLE_ANSWER, answer);
+      },
+      answerWord: (answer: string) => {
+        if (socket.connected) socket.emit(EV.WORD_ANSWER, answer);
+      },
+      answerNumeric: (value: number) => {
+        if (socket.connected) socket.emit(EV.NUMERIC_ANSWER, value);
+      },
+      answerOrder: (order: number[]) => {
+        if (socket.connected) socket.emit(EV.ORDER_ANSWER, order);
+      },
+      pickCell: (cell: number) => {
+        if (socket.connected) socket.emit(EV.PICK_CELL, cell);
+      },
+      wordLetter: () => {
+        if (socket.connected) socket.emit(EV.WORD_LETTER);
+      },
+      placeBet: (amount: number) => {
+        if (socket.connected) socket.emit(EV.BET, amount);
+      },
+      playAgain: () => {
+        if (socket.connected) socket.emit(EV.PLAY_AGAIN);
+      },
+      addBot: () => {
+        if (socket.connected) socket.emit(EV.ADD_BOT);
+      },
+      ready: (value: boolean) => {
+        if (socket.connected) socket.emit(EV.READY, value);
+      },
+      setCategories: (categories: string[]) => {
+        if (socket.connected) socket.emit(EV.SET_CATEGORIES, categories);
+      },
+      setQuestionCount: (count: number) => {
+        if (socket.connected) socket.emit(EV.SET_QUESTION_COUNT, { count });
+      },
+      setDifficulty: (difficulty: Difficulty | null) => {
+        if (socket.connected) socket.emit(EV.SET_DIFFICULTY, { difficulty });
+      },
+      setPack: (packId: string | null) => {
+        if (socket.connected) socket.emit(EV.SET_PACK, { packId });
+      },
+      setTableTheme: (theme: TableTheme) => {
+        if (socket.connected) socket.emit(EV.SET_THEME, { theme });
+      },
+      submitQuestion: (q: WrittenQuestionInput) => {
+        if (socket.connected) socket.emit(EV.SUBMIT_QUESTION, q);
+      },
+      deleteQuestion: () => {
+        if (socket.connected) socket.emit(EV.DELETE_QUESTION);
+      },
+      setQuestionTime: (ms: number | null) => {
+        if (socket.connected) socket.emit(EV.SET_QUESTION_TIME, { ms });
+      },
+      setSpeedBonus: (value: boolean) => {
+        if (socket.connected) socket.emit(EV.SET_SPEED_BONUS, { value });
+      },
+      setImageOnly: (value: boolean) => {
+        if (socket.connected) socket.emit(EV.SET_IMAGE_ONLY, { value });
+      },
+      setMode: (mode: GameMode) => {
+        if (socket.connected) socket.emit(EV.SET_MODE, { mode });
+      },
+      setTeam: (targetId: string, team: number) => {
+        if (socket.connected) socket.emit(EV.SET_TEAM, { targetId, team });
+      },
+      shuffleTeams: () => {
+        if (socket.connected) socket.emit(EV.TEAM_SHUFFLE);
+      },
+      useCard: (type: CardType, targetId?: string) => {
+        if (socket.connected) socket.emit(EV.USE_CARD, { type, ...(targetId ? { targetId } : {}) });
+      },
+      // Host araçları. Yetki ve ban süresi SUNUCUDA (rooms.ts kick/transferHost);
+      // burası yalnızca hedefi bildirir. Reddedilirse sunucu toast döndürür.
+      kick: (targetId: string) => {
+        if (socket.connected) socket.emit(EV.KICK, { targetId });
+      },
+      transferHost: (targetId: string) => {
+        if (socket.connected) socket.emit(EV.TRANSFER_HOST, { targetId });
+      },
+      // İzleyici modu: koltuğu bırak (izle) / boş koltuğa otur (oyna). Karar sunucuda.
+      spectate: () => {
+        if (socket.connected) socket.emit(EV.SPECTATE);
+      },
+      takeSeat: () => {
+        if (socket.connected) socket.emit(EV.TAKE_SEAT);
+      },
+      reportQuestion: (note?: string) => {
+        if (socket.connected) socket.emit(EV.QUESTION_REPORT, { note });
+      },
+      /** İzleyici: maç başında kazananı tahmin et (pencere: geri sayım + ilk tur). */
+      predict: (targetId: string) => {
+        if (socket.connected) socket.emit(EV.PREDICT, { targetId });
+      },
+      // Unvan tak/kaldır (null = kaldır) — kazanılmış rozetlerden biri olmalı.
+      setTitle: (title: BadgeKey | null) => {
+        if (socket.connected) socket.emit(EV.SET_TITLE, { title });
+      },
+      /**
+       * Kapatmayı SUNUCU yapar (LEAVE_GAME handler'ı removePlayer'dan sonra
+       * socket.disconnect(true) çağırıyor). Burada emit'in hemen ardından
+       * disconnect() çağırmak yarış yaratıyordu: olay sunucuya varmadan bağlantı
+       * kopunca sunucu bunu "ayrıldı" değil "bağlantısı gitti" sayıp 30 sn grace
+       * başlatıyor, oyuncu odada kalıyor ve geri bağlanınca koşan maça dönüyordu.
+       *
+       * thenRejoin: masada başka insan yoksa sunucu odayı siler; kopmayı BEKLEYİP
+       * yeniden bağlanmak taze bir lobi verir ("ana sayfaya dön" beklentisi).
+       */
+      leaveGame: (thenRejoin = false) => {
+        intentionalLeave.current = true;
+        if (thenRejoin) {
+          let rejoined = false;
+          socket.once("disconnect", () => {
+            rejoined = true;
+            window.setTimeout(() => socket.connect(), 60);
+          });
+          // Sunucu disconnect(true)'yu gönderemezse (kopuk transport, proxy
+          // kaybı) istemci sonsuza kadar beklemez: 2 sn içinde kopma gelmediyse
+          // kendisi kapatır; once-handler yine rejoin'i çalıştırır. Sunucu
+          // zaten kestiyse timer no-op'tur.
+          window.setTimeout(() => {
+            if (!rejoined && socket.connected) socket.disconnect();
+          }, 2000);
+        }
+        // Kopukken emit kasıtlı olarak korumasız bırakılır: tamponlanan
+        // LEAVE_GAME yeniden bağlanınca sunucuya ulaşır ve koltuğu temizler.
+        socket.emit(EV.LEAVE_GAME);
+      },
+      /** Podyumdan lobiye dön: odada kalır, sahiplik değişmez (sunucu: Room.returnToLobby). */
+      returnToLobby: () => {
+        if (socket.connected) socket.emit(EV.RETURN_TO_LOBBY);
+      },
+      /** Podyumda rövanş oyu — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
+      rematch: () => {
+        if (socket.connected) socket.emit(EV.REMATCH);
+      },
+      rejoinGame: () => socket.connect(),
+    }),
+    [socket, state, status, message, connectionError, emotes, droppedAt],
+  );
 }

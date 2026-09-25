@@ -352,6 +352,25 @@ export class Room {
   private inResults = new Set<string>();
   private onQuestionStarted: QuestionStarted | null = null;
   private onEmptied: (() => void) | null = null;
+  /** Lider tabloları her yayında × her alıcı için SQLite'a gidiyordu; kısa
+   *  ömürlü önbellek (15 sn) — maç sonu yazımları bir sonraki yayında zaten
+   *  tazelenir (invalidate, recordMatch sonrası çağrılır). */
+  private boardCache: { at: number; season: SeasonBoard | null; weekly: SeasonBoard | null } | null = null;
+  private boardsCached(): { season: SeasonBoard | null; weekly: SeasonBoard | null } {
+    const now = Date.now();
+    if (!this.boardCache || now - this.boardCache.at > 15_000) {
+      this.boardCache = {
+        at: now,
+        season: this.progress?.seasonBoard(5) ?? null,
+        weekly: this.progress?.weeklyBoard(5) ?? null,
+      };
+    }
+    return this.boardCache;
+  }
+  /** Maç sonu XP yazımından sonra çağrılır: sıradaki yayın güncel tabloyu verir. */
+  invalidateBoardCache(): void {
+    this.boardCache = null;
+  }
   private onToast: ((playerId: string, key: ToastKey) => void) | null = null;
 
   constructor(
@@ -1890,8 +1909,10 @@ export class Room {
       xpGains: this.phase === "podium" && this.progress && this.xpGains.size ? Object.fromEntries(this.xpGains) : null,
       // Lider tabloları yalnız lobi/podium'da gösterilir — oyun fazlarında her
       // stateFor çağrısı alıcı başına gereksiz SQLite sorgusu üretirdi (§7.1).
-      seasonBoard: showBoards ? (this.progress?.seasonBoard(5) ?? null) : null,
-      weeklyBoard: showBoards ? (this.progress?.weeklyBoard(5) ?? null) : null,
+      // Üstüne 15 sn'lik oda-içi önbellek: lobi yayınları arka arkaya geldiğinde
+      // her alıcı aynı iki sorguyu tekrar tetikliyordu.
+      seasonBoard: showBoards ? this.boardsCached().season : null,
+      weeklyBoard: showBoards ? this.boardsCached().weekly : null,
       dailyBoard: null,
       serverNow: Date.now(),
     };
@@ -2593,6 +2614,11 @@ export class Room {
       ...(this.gameMode === "bet" && this.rescueRound.size ? { rescued: [...this.rescueRound] } : {}),
       ...(this.gameMode === "bet" ? { bets } : {}),
       ...(question.fact ? { fact: question.fact, factEn: question.factEn } : {}),
+      // Sıradaki soru görselliyse adını önden yolla: istemci reveal sırasında
+      // indirir, soru açıldığında görsel yüklemesini beklemeden sayaç başlar.
+      ...(this.qIndex + 1 < this.roundLimit && this.questions[this.qIndex + 1]?.image
+        ? { nextImage: this.questions[this.qIndex + 1].image }
+        : {}),
     };
     this.broadcast();
     this.scheduleNext(() => this.advanceFromReveal(), revealMs);
@@ -2861,7 +2887,9 @@ export class Room {
       const questions = this.questions.slice(0, this.roundLimit);
       const entries: DailyResultEntry[] = [];
       for (const player of this.players.values()) {
-        if (player.isBot) continue;
+        // Maç ortasında oturan oyuncu günlük setin tamamını oynamadı: kaydı
+        // yazılırsa kaçırdığı turlar ⬜ olur ve bugünkü hakkı boşa yanar.
+        if (player.isBot || player.eligibleFrom > 0) continue;
         const pattern = dailyPattern(player.answers, questions);
         this.dailyResults.set(player.id, pattern);
         entries.push({ day: this.dailyDay, userId: player.id, name: player.name, pattern, score: player.score });
@@ -2905,6 +2933,8 @@ export class Room {
       if (matchEntries.length) {
         try {
           this.xpGains = this.progress.recordMatch(matchEntries);
+          // Sezon/haftalık tablolar değişti — lobi önbelleği bayat kalmasın.
+          this.invalidateBoardCache();
         } catch (error) {
           console.error("[xp] maç sonucu yazılamadı:", error);
         }
