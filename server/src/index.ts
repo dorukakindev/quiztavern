@@ -17,6 +17,7 @@ import {
   isAllowedProductionOrigin,
 } from "./config";
 import { exchangeCode, verifyInstanceMembership, verifySession, type SessionUser } from "./auth";
+import { startDiscordCommands, stopDiscordCommands } from "./discordCommands";
 import { Room } from "./rooms";
 import {
   BADGE_KEYS,
@@ -971,6 +972,7 @@ io.on("connection", (socket) => {
 });
 
 httpServer.listen(PORT, HOST, () => log.info({ host: HOST, port: PORT }, "server dinliyor"));
+startDiscordCommands();
 
 let shuttingDown = false;
 function shutdown(signal: NodeJS.Signals) {
@@ -981,6 +983,7 @@ function shutdown(signal: NodeJS.Signals) {
 
   for (const room of rooms.values()) room.dispose();
   rooms.clear();
+  stopDiscordCommands();
 
   let finished = false;
   const finish = (error?: Error) => {

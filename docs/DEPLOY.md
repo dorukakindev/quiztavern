@@ -238,6 +238,16 @@ odalarına asla karışamaz) ve XP/rozet/günlük kayıtlarına yazılmaz.
 Kapatmak için `ALLOW_GUEST_AUTH=0`. Discord etkinliği bundan etkilenmez;
 URL Mappings ayrı çalışır.
 
+## 6. Slash komutu (Discovery şartı)
+
+Discord App Directory için uygulamanın çalışan en az bir slash komutu
+olmalı. Sunucu `/triviara` komutunu minimal bir gateway bağlantısıyla
+cevaplar (`server/src/discordCommands.ts`, `DISCORD_BOT_TOKEN` yeterli —
+ek uç açmaz; kapatmak: `DISCORD_GATEWAY=0`). Komutu bir kez Discord'a
+kaydet:
+
+    DISCORD_CLIENT_ID=... DISCORD_BOT_TOKEN=... npm run register:command -w server
+
 ## Notlar
 
 - A1 ARM kapasitesi bazen dolu olur; "Out of capacity" alırsan başka
