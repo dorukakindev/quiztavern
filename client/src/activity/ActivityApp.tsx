@@ -269,6 +269,84 @@ function SeasonStrip({
   );
 }
 
+/** Özel masa kartı: kod gir → web-<kod> odasına düşersin; arkadaşlar kodu
+ *  başka Discord kanalında ya da web misafir kapısında aynı odaya girer. */
+function PrivateRoomCard({
+  state,
+  onJoin,
+  onLeave,
+}: {
+  state: GameState | null;
+  onJoin: (code: string) => void;
+  onLeave: () => void;
+}) {
+  const { t } = useI18n();
+  const [code, setCode] = useState("");
+  const inPrivate = !!state?.roomId?.startsWith("web-");
+  const roomCode = (state?.roomId ?? "").replace(/^web-/, "");
+  const clean = code.trim().toLowerCase();
+  const codeValid = /^[a-z0-9][a-z0-9-]{0,23}$/.test(clean);
+  const genCode = () => {
+    // Okunabilir kısa kod — karışan i/l/o/0/1 dışarıda.
+    const chars = "abcdefghjkmnpqrstuvwxyz23456789";
+    return Array.from({ length: 5 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  };
+  return (
+    <details className="qt-privroom">
+      <summary className="qt-privroom__head">
+        <span>{t("private.title")}</span>
+        {inPrivate && <b className="qt-privroom__chip">{roomCode}</b>}
+      </summary>
+      {inPrivate ? (
+        <div className="qt-privroom__body">
+          <small>{t("private.hint")}</small>
+          <div className="qt-privroom__actions">
+            <button
+              type="button"
+              className="qt-button qt-writer-delete"
+              onClick={() => void navigator.clipboard?.writeText(roomCode)}
+            >
+              {t("private.copy")}
+            </button>
+            <button type="button" className="qt-button qt-daily-share__copy" onClick={onLeave}>
+              {t("private.leave")}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="qt-privroom__body">
+          <small>{t("private.hint")}</small>
+          <input
+            className="qt-privroom__input"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && codeValid) onJoin(clean);
+            }}
+            placeholder={t("private.code")}
+            aria-label={t("private.code")}
+            maxLength={24}
+            autoComplete="off"
+          />
+          <div className="qt-privroom__actions">
+            <button
+              type="button"
+              className="qt-button qt-daily-share__copy"
+              disabled={!codeValid}
+              onClick={() => onJoin(clean)}
+            >
+              {t("private.join")}
+            </button>
+            <button type="button" className="qt-button qt-writer-delete" onClick={() => onJoin(genCode())}>
+              {t("private.create")}
+            </button>
+          </div>
+        </div>
+      )}
+    </details>
+  );
+}
+
 /** Bugünün günlük lider tablosu — skor sırası + Wordle deseni + seri rozeti. */
 function DailyStrip({ state }: { state: GameState }) {
   const { t } = useI18n();
@@ -2230,6 +2308,8 @@ function ActivityLobby({
   onDeleteQuestion,
   speakingIds,
   onHelp,
+  onJoinPrivateRoom,
+  onLeavePrivateRoom,
 }: {
   state: GameState | null;
   status: string;
@@ -2258,6 +2338,9 @@ function ActivityLobby({
   onSpectate: () => void;
   onTakeSeat: () => void;
   onSubmitQuestion: (q: { text: string; choices: string[]; correctIndex: number }) => void;
+  /** Özel masa: kodu girilen web- odasına bağlanır; undefined kanala döner. */
+  onJoinPrivateRoom: (code: string) => void;
+  onLeavePrivateRoom: () => void;
   onDeleteQuestion: () => void;
   onHelp?: () => void;
 }) {
@@ -2864,6 +2947,11 @@ function ActivityLobby({
                 {state?.dailyBoard && <DailyStrip state={state} />}
               </div>
             </details>
+          )}
+          {/* Özel masa: misafirler zaten ?room= koduyla gelir — kartı yalnız
+            Discord/dev oyuncusuna göster. */}
+          {!identity.webGuest && (
+            <PrivateRoomCard state={state} onJoin={onJoinPrivateRoom} onLeave={onLeavePrivateRoom} />
           )}
           <div className="qt-howto">
             <span>{t("table.howTo")}</span>
@@ -5793,7 +5881,11 @@ function LeaveConfirm({ alone, onCancel, onConfirm }: { alone: boolean; onCancel
 export function ActivityApp() {
   const activity = useDiscordActivity();
   const roomId = activity.identity.instanceId || "ana-lobi";
-  const game = useRealtimeGame(roomId, activity.identity, activity.retry);
+  // Özel masa: Discord/dev oyuncusu kod girince sunucu onu web-<kod> odasına
+  // yerleştirir (üyelik doğrulaması hâlâ instanceId üzerinden koşar). Socket
+  // privateRoom değişince yeniden kurulur — oda değişimi = yeniden bağlanma.
+  const [privateRoom, setPrivateRoom] = useState<string | null>(null);
+  const game = useRealtimeGame(roomId, activity.identity, activity.retry, privateRoom);
   const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
   const [hasLeftGame, setHasLeftGame] = useState(false);
   // "Sonucu gördüm" işareti: bu maç kimliği için sonuç ekranı bir daha açılmaz.
@@ -6015,6 +6107,8 @@ export function ActivityApp() {
           onSpectate={game.spectate}
           onTakeSeat={game.takeSeat}
           onHelp={() => setHowToOpen(true)}
+          onJoinPrivateRoom={(code) => setPrivateRoom(code)}
+          onLeavePrivateRoom={() => setPrivateRoom(null)}
         />
       );
 

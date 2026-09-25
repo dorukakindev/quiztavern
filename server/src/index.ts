@@ -557,6 +557,7 @@ io.use(async (socket, next) => {
     devId?: string;
     instanceId?: string;
     roomId?: string;
+    privateRoom?: string;
     guestName?: string;
     guestId?: string;
   };
@@ -592,11 +593,19 @@ io.use(async (socket, next) => {
       log.warn({ userId: user.id, instanceId: auth.instanceId }, "INSTANCE_DENIED ayrıntı");
       return deny("INSTANCE_DENIED", "Bu Discord Activity odasına erişimin doğrulanamadı.");
     }
-    // Oyuncu ancak üyeliği doğrulanan instance'ın odasında oynayabilir;
-    // istemcinin beyan ettiği roomId üretimde dikkate alınmaz.
-    socket.data.roomId = auth.instanceId;
+    // Üyeliği doğrulanan oyuncu varsayılan olarak kendi kanal odasında oynar;
+    // geçerli bir özel-masa kodu beyan ederse `web-<kod>` odasına alınır —
+    // misafirlerle aynı kod ad alanını paylaşır (kod = ?room= bağlantısı).
+    const privateCode = typeof auth.privateRoom === "string" ? auth.privateRoom.trim().toLowerCase() : "";
+    socket.data.roomId = WEB_ROOM_PATTERN.test(privateCode) ? `web-${privateCode}` : auth.instanceId;
     socket.data.sessionToken = auth.sessionToken;
     socket.data.instanceId = auth.instanceId;
+  } else {
+    // Geliştirme/mock: misafirler yine web- öneki alır; özel-masa kodu beyanı
+    // olan oyuncu da aynı web- ad alanına girer (prod yoluyla aynı davranış).
+    const privateCode = typeof auth.privateRoom === "string" ? auth.privateRoom.trim().toLowerCase() : "";
+    if (user.id.startsWith("guest:")) socket.data.roomId = webRoomId(auth.roomId);
+    else if (WEB_ROOM_PATTERN.test(privateCode)) socket.data.roomId = `web-${privateCode}`;
   }
   socket.data.user = user;
   next();
