@@ -15,6 +15,7 @@ const tr = {
   "lang.label": "Arayüz dili",
   "conn.discord": "Discord oturumunda",
   "conn.local": "Yerel test modu",
+  "conn.guest": "Misafir modu",
   "room.connecting": "Bağlanılıyor",
   "app.loading": "Yükleniyor…",
 
@@ -627,6 +628,7 @@ const en: Record<StringKey, string> = {
   "lang.label": "Interface language",
   "conn.discord": "Discord connected",
   "conn.local": "Local test mode",
+  "conn.guest": "Guest mode",
   "room.connecting": "Connecting",
   "app.loading": "Loading…",
 
