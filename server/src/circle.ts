@@ -1609,9 +1609,11 @@ export const normalizeCircleAnswer = (value: string) =>
     // Treat both keyboard variants alike so CAPS LOCK cannot turn a correct answer
     // such as IGUANODON into a mismatch, while preserving the İSTANBUL case too.
     .replace(/ı/g, "i")
-    .replace(/[\s-]+/g, "")
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+    .replace(/[\u0300-\u036f]/g, "")
+    // Harf ve rakam dışındaki her şey düşer: boşluk/tire kadar !?.' gibi
+    // noktalama da — "Tuz Gölü!" yazan oyuncu yanlış sayılmaz.
+    .replace(/[^\p{L}\p{N}]/gu, "");
 
 /**
  * Oyuncunun cevabı prompt'un `answer` ya da `aliases` alanındaki herhangi bir
