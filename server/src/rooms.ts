@@ -2058,7 +2058,8 @@ export class Room {
         if (this.gameMode === "board") gain = correct ? this.boardCells[this.currentCell]?.value ?? 0 : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
-        if (gain) player.score += gain;
+        // Skor negatife inmez — Zil'in -200 cezası düşük skorlu oyuncuyu eksiye taşırdı.
+        if (gain) player.score = Math.max(0, player.score + gain);
         // Son Masa: yanlış ya da cevapsız tur 1 can götürür; doğruya puan yok
         // sayılmaz — hayatta kalmak oyunun kendisi, puan klasik gibi işler.
         if (this.gameMode === "elim" && !correct) player.lives = Math.max(0, player.lives - 1);
