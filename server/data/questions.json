@@ -37832,7 +37832,7 @@
   "category": "Hayvanlar",
   "text": "Görseldeki, bacaklarında zebra benzeri çizgiler bulunan Orta Afrika memelisi hangisidir?",
   "choices": [
-   "Bongo",
+   "Bongo antilopu",
    "Kudu",
    "Okapi",
    "Gerenuk"
@@ -37920,10 +37920,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Atoll",
-   "Glacier",
+   "Atol",
+   "Buzul",
    "Yardang",
-   "Kettle (landform)"
+   "Kettle çukuru"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -37942,10 +37942,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Geyser",
-   "River delta",
+   "Gayzer",
+   "Nehir deltası",
    "Ria",
-   "Glacier"
+   "Buzul"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -37966,8 +37966,8 @@
   "choices": [
    "Butte",
    "Mesa",
-   "Moraine",
-   "Oxbow lake"
+   "Moren",
+   "Atnalı gölü"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -37986,10 +37986,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Atoll",
+   "Atol",
    "Drumlin",
-   "Kettle (landform)",
-   "Canyon"
+   "Kettle çukuru",
+   "Kanyon"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -38008,9 +38008,9 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Geyser",
+   "Gayzer",
    "Ria",
-   "U-shaped valley",
+   "U biçimli vadi",
    "Drumlin"
   ],
   "correctIndex": 0,
@@ -38031,9 +38031,9 @@
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
    "Mesa",
-   "Moraine",
-   "Oxbow lake",
-   "Badlands"
+   "Moren",
+   "Atnalı gölü",
+   "Çorak arazi"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -38052,10 +38052,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Badlands",
-   "Kettle (landform)",
+   "Çorak arazi",
+   "Kettle çukuru",
    "Yardang",
-   "Atoll"
+   "Atol"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -38075,9 +38075,9 @@
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
    "Ria",
-   "Oxbow lake",
+   "Atnalı gölü",
    "Drumlin",
-   "River delta"
+   "Nehir deltası"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -38118,10 +38118,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Kettle (landform)",
-   "Canyon",
-   "Atoll",
-   "River delta"
+   "Kettle çukuru",
+   "Kanyon",
+   "Atol",
+   "Nehir deltası"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -38140,9 +38140,9 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "U-shaped valley",
+   "U biçimli vadi",
    "Drumlin",
-   "Kettle (landform)",
+   "Kettle çukuru",
    "Ria"
   ],
   "correctIndex": 2,
@@ -38163,9 +38163,9 @@
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
    "Yardang",
-   "Escarpment",
+   "Eskarpman",
    "Mesa",
-   "Moraine"
+   "Moren"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -38185,9 +38185,9 @@
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
    "Butte",
-   "Atoll",
-   "Badlands",
-   "River delta"
+   "Atol",
+   "Çorak arazi",
+   "Nehir deltası"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -38228,9 +38228,9 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Escarpment",
+   "Eskarpman",
    "Mesa",
-   "Alluvial fan",
+   "Birikinti yelpazesi",
    "Yardang"
   ],
   "correctIndex": 2,
@@ -38250,10 +38250,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Atoll",
-   "Canyon",
-   "River delta",
-   "Alluvial fan"
+   "Atol",
+   "Kanyon",
+   "Nehir deltası",
+   "Birikinti yelpazesi"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -38274,7 +38274,7 @@
   "choices": [
    "Mesa",
    "Butte",
-   "U-shaped valley",
+   "U biçimli vadi",
    "Drumlin"
   ],
   "correctIndex": 0,
@@ -38294,10 +38294,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Canyon",
-   "Moraine",
+   "Kanyon",
+   "Moren",
    "Yardang",
-   "Loess"
+   "Lös"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -38316,10 +38316,10 @@
   "category": "Coğrafya",
   "text": "Görseldeki yeryüzü şekli hangisidir?",
   "choices": [
-   "Badlands",
-   "River delta",
-   "U-shaped valley",
-   "Atoll"
+   "Çorak arazi",
+   "Nehir deltası",
+   "U biçimli vadi",
+   "Atol"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -38778,8 +38778,8 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Venus flytrap",
-   "Nepenthes",
+   "Venüs sinek kapanı",
+   "Etobur sürahi",
    "Welwitschia",
    "Protea"
   ],
@@ -38800,10 +38800,10 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Dracaena cinnabari",
+   "Ejderha kanı ağacı",
    "Brachychiton rupestris",
    "Banksia",
-   "Nepenthes"
+   "Etobur sürahi"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -38822,10 +38822,10 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Adansonia grandidieri",
+   "Baobap",
    "Puya raimondii",
-   "Amorphophallus titanum",
-   "Drosera"
+   "Ceset çiçeği",
+   "Güneş gülü"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -38844,10 +38844,10 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Amorphophallus titanum",
-   "Rafflesia arnoldii",
+   "Ceset çiçeği",
+   "Rafflesia (et çiçeği)",
    "Protea",
-   "Ginkgo biloba"
+   "Mabet ağacı"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -38866,9 +38866,9 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Dracaena cinnabari",
+   "Ejderha kanı ağacı",
    "Banksia",
-   "Nepenthes",
+   "Etobur sürahi",
    "Welwitschia"
   ],
   "correctIndex": 0,
@@ -38889,7 +38889,7 @@
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
    "Puya raimondii",
-   "Dracaena cinnabari",
+   "Ejderha kanı ağacı",
    "Brachychiton rupestris",
    "Pandanus"
   ],
@@ -38911,9 +38911,9 @@
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
    "Sphaeropteris cooperi",
-   "Adansonia grandidieri",
+   "Baobap",
    "Welwitschia",
-   "Amorphophallus titanum"
+   "Ceset çiçeği"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -38932,8 +38932,8 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Ginkgo biloba",
-   "Drosera",
+   "Mabet ağacı",
+   "Güneş gülü",
    "Pandanus",
    "Hydnora africana"
   ],
@@ -38956,8 +38956,8 @@
   "choices": [
    "Sphaeropteris cooperi",
    "Brachychiton rupestris",
-   "Nelumbo nucifera",
-   "Nepenthes"
+   "Kutsal lotus",
+   "Etobur sürahi"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -38976,9 +38976,9 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Adansonia grandidieri",
-   "Venus flytrap",
-   "Dracaena cinnabari",
+   "Baobap",
+   "Venüs sinek kapanı",
+   "Ejderha kanı ağacı",
    "Brachychiton rupestris"
   ],
   "correctIndex": 3,
@@ -38998,10 +38998,10 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Rafflesia arnoldii",
-   "Drosera",
+   "Rafflesia (et çiçeği)",
+   "Güneş gülü",
    "Protea",
-   "Ginkgo biloba"
+   "Mabet ağacı"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -39022,7 +39022,7 @@
   "choices": [
    "Protea",
    "Hydnora africana",
-   "Nepenthes",
+   "Etobur sürahi",
    "Welwitschia"
   ],
   "correctIndex": 1,
@@ -39042,10 +39042,10 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Adansonia grandidieri",
-   "Dracaena cinnabari",
+   "Baobap",
+   "Ejderha kanı ağacı",
    "Brachychiton rupestris",
-   "Nelumbo nucifera"
+   "Kutsal lotus"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -39064,9 +39064,9 @@
   "category": "Doğa",
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
-   "Drosera",
-   "Adansonia grandidieri",
-   "Venus flytrap",
+   "Güneş gülü",
+   "Baobap",
+   "Venüs sinek kapanı",
    "Banksia"
   ],
   "correctIndex": 3,
@@ -39087,8 +39087,8 @@
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
    "Puya raimondii",
-   "Rafflesia arnoldii",
-   "Nelumbo nucifera",
+   "Rafflesia (et çiçeği)",
+   "Kutsal lotus",
    "Protea"
   ],
   "correctIndex": 2,
@@ -39109,9 +39109,9 @@
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
    "Welwitschia",
-   "Ginkgo biloba",
+   "Mabet ağacı",
    "Banksia",
-   "Amorphophallus titanum"
+   "Ceset çiçeği"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -39131,7 +39131,7 @@
   "text": "Görseldeki bitki hangisidir?",
   "choices": [
    "Puya raimondii",
-   "Venus flytrap",
+   "Venüs sinek kapanı",
    "Pandanus",
    "Brachychiton rupestris"
   ],
@@ -39153,9 +39153,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Binturong",
-   "Pallas's cat",
-   "Markhor",
-   "Margay"
+   "Pallas kedisi",
+   "Markur",
+   "Margay kedisi"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -39175,9 +39175,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Dik-dik",
-   "Addax",
-   "Saiga antelope",
-   "Pallas's cat"
+   "Addaks",
+   "Sayga antilopu",
+   "Pallas kedisi"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -39196,10 +39196,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Echidna",
+   "Ekidne",
    "Quokka",
-   "Proboscis monkey",
-   "Aye-aye"
+   "Hortumlu maymun",
+   "Ay-ay"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -39219,9 +39219,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Binturong",
-   "Fennec fox",
-   "Margay",
-   "Ring-tailed lemur"
+   "Fennec tilkisi",
+   "Margay kedisi",
+   "Halka kuyruklu lemur"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -39241,9 +39241,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Dik-dik",
-   "Saiga antelope",
+   "Sayga antilopu",
    "Takin",
-   "Fennec fox"
+   "Fennec tilkisi"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -39263,9 +39263,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Quokka",
-   "Proboscis monkey",
-   "Aye-aye",
-   "Kinkajou"
+   "Hortumlu maymun",
+   "Ay-ay",
+   "Kinkaju"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -39284,9 +39284,9 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Kinkajou",
-   "Margay",
-   "Markhor",
+   "Kinkaju",
+   "Margay kedisi",
+   "Markur",
    "Binturong"
   ],
   "correctIndex": 2,
@@ -39306,10 +39306,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Saiga antelope",
-   "Aye-aye",
-   "Fennec fox",
-   "Addax"
+   "Sayga antilopu",
+   "Ay-ay",
+   "Fennec tilkisi",
+   "Addaks"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -39328,9 +39328,9 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Southern cassowary",
-   "Markhor",
-   "Echidna",
+   "Güney kasuarı",
+   "Markur",
+   "Ekidne",
    "Quokka"
   ],
   "correctIndex": 0,
@@ -39350,10 +39350,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Margay",
-   "Ring-tailed lemur",
+   "Margay kedisi",
+   "Halka kuyruklu lemur",
    "Binturong",
-   "Addax"
+   "Addaks"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -39373,9 +39373,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Takin",
-   "Fennec fox",
-   "Margay",
-   "Saiga antelope"
+   "Fennec tilkisi",
+   "Margay kedisi",
+   "Sayga antilopu"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -39394,10 +39394,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Markhor",
-   "Gharial",
+   "Markur",
+   "Gavyal",
    "Quokka",
-   "Proboscis monkey"
+   "Hortumlu maymun"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -39416,10 +39416,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Echidna",
+   "Ekidne",
    "Binturong",
-   "Kinkajou",
-   "Addax"
+   "Kinkaju",
+   "Addaks"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -39438,10 +39438,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Fennec fox",
-   "Southern cassowary",
-   "Echidna",
-   "Saiga antelope"
+   "Fennec tilkisi",
+   "Güney kasuarı",
+   "Ekidne",
+   "Sayga antilopu"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -39460,10 +39460,10 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Gharial",
+   "Gavyal",
    "Quokka",
-   "Maned wolf",
-   "Markhor"
+   "Yeleli kurt",
+   "Markur"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -39483,9 +39483,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Binturong",
-   "Ring-tailed lemur",
-   "Addax",
-   "Maned wolf"
+   "Halka kuyruklu lemur",
+   "Addaks",
+   "Yeleli kurt"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -39505,9 +39505,9 @@
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
    "Quokka",
-   "Echidna",
+   "Ekidne",
    "Takin",
-   "Fennec fox"
+   "Fennec tilkisi"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -39526,9 +39526,9 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Ring-tailed lemur",
-   "Proboscis monkey",
-   "Markhor",
+   "Halka kuyruklu lemur",
+   "Hortumlu maymun",
+   "Markur",
    "Dhole"
   ],
   "correctIndex": 3,
@@ -39548,8 +39548,8 @@
   "category": "Hayvanlar",
   "text": "Görseldeki hayvan hangisidir?",
   "choices": [
-   "Kinkajou",
-   "Addax",
+   "Kinkaju",
+   "Addaks",
    "Takin",
    "Binturong"
   ],
@@ -39571,9 +39571,9 @@
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
    "Dolmen",
-   "Lighthouse",
-   "Loggia",
-   "Menhir"
+   "Deniz feneri",
+   "Locia",
+   "Dikilitaş"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -39592,10 +39592,10 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Shikhara",
-   "Minaret",
-   "Clock tower",
-   "Lighthouse"
+   "Şikhara",
+   "Minare",
+   "Saat kulesi",
+   "Deniz feneri"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -39616,8 +39616,8 @@
   "choices": [
    "Stupa",
    "Dolmen",
-   "Windmill",
-   "Pyramidion"
+   "Yel değirmeni",
+   "Piramidion"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -39636,9 +39636,9 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Shikhara",
+   "Şikhara",
    "Torii",
-   "Menhir",
+   "Dikilitaş",
    "Gopuram"
   ],
   "correctIndex": 1,
@@ -39658,10 +39658,10 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Shikhara",
-   "Clock tower",
-   "Windmill",
-   "Pyramidion"
+   "Şikhara",
+   "Saat kulesi",
+   "Yel değirmeni",
+   "Piramidion"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -39681,8 +39681,8 @@
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
    "Dolmen",
-   "Loggia",
-   "Menhir",
+   "Locia",
+   "Dikilitaş",
    "Pagoda"
   ],
   "correctIndex": 3,
@@ -39702,9 +39702,9 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Minaret",
-   "Clock tower",
-   "Loggia",
+   "Minare",
+   "Saat kulesi",
+   "Locia",
    "Torii"
   ],
   "correctIndex": 2,
@@ -39725,8 +39725,8 @@
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
    "Dolmen",
-   "Pyramidion",
-   "Loggia",
+   "Piramidion",
+   "Locia",
    "Stupa"
   ],
   "correctIndex": 1,
@@ -39746,8 +39746,8 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Chhatri",
-   "Menhir",
+   "Çhatri",
+   "Dikilitaş",
    "Gopuram",
    "Torii"
   ],
@@ -39768,10 +39768,10 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Clock tower",
-   "Windmill",
-   "Loggia",
-   "Minaret"
+   "Saat kulesi",
+   "Yel değirmeni",
+   "Locia",
+   "Minare"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -39791,8 +39791,8 @@
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
    "Pagoda",
-   "Minaret",
-   "Menhir",
+   "Minare",
+   "Dikilitaş",
    "Dolmen"
   ],
   "correctIndex": 2,
@@ -39812,10 +39812,10 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Clock tower",
-   "Stepwell",
+   "Saat kulesi",
+   "Basamaklı kuyu",
    "Torii",
-   "Chhatri"
+   "Çhatri"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -39835,8 +39835,8 @@
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
    "Stupa",
-   "Loggia",
-   "Stepwell",
+   "Locia",
+   "Basamaklı kuyu",
    "Dolmen"
   ],
   "correctIndex": 0,
@@ -39856,10 +39856,10 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Minaret",
+   "Minare",
    "Gopuram",
    "Torii",
-   "Clock tower"
+   "Saat kulesi"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -39878,9 +39878,9 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Windmill",
-   "Loggia",
-   "Triumphal arch",
+   "Yel değirmeni",
+   "Locia",
+   "Zafer takı",
    "Stupa"
   ],
   "correctIndex": 2,
@@ -39900,7 +39900,7 @@
   "category": "Mimari",
   "text": "Görseldeki yapı ya da mimari öğe hangisidir?",
   "choices": [
-   "Minaret",
+   "Minare",
    "Gopuram",
    "Dolmen",
    "Pagoda"
@@ -39922,10 +39922,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Cloche hat",
-   "Qipao",
-   "Top hat",
-   "Gaiters"
+   "Kloş şapka",
+   "Çipao",
+   "Silindir şapka",
+   "Tozluk"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -39944,10 +39944,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Bowler hat",
-   "Homburg hat",
+   "Melon şapka",
+   "Homburg şapkası",
    "Kaftan",
-   "Qipao"
+   "Çipao"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -39966,10 +39966,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Balmoral bonnet",
-   "Moccasin",
+   "Balmoral beresi",
+   "Mokasen",
    "Sombrero",
-   "Farthingale"
+   "İskelet eteklik"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -39988,9 +39988,9 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Cloche hat",
+   "Kloş şapka",
    "Kilt",
-   "Gaiters",
+   "Tozluk",
    "Dirndl"
   ],
   "correctIndex": 1,
@@ -40010,7 +40010,7 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Bowler hat",
+   "Melon şapka",
    "Kaftan",
    "Hanbok",
    "Kilt"
@@ -40032,9 +40032,9 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Moccasin",
+   "Mokasen",
    "Sombrero",
-   "Farthingale",
+   "İskelet eteklik",
    "Kimono"
   ],
   "correctIndex": 3,
@@ -40055,9 +40055,9 @@
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
    "Kimono",
-   "Gaiters",
-   "Top hat",
-   "Cloche hat"
+   "Tozluk",
+   "Silindir şapka",
+   "Kloş şapka"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -40077,9 +40077,9 @@
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
    "Kaftan",
-   "Farthingale",
+   "İskelet eteklik",
    "Kilt",
-   "Homburg hat"
+   "Homburg şapkası"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -40098,10 +40098,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Buskin",
-   "Top hat",
-   "Balmoral bonnet",
-   "Moccasin"
+   "Buskin çizmesi",
+   "Silindir şapka",
+   "Balmoral beresi",
+   "Mokasen"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -40120,10 +40120,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Gaiters",
+   "Tozluk",
    "Dirndl",
-   "Cloche hat",
-   "Homburg hat"
+   "Kloş şapka",
+   "Homburg şapkası"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -40144,7 +40144,7 @@
   "choices": [
    "Hanbok",
    "Kilt",
-   "Gaiters",
+   "Tozluk",
    "Kaftan"
   ],
   "correctIndex": 2,
@@ -40164,9 +40164,9 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Top hat",
+   "Silindir şapka",
    "Sarong",
-   "Moccasin",
+   "Mokasen",
    "Sombrero"
   ],
   "correctIndex": 1,
@@ -40186,10 +40186,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Balmoral bonnet",
-   "Cloche hat",
+   "Balmoral beresi",
+   "Kloş şapka",
    "Kimono",
-   "Homburg hat"
+   "Homburg şapkası"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -40209,8 +40209,8 @@
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
    "Kilt",
-   "Buskin",
-   "Balmoral bonnet",
+   "Buskin çizmesi",
+   "Balmoral beresi",
    "Kaftan"
   ],
   "correctIndex": 3,
@@ -40231,9 +40231,9 @@
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
    "Sarong",
-   "Moccasin",
-   "Breeches",
-   "Top hat"
+   "Mokasen",
+   "Dizlik pantolon",
+   "Silindir şapka"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -40252,10 +40252,10 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Cloche hat",
+   "Kloş şapka",
    "Dirndl",
-   "Homburg hat",
-   "Breeches"
+   "Homburg şapkası",
+   "Dizlik pantolon"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -40274,8 +40274,8 @@
   "category": "Moda",
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
-   "Moccasin",
-   "Balmoral bonnet",
+   "Mokasen",
+   "Balmoral beresi",
    "Hanbok",
    "Kilt"
   ],
@@ -40298,8 +40298,8 @@
   "choices": [
    "Dirndl",
    "Sombrero",
-   "Top hat",
-   "Espadrille"
+   "Silindir şapka",
+   "Espadril"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -40319,9 +40319,9 @@
   "text": "Görseldeki giysi veya aksesuar hangisidir?",
   "choices": [
    "Kimono",
-   "Homburg hat",
+   "Homburg şapkası",
    "Hanbok",
-   "Cloche hat"
+   "Kloş şapka"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -40340,8 +40340,8 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Alphorn",
-   "Hurdy-gurdy",
+   "Alp boynuzu",
+   "Tekerlekli keman",
    "Dulcimer",
    "Zither"
   ],
@@ -40362,10 +40362,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Mbira",
-   "Djembe",
-   "Lute",
-   "Hurdy-gurdy"
+   "Parmak piyanosu (Mbira)",
+   "Cembe",
+   "Ut",
+   "Tekerlekli keman"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -40385,9 +40385,9 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Bandoneon",
-   "Steelpan",
-   "Theremin",
-   "Shamisen"
+   "Çelik teneke davulu",
+   "Teremin",
+   "Şamisen"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -40406,10 +40406,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Theremin",
-   "Harp",
+   "Teremin",
+   "Arp",
    "Zither",
-   "Ocarina"
+   "Okarina"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -40428,9 +40428,9 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Mbira",
-   "Lute",
-   "Hurdy-gurdy",
+   "Parmak piyanosu (Mbira)",
+   "Ut",
+   "Tekerlekli keman",
    "Dulcimer"
   ],
   "correctIndex": 0,
@@ -40450,10 +40450,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Steelpan",
-   "Mbira",
-   "Djembe",
-   "Concertina"
+   "Çelik teneke davulu",
+   "Parmak piyanosu (Mbira)",
+   "Cembe",
+   "Konsertina"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -40475,7 +40475,7 @@
    "Marimba",
    "Bandoneon",
    "Dulcimer",
-   "Theremin"
+   "Teremin"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -40494,10 +40494,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Ocarina",
-   "Shamisen",
-   "Concertina",
-   "Didgeridoo"
+   "Okarina",
+   "Şamisen",
+   "Konsertina",
+   "Diciridu"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -40517,9 +40517,9 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Marimba",
-   "Djembe",
-   "Pan flute",
-   "Hurdy-gurdy"
+   "Cembe",
+   "Pan flütü",
+   "Tekerlekli keman"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -40539,9 +40539,9 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Bandoneon",
-   "Alphorn",
-   "Mbira",
-   "Djembe"
+   "Alp boynuzu",
+   "Parmak piyanosu (Mbira)",
+   "Cembe"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -40560,10 +40560,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Harp",
-   "Shamisen",
+   "Arp",
+   "Şamisen",
    "Zither",
-   "Ocarina"
+   "Okarina"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -40583,8 +40583,8 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Zither",
-   "Didgeridoo",
-   "Hurdy-gurdy",
+   "Diciridu",
+   "Tekerlekli keman",
    "Dulcimer"
   ],
   "correctIndex": 1,
@@ -40605,9 +40605,9 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Bandoneon",
-   "Mbira",
-   "Djembe",
-   "Pan flute"
+   "Parmak piyanosu (Mbira)",
+   "Cembe",
+   "Pan flütü"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -40626,10 +40626,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Shamisen",
+   "Şamisen",
    "Bandoneon",
-   "Alphorn",
-   "Lute"
+   "Alp boynuzu",
+   "Ut"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -40648,9 +40648,9 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Steelpan",
-   "Harp",
-   "Pan flute",
+   "Çelik teneke davulu",
+   "Arp",
+   "Pan flütü",
    "Zither"
   ],
   "correctIndex": 2,
@@ -40671,9 +40671,9 @@
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
    "Dulcimer",
-   "Ocarina",
-   "Lute",
-   "Theremin"
+   "Okarina",
+   "Ut",
+   "Teremin"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -40692,10 +40692,10 @@
   "category": "Müzik",
   "text": "Görseldeki müzik aleti hangisidir?",
   "choices": [
-   "Steelpan",
-   "Alphorn",
-   "Concertina",
-   "Djembe"
+   "Çelik teneke davulu",
+   "Alp boynuzu",
+   "Konsertina",
+   "Cembe"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -40714,10 +40714,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Portuguese man o' war",
-   "Blue-ringed octopus",
-   "Leafy seadragon",
-   "Sea cucumber"
+   "Portekiz savaş gemisi",
+   "Mavi halkalı ahtapot",
+   "Yapraklı deniz ejderi",
+   "Deniz hıyarı"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -40736,10 +40736,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Basket star",
-   "Sea spider",
-   "Sea pen",
-   "Blue-ringed octopus"
+   "Sepet yıldızı",
+   "Deniz örümceği",
+   "Deniz kalemi",
+   "Mavi halkalı ahtapot"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -40758,10 +40758,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Common seadragon",
-   "Japanese spider crab",
-   "Glaucus atlanticus",
-   "Coelacanth"
+   "Deniz ejderi",
+   "Japon örümcek yengeci",
+   "Mavi ejder",
+   "Latimeria (Coelacanth)"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -40780,10 +40780,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Blue-ringed octopus",
-   "Crinoid",
-   "Sea cucumber",
-   "Goose barnacle"
+   "Mavi halkalı ahtapot",
+   "Deniz zambağı",
+   "Deniz hıyarı",
+   "Kaz ayağı kabuklusu"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -40802,9 +40802,9 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Basket star",
-   "Sea pen",
-   "Portuguese man o' war",
+   "Sepet yıldızı",
+   "Deniz kalemi",
+   "Portekiz savaş gemisi",
    "Dugong"
   ],
   "correctIndex": 0,
@@ -40824,9 +40824,9 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Japanese spider crab",
-   "Crinoid",
-   "Giant clam",
+   "Japon örümcek yengeci",
+   "Deniz zambağı",
+   "Dev istiridye",
    "Dugong"
   ],
   "correctIndex": 3,
@@ -40846,10 +40846,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Coelacanth",
-   "Vampire squid",
-   "Leafy seadragon",
-   "Blue-ringed octopus"
+   "Latimeria (Coelacanth)",
+   "Vampir mürekkepbalığı",
+   "Yapraklı deniz ejderi",
+   "Mavi halkalı ahtapot"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -40868,10 +40868,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Barreleye",
-   "Coelacanth",
-   "Basket star",
-   "Sea cucumber"
+   "Şeffaf başlı balık",
+   "Latimeria (Coelacanth)",
+   "Sepet yıldızı",
+   "Deniz hıyarı"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -40890,10 +40890,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Giant clam",
-   "Coelacanth",
-   "Sea pen",
-   "Sea angel"
+   "Dev istiridye",
+   "Latimeria (Coelacanth)",
+   "Deniz kalemi",
+   "Deniz meleği"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -40912,10 +40912,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Vampire squid",
-   "Japanese spider crab",
-   "Glaucus atlanticus",
-   "Sea spider"
+   "Vampir mürekkepbalığı",
+   "Japon örümcek yengeci",
+   "Mavi ejder",
+   "Deniz örümceği"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -40934,10 +40934,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Blue-ringed octopus",
+   "Mavi halkalı ahtapot",
    "Dugong",
-   "Sea cucumber",
-   "Barreleye"
+   "Deniz hıyarı",
+   "Şeffaf başlı balık"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -40956,10 +40956,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Giant clam",
-   "Vampire squid",
-   "Sea angel",
-   "Basket star"
+   "Dev istiridye",
+   "Vampir mürekkepbalığı",
+   "Deniz meleği",
+   "Sepet yıldızı"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -40978,10 +40978,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Common seadragon",
-   "Glaucus atlanticus",
-   "Coelacanth",
-   "Vampire squid"
+   "Deniz ejderi",
+   "Mavi ejder",
+   "Latimeria (Coelacanth)",
+   "Vampir mürekkepbalığı"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -41001,9 +41001,9 @@
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
    "Dugong",
-   "Sea cucumber",
-   "Goose barnacle",
-   "Sea pen"
+   "Deniz hıyarı",
+   "Kaz ayağı kabuklusu",
+   "Deniz kalemi"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -41022,10 +41022,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Sea pen",
-   "Portuguese man o' war",
-   "Barreleye",
-   "Giant clam"
+   "Deniz kalemi",
+   "Portekiz savaş gemisi",
+   "Şeffaf başlı balık",
+   "Dev istiridye"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -41044,10 +41044,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Crinoid",
-   "Goose barnacle",
-   "Vampire squid",
-   "Sea angel"
+   "Deniz zambağı",
+   "Kaz ayağı kabuklusu",
+   "Vampir mürekkepbalığı",
+   "Deniz meleği"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -41066,10 +41066,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Japanese spider crab",
-   "Barreleye",
-   "Glaucus atlanticus",
-   "Leafy seadragon"
+   "Japon örümcek yengeci",
+   "Şeffaf başlı balık",
+   "Mavi ejder",
+   "Yapraklı deniz ejderi"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -41088,10 +41088,10 @@
   "category": "Okyanuslar",
   "text": "Görseldeki deniz canlısı hangisidir?",
   "choices": [
-   "Portuguese man o' war",
+   "Portekiz savaş gemisi",
    "Dugong",
-   "Sea spider",
-   "Sea angel"
+   "Deniz örümceği",
+   "Deniz meleği"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -41110,10 +41110,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Bayeux Tapestry",
-   "Nefertiti Bust",
-   "Lindisfarne Gospels",
-   "Portland Vase"
+   "Bayeux halısı",
+   "Nefertiti Büstü",
+   "Lindisfarne İncilleri",
+   "Portland vazosu"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -41132,10 +41132,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Terracotta Army",
-   "Venus of Willendorf",
-   "Narmer Palette",
-   "Nefertiti Bust"
+   "Terrakotta Ordusu",
+   "Willendorf Venüsü",
+   "Narmer Paleti",
+   "Nefertiti Büstü"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -41242,10 +41242,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Antikythera mechanism",
-   "Portland Vase",
-   "Lindisfarne Gospels",
-   "Bayeux Tapestry"
+   "Antikythera düzeneği",
+   "Portland vazosu",
+   "Lindisfarne İncilleri",
+   "Bayeux halısı"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -41286,10 +41286,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Moai",
-   "Lindisfarne Gospels",
-   "Olmec colossal heads",
-   "Sutton Hoo helmet"
+   "Moai heykeli",
+   "Lindisfarne İncilleri",
+   "Olmec dev başları",
+   "Sutton Hoo miğferi"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -41308,10 +41308,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Portland Vase",
-   "Mask of Tutankhamun",
-   "Bayeux Tapestry",
-   "Venus of Willendorf"
+   "Portland vazosu",
+   "Tutankamon'un maskesi",
+   "Bayeux halısı",
+   "Willendorf Venüsü"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -41374,10 +41374,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Olmec colossal heads",
-   "Bayeux Tapestry",
-   "Antikythera mechanism",
-   "Venus of Willendorf"
+   "Olmec dev başları",
+   "Bayeux halısı",
+   "Antikythera düzeneği",
+   "Willendorf Venüsü"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -41418,10 +41418,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Lascaux",
-   "Sutton Hoo helmet",
-   "Standard of Ur",
-   "Lindisfarne Gospels"
+   "Lascaux mağarası",
+   "Sutton Hoo miğferi",
+   "Ur Standardı",
+   "Lindisfarne İncilleri"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -41440,10 +41440,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Bayeux Tapestry",
-   "Mask of Tutankhamun",
-   "Venus of Willendorf",
-   "Standard of Ur"
+   "Bayeux halısı",
+   "Tutankamon'un maskesi",
+   "Willendorf Venüsü",
+   "Ur Standardı"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -41506,10 +41506,10 @@
   "category": "Tarih",
   "text": "Görseldeki tarihî eser hangisidir?",
   "choices": [
-   "Antikythera mechanism",
-   "Venus of Willendorf",
-   "Laocoön and His Sons",
-   "Bayeux Tapestry"
+   "Antikythera düzeneği",
+   "Willendorf Venüsü",
+   "Laokoon ve Oğulları",
+   "Bayeux halısı"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -41529,7 +41529,7 @@
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
    "Papaya",
-   "Carambola",
+   "Karambola",
    "Rambutan",
    "Durian"
   ],
@@ -41550,10 +41550,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Lychee",
-   "Artichoke",
+   "Liçi",
+   "Enginar",
    "Guava",
-   "Carambola"
+   "Karambola"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -41574,8 +41574,8 @@
   "choices": [
    "Pomelo",
    "Pachyrhizus erosus",
-   "Tamarind",
-   "Dragon fruit"
+   "Demirhindi",
+   "Ejder meyvesi"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -41594,10 +41594,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Carambola",
-   "Passiflora edulis",
+   "Karambola",
+   "Çarkıfelek meyvesi",
    "Durian",
-   "Cassava"
+   "Manyok"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -41616,10 +41616,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Lychee",
+   "Liçi",
    "Guava",
    "Papaya",
-   "Mangosteen"
+   "Mangostan"
   ],
   "correctIndex": 0,
   "difficulty": "kolay",
@@ -41639,9 +41639,9 @@
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
    "Pachyrhizus erosus",
-   "Passiflora edulis",
-   "Fennel",
-   "Mangosteen"
+   "Çarkıfelek meyvesi",
+   "Rezene",
+   "Mangostan"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -41660,10 +41660,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Dragon fruit",
-   "Persimmon",
+   "Ejder meyvesi",
+   "Trabzon hurması",
    "Rambutan",
-   "Carambola"
+   "Karambola"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -41683,8 +41683,8 @@
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
    "Jackfruit",
-   "Dragon fruit",
-   "Lychee",
+   "Ejder meyvesi",
+   "Liçi",
    "Durian"
   ],
   "correctIndex": 1,
@@ -41704,8 +41704,8 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Fennel",
-   "Dragon fruit",
+   "Rezene",
+   "Ejder meyvesi",
    "Guava",
    "Cherimoya"
   ],
@@ -41726,10 +41726,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Persimmon",
+   "Trabzon hurması",
    "Pachyrhizus erosus",
-   "Tamarind",
-   "Artichoke"
+   "Demirhindi",
+   "Enginar"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -41748,8 +41748,8 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Carambola",
-   "Mangosteen",
+   "Karambola",
+   "Mangostan",
    "Durian",
    "Jackfruit"
   ],
@@ -41770,10 +41770,10 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Fennel",
-   "Persimmon",
+   "Rezene",
+   "Trabzon hurması",
    "Cherimoya",
-   "Lychee"
+   "Liçi"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -41793,9 +41793,9 @@
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
    "Pomelo",
-   "Tamarind",
-   "Dragon fruit",
-   "Persimmon"
+   "Demirhindi",
+   "Ejder meyvesi",
+   "Trabzon hurması"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -41814,9 +41814,9 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Mangosteen",
+   "Mangostan",
    "Durian",
-   "Cassava",
+   "Manyok",
    "Guava"
   ],
   "correctIndex": 3,
@@ -41839,7 +41839,7 @@
    "Guava",
    "Papaya",
    "Jackfruit",
-   "Fennel"
+   "Rezene"
   ],
   "correctIndex": 2,
   "difficulty": "zor",
@@ -41858,9 +41858,9 @@
   "category": "Yemek",
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
-   "Passiflora edulis",
-   "Cassava",
-   "Persimmon",
+   "Çarkıfelek meyvesi",
+   "Manyok",
+   "Trabzon hurması",
    "Cherimoya"
   ],
   "correctIndex": 1,
@@ -41882,7 +41882,7 @@
   "choices": [
    "Pachyrhizus erosus",
    "Jackfruit",
-   "Tamarind",
+   "Demirhindi",
    "Rambutan"
   ],
   "correctIndex": 0,
@@ -41903,8 +41903,8 @@
   "text": "Görseldeki yiyecek veya tarım ürünü hangisidir?",
   "choices": [
    "Papaya",
-   "Mangosteen",
-   "Artichoke",
+   "Mangostan",
+   "Enginar",
    "Cherimoya"
   ],
   "correctIndex": 3,
@@ -41946,10 +41946,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Sextant",
-   "Orrery",
-   "Phonograph",
-   "Difference engine"
+   "Sekstant",
+   "Gezegen modeli",
+   "Fonograf",
+   "Fark makinesi"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -41968,10 +41968,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Theodolite",
-   "Jacquard machine",
-   "Bunsen burner",
-   "Slide rule"
+   "Teodolit",
+   "Jakarlı dokuma tezgâhı",
+   "Bunsen beki",
+   "Sürgülü hesap cetveli"
   ],
   "correctIndex": 2,
   "difficulty": "kolay",
@@ -41990,10 +41990,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Difference engine",
-   "Barometer",
-   "Zoetrope",
-   "Calipers"
+   "Fark makinesi",
+   "Barometre",
+   "Zoetrop",
+   "Kumpas"
   ],
   "correctIndex": 1,
   "difficulty": "kolay",
@@ -42034,10 +42034,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Jacquard machine",
-   "Barometer",
-   "Seismometer",
-   "Tesla coil"
+   "Jakarlı dokuma tezgâhı",
+   "Barometre",
+   "Sismometre",
+   "Tesla bobini"
   ],
   "correctIndex": 3,
   "difficulty": "kolay",
@@ -42056,10 +42056,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Slide rule",
-   "Gyroscope",
-   "Wimshurst machine",
-   "Difference engine"
+   "Sürgülü hesap cetveli",
+   "Jiroskop",
+   "Wimshurst makinesi",
+   "Fark makinesi"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -42078,10 +42078,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Magic lantern",
-   "Slide rule",
-   "Sextant",
-   "Zoetrope"
+   "Sihirli fener",
+   "Sürgülü hesap cetveli",
+   "Sekstant",
+   "Zoetrop"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -42100,10 +42100,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Seismometer",
-   "Slide rule",
-   "Phonograph",
-   "Galvanometer"
+   "Sismometre",
+   "Sürgülü hesap cetveli",
+   "Fonograf",
+   "Galvanometre"
   ],
   "correctIndex": 0,
   "difficulty": "orta",
@@ -42122,10 +42122,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Gyroscope",
-   "Jacquard machine",
-   "Bunsen burner",
-   "Orrery"
+   "Jiroskop",
+   "Jakarlı dokuma tezgâhı",
+   "Bunsen beki",
+   "Gezegen modeli"
   ],
   "correctIndex": 3,
   "difficulty": "orta",
@@ -42144,10 +42144,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Difference engine",
-   "Tesla coil",
-   "Zoetrope",
-   "Magic lantern"
+   "Fark makinesi",
+   "Tesla bobini",
+   "Zoetrop",
+   "Sihirli fener"
   ],
   "correctIndex": 2,
   "difficulty": "orta",
@@ -42166,10 +42166,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Seismometer",
-   "Gyroscope",
-   "Galvanometer",
-   "Sextant"
+   "Sismometre",
+   "Jiroskop",
+   "Galvanometre",
+   "Sekstant"
   ],
   "correctIndex": 1,
   "difficulty": "orta",
@@ -42188,10 +42188,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Theodolite",
-   "Bunsen burner",
-   "Slide rule",
-   "Gyroscope"
+   "Teodolit",
+   "Bunsen beki",
+   "Sürgülü hesap cetveli",
+   "Jiroskop"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
@@ -42210,10 +42210,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Tesla coil",
-   "Zoetrope",
-   "Calipers",
-   "Phonograph"
+   "Tesla bobini",
+   "Zoetrop",
+   "Kumpas",
+   "Fonograf"
   ],
   "correctIndex": 3,
   "difficulty": "zor",
@@ -42254,10 +42254,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Barometer",
-   "Calipers",
-   "Gyroscope",
-   "Galvanometer"
+   "Barometre",
+   "Kumpas",
+   "Jiroskop",
+   "Galvanometre"
   ],
   "correctIndex": 1,
   "difficulty": "zor",
@@ -42276,10 +42276,10 @@
   "category": "İcatlar",
   "text": "Görseldeki araç veya aygıt hangisidir?",
   "choices": [
-   "Jacquard machine",
-   "Magic lantern",
-   "Bunsen burner",
-   "Wimshurst machine"
+   "Jakarlı dokuma tezgâhı",
+   "Sihirli fener",
+   "Bunsen beki",
+   "Wimshurst makinesi"
   ],
   "correctIndex": 0,
   "difficulty": "zor",
