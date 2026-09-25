@@ -13,9 +13,21 @@ export const BOT_NAMES = [
 ];
 
 /**
+ * Oyuncu-başı deterministik beceri: her botun isabet oranı id'sinden türetilir,
+ * böylece aynı masadaki botlar farklı güçte oynar ve bir bot maç boyunca
+ * tutarlı kalır. Ortalama ~%45 (klasik taban); modlar üstüne sabit ekler.
+ */
+export function botSkill(id: string): number {
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) & 0xffff;
+  return 0.3 + (h % 31) / 100; // 0.30–0.60
+}
+
+/**
  * Soru başladığında botların cevaplarını planlar. Cevaplar rastgele gecikmeli
- * gelir; %45 doğru olasılığı skorları ilginç tutar. Soru erken biterse
- * room.answer() içindeki faz koruması geç kalan bot cevabını zaten reddeder.
+ * gelir; botun becerisine göre doğruluk olasılığı skorları ilginç tutar. Soru
+ * erken biterse room.answer() içindeki faz koruması geç kalan bot cevabını
+ * zaten reddeder.
  */
 /**
  * Cevap gecikmesini modun GERÇEK süresine göre üretir: son %20'lik dilime hiç
@@ -38,7 +50,7 @@ export function scheduleBotAnswers(room: Room): void {
       const roundAtSchedule = room.qIndex;
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
-        room.wordAnswer(p.id, Math.random() < 0.55 ? wp.answer : "bilmiyorum");
+        room.wordAnswer(p.id, Math.random() < botSkill(p.id) + 0.1 ? wp.answer : "bilmiyorum");
       }, delay);
     }
     return;
@@ -52,7 +64,7 @@ export function scheduleBotAnswers(room: Room): void {
       const roundAtSchedule = room.qIndex;
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule || room.gameMode !== "circle") return;
-        room.answerCircle(p.id, Math.random() < 0.55 ? prompt.answer : "bilmiyorum");
+        room.answerCircle(p.id, Math.random() < botSkill(p.id) + 0.1 ? prompt.answer : "bilmiyorum");
       }, delay);
     }
     return;
@@ -62,14 +74,14 @@ export function scheduleBotAnswers(room: Room): void {
   if (room.gameMode === "zil") return;
   if (room.gameMode === "blitz") {
     // Kendi hızında ilerleyen akış: bot zincirleme cevaplar (~1.2–3 sn arayla),
-    // %65 doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
+    // becerisine göre doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
     for (const p of room.players.values()) {
       if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
       const step = () => {
         if (room.phase !== "question" || Date.now() >= room.questionDeadline) return;
         const claim = (p as unknown as { blitzClaim: { truth: boolean } | null }).blitzClaim;
         if (!claim) return;
-        const knows = Math.random() < 0.65;
+        const knows = Math.random() < botSkill(p.id) + 0.2;
         room.answer(p.id, knows ? (claim.truth ? 0 : 1) : (claim.truth ? 1 : 0));
         room.scheduleBotTask(step, 1_200 + Math.random() * 1_800);
       };
@@ -127,7 +139,7 @@ export function scheduleBotAnswers(room: Room): void {
     const roundAtSchedule = room.qIndex;
     room.scheduleBotTask(() => {
       if (room.qIndex !== roundAtSchedule) return; // bayat zamanlayıcı
-      const correct = Math.random() < 0.45;
+      const correct = Math.random() < botSkill(p.id);
       let choice = q.correctIndex;
       if (!correct) {
         const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex);
