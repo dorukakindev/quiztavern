@@ -48590,7 +48590,7 @@
   {
     "id": "bayrak-brezilya",
     "category": "Bayraklar & Başkentler",
-    "text": "Brezilya bayrağındaki yeşil zemin üzerine yerleşen sarı şekil nedir?",
+    "text": "Brezilya bayrağındaki yeşil zemin üzerinde bulunan sarı şekil nedir?",
     "choices": [
       "Beşgen",
       "Hilal",
@@ -48634,7 +48634,7 @@
     "choices": [
       "Tek renk olmaları",
       "Enine çizgili olmaları",
-      "Kare biçimde olmaları",
+      "Kare şeklinde olmaları",
       "Arma taşımamaları"
     ],
     "correctIndex": 2,
@@ -48790,7 +48790,7 @@
   {
     "id": "bayrak-jamaika",
     "category": "Bayraklar & Başkentler",
-    "text": "Kırmızı, beyaz veya mavi içermeyen tek ulusal bayrak hangi ülkenindir?",
+    "text": "Kırmızı, beyaz veya mavi renklerinden hiçbirini barındırmayan tek ulusal bayrak hangi ülkenindir?",
     "choices": [
       "Nijerya",
       "Jamaika",
@@ -48810,7 +48810,7 @@
   {
     "id": "bayrak-filipinler",
     "category": "Bayraklar & Başkentler",
-    "text": "Savaş ilanı durumunda ters (kırmızı şerit üstte) asılarak kullanılan bayrak hangi ülkenindir?",
+    "text": "Savaş ilanı durumunda ters (kırmızı şerit üstte) asılan bayrak hangi ülkenindir?",
     "choices": [
       "Çekya",
       "Polonya",
@@ -48970,7 +48970,7 @@
   {
     "id": "bayrak-guneyafrika",
     "category": "Bayraklar & Başkentler",
-    "text": "'Gökkuşağı ulus' lakaplı ve bayrağında tam altı renk bulunan ülke hangisidir?",
+    "text": "'Gökkuşağı Ulusu' lakaplı ve bayrağında tam altı renk bulunan ülke hangisidir?",
     "choices": [
       "Güney Afrika",
       "Mauritius",
