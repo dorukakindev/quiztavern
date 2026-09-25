@@ -166,6 +166,21 @@ test('maç ortasında katılan oyuncu bu maça giremez (waiting)', () => {
 })
 stop(room4)
 
+// Countdown'da katılan oyuncu can dağıtımını kaçırır — bu maçı izler.
+const room5 = new Room('elim-5', () => {}, { minPlayers: 2, questionCount: 10 })
+room5.addPlayer(player('p', 'Pia'))
+room5.addPlayer(player('q', 'Qua'))
+room5.setGameMode('p', 'elim')
+room5.setReady('p', true)
+room5.setReady('q', true)
+room5.start('p', 'elim')
+const cdJoiner = room5.addPlayer(player('cd', 'Cedi'))
+
+test('countdown katılımcısı 0 canlı hayalet olmaz — bu maçı izler', () => {
+  assert.ok(cdJoiner.eligibleFrom >= room5.roundLimit, 'izleyici')
+})
+stop(room5)
+
 stop(room)
 stop(room2)
 console.log(`\n[elim] sonuç: ${passed} geçti, 0 kaldı`)
