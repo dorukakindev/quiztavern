@@ -128,6 +128,20 @@ test("Lobi dışı fazlarda basmak yutulur", () => {
   assert.equal(internals(room).buzzWinnerId, null);
 });
 
+test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B48)", () => {
+  const room = zilRoom("z-passive", ["a", "b", "c"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.answer("a", (inner.questions[0].correctIndex + 1) % 4); // a: yanlış deneme → yanar
+  room.buzz("b");
+  room.answer("b", inner.questions[0].correctIndex);           // b: doğru → kazanır
+  assert.equal(room.phase, "reveal");
+  const gains = room.stateFor("c").reveal!.gains;
+  assert.equal(gains["a"], -GAME.ZIL_PENALTY, "yanlış basan ceza");
+  assert.ok(gains["b"] > 0, "kazanan değer aldı");
+  assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
+});
+
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın
