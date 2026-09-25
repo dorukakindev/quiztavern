@@ -98,6 +98,7 @@ const dbPath = join(tmp, "reports.db");
   }
 }
 
-rmSync(tmp, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+await sleep(500); // Windows'ta child süreç db tutamacını geç bırakıyor
+rmSync(tmp, { recursive: true, force: true, maxRetries: 20, retryDelay: 500 });
 console.log(`\n[admin-reports] sonuç: ${passed} geçti, ${failed} kaldı`);
 process.exit(failed ? 1 : 0);

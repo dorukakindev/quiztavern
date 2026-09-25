@@ -24,6 +24,9 @@ import {
   Alien, Axe, Books, Cat, Crosshair, DiceFive, Guitar, HandsPraying, PenNib, Shield, Shovel, Tooth,
   Broadcast, Campfire, Circuitry, Code, Compass, Cube, CurrencyBtc, FlagCheckered, GlobeHemisphereEast, Joystick,
   ShareNetwork, ClockCounterClockwise, Basketball, Trademark, Wrench,
+  GraduationCap, PersonSimpleRun, TextT, Tornado, Hourglass, PiggyBank, Camera, ChefHat, Airplane, Mountains,
+  BookBookmark, BookOpenUser, Rainbow, TShirt, VinylRecord, SteeringWheel, Money, Timer, FrameCorners, MedalMilitary, FilmReel,
+  Tent, MaskHappy, Stethoscope,
 } from '@phosphor-icons/react'
 
 type Glyph = ComponentType<PhosphorProps>
@@ -178,6 +181,31 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
   'Minecraft': Cube,
   'NBA': Basketball,
   'Oyun Karakterleri': Joystick,
+  'Antropoloji': GraduationCap,
+  'Bilim İnsanları': BookOpenUser,
+  'Dans': PersonSimpleRun,
+  'Dilbilim': TextT,
+  'Doğal Afetler': Tornado,
+  'Dünya Tarihi': Hourglass,
+  'Finans & Ekonomi': PiggyBank,
+  'Fotoğrafçılık': Camera,
+  'Gastronomi': ChefHat,
+  'Havacılık Tarihi': Airplane,
+  'Hukuk Tarihi': Scales,
+  'Jeoloji': Mountains,
+  'Kütüphaneler Tarihi': BookBookmark,
+  'Meteoroloji': Rainbow,
+  'Moda Tarihi': TShirt,
+  'Müzik Tarihi': VinylRecord,
+  'Otomobil Tarihi': SteeringWheel,
+  'Para Tarihi': Money,
+  'Saatler & Zaman': Timer,
+  'Sanat Tarihi': FrameCorners,
+  'Savaş Tarihi': MedalMilitary,
+  'Sinema Tarihi': FilmReel,
+  'Sirk & Eğlence': Tent,
+  'Tiyatro': MaskHappy,
+  'Tıp Tarihi': Stethoscope,
 }
 
 export function CategoryIcon({ name, weight = 'duotone' }: { name: string; weight?: IconWeight }) {
