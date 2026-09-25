@@ -3082,8 +3082,31 @@ function GameBoard({
   }, [state.round.index]);
   const correctIndex = state.reveal?.correctIndex;
   const selected = state.yourChoice;
-  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline;
-  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs;
+  // Her soru tipi kendi deadline'ını taşır: numeric/blitz/timeline payload'ları
+  // da deadline+durationMs gönderir — önceden yalnız circle/word/shown okunuyordu,
+  // bu modlarda köşedeki mini sayaç hiç doğmuyordu.
+  const deadline = isCircle
+    ? shownCircle?.deadline
+    : isWord
+      ? shownWord?.deadline
+      : isNumeric
+        ? shownNumeric?.deadline
+        : isBlitz
+          ? state.blitz?.deadline
+          : isTimeline
+            ? state.timeline?.deadline
+            : shown?.deadline;
+  const durationMs = isCircle
+    ? shownCircle?.durationMs
+    : isWord
+      ? shownWord?.durationMs
+      : isNumeric
+        ? shownNumeric?.durationMs
+        : isBlitz
+          ? state.blitz?.durationMs
+          : isTimeline
+            ? state.timeline?.durationMs
+            : shown?.durationMs;
   // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
   // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
   const sfxNow = useServerNow(state.serverNow, 250);
