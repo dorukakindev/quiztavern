@@ -2333,7 +2333,7 @@ function ActivityLobby({
         {!identity.isDiscord && (
           <div className={`qt-connection is-${status}`}>
             <i />
-            {t("conn.local")}
+            {t(identity.webGuest ? "conn.guest" : "conn.local")}
           </div>
         )}
         <SfxToggle />
