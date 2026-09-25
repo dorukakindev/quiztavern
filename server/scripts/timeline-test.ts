@@ -124,6 +124,19 @@ test("round.total havuz büyüklüğünü yansıtır (Soru 1/0 bug'ı)", () => {
   assert.ok(st.round.total > 0, "total sıfır değil");
 });
 
+test("2. turda dizimler sıfırlanır — eski tur 'zaten cevapladı' sanıp yutmaz", () => {
+  const room = timelineRoom("t8", ["a"]);
+  const inner = startRound(room);
+  room.orderAnswer("a", solution(room));
+  assert.ok(inner.orderGuesses.has("a"), "1. tur dizimi işlendi");
+  inner.reveal();
+  inner.qIndex = 1;
+  inner.beginQuestion();
+  assert.ok(!inner.orderGuesses.has("a"), "yeni tur harita temiz");
+  room.orderAnswer("a", solution(room));
+  assert.ok(inner.orderGuesses.has("a"), "2. turda cevap kabul edilir");
+});
+
 console.log(`timeline-test: ${passed} geçti`);
-assert.equal(passed, 7);
+assert.equal(passed, 8);
 process.exit(0);
