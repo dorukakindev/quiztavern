@@ -503,11 +503,13 @@ function Timer({
   durationMs,
   serverNow,
   frozen = false,
+  compact = false,
 }: {
   deadline?: number;
   durationMs?: number;
   serverNow?: number;
   frozen?: boolean;
+  compact?: boolean;
 }) {
   const { t } = useI18n();
   const now = useServerNow(serverNow, 200);
@@ -518,7 +520,7 @@ function Timer({
   const visibleRatio = frozen ? 0 : ratio;
   return (
     <div
-      className={`qt-timer ${urgent ? "is-urgent" : soon ? "is-soon" : ""} ${frozen ? "is-frozen" : ""}`}
+      className={`qt-timer ${compact ? "qt-timer--mini" : ""} ${urgent ? "is-urgent" : soon ? "is-soon" : ""} ${frozen ? "is-frozen" : ""}`}
       style={{ "--progress-turn": `${visibleRatio}turn`, "--timer-angle": `${1 - visibleRatio}turn` } as CSSProperties}
       role="timer"
       aria-label={`${frozen ? 0 : seconds} ${t("game.seconds")}`}
@@ -991,7 +993,7 @@ function GameLeaveButton({ onLeave, floating = false }: { onLeave: () => void; f
   return (
     <button
       type="button"
-      className={`qt-game-exit ${floating ? "qt-game-exit--floating" : ""}`}
+      className={`qt-game-exit qt-game-exit--danger ${floating ? "qt-game-exit--floating" : ""}`}
       onClick={onLeave}
       title={t("game.leave")}
       aria-label={t("game.leave")}
@@ -2933,6 +2935,7 @@ function GameBoard({
   onPredict,
   onBuzz,
   speakingIds,
+  emoteBar,
 }: {
   state: GameState;
   onAnswer: (choice: number) => void;
@@ -2948,6 +2951,7 @@ function GameBoard({
   onPredict?: (targetId: string) => void;
   onBuzz?: () => void;
   speakingIds?: ReadonlySet<string>;
+  emoteBar?: React.ReactNode;
 }) {
   const youAreSpectator = state.youAreSpectator;
   const self = state.players.find((player) => player.id === state.youId);
@@ -3272,16 +3276,21 @@ function GameBoard({
         <header className="qt-game-top">
           <div>
             <b>{t(MODE_KEYS[modeKeyOf(state.gameMode)].tag)}</b>
-            <span>
-              {state.gameMode === "blitz"
-                ? state.blitz
-                  ? t("blitz.progress", { n: state.blitz.index + 1, c: state.blitz.correct })
-                  : t(MODE_KEYS.blitz.name)
-                : t(isCircle ? "game.roundOf" : "game.questionOf", {
-                    index: state.round.index + 1,
-                    total: state.round.total,
-                  })}
-            </span>
+            {/* Nokta çubuğu zaten turu gösteriyor — 'Soru 3/10' aynı bilgiyi
+              tekrarlıyordu. Metin yalnız noktaların okunamadığı çok-turlu
+              modlarda (Çember, >12 tur) ve Blitz'te (doğru sayısı da taşır) kalır. */}
+            {state.gameMode === "blitz" || state.round.total > PROGRESS_DOT_LIMIT ? (
+              <span>
+                {state.gameMode === "blitz"
+                  ? state.blitz
+                    ? t("blitz.progress", { n: state.blitz.index + 1, c: state.blitz.correct })
+                    : t(MODE_KEYS.blitz.name)
+                  : t(isCircle ? "game.roundOf" : "game.questionOf", {
+                      index: state.round.index + 1,
+                      total: state.round.total,
+                    })}
+              </span>
+            ) : null}
           </div>
           {/* Blitz'te round.index hep 0 / total havuz boyutu — 'Soru 1/30' yanıltıcı;
             bar kendi ilerlemesini izler (B54). */}
@@ -3325,6 +3334,11 @@ function GameBoard({
       <div className="qt-game-grid">
         <RoomStrip state={state} beats={beats} speakingIds={speakingIds} />
         <section className={`qt-question-stage ${youMissed ? "qt-stage-shake" : ""}`}>
+          {/* Sayaç soru kartının sağ üst köşesinde mini rozet: ayrı sağ sütun
+            kaldırıldı, kart merkezi tek odak. Reveal'de yerini sonuç/gain alır. */}
+          {!beats.active && deadline ? (
+            <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} compact />
+          ) : null}
           {isCircle && shownCircle ? (
             <>
               <div className="qt-question-head qt-question-head--circle">
@@ -3848,8 +3862,10 @@ function GameBoard({
               </div>
               {cardsEnabled ? (
                 <div className="qt-card-bar">
-                  <span className="qt-card-count" title={t("card.title")}>
-                    <Icon name="deck" />×{state.yourCards}
+                  <span className={`qt-card-count ${state.yourCards <= 0 ? "is-empty" : ""}`} title={t("card.title")}>
+                    <Icon name="deck" />
+                    <b>{t("card.deck")}</b>
+                    <em>×{state.yourCards}</em>
                   </span>
                   {CARD_TYPES.map((type) => (
                     <button
@@ -4101,12 +4117,10 @@ function GameBoard({
           ) : null}
         </section>
         <aside className="qt-game-side">
-          {/* Reveal'de donmuş bir sayaç bilgi taşımaz; yerini turun asıl sonucu alır. */}
-          {beats.active ? (
-            <YourGain state={state} beats={beats} />
-          ) : (
-            <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} frozen={false} />
-          )}
+          {/* Reveal'de tur kazancı; soru fazında emote rayı aynı sütuna oturur
+            (eski sabit sağ-alt bar grid'le hizasız asılı duruyordu). */}
+          {beats.active ? <YourGain state={state} beats={beats} /> : null}
+          {!beats.active && state.phase === "question" ? emoteBar : null}
           <RevealProgress beats={beats} />
         </aside>
       </div>
@@ -5945,6 +5959,11 @@ export function ActivityApp() {
           onNumericAnswer={game.answerNumeric}
           onOrderAnswer={game.answerOrder}
           speakingIds={activity.speakingIds}
+          emoteBar={
+            !hasLeftGame ? (
+              <EmoteBar emotes={game.emotes} players={game.state!.players} onSend={game.sendEmote} />
+            ) : null
+          }
         />
       );
     // Podyum: "Lobiye dön" odada KALIR ve sahipliği korur (RETURN_TO_LOBBY).
@@ -6004,11 +6023,6 @@ export function ActivityApp() {
   // ya da PIP'teyse gösterme. Grace yalnızca maç sırasında işler.
   const showDrop = !isPip && !hasLeftGame && game.droppedAt !== null && !!game.state;
   const inMatch = game.state ? game.state.phase !== "lobby" && game.state.phase !== "podium" : false;
-  // Emote yalnızca soru fazında: reveal'de sağ alt köşeyi geri sayım çizgisi
-  // tutuyor, ikisi üst üste binerdi.
-  // hasLeftGame: masadan çıktıysan emote atacak masan yok — bekleme ekranında
-  // çubuk görünüyordu.
-  const inGame = game.state?.phase === "question" && !hasLeftGame;
   // Lobi dışındaki her sahne "oyun sahnesi": arka planı sade kalır.
   const onGameScene = !!game.state && game.state.phase !== "lobby";
   const showSpectatorBar = !isPip && !showDrop && !!game.state?.youAreSpectator && game.state.phase !== "lobby";
@@ -6021,9 +6035,7 @@ export function ActivityApp() {
         {!isPip && !onGameScene && !activity.lowPower && <AmbientShader />}
         {body}
       </div>
-      {!isPip && inGame && !showDrop && (
-        <EmoteBar emotes={game.emotes} players={game.state!.players} onSend={game.sendEmote} />
-      )}
+
       {/* İzleyici çubuğu: oyun/podyum fazlarında (lobide you-panel hallediyor). */}
       {showSpectatorBar && (
         <SpectatorBar

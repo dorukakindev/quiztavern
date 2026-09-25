@@ -1200,15 +1200,13 @@ button.qt-button--danger:hover:not(:disabled) {
     transform: translate(-1px, 0);
   }
 }
-/* Sağ sütun: sayaç üstte, emote şeridi (fixed) altta durur — ikisi de artık
-   şıkların üzerine binmiyor. */
-/* Sayaç/puan üstte, geri sayım çizgisi altta; ikisinin arası esner ki faz
-   değişince sütunun içindekiler yer değiştirmesin. */
+/* Sağ sütun: soru fazında dikey emote rayı, reveal'de tur kazancı + geri sayım
+   çizgisi — içerik alta yaslanır ki faz değişince sütun zıplamasın. */
 .qt-game-side {
   grid-column: 3;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   align-items: center;
   gap: 10px;
   height: 100%;
