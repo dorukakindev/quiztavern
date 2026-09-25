@@ -863,6 +863,12 @@ const MODE_EMBLEMS: Partial<Record<GameMode, string>> = {
   elim: "/emblems/elim.webp",
   blur: "/emblems/blur.webp",
   word: "/emblems/word.webp",
+  duel: "/emblems/duel.webp",
+  zil: "/emblems/zil.webp",
+  numeric: "/emblems/numeric.webp",
+  blitz: "/emblems/blitz.webp",
+  timeline: "/emblems/timeline.webp",
+  board: "/emblems/board.webp",
 };
 function ModePicker({
   mode,
