@@ -165,6 +165,7 @@ test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B4
   assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
 });
 
+
 console.log(`zil-test: ${passed} geçti`);
 assert.equal(passed, 11);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

@@ -1490,8 +1490,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (!s.revealed) { s.revealed = true; sfx.play('reveal') }
       if (beats.gains && !s.gained) {
         s.gained = true
-        const answered = isCircle ? state.yourCircleAnswer !== null : state.yourChoice !== null
-        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
+        const answered = isCircle ? state.yourCircleAnswer !== null : isWord ? state.yourWordAnswer !== null : state.yourChoice !== null
+        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : isWord ? state.wordReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
       }
     } else {
       s.revealed = false
@@ -1501,7 +1501,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (secLeft >= 1 && secLeft <= 3 && s.tick !== secLeft) { s.tick = secLeft; sfx.play('tick'); sfx.play(secLeft === 1 ? 'heart3' : secLeft === 2 ? 'heart2' : 'heart') }
       if (secLeft > 3) s.tick = -1
     }
-  }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
+  }, [beats.active, beats.gains, secLeft, isCircle, isWord, state.reveal, state.circleReveal, state.wordReveal, state.yourChoice, state.yourCircleAnswer, state.yourWordAnswer, state.youId])
 
   // Zil: Space (veya B) fiziksel buton gibi — tıklamayla aynı şartlarda BAS
   // yapar. Yarış hızlı olduğu için klavyeden basmak fareyi bulmaktan adil.
@@ -1940,7 +1940,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
 function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const rescued = state.gameMode === 'bet' && !!state.reveal?.rescued?.includes(state.youId)
   if (!beats.gains) return <div className="qt-your-gain" aria-hidden="true" />
   if (rescued && gain <= 0) return <div className="qt-your-gain is-zero"><b>{t('reveal.noGain')}</b><small>{t('reveal.betRescueMiss')}</small></div>
@@ -2269,7 +2269,7 @@ function PipCard({ state }: { state: GameState | null }) {
   if (!state) return null
 
   const self = state.players.find((player) => player.id === state.youId)
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const answered = !!self?.answered
 
   let tag: string
