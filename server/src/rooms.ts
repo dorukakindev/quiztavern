@@ -501,6 +501,9 @@ export class Room {
     this.fastestFingerSnapshot = undefined;
     this.momentsSnapshot = null;
     this.dailyMatch = false;
+    // Günlük öncesi modu "geri yükle" anısı masa sıfırlanınca da silinmeli —
+    // yoksa yeni masanın ilk maçı bayat modla açılırdı (B50).
+    this.modeBeforeDaily = null;
     this.dailyResults = new Map();
     this.xpGains = new Map();
     this.clearLastMatch();
