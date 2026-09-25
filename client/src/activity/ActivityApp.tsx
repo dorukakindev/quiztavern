@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, COUNTLESS_MODES, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -1147,10 +1147,12 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </div>
         </div>
 
-        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). */}
-        <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
+        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). Sayının anlam
+            taşımadığı modlarda (duel/word/blitz/board) grup gizlenir — çip
+            ölü kontrol olmasın. */}
+        {!COUNTLESS_MODES.includes(mode) && <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
           <div className="qt-count-row">{(mode === 'circle' ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
-        </div>
+        </div>}
 
         {/* Takım modu: host tek dokunuşla takımları yeniden dağıtır. */}
         {mode === 'team' && <div className="qt-settings__group"><span>{t('team.shuffleLabel')}</span>
@@ -1490,8 +1492,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (!s.revealed) { s.revealed = true; sfx.play('reveal') }
       if (beats.gains && !s.gained) {
         s.gained = true
-        const answered = isCircle ? state.yourCircleAnswer !== null : state.yourChoice !== null
-        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
+        const answered = isCircle ? state.yourCircleAnswer !== null : isWord ? state.yourWordAnswer !== null : state.yourChoice !== null
+        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : isWord ? state.wordReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
       }
     } else {
       s.revealed = false
@@ -1501,7 +1503,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (secLeft >= 1 && secLeft <= 3 && s.tick !== secLeft) { s.tick = secLeft; sfx.play('tick'); sfx.play(secLeft === 1 ? 'heart3' : secLeft === 2 ? 'heart2' : 'heart') }
       if (secLeft > 3) s.tick = -1
     }
-  }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
+  }, [beats.active, beats.gains, secLeft, isCircle, isWord, state.reveal, state.circleReveal, state.wordReveal, state.yourChoice, state.yourCircleAnswer, state.yourWordAnswer, state.youId])
 
   // Zil: Space (veya B) fiziksel buton gibi — tıklamayla aynı şartlarda BAS
   // yapar. Yarış hızlı olduğu için klavyeden basmak fareyi bulmaktan adil.
@@ -1940,7 +1942,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
 function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const rescued = state.gameMode === 'bet' && !!state.reveal?.rescued?.includes(state.youId)
   if (!beats.gains) return <div className="qt-your-gain" aria-hidden="true" />
   if (rescued && gain <= 0) return <div className="qt-your-gain is-zero"><b>{t('reveal.noGain')}</b><small>{t('reveal.betRescueMiss')}</small></div>
@@ -2269,7 +2271,7 @@ function PipCard({ state }: { state: GameState | null }) {
   if (!state) return null
 
   const self = state.players.find((player) => player.id === state.youId)
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const answered = !!self?.answered
 
   let tag: string
