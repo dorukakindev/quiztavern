@@ -25,6 +25,13 @@ export const HOST = process.env.HOST?.trim() || "127.0.0.1";
 // secret'ların varlığına/yokluğuna göre asla kendiliğinden açılmaz.
 export const ALLOW_MOCK_AUTH = bool(process.env.ALLOW_MOCK_AUTH, false);
 
+// Web misafirleri: Discord'suz tarayıcı oyuncuları. Kimlikleri `guest:`
+// öneklidir ve yalnız `web-` önekli odalara girebilirler — Discord instance
+// odalarına ve kalıcı yazılara (XP/rozet/günlük) erişmezler. Dev'de mock
+// auth zaten kimlik verir; bu kapı prod'daki gerçek web akışı içindir.
+// Kapatmak: ALLOW_GUEST_AUTH=0.
+export const ALLOW_GUEST_AUTH = bool(process.env.ALLOW_GUEST_AUTH, true);
+
 const configuredPort = process.env.PORT ?? "3001";
 export const PORT = Number(configuredPort);
 if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65_535) {

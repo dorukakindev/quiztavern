@@ -53,6 +53,7 @@ const sameBoth = keys.filter((k) => STRINGS.tr[k] === STRINGS.en[k]);
 // bet.allBoost: "×2.5" çarpan işareti — dile bağımsız, kasıtlı aynı.
 const allowedSame = new Set<string>([
   "brand.name",
+  "web.gateTitle",
   "category.mixed",
   "err.invalidTarget",
   "reveal.betLost",

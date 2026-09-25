@@ -213,6 +213,31 @@ Activity iframe'i HTTPS ister; seçenekler:
 - Eski cloudflared mapping'lerini kaldır.
 - Doğrulama: `curl https://<alan-adın>/health` → `{"ok":true}`.
 
+## 5. Kendi domain'ini bağlama (triviara.io vb. — web oynanışı)
+
+Oyun domain'siz de tarayıcıdan misafir modunda oynanır; kendi domain'in
+hazır olduğunda üç adımda devreye girer:
+
+1. **DNS:** domain sağlayıcında `A` kaydı → VM public IP'si (şu an
+   `193.123.36.134`). (Cloudflare kullanırsan proxy'yi önce "DNS only"
+   bırak; Let's Encrypt HTTP-01 doğrulaması geçince istersen açarsın.)
+2. **Caddy:** `deploy/oracle/Caddyfile` içindeki `<DOMAIN>` satırını gerçek
+   domainle değiştir (ör. `triviara.io {`), `systemctl reload caddy` —
+   sertifika otomatik alınır/yenilenir. `www` alt alanını da istiyorsan
+   ikinci bir site bloğu ekle: `www.triviara.io { redir https://triviara.io{uri} permanent }`.
+3. **Env:** container env'inde `PUBLIC_BASE_URL=https://<domain>` olmalı
+   (`deploy/oracle/redeploy.sh` içinde ya da `/opt/quiztavern/.env`).
+   `ALLOWED_ORIGINS`'e otomatik eklenir — socket/CORS/OAuth redirect hep
+   buradan türer. Başka origin lazımsa `ALLOWED_ORIGINS=https://a,https://b`.
+
+**Web misafir modu** (`ALLOW_GUEST_AUTH`, varsayılan açık): domain ya da
+sslip adresini doğrudan tarayıcıda açan kişi Discord'suz oynar — ad+oda
+kapısı gelir, `?room=<kod>` bağlantısıyla masa paylaşılır. Misafir
+kimliği `guest:` öneklidir, yalnız `web-` önekli odalara girer (Discord
+odalarına asla karışamaz) ve XP/rozet/günlük kayıtlarına yazılmaz.
+Kapatmak için `ALLOW_GUEST_AUTH=0`. Discord etkinliği bundan etkilenmez;
+URL Mappings ayrı çalışır.
+
 ## Notlar
 
 - A1 ARM kapasitesi bazen dolu olur; "Out of capacity" alırsan başka

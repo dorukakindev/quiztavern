@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+} from "react";
 import { createPortal } from "react-dom";
 import { sfx } from "../lib/sfx";
 import { storageGet, storageSet } from "../lib/storage";
@@ -2797,7 +2806,13 @@ function ActivityLobby({
       </section>
       {pickerOpen && (
         <div className="qt-invite-hint" role="status" onClick={() => setPickerOpen(false)}>
-          {identity.isDiscord ? t("invite.failed") : `${t("table.invite")}: ${state?.roomId}`}
+          {identity.isDiscord
+            ? t("invite.failed")
+            : identity.webGuest
+              ? `${t("web.shareHint")}: ${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(
+                  (state?.roomId ?? "").replace(/^web-/, ""),
+                )}`
+              : `${t("table.invite")}: ${state?.roomId}`}
         </div>
       )}
       {/* Menü yalnızca sen host isen VE hedef hâlâ masadaysa. Sahiplik devredince
@@ -5278,6 +5293,75 @@ function PipCard({ state }: { state: GameState | null }) {
   );
 }
 
+/**
+ * Web misafir kapısı: Discord'suz tarayıcı oyuncusu isim + oda kodu girer.
+ * İsim girilene kadar socket hiç bağlanmaz (realtime kapısı) — bu ekran
+ * masanın önündeki tek zorunlu adımdır. Oda kodu değişirse ?room= yeniden
+ * yazılarak sayfa yüklenir (identity oradan kurulur).
+ */
+function GuestGate({ roomCode, onJoin }: { roomCode: string; onJoin: (name: string) => void }) {
+  const { t } = useI18n();
+  const [name, setName] = useState("");
+  const [code, setCode] = useState(roomCode === "dev-ana-lobi" ? "" : roomCode);
+  const submit = (event: FormEvent) => {
+    event.preventDefault();
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const nextCode = code.trim().toLowerCase();
+    if (nextCode && nextCode !== roomCode) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("room", nextCode);
+      url.searchParams.set("name", trimmed.slice(0, 24));
+      window.location.assign(url.toString());
+      return;
+    }
+    onJoin(trimmed);
+  };
+  const shareUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(roomCode === "dev-ana-lobi" ? "ana-lobi" : roomCode)}`;
+  return (
+    <main className="qt-activity qt-guest-gate">
+      <header className="qt-activity-bar">
+        <div className="qt-brand-mark">
+          <img src="/table/quiztavern-logo.png" alt="" />
+          <b>{t("brand.name")}</b>
+        </div>
+      </header>
+      <form className="qt-guest-gate__card" onSubmit={submit}>
+        <h1>{t("web.gateTitle")}</h1>
+        <p className="qt-guest-gate__intro">{t("web.gateIntro")}</p>
+        <label>
+          <span>{t("web.name")}</span>
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            maxLength={24}
+            placeholder={t("web.namePlaceholder")}
+            autoFocus
+            required
+          />
+        </label>
+        <label>
+          <span>{t("web.roomCode")}</span>
+          <input
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+            maxLength={24}
+            placeholder="ana-lobi"
+            autoComplete="off"
+          />
+        </label>
+        <button type="submit" className="qt-button qt-button--primary" disabled={!name.trim()}>
+          <Icon name="people" /> {t("web.join")}
+        </button>
+        <p className="qt-guest-gate__note">{t("web.guestNote")}</p>
+        <p className="qt-guest-gate__share">
+          {t("web.shareHint")}: <code>{shareUrl}</code>
+        </p>
+      </form>
+    </main>
+  );
+}
+
 function ActivityHome({ onRejoin }: { onRejoin: () => void }) {
   const { t } = useI18n();
   return (
@@ -5677,6 +5761,10 @@ export function ActivityApp() {
   }, [zilWinner, phase, livesKey, emoteTopUid, game.state]);
   const isLoading = activity.status === "booting" || !game.state;
   const body = useMemo(() => {
+    // Web misafiri henüz ad yazmadıysa kapı ekranı: isim olmadan socket
+    // zaten bağlanmaz (realtime kapısı), lobiyi hiç göstermeyiz.
+    if (activity.identity.webGuest && !activity.identity.user?.name)
+      return <GuestGate roomCode={activity.identity.instanceId} onJoin={activity.setGuestName} />;
     // PIP tüm fazların önüne geçer: masa o pencereye sığmadığı için hiçbir
     // faz ekranı orada render edilmez.
     if (activity.layoutMode === "pip" && !isLoading && !hasLeftGame) return <PipCard state={game.state} />;
@@ -5853,6 +5941,7 @@ export function ActivityApp() {
     activity.error,
     activity.identity,
     activity.layoutMode,
+    activity.setGuestName,
     activity.status,
     game,
     hasLeftGame,
