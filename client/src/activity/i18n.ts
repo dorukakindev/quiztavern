@@ -1236,6 +1236,21 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Olimpiyatlar': 'Olympics',
   'Orta Çağ': 'Middle Ages',
   'İklim & Hava': 'Weather & Climate',
+  'Gizemler & Komplo Kültürü': 'Mysteries & Conspiracies',
+  'Arkeoloji': 'Archaeology',
+  'Meme Kültürü': 'Meme Culture',
+  'Rol Yapma Oyunları': 'RPGs',
+  'Rock & Metal': 'Rock & Metal',
+  'Harry Potter': 'Harry Potter',
+  'Marvel & DC': 'Marvel & DC',
+  'Witcher': 'The Witcher',
+  'LOTR': 'The Lord of the Rings',
+  'Sözcükler & Etimoloji': 'Words & Etymology',
+  'Dünya Savaşları': 'World Wars',
+  'Osmanlı Tarihi': 'Ottoman History',
+  'Dinler ve İnançlar': 'Religions & Beliefs',
+  'İnsan Vücudu': 'Human Body',
+  'Çizgi Romanlar': 'Comic Books',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
