@@ -204,6 +204,16 @@ test("maç ortasında katılan oyuncu pano sırasına girer (B60)", () => {
   assert.ok(inner.boardPickerOrder.includes("c"), "katılan kuyruğun sonunda");
 });
 
+test("pick ortasında katılan izleyici seçici olamaz (B60)", () => {
+  // Maç sırasında katılan oyuncu bu soruda izleyicidir (eligibleFrom=qIndex+1):
+  // sırası gelirse istemci hücreleri kilitli gösterir — atlanmalı.
+  const room = boardRoom("b15", ["a", "b"]);
+  const inner = startPick(room);
+  room.addPlayer({ ...user("c"), isBot: false }); // pick ortasında → izleyici
+  room.removePlayer("a"); // seçici ayrıldı
+  assert.equal(inner.boardPickerId(), "b", "sıra uygun oyuncuya geçer, izleyiciye değil");
+});
+
 test("önceki panoda sorulanlar 'son maç' korumasına taşınır (B58)", () => {
   // Board'da questions dizisi boş olduğu için lastQuestionIds hep boştu —
   // alt-havuz reseti önceki panonun sorularını hemen geri getirebilirdi.
@@ -223,5 +233,5 @@ test("önceki panoda sorulanlar 'son maç' korumasına taşınır (B58)", () => 
 });
 
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 15);
+assert.equal(passed, 16);
 process.exit(0);

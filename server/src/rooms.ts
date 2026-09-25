@@ -1844,7 +1844,7 @@ export class Room {
     // turda PICK_MS kadar boşa bekletir. Kopan ama masada kalan (grace'teki)
     // oyuncu atlanmaz: süre yeniden bağlanma penceresi olarak da çalışır.
     let guard = 0;
-    while (guard++ < this.boardPickerOrder.length && !this.players.has(this.boardPickerId()!)) this.boardPickerPos += 1;
+    while (guard++ < this.boardPickerOrder.length && !this.pickerCandidate()) this.boardPickerPos += 1;
     if (!this.boardCells.some((cell) => !cell.used)) return this.finish();
     this.clearTimer();
     this.phase = "pick";
@@ -1862,7 +1862,9 @@ export class Room {
     const picker = this.boardPickerId();
     if (picker && this.players.get(picker)?.isBot) {
       this.scheduleBotTask(() => {
-        if (this.phase !== "pick") return;
+        // Görev kurulduktan sonra sıra başkasına geçmiş olabilir (seçici
+        // ayrıldı) — yalnız hâlâ bu botun turuysa hücre aç.
+        if (this.phase !== "pick" || this.boardPickerId() !== picker) return;
         const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
         if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
       }, 1_000 + Math.random() * 2_000);
@@ -1875,6 +1877,16 @@ export class Room {
     }, GAME.PICK_MS);
   }
 
+  /** Sıradaki oyuncu bu turda hücre seçebilir mi? Masada olmalı ve bu soruya
+   *  zaten oyuncu olarak katılmış olmalı — soru/pick ortasında katılan
+   *  (eligibleFrom > qIndex) izleyicidir, istemci onun hücrelerini kilitler. */
+  private pickerCandidate(): boolean {
+    const id = this.boardPickerId();
+    if (!id) return false;
+    const p = this.players.get(id);
+    return !!p && p.eligibleFrom <= this.qIndex;
+  }
+
   /** Açık pick turunun seçicisi ayrıldıysa sırayı hemen ilerlet — tur geri
    *  kalan PICK_MS boyunca ölü beklemesin; yeni seçici tam süre alır (B60). */
   private boardPickerDeparted(departedId: string): void {
@@ -1882,7 +1894,7 @@ export class Room {
     let guard = 0;
     do {
       this.boardPickerPos += 1;
-    } while (guard++ < this.boardPickerOrder.length && !this.players.has(this.boardPickerId()!));
+    } while (guard++ < this.boardPickerOrder.length && !this.pickerCandidate());
     this.pickDeadline = Date.now() + GAME.PICK_MS;
     this.clearTimer();
     this.armPickDeadline();
