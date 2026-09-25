@@ -1,8 +1,10 @@
-# QuizTavern — Doğrulanmış Bug Analizi ve Düzeltme Planı (v3)
+# QuizTavern — Doğrulanmış Bug Analizi ve Düzeltme Planı (v4)
 
 > **Bu rapor v1'in (önceki `BUG-RAPORU.md`) yerini alır.** v1 statik bir ön taramaydı ve 40 bulgudan **çoğu kod okunarak doğrulanamadı** — bkz. [Eski raporun akıbeti](#eski-raporun-akıbeti). Bu rapor her bulgunun **kod satırıyla doğrulandığı** ve mümkün olan her yerde **çalıştırılarak yeniden üretildiği** tam bir analizdir.
 >
 > **v3 eki:** Server/client kaynağının ikinci tam geçişinde **14 yeni bulgu** eklendi (B45–B58). Bunların 8'i oda sınıfını doğrudan örnekleyen geçici bir doğrulama betiğiyle **çalıştırılarak** kanıtlandı (`Room` + mock `ProgressStore`, gerçek `start()`/`beginQuestion()`/`reveal()` akışı — ürün koduna dokunulmadı, betik sonrası silindi); B45 production bundle'ı gerçekten açılıp çöktüğü gözlenerek doğrulandı.
+>
+> **v4 eki:** `rooms.ts`'in kalan bloklarına (oda yaşam döngüsü, kartlar, bahis, kelime/çember, izleyici/kick/reconnect yolları, `stateFor` yayını) ve `index.ts`/`auth.ts`'e üçüncü odaklı geçişte **3 yeni bulgu** eklendi (B59–B61) — üçü de geçici `Room` harness'ıyla **çalıştırılarak yeniden üretildi** (betik sonrası silindi).
 >
 > **Yöntem:** `client/`, `server/`, `shared/`, `tools/` altındaki ~11.000 satırın tamamı okundu; `npm ci` → `npm run build` → `npm test` zinciri gerçekten koşuldu (33 test paketi); ayrıca **soru bankası verisinin tamamı** (`questions.json` 2357 soru, `questions-numeric.json` 16 soru, `questions-order.json` 30 soru, 465 görsel dosyası) betimsel analizle tarandı. Aşağıdaki her bulgu ya doğrudan kod kanıtıyla ya da test/veri koşusuyla doğrulanmıştır. **Hiçbir kod değişikliği yapılmamıştır.**
 >
@@ -30,6 +32,7 @@
 | `node server/dist/src/index.js` (prod bundle boot) | ❌ **ENOENT** — `dist/data/questions-numeric.json` eksik (B45); `dist/data/` altında yalnız `questions.json` |
 | Geçici `Room` harness'i (mock `ProgressStore`, gerçek `start`/`finish`) | B46 (blitz: 2 cevap→30 "yanlış" kayıt; çember: 20 kullanılmayan soru; elim: 3 turluk maç→20 asked), B47 (orphan), B48 (−200'e düşen basmayanlar), B49 (blitz'te geç predict kabulü), B50 (bayat `elim` modu zorlanır), B51 (numeric review boş), B53 (duel `roundLimit=15`) — hepsi yeniden üretildi; betik koşudan sonra silindi |
 | `blitz/numeric/zil/elim/duel/predict/board/word/timeline` test paketleri | ✅ tümü geçer — mevcut paket bu yeni bulguları kapsamıyor |
+| **v4:** Geçici `Room` harness'i (dar havuz + yazar + pano/zil senaryoları) | B59 (`questions.length=14`, 5 delik `[5,6,8,10,12]`, delik turda `beginQuestion` → **podium**), B60 (ayrılan picker hâlâ `pickerId`; başkasının `pickCell`'i yutulur), B61 (zil kazananı izleyiciye geçince `buzzWinnerId` takılı kalır, kimse basamaz) — hepsi yeniden üretildi; betik koşudan sonra silindi |
 
 ---
 
@@ -451,6 +454,29 @@ masa modu 'elim' → günlük başlar (modeBeforeDaily='elim') → tüm insanlar
 - **Etki ayrıca:** Aynı çipler board (`questionCount=25` → hiç çip seçili değil, değer pano için zaten yok sayılıyor), blitz (30'lu havuz penceresi, sayı etkisiz), word (tur sayısı `wordPrompts.length`), timeline/numeric (havuz boyutuyla sınırlı: numeric'te 15 seçimi 16'lık havuzda dolu ama 20 seçeneği yok) modlarında ya tamamen ölü ya da yanıltıcı.
 - **Düzeltme:** Çip grubunu `MODE_COUNT_OPTIONS: Record<GameMode, ...>` gibi mod başına değer listesine bağla: duel/zil/blitz/word/board için kontrolü gizle ya da kilitle; `setQuestionCount`'u da sunucuda mod-uyumlu doğrula (ör. `duel` için reddet).
 
+### B59. Yazar soruları dar havuzda seyrek delik açıyor — yazılan soru sessizce düşer, maç ilk boşlukta erken biter
+
+- **Dosya:** `server/src/rooms.ts:1164-1175` (yazar sorularının `questions[]`'a karıştırılması), `1112` (`roundLimit = questionCount` — henüz eski değer), `1180-1184` (`roundLimit` enjeksyondan **sonra** `questions.length`'e çekilir), `1619-1620` (`beginQuestion`'da `!round → finish()`)
+- **KANIT:**
+
+```ts
+const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
+const slots = shuffleIdx(this.roundLimit).slice(0, count);   // ← roundLimit = İSTENEN sayı (örn. 15)
+this.questions[slots[i]] = pool[poolIdx];                    //     ama questions.length = havuz (örn. 5)
+```
+
+`slots` aralığı `questionCount`'a göre üretilir; `sampleQuestions`/`samplePackQuestions` dar havuzda kısa döner (benzersiz çekim — `questions.ts:171` `pool.slice(0, n)`). `slot >= questions.length`'e yazım diziyi seyrek büyütür: aradaki indeksler `undefined` kalır ve `roundLimit` şişmiş `length`'e çekilir.
+- **Yeniden üretildi (harness):** `Otomobil|zor` havuzu (5 soru) + `questionCount=15` + 4 yazar → `questions.length=14`, tanımlı 9, delik `[5,6,8,10,12]` → `qIndex=5`'te `beginQuestion()` → faz `countdown → podium`: **maç ilk delikte bitiyor**. Delikler yalnız gerçek havuzun sonunda açıldığı için çökme olmaz (guard'lı), ama deliğin ötesine düşen yazılmış sorular **asla sorulmaz** ve `round.total` (örn. "14") gerçek tur sayısından büyük görünür. Slot havuz içine düşerse de gerçek soru ezilir (o soru `seen`'e yazılmış ama hiç sorulmamış sayılır).
+- **Senaryo:** Küçük paket (min 1 soru) veya dar kategori+zorluk filtresi + lobide soru yazan oyuncu → yazar kendi sorusunu hiç göremez, sayaç "5/14" gibi tutarsız kalır, maç havuz bitiminde beklenenden farklı sinyalle kapanır.
+- **Düzeltme:** Enjeksiyonu `roundLimit` yeniden hesabından SONRAYA taşı ya da `slots`'u `this.questions.length` üzerinden üret (`shuffleIdx(this.questions.length)`); alternatif olarak yazılmış soruları `splice` ile değiştirme yerine slota atarken `Math.min(slot, questions.length-1)` sınırı koy. Regresyon: 3 soruluk paket + 1 yazar + count 15.
+
+### B60. Tavern Panosu seçici sırası maç anlığına sabitleniyor — ayrılan oyuncu her turda ~10 sn ölü pencere bırakır, yeni katılan hiç seçemez
+
+- **Dosya:** `server/src/rooms.ts:1151` (`boardPickerOrder = eligiblePlayers().map(id)` — yalnız `start()`'ta bir kez), `1762-1764` (`boardPickerId` salt modüler indeks — ayrılanı/kopanı atlamaz), `440-458`/`551-566` (`removePlayer`/`becomeSpectator` sırayı güncellemez), `310-381` (`addPlayer` sıraya eklemez)
+- **KANIT — yeniden üretildi:** `boardPickerOrder=["u1".."u5"]` → `removePlayer("u1")` → `boardPickerId()` hâlâ `"u1"` döndürür; `u2.pickCell(0)` sessizce yutulur (`pickerId !== playerId`), `currentCell` `-1` kalır → tur `PICK_MS=10 sn` boyunca kilitli; süre dolunca otomatik rastgele hücre açılır ve sıra ilerler (kendini kurtarır ama her döngüde bir kez tekrarlar). İstemcide `pickerName=""` → "seçiyor" satırı boş isimle görünür (`ActivityApp.tsx:1836,1847`).
+- **Senaryo:** Pano maçında 3 oyuncu ayrılır/kopma süresi dolar → her seçim döngüsünde o kadar ölü 10 sn'lik pencere; maç ortasında katılan oyuncu (izleyiciden `becomePlayer`) cevaplayabilir ama sıra ona hiç gelmez — panonun sosyal yönü (sırayla seçim) kaybolur.
+- **Düzeltme:** `boardPickerId()`'yi canlı hesapla: `this.boardPickerOrder` yerine `this.eligiblePlayers()[this.boardPickerPos % eligibleCount]` (sıra maç içi katılım/ayrılmayı doğal izler) ya da `removePlayer`/`becomeSpectator`/`addPlayer`'da sırayı `players`'a göre filtrele/uzat. `pickerName` boş dönerse istemcide "…" yerine otomatik seçim notu göster.
+
 ---
 
 ## 4. ⚪ Düşük Bulgu
@@ -477,6 +503,7 @@ masa modu 'elim' → günlük başlar (modeBeforeDaily='elim') → tüm insanlar
 | B56 | Yazar soruları `category:"community"` — katalogda yok → çip ham "community" yazar, ikon jenerik "?"ye düşer | `rooms.ts:995` + `icons.tsx:93`, `i18n.ts:1114` | `CATEGORY_ICONS`/`CATEGORY_LABELS_EN`'e "community" ekle ya da yazara kategori seçtir |
 | B57 | `uploadPack` (metin yapıştırma yolu) `auth`'da yalnız `token` gönderir; `devId` yok → mock modda paket yükleme 401'e düşer | `client/src/activity/packs.ts:105-118` + `ActivityApp.tsx:829` | `PackAuth`'u buraya da bağla (yalnız dev/mock etkilenir) |
 | B58 | Pano'da `lastQuestionIds` hep boş — `sampleBoardCells`'in "son maç hariç" koruması etkisiz | `rooms.ts:1154-1159` (board'da `questions=[]` → boş set) + `questions-board.ts:46` | Alt-havuz tükenince önceki panonun soruları hemen tekrar düşebilir; `boardAsked` id'lerini `lastQuestionIds`'e taşı |
+| B61 | Zil kazananı cevap penceresinde "İzleyici ol"ursa zil ~5 sn takılır — `becomeSpectator` `zilFailWinner`'ı çağırmıyor (`removePlayer`/`markDisconnected` çağırıyor) | `rooms.ts:551-566` (eksik) vs `449`, `413` | Yeniden üretildi: kazanan izleyiciye geçti → `buzzWinnerId` takılı → kimse basamaz; `zilTimer` (ZIL_ANSWER_MS=5 sn) dolunca kendini kurtarır. `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` satırı |
 
 ---
 
@@ -623,6 +650,9 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 | 1.15 | B49 blitz predict | `rooms.ts` | `predictOpen`'a blitz için erken-kapan koşulu | 15 dk |
 | 1.16 | B50 modeBeforeDaily | `rooms.ts` | İki sıfırlama yoluna `modeBeforeDaily = null` (B13 `resetToLobby` ile birleşir) | 10 dk |
 | 1.17 | B53 soru sayısı çipleri | `ActivityApp.tsx`, `rooms.ts` | Mod başına geçerli değer listesi; duel'de kontrolü gizle + sunucuda reddet | 30 dk |
+| 1.18 | B59 seyrek enjeksiyon | `rooms.ts` | `slots`'u `this.questions.length` üzerinden üret (ya da enjeksiyonu `roundLimit` yeniden hesabının altına taşı) + "küçük paket + yazar" regresyon testi | 30 dk |
+| 1.19 | B60 pano seçici sırası | `rooms.ts` | `boardPickerId`'yi `eligiblePlayers` üzerinden canlı hesapla (ya da katılım/ayrılmada sırayı süz) | 30 dk |
+| 1.20 | B61 zil kazananı izleyici | `rooms.ts` | `becomeSpectator`'a `buzzWinnerId === userId → zilFailWinner()` (removePlayer ile aynı satır) | 10 dk |
 
 ### Faz 2 — Sağlamlık ve geliştirici deneyimi
 
@@ -666,4 +696,4 @@ Eski `BUG-RAPORU.md`'deki 40 iddiadan **doğrulananlar** v2'de yukarıda düzelt
 
 ---
 
-*Rapor tarihi: 2026-02-24 · Analiz: kodun tamamının iki tam geçişle okunması + `npm ci`/`build`/`test` koşuları + `Room`-harness doğrulama betiği + prod bundle boot denemesi (Node 25.6.1, Windows) · Hiçbir kaynak kod değiştirilmedi.*
+*Rapor tarihi: 2026-02-24 · Analiz: kodun tamamının üç tam geçişle okunması + `npm ci`/`build`/`test` koşuları + `Room`-harness doğrulama betikleri (v3 + v4) + prod bundle boot denemesi (Node 25.6.1, Windows) · Hiçbir kaynak kod değiştirilmedi.*
