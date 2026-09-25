@@ -439,6 +439,7 @@ export type ToastKey =
   | "err.teamFailed"
   | "err.countHostOnly"
   | "err.countInvalid"
+  | "err.countMode"
   | "err.difficultyHostOnly"
   | "err.difficultyInvalid"
   | "err.themeHostOnly"
@@ -573,6 +574,10 @@ export const QUESTION_COUNTS = [5, 10, 15] as const;
 /** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
 export const CIRCLE_COUNTS = [10, 15, 20] as const;
 export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
+/** Soru sayısı ayarının anlam taşımadığı modlar — tur sayısı mod sözleşmesi ya da
+ *  havuz boyutuyla sabittir: duel hep 7 soru, word/blitz/board sayıyı yok sayar.
+ *  Lobi çipi bu modlarda gizlenir; sunucu da isteği reddeder. */
+export const COUNTLESS_MODES: readonly GameMode[] = ["duel", "word", "blitz", "board"];
 /** §6.3 masa temaları: host'un ligi tema kapısını açar — tema tüm masaya uygulanır. */
 export const TABLE_THEMES = [
   { key: "tavern", league: "acemi" },
