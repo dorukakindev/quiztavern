@@ -1,5 +1,7 @@
 # Triviara — Render Blueprint (https://render.com/docs/blueprint-spec)
 # Dashboard → New → Blueprint → repo'yu seç → Apply. Ayrıntılar: docs/DEPLOY.md §Render.
+# Ortam değişkenlerinin kanonik listesi: deploy/env.list — değişken
+# eklerken/değiştirirken üç platform config'i de ona uyar.
 services:
   - type: web
     name: quiztavern

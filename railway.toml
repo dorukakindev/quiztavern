@@ -2,6 +2,8 @@
 # Railway repo'yu bağlayınca Dockerfile'ı otomatik görür; bu dosya deploy
 # davranışını sabitler. Adımlar: docs/DEPLOY.md §Railway.
 
+# Ortam değişkenlerinin kanonik listesi: deploy/env.list — değişken
+# eklerken/değiştirirken üç platform config'i de ona uyar.
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
