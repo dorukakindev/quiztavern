@@ -1385,6 +1385,7 @@ export class Room {
     if (!claim) return;
     const right = (choice === 0) === claim.truth;
     player.blitzAnswered++;
+    if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     if (right) {
       player.blitzStreak++;
       const gain = GAME.BLITZ_BASE + GAME.BLITZ_STREAK_STEP * Math.min(player.blitzStreak - 1, GAME.BLITZ_STREAK_CAP);
@@ -1392,7 +1393,6 @@ export class Room {
       player.blitzScore += gain;
       player.blitzCorrect++;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
-      if (this.firstAnswerId === null) this.firstAnswerId = playerId;
     } else {
       player.blitzStreak = 0;
     }
@@ -1449,6 +1449,7 @@ export class Room {
     const inCircle = this.phase === "question" && circlePrompt;
     const inWord = this.phase === "question" && wordPrompt;
     const inNumeric = this.phase === "question" && numericPrompt;
+    const showBoards = this.phase === "lobby" || this.phase === "podium";
     const writerId = question && question.id.startsWith("written-") ? question.id.slice(8) : null;
     const questionPayload: QuestionPayload | null = inQuestion
       ? {
@@ -1613,8 +1614,10 @@ export class Room {
       xpGains: this.phase === "podium" && this.progress && this.xpGains.size
         ? Object.fromEntries(this.xpGains)
         : null,
-      seasonBoard: this.progress?.seasonBoard(5) ?? null,
-      weeklyBoard: this.progress?.weeklyBoard(5) ?? null,
+      // Lider tabloları yalnız lobi/podium'da gösterilir — oyun fazlarında her
+      // stateFor çağrısı alıcı başına gereksiz SQLite sorgusu üretirdi (§7.1).
+      seasonBoard: showBoards ? this.progress?.seasonBoard(5) ?? null : null,
+      weeklyBoard: showBoards ? this.progress?.weeklyBoard(5) ?? null : null,
       dailyBoard: null,
       serverNow: Date.now(),
     };
@@ -1626,6 +1629,7 @@ export class Room {
   private personalStateFor(youId: string, shared: GameState): GameState {
     const self = this.players.get(youId);
     const meta = this.lastMatchMeta;
+    const showBoards = this.phase === "lobby" || this.phase === "podium";
     // Dondur jokeri yiyen oyuncuya kişisel (kısaltılmış) deadline gider;
     // diğer herkes genel deadline'ı görür. Yazar sorusunda writtenByYou da kişisel.
     let question = shared.question;
@@ -1696,7 +1700,7 @@ export class Room {
       rematch: shared.rematch ? { ...shared.rematch, youVoted: this.rematchVotes.has(youId) } : null,
       yourPrediction: this.predictions.get(youId) ?? null,
       progress: this.progress?.snapshot(youId) ?? null,
-      dailyBoard: this.dailyBoardProvider?.(youId) ?? null,
+      dailyBoard: showBoards ? this.dailyBoardProvider?.(youId) ?? null : null,
     };
   }
 

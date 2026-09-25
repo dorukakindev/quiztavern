@@ -42,7 +42,19 @@ const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(proces
 // Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 // Kalıcı ilerleme (XP/seviye/lig/sezon/seri) tek dosyada; XP_DB_PATH ile ezilebilir.
-const xpStore = createXpStore(process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db"));
+const xpDbPath = process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db");
+const xpStore = createXpStore(xpDbPath);
+// xp.db günlük yedekleme + haftalık bakım (§7.18): tek dosyalık SQLite tek
+// hata noktası — seviye/lig/sezon/rozet hepsi içinde. Kopya xp-backup.db'ye
+// VACUUM INTO ile tutarlı yazılır; Pazar günleri ana dosyaya da bakım yapılır.
+const xpBackupPath = resolve(dirname(xpDbPath), "xp-backup.db");
+const runXpBackup = () => {
+  try { xpStore.backup(xpBackupPath, new Date().getUTCDay() === 0); }
+  catch (backupError) { log.warn({ err: backupError }, "xp.db yedekleme başarısız"); }
+};
+const xpBackupTimer = setInterval(runXpBackup, 24 * 60 * 60 * 1000);
+xpBackupTimer.unref();
+setTimeout(runXpBackup, 60_000).unref();
 // §6.3 zorluk kalibrasyonu: soru istatistiklerinden kalibre etiket haritası
 // (her maç sonunda Room da tazeler — bkz. rooms.ts finish()).
 setQuestionCalibration(xpStore.questionStats());
@@ -792,6 +804,7 @@ let shuttingDown = false;
 function shutdown(signal: NodeJS.Signals) {
   if (shuttingDown) return;
   shuttingDown = true;
+  clearInterval(xpBackupTimer);
   log.info({ signal }, "kapatma sinyali alındı; bağlantılar kontrollü kapatılıyor");
 
   for (const room of rooms.values()) room.dispose();
