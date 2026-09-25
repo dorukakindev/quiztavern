@@ -422,9 +422,11 @@ function getRoom(roomId: string) {
 }
 
 function emitRoom(room: Room) {
-  // Oyuncular + izleyiciler: herkes kendi bakış açısıyla state alır.
+  // Ortak yük broadcast başına bir kez kurulur; alıcı başına yalnız
+  // kişisel katman yazılır (§7.3) — maske/sıralama/pano üretimi paylaşılır.
+  const shared = room.sharedState(ALLOW_MOCK_AUTH);
   for (const recipient of room.recipients()) {
-    if (recipient.socketId) io.to(recipient.socketId).emit(EV.STATE, room.stateFor(recipient.id, ALLOW_MOCK_AUTH));
+    if (recipient.socketId) io.to(recipient.socketId).emit(EV.STATE, room.stateFor(recipient.id, shared));
   }
 }
 
