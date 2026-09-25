@@ -1251,6 +1251,21 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Dinler ve İnançlar': 'Religions & Beliefs',
   'İnsan Vücudu': 'Human Body',
   'Çizgi Romanlar': 'Comic Books',
+  'Bilgisayar Donanımı': 'Computer Hardware',
+  'İcatlar & Mucitler': 'Inventions & Inventors',
+  'Programlama': 'Programming',
+  'Sosyal Medya': 'Social Media',
+  'Teknoloji Tarihi': 'History of Technology',
+  'Yayıncılar & Streamerlar': 'Streamers & Creators',
+  'Hayatta Kalma': 'Survival',
+  'İlkler & Keşifler': 'Firsts & Discoveries',
+  'Ülkeler & Kültürler': 'Countries & Cultures',
+  'Formula 1': 'Formula 1',
+  'Kripto & Blockchain': 'Crypto & Blockchain',
+  'Logolar & Markalar': 'Logos & Brands',
+  'Minecraft': 'Minecraft',
+  'NBA': 'NBA',
+  'Oyun Karakterleri': 'Video Game Characters',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.

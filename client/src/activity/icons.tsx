@@ -22,6 +22,8 @@ import {
   SlidersHorizontal, Scales, Skull, Smiley, SmileyWink, Snowflake, SoccerBall, SpeakerHigh, SpeakerSlash, Star, StarAndCrescent, Sword, Tag, Target, Television,
   Leaf, TestTube, TextAa, Translate, Tree, Trophy, UserPlus, UsersThree, Waves, WifiHigh, X,
   Alien, Axe, Books, Cat, Crosshair, DiceFive, Guitar, HandsPraying, PenNib, Shield, Shovel, Tooth,
+  Broadcast, Campfire, Circuitry, Code, Compass, Cube, CurrencyBtc, FlagCheckered, GlobeHemisphereEast, Joystick,
+  ShareNetwork, ClockCounterClockwise, Basketball, Trademark, Wrench,
 } from '@phosphor-icons/react'
 
 type Glyph = ComponentType<PhosphorProps>
@@ -161,6 +163,21 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
   'Dinler ve İnançlar': HandsPraying,
   'İnsan Vücudu': Tooth,
   'Çizgi Romanlar': Books,
+  'Bilgisayar Donanımı': Circuitry,
+  'İcatlar & Mucitler': Wrench,
+  'Programlama': Code,
+  'Sosyal Medya': ShareNetwork,
+  'Teknoloji Tarihi': ClockCounterClockwise,
+  'Yayıncılar & Streamerlar': Broadcast,
+  'Hayatta Kalma': Campfire,
+  'İlkler & Keşifler': Compass,
+  'Ülkeler & Kültürler': GlobeHemisphereEast,
+  'Formula 1': FlagCheckered,
+  'Kripto & Blockchain': CurrencyBtc,
+  'Logolar & Markalar': Trademark,
+  'Minecraft': Cube,
+  'NBA': Basketball,
+  'Oyun Karakterleri': Joystick,
 }
 
 export function CategoryIcon({ name, weight = 'duotone' }: { name: string; weight?: IconWeight }) {
