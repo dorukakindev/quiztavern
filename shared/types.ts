@@ -311,6 +311,8 @@ export interface ProgressSnapshot extends ProgressBadge {
   seasonXp: number;
   /** Bu sezondaki sıralama (1 = lider); hiç puanı yoksa null. */
   seasonRank: number | null;
+  /** Tüm zamanlar XP sıralaması (1 = lider); hiç XP yoksa null. */
+  allTimeRank: number | null;
   /** Art arda en az bir maç oynanan UTC günü sayısı. */
   streakDays: number;
   /** Kazanılmış başarım rozetleri (BADGE_KEYS sırasında). */
@@ -889,6 +891,8 @@ export interface GameState {
   seasonBoard: SeasonBoard | null;
   /** Haftalık turnuva tablosu (§6.3): geçerli ISO haftası; season alanı 'YYYY-Www'. */
   weeklyBoard: SeasonBoard | null;
+  /** Tüm zamanlar prestij tablosu: toplam XP ilk 5; season alanı 'all'. */
+  allTimeBoard: SeasonBoard | null;
   /** Soru yazarı turu: lobide soru yazmış oyuncu id'leri. */
   writers: string[];
   /** Zil modu: bu tur zili kazanan oyuncu + bu turda yanlış cevaplamışlar.

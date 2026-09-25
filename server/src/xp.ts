@@ -207,6 +207,9 @@ export interface XpStore {
   seasonBoard(limit?: number, now?: Date): SeasonBoard;
   /** Haftalık turnuva: geçerli ISO haftanın ilk `limit` sırası (§6.3). */
   weeklyBoard(limit?: number, now?: Date): SeasonBoard;
+  /** Tüm zamanlar prestij tablosu: toplam XP'nin ilk `limit` sırası.
+   *  `season` alanı "all" döner — istemci başlığı buna göre basar. */
+  allTimeBoard(limit?: number): SeasonBoard;
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına
    *  GAME.MASTERY_CORRECT doğruyu geçenler. */
   categoryMastery(userId: string): string[];
@@ -322,6 +325,10 @@ export function createXpStore(file: string): XpStore {
     WHERE week = ? ORDER BY xp DESC, user_id ASC LIMIT 1`);
   const seasonRank = db.prepare(`SELECT COUNT(*) + 1 AS rank FROM season_points
     WHERE season = ? AND xp > (SELECT xp FROM season_points WHERE user_id = ? AND season = ?)`);
+  const allTimeTop = db.prepare(`SELECT user_id AS userId, name AS name, xp AS xp
+    FROM players WHERE xp > 0 ORDER BY xp DESC, user_id ASC LIMIT ?`);
+  const allTimeRank = db.prepare(`SELECT COUNT(*) + 1 AS rank FROM players
+    WHERE xp > (SELECT xp FROM players WHERE user_id = ?)`);
   const seasonRow = db.prepare("SELECT xp FROM season_points WHERE user_id = ? AND season = ?");
   const earnedBadgeRows = db.prepare("SELECT badge FROM achievements WHERE user_id = ?");
   const setPlayerTitle = db.prepare("UPDATE players SET title = ? WHERE user_id = ?");
@@ -397,6 +404,7 @@ export function createXpStore(file: string): XpStore {
       season,
       seasonXp,
       seasonRank: rankRow,
+      allTimeRank: row.xp > 0 ? (allTimeRank.get(userId) as { rank: number }).rank : null,
       streakDays: row.streak_days,
       badges,
       categoryMastery: categoryMastery(userId),
@@ -561,6 +569,19 @@ export function createXpStore(file: string): XpStore {
           name: row.name,
           xp: row.xp,
           league: leagueFor(row.totalXp),
+        })),
+      };
+    },
+    allTimeBoard(limit = 5) {
+      const rows = allTimeTop.all(limit) as { userId: string; name: string; xp: number }[];
+      return {
+        season: "all",
+        entries: rows.map((row, i) => ({
+          rank: i + 1,
+          userId: row.userId,
+          name: row.name,
+          xp: row.xp,
+          league: leagueFor(row.xp),
         })),
       };
     },
