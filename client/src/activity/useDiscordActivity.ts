@@ -293,12 +293,10 @@ export function useDiscordActivity() {
       return
     }
 
-    let sdk: DiscordSDK | null = null
     let unsubs: (() => void)[] = []
     connectOnce(clientId)
       .then((session) => {
         if (cancelled) return
-        sdk = session.sdk
         sdkRef.current = session.sdk
         unsubs = [
           subscribeLayoutModeCompat(session.sdk, setLayoutMode),

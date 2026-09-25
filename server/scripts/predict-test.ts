@@ -3,7 +3,6 @@ import { GAME } from "../src/config.js";
 import { Room } from "../src/rooms.js";
 import type { XpGain } from "@quiztavern/shared";
 
-const user = (id: string, name = id) => ({ id, name, avatarUrl: null, socketId: `s-${id}` });
 const stop = (room: Room) => (room as unknown as { clearTimer: () => void }).clearTimer();
 const internals = (room: Room) => room as unknown as {
   qIndex: number;

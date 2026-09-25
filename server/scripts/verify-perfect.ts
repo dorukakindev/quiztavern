@@ -7,7 +7,7 @@
  * Kullanım: SERVER_URL=http://localhost:3002 npx tsx scripts/verify-perfect.ts
  */
 import { io } from "socket.io-client";
-import { EV } from "../../shared/types";
+import { EV, type GameState } from "../../shared/types";
 
 const url = process.env.SERVER_URL || "http://localhost:3002";
 const socket = io(url, { path: "/socket.io", transports: ["websocket"], auth: { roomId: "verify-6b", devId: "verify-perf", devName: "Sen" } });
@@ -21,7 +21,7 @@ let revealCount = 0;
 
 socket.on("connect", () => socket.emit(EV.READY, true));
 
-socket.on(EV.STATE, (state: any) => {
+socket.on(EV.STATE, (state: GameState) => {
   if (state.phase === "lobby" && !started && state.hostId === state.youId) {
     started = true;
     setTimeout(() => socket.emit(EV.START, { mode: "classic" }), 300);

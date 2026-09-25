@@ -1,7 +1,6 @@
 import { strict as assert } from 'node:assert'
 import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
-import { GAME } from '../src/config'
 import { questionPoolIds } from '../src/questions'
 
 let passed = 0

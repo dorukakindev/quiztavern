@@ -15,9 +15,18 @@
     "start": "npm run start -w server",
     "test": "node scripts/run-tests.mjs",
     "test:validate-questions": "tsx tools/validate-questions.ts",
-    "test:timeline": "tsx server/scripts/timeline-test.ts"
+    "test:timeline": "tsx server/scripts/timeline-test.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "concurrently": "^10.0.3"
+    "@eslint/js": "^10.0.1",
+    "concurrently": "^10.0.3",
+    "eslint": "^10.11.0",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.9",
+    "typescript-eslint": "^8.70.1"
   }
 }

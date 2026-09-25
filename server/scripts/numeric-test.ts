@@ -120,7 +120,7 @@ test("stateFor yourNumericGuess ve zil ile çakışmaz", () => {
 
 test("choice emit'i numeric modda state'i kirletmez", () => {
   const room = numericRoom("n-choice", ["a"]);
-  const inner = startRound(room);
+  startRound(room); // inner bilinçli bağlanmadı — aşağıda internals2 okunuyor
   room.answer("a", 2); // numeric modda indeks cevap yutulmalı
   const internals2 = internals(room) as unknown as {
     players: Map<string, { choice: number | null }>;

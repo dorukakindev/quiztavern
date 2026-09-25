@@ -3,13 +3,10 @@
  * tavanda `circle-test`'le aynı pattern.
  */
 import { strict as assert } from "node:assert";
-import { Room, type RoomPlayer } from "../src/rooms";
+import { Room } from "../src/rooms";
 import { GameError } from "../src/errors"
 import { GAME } from "../src/config";
-import type { GameState } from "../../shared/types";
 import { sampleWordPrompts } from "../src/circle";
-
-type PublicPlayerRow = GameState["players"][number];
 
 function player(id: string): Parameters<Room["addPlayer"]>[0] {
   return { id, name: id, avatarUrl: null, socketId: null, isBot: false };
@@ -26,11 +23,6 @@ function next(room: Room) {
   (room as unknown as { advanceFromReveal(): void }).advanceFromReveal();
 }
 const stateOf = (room: Room, id: string) => room.stateFor(id, false);
-const row = (state: GameState, id: string): PublicPlayerRow => {
-  const p = state.players.find((x) => x.id === id);
-  assert.ok(p, id);
-  return p;
-};
 
 // 1) Yalnızca host mod seçebilir; word seçimi geçerli.
 {
@@ -73,7 +65,7 @@ const row = (state: GameState, id: string): PublicPlayerRow => {
   const before = stateOf(room, "a").word!;
   const openBefore = before.letters.filter(Boolean).length;
   room.wordLetter("a");
-  const after = stateOf(room, "b" === "b" ? "a" : "a").word!;
+  const after = stateOf(room, "a").word!;
   const openAfter = after.letters.filter(Boolean).length;
   assert.equal(openAfter, openBefore + 1);
   assert.equal(after.value, before.value - GAME.WORD_LETTER_POINTS);

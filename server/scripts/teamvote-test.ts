@@ -48,9 +48,8 @@ test('Oybirliği doğru takım cevabı +TEAM_VOTE_PTS (gain toplamı değil)', (
 })
 
 test('Eşitlikte kaptan (düşük seat) seçimi takım cevabı olur', () => {
-  const { r, inner } = teamRoom(['a', 'b', 'c', 'd'])
+  const { r } = teamRoom(['a', 'b', 'c', 'd']) // inner yok — bu testte inner2 kullanılır
   // Takım0: a(seat0,kaptan) + c. Takım1: b + d.
-  const q = r.currentQuestion
   const inner2 = internals(r)
   inner2.beginQuestion()
   const cq = r.currentQuestion()!

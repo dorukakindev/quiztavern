@@ -176,7 +176,6 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   // Kategori/zorluk filtresi resimli soru içermiyorsa hedef otomatik 0'a
   // düşer (min(havuz, hedef)) — zorlama yok, maç normal devam eder.
   const pictures = source.filter((q) => q.image);
-  const texts = source.filter((q) => !q.image);
   const { min, max } = imageOnly ? { min: n, max: n } : pictureQuota(n);
   const pictureTarget = Math.min(pictures.length, n, randomInt(min, max));
   // Kategori dengesi: birden çok kategori seçiliyken (ya da seçim yokken tüm
@@ -266,7 +265,7 @@ export function questionPoolIds(categories: string[] = [], difficulty: Difficult
  * karşılar (bu, bir turun son 1-2 maçında en fazla birkaç erken tekrara yol
  * açabilir — sürekli/sistemik tekrardan çok daha iyi).
  */
-export function resetExhaustedSubpools(categories: string[], difficulty: Difficulty | null, seen: Set<string>, lastIds: Set<string>, roundLimit: number): Set<string> {
+export function resetExhaustedSubpools(categories: string[], difficulty: Difficulty | null, seen: Set<string>, lastIds: Set<string>, _roundLimit: number): Set<string> {
   const source = effectiveQuestionPool(categories, difficulty);
   const pictureIds = new Set(source.filter((q) => q.image).map((q) => q.id));
   const textIds = new Set(source.filter((q) => !q.image).map((q) => q.id));
