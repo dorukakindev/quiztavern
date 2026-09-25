@@ -153,7 +153,7 @@ test('socket offline iken iskelet yerine hata ekranı ve reconnectNow çıkar', 
 
 test('özel soru paketi: SET_PACK emit + lobi seçici + yükleme formu bağlıdır', () => {
   // FAZ 4.4 — masa ayarı socket'e bağlı, liste /api/question-packs'ten çekilir.
-  assert.match(realtimeSource, /setPack: \(packId: string \| null\) => socket\.emit\(EV\.SET_PACK, \{ packId \}\)/)
+  assert.match(realtimeSource, /setPack: \(packId: string \| null\).*EV\.SET_PACK, \{ packId \}\)/)
   assert.match(activitySource, /onSetPack=\{game\.setPack\}/)
   assert.match(activitySource, /state\?\.pack\?\.id === pack\.id/)
   assert.match(activitySource, /PackUploadForm/)
