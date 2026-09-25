@@ -73,7 +73,7 @@ const row = (state: GameState, id: string): PublicPlayerRow => {
   const before = stateOf(room, "a").word!;
   const openBefore = before.letters.filter(Boolean).length;
   room.wordLetter("a");
-  const after = stateOf(room, "b" === "b" ? "a" : "a").word!;
+  const after = stateOf(room, "a").word!;
   const openAfter = after.letters.filter(Boolean).length;
   assert.equal(openAfter, openBefore + 1);
   assert.equal(after.value, before.value - GAME.WORD_LETTER_POINTS);

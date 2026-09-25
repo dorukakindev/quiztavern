@@ -805,8 +805,7 @@ export class Room {
 
   /** Odaya ait gecikmeli bot işi; oda/tur kapanınca topluca iptal edilir. */
   scheduleBotTask(task: () => void, delayMs: number): void {
-    let timer: NodeJS.Timeout;
-    timer = setTimeout(() => {
+    const timer: NodeJS.Timeout = setTimeout(() => {
       this.botTimers.delete(timer);
       task();
     }, delayMs);
@@ -875,7 +874,7 @@ export class Room {
   /** Yeni katılan oyuncunun atanacağı takım: üye sayısı az olan (eşitse 0). */
   private smallerTeam(): number {
     let a = 0, b = 0;
-    for (const player of this.players.values()) player.team === 1 ? (b += 1) : (a += 1);
+    for (const player of this.players.values()) if (player.team === 1) b += 1; else a += 1;
     return a <= b ? 0 : 1;
   }
 
@@ -1726,7 +1725,7 @@ export class Room {
     this.timer = setTimeout(() => {
       if (this.phase !== "countdown") return;
       // Çifte Bahis: sorudan önce bahis fazı gelir; diğer modlar doğrudan soruya.
-      this.gameMode === "bet" ? this.beginBet() : this.gameMode === "board" ? this.beginPick() : this.beginQuestion();
+      if (this.gameMode === "bet") this.beginBet(); else if (this.gameMode === "board") this.beginPick(); else this.beginQuestion();
     }, GAME.COUNTDOWN_MS);
   }
 
@@ -2331,7 +2330,7 @@ export class Room {
       return this.boardCells.some((cell) => !cell.used) ? this.beginPick() : this.finish();
     }
     // Çifte Bahis'te her sorunun önünde yeniden bahis fazı vardır.
-    this.gameMode === "bet" ? this.beginBet() : this.beginQuestion();
+    if (this.gameMode === "bet") this.beginBet(); else this.beginQuestion();
   }
 
   private finish() {
