@@ -1666,9 +1666,14 @@ export function sampleCirclePrompts(count = ALL_CIRCLE_PROMPTS.length, categorie
   const answers = new Set<string>();
   return pool.filter((p) => {
     const answerKey = normalizeCircleAnswer(p.answer);
-    if (seen.has(key(p)) || answers.has(answerKey)) return false;
+    const answerEnKey = p.answerEn ? normalizeCircleAnswer(p.answerEn) : "";
+    if (seen.has(key(p)) || answers.has(answerKey) || (answerEnKey && answers.has(answerEnKey))) return false;
     seen.add(key(p));
     answers.add(answerKey);
+    // EN cevap da ayrı anahtar — TR'de farklı kavramlar aynı İngilizce
+    // cevaba denk gelebilir (galibiyet/zafer → victory); EN oyuncusu
+    // aynı cevabı iki kez görmemeli.
+    if (answerEnKey) answers.add(answerEnKey);
     return true;
   }).slice(0, count);
 }
@@ -1722,8 +1727,10 @@ export function sampleWordPrompts(categories: string[] = [], exclude: Set<string
     const pool = [...shuf(bucket.filter((p) => !exclude.has(key(p)))), ...shuf(bucket.filter((p) => exclude.has(key(p))))];
     for (const p of pool) {
       const answerKey = normalizeCircleAnswer(p.answer);
-      if (answers.has(answerKey)) continue;
+      const answerEnKey = p.answerEn ? normalizeCircleAnswer(p.answerEn) : "";
+      if (answers.has(answerKey) || (answerEnKey && answers.has(answerEnKey))) continue;
       answers.add(answerKey);
+      if (answerEnKey) answers.add(answerEnKey);
       picked.push(p);
       if (picked.filter((x) => x.answer.length === len).length === 2) break;
     }
