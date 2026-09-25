@@ -1,5 +1,5 @@
 import { strict as assert } from 'node:assert'
-import { ALL_CIRCLE_PROMPTS, normalizeCircleAnswer, type CirclePrompt } from '../src/circle'
+import { ALL_CIRCLE_PROMPTS, normalizeCircleAnswer, sampleCirclePrompts, type CirclePrompt } from '../src/circle'
 import { Room } from '../src/rooms'
 import type { Question } from '../src/questions'
 
@@ -119,6 +119,19 @@ test('Çemberde yalnız en hızlı 3 puanlanır, 4. doğru +0 kalır', () => {
   assert.deepEqual(reveal.rankedPlayerIds, ['a', 'b', 'c', 'd'])
   assert.deepEqual(reveal.gains, { a: 450, b: 320, c: 220, d: 0 })
   assert.equal(top3.players.get('d')!.score, 0)
+})
+
+test('Çember örnekleme EN cevabı da tekilleştirir (galibiyet/zafer→victory)', () => {
+  // Tüm havuz örneklenince seçilen hiç iki prompt aynı normalize answerEn'i
+  // paylaşamaz — veride 52 çakışan answerEn grubu var (TR dedup yetmezdi).
+  const sampled = sampleCirclePrompts()
+  const enSeen = new Set<string>()
+  for (const p of sampled) {
+    if (!p.answerEn) continue
+    const k = normalizeCircleAnswer(p.answerEn)
+    assert.ok(!enSeen.has(k), `answerEn tekrarı: "${p.answerEn}" (${p.answer})`)
+    enSeen.add(k)
+  }
 })
 
 console.log(`\n[circle-lightning-edge] sonuç: ${passed} geçti, 0 kaldı`)
