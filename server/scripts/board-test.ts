@@ -185,6 +185,35 @@ test("seçici sırası eligibleFrom sıfırlandıktan sonra örneklenir", () => 
   assert.deepEqual(inner.boardPickerOrder.sort(), ["a", "b"]);
 });
 
+test("pick turundaki seçici ayrılınca sıra hemen ilerler (B60)", () => {
+  // boardPickerOrder maç anlığına sabitlenmişti: seçici çıkınca slotu
+  // PICK_MS kadar ölü bekletiyordu — artık ayrılışta sıra ilerler.
+  const room = boardRoom("b13", ["a", "b", "c"]);
+  const inner = startPick(room);
+  assert.equal(inner.boardPickerId(), "a");
+  room.removePlayer("a");
+  assert.equal(inner.boardPickerId(), "b", "sıra anında b'ye geçti");
+  room.pickCell("b", 3);
+  assert.equal(inner.phase, "question", "yeni seçicinin hücresi açılır — ölü pencere yok");
+});
+
+test("maç ortasında katılan oyuncu pano sırasına girer (B60)", () => {
+  const room = boardRoom("b14", ["a", "b"]);
+  const inner = startPick(room);
+  room.addPlayer({ ...user("c"), isBot: false });
+  assert.ok(inner.boardPickerOrder.includes("c"), "katılan kuyruğun sonunda");
+});
+
+test("pick ortasında katılan izleyici seçici olamaz (B60)", () => {
+  // Maç sırasında katılan oyuncu bu soruda izleyicidir (eligibleFrom=qIndex+1):
+  // sırası gelirse istemci hücreleri kilitli gösterir — atlanmalı.
+  const room = boardRoom("b15", ["a", "b"]);
+  const inner = startPick(room);
+  room.addPlayer({ ...user("c"), isBot: false }); // pick ortasında → izleyici
+  room.removePlayer("a"); // seçici ayrıldı
+  assert.equal(inner.boardPickerId(), "b", "sıra uygun oyuncuya geçer, izleyiciye değil");
+});
+
 test("önceki panoda sorulanlar 'son maç' korumasına taşınır (B58)", () => {
   // Board'da questions dizisi boş olduğu için lastQuestionIds hep boştu —
   // alt-havuz reseti önceki panonun sorularını hemen geri getirebilirdi.
@@ -204,5 +233,5 @@ test("önceki panoda sorulanlar 'son maç' korumasına taşınır (B58)", () => 
 });
 
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 13);
+assert.equal(passed, 16);
 process.exit(0);

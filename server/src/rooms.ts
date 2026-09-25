@@ -400,6 +400,11 @@ export class Room {
       title: player.isBot ? null : (this.progress?.title(player.id) ?? null),
     };
     this.players.set(record.id, record);
+    // Pano seçim sırası maç anlığına sabitlenmişti — maç ortasında katılan
+    // oyuncunun sırası hiç gelmezdi; kuyruğun sonuna eklenir (B60).
+    if (this.gameMode === "board" && this.phase !== "lobby" && !this.boardPickerOrder.includes(record.id)) {
+      this.boardPickerOrder.push(record.id);
+    }
     this.reassignHost();
     this.broadcast();
     return record;
@@ -473,6 +478,8 @@ export class Room {
     if (this.buzzWinnerId === playerId) this.zilFailWinner();
     if (this.hostId === playerId) this.reassignHost();
     if (this.handleNoPlayersLeft()) return;
+    // Ayrılan açık pick turunun seçicisiyse sırayı hemen ilerlet (B60).
+    this.boardPickerDeparted(playerId);
     // Ayrılma eşiği düşürmüş olabilir — bekleyen çoğunluk artık yeterli olabilir.
     this.checkRematchTrigger();
     this.broadcast();
@@ -579,6 +586,8 @@ export class Room {
     this.spectators.set(id, { id, name, avatarUrl, socketId });
     if (this.handleNoPlayersLeft()) return;
     this.checkRematchTrigger();
+    // Ayrılan açık pick turunun seçicisiyse sırayı hemen ilerlet (B60).
+    this.boardPickerDeparted(userId);
     this.broadcast();
     this.revealIfEveryoneAnswered();
     this.advanceIfEveryoneBet();
@@ -1903,7 +1912,7 @@ export class Room {
     // turda PICK_MS kadar boşa bekletir. Kopan ama masada kalan (grace'teki)
     // oyuncu atlanmaz: süre yeniden bağlanma penceresi olarak da çalışır.
     let guard = 0;
-    while (guard++ < this.boardPickerOrder.length && !this.players.has(this.boardPickerId()!)) this.boardPickerPos += 1;
+    while (guard++ < this.boardPickerOrder.length && !this.pickerCandidate()) this.boardPickerPos += 1;
     if (!this.boardCells.some((cell) => !cell.used)) return this.finish();
     this.clearTimer();
     this.phase = "pick";
@@ -1912,10 +1921,18 @@ export class Room {
     this.broadcast();
     // Sıradaki botsa kendi hücresini seçer (1–3 sn); pasif insan için süre
     // sonunda sunucu rastgele açar — pick fazı maçı asla kilitlemez.
+    this.armPickDeadline();
+  }
+
+  /** Pick fazının süre sonunu kurar: sıradaki botsa kendi hücresini seçer
+   *  (1–3 sn); pasif insan için süre bitince rastgele hücre açılır. */
+  private armPickDeadline(): void {
     const picker = this.boardPickerId();
     if (picker && this.players.get(picker)?.isBot) {
       this.scheduleBotTask(() => {
-        if (this.phase !== "pick") return;
+        // Görev kurulduktan sonra sıra başkasına geçmiş olabilir (seçici
+        // ayrıldı) — yalnız hâlâ bu botun turuysa hücre aç.
+        if (this.phase !== "pick" || this.boardPickerId() !== picker) return;
         const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
         if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
       }, 1_000 + Math.random() * 2_000);
@@ -1926,6 +1943,29 @@ export class Room {
       const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
       if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
     }, GAME.PICK_MS);
+  }
+
+  /** Sıradaki oyuncu bu turda hücre seçebilir mi? Masada olmalı ve bu soruya
+   *  zaten oyuncu olarak katılmış olmalı — soru/pick ortasında katılan
+   *  (eligibleFrom > qIndex) izleyicidir, istemci onun hücrelerini kilitler. */
+  private pickerCandidate(): boolean {
+    const id = this.boardPickerId();
+    if (!id) return false;
+    const p = this.players.get(id);
+    return !!p && p.eligibleFrom <= this.qIndex;
+  }
+
+  /** Açık pick turunun seçicisi ayrıldıysa sırayı hemen ilerlet — tur geri
+   *  kalan PICK_MS boyunca ölü beklemesin; yeni seçici tam süre alır (B60). */
+  private boardPickerDeparted(departedId: string): void {
+    if (this.gameMode !== "board" || this.phase !== "pick" || this.boardPickerId() !== departedId) return;
+    let guard = 0;
+    do {
+      this.boardPickerPos += 1;
+    } while (guard++ < this.boardPickerOrder.length && !this.pickerCandidate());
+    this.pickDeadline = Date.now() + GAME.PICK_MS;
+    this.clearTimer();
+    this.armPickDeadline();
   }
 
   /** Tavern Panosu: yalnız sırası gelen oyuncu, açık bir hücreyi seçebilir. */
