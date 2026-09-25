@@ -1,6 +1,6 @@
 import { GAME } from "./config";
 import { GameError } from "./errors";
-import { CIRCLE_COUNTS, COUNTLESS_MODES, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
+import { CIRCLE_COUNTS, MODE_CONTRACT, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, type TableTheme, LEAGUE_ORDER } from "../../shared/types";
 import { circlePoolKeys, matchesCircleAnswer, sampleCirclePrompts, sampleWordPrompts, wordPoolKeys, type CirclePrompt } from "./circle";
 import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuestionCalibration, shuffleChoices, type Question } from "./questions";
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
@@ -155,14 +155,7 @@ export interface ProgressStore {
 
 /** Sunucunun otorite olduğu tek bir eşzamanlı maç odası. */
 
-/** Soru yazarı turunun puan-akışlı modları — bu modlarda yazılan sorular maça
- *  karışır; bahis/çember/kelime/bulanık kendi mekaniğine sahip olduğu için dışarıda. */
-const WRITTEN_MODES = new Set(["classic", "lightning", "elim", "team", "duel"]);
 
-/** ANSWER (şık indeksi) kabul eden modlar — numeric/timeline/circle/word kendi
- *  giriş yollarını kullanır; onlarda choice emit'i state'i kirletir
- *  (firstAnswerId kaçak set olur, choice anlamsız dolar). */
-const CHOICE_MODES = new Set(["classic", "lightning", "bet", "team", "elim", "blur", "duel", "zil", "blitz", "board"]);
 
 /** Kalibrasyon beslemesine girmeyen modlar: çember/kelime this.questions'ı
  *  kullanmadan typed[]'de cevaplar; blitz ifade havuzu kararlı soru id'si
@@ -879,7 +872,7 @@ export class Room {
     if (mode === "elim") this.questionCount = 10;
     if (mode === "blur") this.questionCount = 10;
     if (mode === "word") this.questionCount = 10;
-    // Düello hep 7 soru — host'a sayı seçtirilmez (COUNTLESS_MODES; lobi çipi
+    // Düello hep 7 soru — host'a sayı seçtirilmez (questionCountEditable; lobi çipi
     // gizli + setQuestionCount reddeder).
     if (mode === "duel") this.questionCount = GAME.DUEL_QUESTIONS as QuestionCount;
     if (mode === "zil") this.questionCount = 10;
@@ -950,7 +943,7 @@ export class Room {
     if (this.hostId !== playerId) throw new GameError("err.countHostOnly");
     // Soru sayısı ayarı anlamsız modlar (duel=7 sabit; word/blitz/board sayıyı
     // yok sayar) — istemcide çip gizli, burada da reddedilir.
-    if (COUNTLESS_MODES.includes(this.gameMode)) throw new GameError("err.countMode");
+    if (!MODE_CONTRACT[this.gameMode].questionCountEditable) throw new GameError("err.countMode");
     // Çember'de aynı alan tur sayısını taşır: 10/15/20.
     const valid = this.gameMode === "circle" ? CIRCLE_COUNTS : QUESTION_COUNTS;
     if (!(valid as readonly number[]).includes(count as number)) throw new GameError("err.countInvalid");
@@ -1172,8 +1165,8 @@ export class Room {
       // Özel paket seçiliyse (Çember ve Bulanık Resim hariç — çemberin kendi
       // prompt havuzu, bulanığın resimli-soru zorunluluğu var) sorular paketin
       // listesinden çekilir; kategori/zorluk filtreleri paket için uygulanmaz.
-      const pack = this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && this.gameMode !== "board" ? getPack(this.packId) : null;
-      if (this.packId && this.gameMode !== "circle" && this.gameMode !== "blur" && this.gameMode !== "word" && this.gameMode !== "timeline" && this.gameMode !== "board" && !pack) throw new GameError("err.packUnknown");
+      const pack = this.packId && MODE_CONTRACT[this.gameMode].packCompatible ? getPack(this.packId) : null;
+      if (this.packId && MODE_CONTRACT[this.gameMode].packCompatible && !pack) throw new GameError("err.packUnknown");
       if (pack && !pack.questions.length) throw new GameError("err.packEmpty");
       this.numericQuestions = this.gameMode === "numeric" ? sampleNumericQuestions(this.roundLimit, this.seenQuestionIds) : [];
       this.orderQuestions = this.gameMode === "timeline" ? sampleOrderQuestions(this.roundLimit, this.seenQuestionIds) : [];
@@ -1204,7 +1197,7 @@ export class Room {
       // Soru yazarı turu: oturan yazarların soruları rastgele soru slotlarına
       // karışır (yer değiştirir, toplam soru sayısı değişmez). Yazar kendi
       // turunda oynamaz — reveal'de yazara puan kazananların ortalaması yazılır.
-      if (WRITTEN_MODES.has(this.gameMode) && this.writtenQuestions.size) {
+      if (MODE_CONTRACT[this.gameMode].writerCompatible && this.writtenQuestions.size) {
         const pool = [...this.players.keys()]
           .filter((id) => this.writtenQuestions.has(id))
           .map((id) => this.writtenQuestions.get(id)!);
@@ -1262,10 +1255,10 @@ export class Room {
       player.circleCorrectAt = null;
       player.bet = null;
       player.wordGain = 0;
-      player.lives = this.gameMode === "elim" ? GAME.ELIM_LIVES : 0;
+      player.lives = MODE_CONTRACT[this.gameMode].usesLives ? GAME.ELIM_LIVES : 0;
       // Tavern kartları: Klasik/Takım maçında herkes 1 jokerle başlar;
       // diğer modlarda kart mekaniği yok (sıfırda kalır, kazanılamaz da).
-      player.cards = this.gameMode === "classic" || this.gameMode === "team" ? 1 : 0;
+      player.cards = MODE_CONTRACT[this.gameMode].usesCards ? 1 : 0;
       player.cardUsed = null;
       player.fiftyRemoved = [];
       player.frozen = false;
@@ -1291,7 +1284,7 @@ export class Room {
   }
 
   answer(playerId: string, choice: number): void {
-    if (!CHOICE_MODES.has(this.gameMode) || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
+    if (!MODE_CONTRACT[this.gameMode].choiceAnswers || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
     // Karar deadline'a göre: timer gecikmiş olsa bile süre dolduysa cevap yerine reveal işler.
     if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);

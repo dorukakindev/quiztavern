@@ -27,6 +27,45 @@ export type GameMode = "quiz" | "classic" | "lightning" | "circle" | "bet" | "te
   | "blitz"
   | "timeline"
   | "board";
+
+/** Mod sözleşmesi (§7.2): her modun hangi girdiyi/özelliği kabul ettiği tek
+ *  tabloda durur — dağınık `gameMode === "x" || === "y"` listeleri yerine
+ *  buraya bakılır. Yeni mod eklerken satırını doldurmak sözleşmeyi de kurar. */
+export interface ModeContract {
+  /** answer() çağrısında şık indeksini (0..3) kabul eder. */
+  choiceAnswers: boolean;
+  /** Lobide soru-sayısı çipleri anlamlı (yoksa sözleşme/havuz sabitler). */
+  questionCountEditable: boolean;
+  /** Özel soru paketi kaynağı olabilir. */
+  packCompatible: boolean;
+  /** Yazar turu soruları havuza karışır. */
+  writerCompatible: boolean;
+  /** Tur verisi soru-kalibrasyon istatistiğine yazar. */
+  feedsCalibration: boolean;
+  /** Tavern kartları (joker) kullanır. */
+  usesCards: boolean;
+  /** Can sistemi kullanır (Son Masa). */
+  usesLives: boolean;
+}
+
+export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
+  quiz:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
+  classic:  { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: true,  usesLives: false },
+  lightning:{ choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
+  circle:   { choiceAnswers: false, questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
+  bet:      { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
+  team:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: true,  usesLives: false },
+  elim:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: true },
+  blur:     { choiceAnswers: true,  questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
+  word:     { choiceAnswers: false, questionCountEditable: false, packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
+  duel:     { choiceAnswers: true,  questionCountEditable: false, packCompatible: true,  writerCompatible: true,  feedsCalibration: true,  usesCards: false, usesLives: false },
+  zil:      { choiceAnswers: true,  questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
+  numeric:  { choiceAnswers: false, questionCountEditable: true,  packCompatible: true,  writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
+  blitz:    { choiceAnswers: true,  questionCountEditable: false, packCompatible: true,  writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
+  timeline: { choiceAnswers: false, questionCountEditable: true,  packCompatible: false, writerCompatible: false, feedsCalibration: false, usesCards: false, usesLives: false },
+  board:    { choiceAnswers: true,  questionCountEditable: false, packCompatible: false, writerCompatible: false, feedsCalibration: true,  usesCards: false, usesLives: false },
+};
+
 /** Soru/prompt zorluk seviyesi. Klasik ve Çember havuzlarındaki her içerik
  *  bununla etiketlenir; gelecekteki zorluk-modu seçimi (basit/orta/zor) bu
  *  alanı filtre olarak kullanacak — içerik önceden ayrılmış, yeniden
