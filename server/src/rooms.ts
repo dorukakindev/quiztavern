@@ -6,6 +6,7 @@ import { effectiveDifficulty, resetExhaustedSubpools, sampleQuestions, setQuesti
 import { sampleNumericQuestions, type NumericQuestion } from "./questions-numeric";
 import { sampleOrderQuestions, type OrderQuestion } from "./questions-order";
 import { sampleBoardCells, type BoardCellSpec } from "./questions-board";
+import { botSkill } from "./bots";
 import { getPack, samplePackQuestions } from "./packs";
 import { CATEGORY_CATALOG, CATEGORY_NAMES } from "./categories";
 import { dailyDayNumber, dailyPattern, dailyQuestions, type DailyBoard, type DailyResultEntry } from "./daily";
@@ -662,7 +663,7 @@ export class Room {
     if (player.isBot) {
       const q = this.currentQuestion();
       if (q) {
-        const correct = Math.random() < 0.45;
+        const correct = Math.random() < botSkill(player.id) + 0.1;
         const choice = correct
           ? q.correctIndex
           : [0, 1, 2, 3].filter((i) => i !== q.correctIndex)[Math.floor(Math.random() * 3)];
