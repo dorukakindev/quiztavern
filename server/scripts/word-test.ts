@@ -123,19 +123,29 @@ const row = (state: GameState, id: string): PublicPlayerRow => {
   stop(room);
 }
 
-// 6) Son harf asla açılmaz — "harf al" sonunda durur.
+// 6) Son harf asla açılmaz + harf-alma kişi başı WORD_LETTER_CAP ile sınırlı.
 {
   const room = new Room("w6", () => {}, { minPlayers: 2 });
-  room.addPlayer(player("host")); room.addPlayer(player("a")); room.addPlayer(player("c"));
+  room.addPlayer(player("host"));
+  for (const id of ["a", "b", "c", "d", "e"]) room.addPlayer(player(id));
   room.setGameMode("host", "word");
   ready(room, ...[...room.players.keys()].filter((id) => id !== "host"));
   room.start("host", "word");
   inner(room).beginQuestion();
   const len = stateOf(room, "a").word!.letters.length;
-  for (let i = 0; i < len + 3; i++) room.wordLetter("a");
+  // Kişi başı cap: tek oyuncu WORD_LETTER_CAP'den fazla harf açamaz.
+  for (let i = 0; i < 10; i++) room.wordLetter("a");
+  const afterCap = stateOf(room, "a").word!.letters.filter(Boolean).length;
+  assert.equal(afterCap, GAME.WORD_LETTER_CAP, "tek oyuncu cap'te durur");
+  // Cevabını kilitleyen artık harf alamaz.
+  room.wordAnswer("host", "yanlis");
+  for (let i = 0; i < 3; i++) room.wordLetter("host");
+  assert.equal(stateOf(room, "a").word!.letters.filter(Boolean).length, afterCap, "kilitli oyuncu harf açamaz");
+  // Yeterli oyuncu dönüşümlü alınca son harf yine de açılmaz.
+  const others = ["a", "b", "c", "d", "e"];
+  for (let i = 0; i < len * 2; i++) room.wordLetter(others[i % others.length]);
   const letters = stateOf(room, "a").word!.letters;
-  assert.equal(letters.filter(Boolean).length, len - 1, "en az bir harf kapalı kalır");
-  assert.equal(stateOf(room, "a").word!.value, GAME.WORD_LETTER_POINTS);
+  assert.equal(letters.filter(Boolean).length, Math.min(len - 1, others.length * GAME.WORD_LETTER_CAP), "en az bir harf kapalı kalır");
   stop(room);
 }
 
