@@ -566,9 +566,12 @@ export class Room {
     // Zil kazananı izleyiciye geçtiyse denemesi yanmış sayılır — yoksa zil
     // buzzWinnerId'de takılır ve masa ~5 sn zilTimer bekler (B61).
     if (this.buzzWinnerId === userId) this.zilFailWinner();
+    // İzleyici kaydı handleNoPlayersLeft'ten ÖNCE: son insan izleyiciye
+    // geçtiğinde erken return bu satırı atlıyordu — socket sahipsiz kalıp
+    // oda onsuz kapanıyordu (B47). Kayıtlı izleyici odayı canlı tutar.
+    this.spectators.set(id, { id, name, avatarUrl, socketId });
     if (this.handleNoPlayersLeft()) return;
     this.checkRematchTrigger();
-    this.spectators.set(id, { id, name, avatarUrl, socketId }); // artık izleyici olduğu için oda kapanmaz, lobiye döner
     this.broadcast();
     this.revealIfEveryoneAnswered();
     this.advanceIfEveryoneBet();
