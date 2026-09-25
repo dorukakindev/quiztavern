@@ -13127,17 +13127,46 @@ export const normalizeCircleAnswer = (value: string) =>
     // noktalama da — "Tuz Gölü!" yazan oyuncu yanlış sayılmaz.
     .replace(/[^\p{L}\p{N}]/gu, "");
 
+/** Levenshtein düzenleme mesafesi (iki satır DP). Cevaplar kısa, çağrı
+ *  başına bir kez — O(n·m) yeterli. */
+const editDistance = (a: string, b: string): number => {
+  if (a === b) return 0;
+  const m = a.length;
+  const n = b.length;
+  if (!m) return n;
+  if (!n) return m;
+  let prev = Array.from({ length: n + 1 }, (_, j) => j);
+  for (let i = 1; i <= m; i++) {
+    const cur = new Array<number>(n + 1);
+    cur[0] = i;
+    for (let j = 1; j <= n; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[n];
+};
+
 /**
  * Oyuncunun cevabı prompt'un `answer` ya da `aliases` alanındaki herhangi bir
- * biçimle normalize eşleştiğinde true.
+ * biçimle normalize eşleştiğinde true. Küçük yazım hataları da kabul edilir:
+ * 6-11 karakterlik cevaplarda 1 düzenleme, 12+ karakterde 2 düzenleme mesafesi
+ * ("macdonalds" → "mcdonalds" gibi). Kısa cevaplarda tolerans yok — yanlış
+ * pozitif riski kısa kelimede gerçek bir karşı-cevap üretir.
  */
 export const matchesCircleAnswer = (prompt: Pick<CirclePrompt, "answer" | "aliases" | "answerEn">, value: string) => {
   const normalized = normalizeCircleAnswer(value);
   if (!normalized) return false;
-  if (normalized === normalizeCircleAnswer(prompt.answer)) return true;
-  // İngilizce arayüzdeki oyuncu EN ipucunu görür ve EN cevabı yazar.
-  if (prompt.answerEn && normalized === normalizeCircleAnswer(prompt.answerEn)) return true;
-  return (prompt.aliases ?? []).some((alias) => normalizeCircleAnswer(alias) === normalized);
+  const targets = [prompt.answer, prompt.answerEn, ...(prompt.aliases ?? [])]
+    .filter((target): target is string => !!target)
+    .map(normalizeCircleAnswer)
+    .filter(Boolean);
+  if (targets.includes(normalized)) return true;
+  return targets.some((target) => {
+    const tolerance = target.length >= 12 ? 2 : target.length >= 6 ? 1 : 0;
+    if (!tolerance || Math.abs(target.length - normalized.length) > tolerance) return false;
+    return editDistance(normalized, target) <= tolerance;
+  });
 };
 
 /**
