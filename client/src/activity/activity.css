@@ -716,8 +716,10 @@ textarea:focus-visible,
   animation:
     qtDotDrift 24s ease-in-out infinite alternate,
     qtDotPulse 4.5s ease-in-out infinite;
-} /* Lobi çocukları içeriktir ve arka planın üstünde durur; sahne dekoru (.qt-backdrop) hariç — o en arkada, kendi absolute konumunda kalır. */
-.qt-lobby > :not(.qt-lobby-dot-field):not(.qt-backdrop) {
+} /* Lobi çocukları içeriktir ve arka planın üstünde durur; sahne dekoru (.qt-backdrop) hariç — o en arkada, kendi absolute konumunda kalır.
+   Baykuş da hariç: position:absolute olmalı — relative'e düşünce akışa girip
+   masayı 101px aşağı itiyor ve alttaki içeriği fold'un dışına atıyordu. */
+.qt-lobby > :not(.qt-lobby-dot-field):not(.qt-backdrop):not(.qt-lobby-owl) {
   position: relative;
   z-index: 1;
 }
@@ -3112,6 +3114,7 @@ button.qt-button--danger:hover:not(:disabled) {
   display: grid;
   grid-template-rows: 1fr;
   height: 100vh;
+  height: 100dvh;
   min-height: 0;
 }
 .qt-table-shell {
@@ -4689,8 +4692,15 @@ textarea.qt-pack-input {
     height: 0;
   }
 }
-/* Discord iframe'i alcak (~530px): maskot ve bosluklar oraninda kuculur. */
-@media (max-height: 640px) {
+/* Discord iframe'i alcak (~500-700px): maskot ve bosluklar oraninda kuculur.
+   Eşik 640→720: gerçek etkinlik iframe'i ~680px civarında, 640 blok'u hiç
+   devreye girmiyordu ve lobide panel içerikleri fold altında kalıyordu. */
+@media (max-height: 720px) {
+  /* Dekoratif marka imgesi (tabela ~90px) kısa iframe'de CTA/istatistikleri
+     aşağı itiyor — mobildeki gibi kısa yükseklikte de gizle. */
+  .qt-you-panel .qt-logo-mark {
+    display: none;
+  }
   /* Alcak iframe: paneller KAYMADAN sigsin. 601px icerik 446px yere
      sigmiyordu (kategori grubu tek basina 258px). Kaydirma cubugunu
      gizleyip icerigi tasirmak, kategorileri gorunmez kilardi. */
@@ -4707,6 +4717,10 @@ textarea.qt-pack-input {
   .qt-you-panel {
     gap: 8px;
     padding: 10px;
+  }
+  .qt-settings__body {
+    gap: 9px;
+    margin-top: 9px;
   }
   .qt-settings__group {
     gap: 5px;

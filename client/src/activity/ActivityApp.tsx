@@ -2659,9 +2659,6 @@ function ActivityLobby({
               <div className="qt-loading-line">{t("lobby.joining")}</div>
             )}
           </div>
-          {/* Kalıcı ilerleme: seviye/lig çubuğu + sezon lider tablosu —
-            sunucu progress deposu bağlıysa dolu gelir, değilse hiç çizilmez. */}
-          {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
           {isSpectator ? (
             <div className="qt-you-cta">
               <button className="qt-button qt-button--primary" disabled={tableFull} onClick={onTakeSeat}>
@@ -2757,6 +2754,11 @@ function ActivityLobby({
               )}
             </>
           )}
+          {/* Kalıcı ilerleme: seviye/lig çubuğu + sezon lider tablosu —
+            sunucu progress deposu bağlıysa dolu gelir, değilse hiç çizilmez.
+            CTA'nın ALTINDA: Hazırım/Başlat alçak iframe'de fold altında
+            kalıyordu, istatistikler kaydırılabilir. */}
+          {state?.progress && <XpStrip snapshot={state.progress} title={self?.title} onTitle={onSetTitle} />}
           {state?.seasonBoard && <SeasonStrip state={state} />}
           {state?.weeklyBoard && <SeasonStrip state={state} weekly />}
           {state?.dailyBoard && <DailyStrip state={state} />}
