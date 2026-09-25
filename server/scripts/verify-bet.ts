@@ -9,6 +9,7 @@
  * Çalıştırma: npx tsx scripts/verify-bet.ts
  */
 import { spawn, spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { io, type Socket } from "socket.io-client";
 import { EV, type GameState } from "../../shared/types";
 
@@ -35,7 +36,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function main() {
   const server = spawn("npx", ["tsx", "src/index.ts"], {
-    cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+    cwd: fileURLToPath(new URL("..", import.meta.url)),
     env: { ...process.env, PORT: String(PORT), ALLOW_MOCK_AUTH: "1" },
     stdio: ["ignore", "pipe", "pipe"], shell: process.platform === "win32",
   });

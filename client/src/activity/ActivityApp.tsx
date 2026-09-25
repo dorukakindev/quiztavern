@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, COUNTLESS_MODES, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -46,7 +46,7 @@ function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | nu
     </div>
     <div className="qt-xp-bar" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}><i style={{ width: `${pct}%` }} /></div>
     <small>{t('progress.nextLevel', { xp: remaining })}</small>
-    {snapshot.badges.length > 0 && <div className="qt-badge-row" aria-label={t('badge.title')}>
+    {(snapshot.badges.length > 0 || snapshot.badgeProgress.length > 0) && <div className="qt-badge-row" aria-label={t('badge.title')}>
       {snapshot.badges.map((badge) => {
         const selected = badge === title
         // Unvan: kazanılmış rozet tıklanınca takılır, takılı olana tıklanınca
@@ -56,6 +56,13 @@ function XpStrip({ snapshot, title, onTitle }: { snapshot: ProgressSnapshot | nu
         return onTitle
           ? <button key={badge} type="button" className={`qt-badge ${selected ? 'is-title' : ''}`} title={hint} aria-pressed={selected} onClick={() => onTitle(selected ? null : badge)}><Icon name="medal" weight="fill" /> {label}</button>
           : <span key={badge} className="qt-badge" title={t(`badge.${badge}.hint` as StringKey)}><Icon name="medal" weight="fill" /> {label}</span>
+      })}
+      {snapshot.badgeProgress.map((entry) => {
+        // Kilitli rozet: hedefe ne kadar yaklaşıldığı mini barla görünür;
+        // tıklanamaz (kazanılmamış rozet unvan olamaz).
+        const label = t(`badge.${entry.key}` as StringKey)
+        const goalPct = Math.min(100, Math.round((entry.current / entry.target) * 100))
+        return <span key={entry.key} className="qt-badge is-locked" title={t(`badge.${entry.key}.hint` as StringKey)}><Icon name="lock" /> {label}<i className="qt-badge__bar"><i style={{ width: `${goalPct}%` }} /></i><em>{entry.current}/{entry.target}</em></span>
       })}
     </div>}
   </div>
@@ -479,6 +486,36 @@ function GameLeaveButton({ onLeave, floating = false }: { onLeave: () => void; f
   return <button type="button" className={`qt-game-exit ${floating ? 'qt-game-exit--floating' : ''}`} onClick={onLeave} title={t('game.leave')} aria-label={t('game.leave')}><Icon name="exit" /><span className="qt-game-exit__label">{t('game.leave')}</span></button>
 }
 
+/** Oyun-içi "?": aktif modun kısa kuralını küçük bir diyalogda açar. Diyalog
+ *  `role="dialog"` taşır — klavye kısayolları (1-4, zil Space) açıkken yutulur. */
+function GameHelpButton({ mode }: { mode: GameMode }) {
+  const { t } = useI18n()
+  const [open, setOpen] = useState(false)
+  return <>
+    <button type="button" className="qt-game-exit qt-game-help" onClick={() => setOpen(true)} title={t('game.help')} aria-label={t('game.help')}><Icon name="info" /></button>
+    {open && <ModeHelpDialog mode={mode} onClose={() => setOpen(false)} />}
+  </>
+}
+
+function ModeHelpDialog({ mode, onClose }: { mode: GameMode; onClose: () => void }) {
+  const { t } = useI18n()
+  const trapRef = useFocusTrap<HTMLElement>(true)
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  return <div className="qt-howto-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
+    <section ref={trapRef} className="qt-howto-modal qt-howto-modal--mode" role="dialog" aria-modal="true" aria-label={t('game.help')}>
+      <div className="qt-howto-modal__head">
+        <div><span>{t('game.help')}</span><b>{t(`mode.${mode}` as StringKey)}</b></div>
+        <button type="button" className="qt-howto-modal__close" onClick={onClose} aria-label={t('leave.cancel')}><Icon name="close" /></button>
+      </div>
+      <p className="qt-mode-help__body">{t(`mode.${mode}.howto` as StringKey)}</p>
+    </section>
+  </div>
+}
+
 /** İzleyici çubuğu: oyun/podyum fazlarında izleyene "izliyorsun" der ve boş koltuk
  *  varsa "Oyna" ile oturtur (lobide bu iş you-panel'de). Sabit alt overlay. */
 function SpectatorBar({ state, canSit, onTakeSeat, onPredict }: { state: GameState; canSit: boolean; onTakeSeat: () => void; onPredict: (targetId: string) => void }) {
@@ -532,6 +569,7 @@ function RoomStrip({ state, beats, speakingIds }: { state: GameState; beats: Rev
         <div><b title={player.name}>{player.name}</b><TitleTag title={player.title} />{player.progress && <LeagueBadge badge={player.progress} />}<small>{player.waiting ? t('game.nextRound') : state.gameMode === 'elim' && player.lives === 0 ? t('elim.out') : player.answered ? t('game.locked') : beats.active ? t('game.missed') : player.connected ? t('game.thinking') : t('game.connecting')}</small></div>
         {state.gameMode === 'elim' && player.lives !== undefined && <span className="qt-player-lives" title={t('elim.lives')}>{Array.from({ length: 3 }, (_, i) => <i key={i} className={i < player.lives! ? 'is-full' : ''}><Icon name="heart" weight="fill" /></i>)}</span>}
         {state.gameMode === 'bet' && beats.active && state.reveal?.bets?.[player.id] !== undefined && <span className="qt-player-bet" title={t('bet.stakedTitle')}><Icon name="coins" />{formatNumber(language, state.reveal.bets[player.id])}</span>}
+        {player.cardPlayed && <span className="qt-card-played" title={t('card.played')}><Icon name="deck" /></span>}
         <b className="qt-player-score">{formatNumber(language, player.score)}</b>
         {player.answered && !beats.gains && <Icon name="check" />}
       </div>)}
@@ -1109,10 +1147,12 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
           </div>
         </div>
 
-        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). */}
-        <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
+        {/* Çember'de aynı ayar tur sayısını taşır (10/15/20). Sayının anlam
+            taşımadığı modlarda (duel/word/blitz/board) grup gizlenir — çip
+            ölü kontrol olmasın. */}
+        {!COUNTLESS_MODES.includes(mode) && <div className="qt-settings__group"><span>{t(mode === 'circle' ? 'table.roundCount' : 'table.questionCount')}</span>
           <div className="qt-count-row">{(mode === 'circle' ? CIRCLE_COUNTS : QUESTION_COUNTS).map((count) => <button key={count} className={`qt-count-chip ${state?.questionCount === count ? 'is-selected' : ''}`} disabled={!isHost} aria-pressed={state?.questionCount === count} onClick={() => onSetQuestionCount(count)}>{count}</button>)}</div>
-        </div>
+        </div>}
 
         {/* Takım modu: host tek dokunuşla takımları yeniden dağıtır. */}
         {mode === 'team' && <div className="qt-settings__group"><span>{t('team.shuffleLabel')}</span>
@@ -1365,11 +1405,31 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   // arka plan tıklaması kapatır. Yanıt kısayollarıyla çakışmasın diye açıkken
   // dialog rolü taşır (kısayol dinleyicisi dialog varsa erken çıkıyor).
   const [lightbox, setLightbox] = useState<{ src: string; credit?: string } | null>(null)
+  const lightboxRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (!lightbox) return
-    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') setLightbox(null) }
+    const root = lightboxRef.current
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    // Odak dialoga alınır ve Tab/Shift+Tab içinde döner — klavye kullanıcısı
+    // arka plandaki cevap düğmelerine kaçamaz; kapanınca odak geri verilir.
+    const focusables = () =>
+      root ? [...root.querySelectorAll<HTMLElement>('button, [href], [tabindex]:not([tabindex="-1"])')].filter((el) => !el.hasAttribute('disabled')) : []
+    focusables()[0]?.focus()
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setLightbox(null); return }
+      if (event.key !== 'Tab') return
+      const els = focusables()
+      if (els.length === 0) return
+      const first = els[0]
+      const last = els[els.length - 1]
+      if (event.shiftKey && document.activeElement === first) { last.focus(); event.preventDefault() }
+      else if (!event.shiftKey && document.activeElement === last) { first.focus(); event.preventDefault() }
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      previouslyFocused?.focus()
+    }
   }, [lightbox])
 
   // Tavern kartları (joker): yalnız Klasik/Takım, soru fazında, cevaptan önce,
@@ -1378,12 +1438,21 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
   useEffect(() => { setFreezePick(false) }, [state.round.index])
   const correctIndex = state.reveal?.correctIndex
   const selected = state.yourChoice
-  const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting })
+  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline
+  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs
+  // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
+  // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
+  const sfxNow = useServerNow(state.serverNow, 250)
+  const secLeft = deadline ? Math.max(0, Math.ceil((deadline - sfxNow) / 1000)) : 99
+  // Süre sunucu saatine göre doldu: şıklar/kutu kilitlensin — sunucu geç
+  // cevabı zaten yutar (err.lateAnswer toast'ı düşer), basılı tutan buton yanıltır.
+  const expired = !!deadline && secLeft === 0
+  const locked = questionIsLocked({ selected, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
+  const numericLocked = circleAnswerIsLocked({ answered: state.yourNumericGuess !== null, revealing: beats.active, spectator: youAreSpectator, waiting, expired })
   const cardsEnabled = (state.gameMode === 'classic' || state.gameMode === 'team') && state.phase === 'question' && !waiting && !youAreSpectator
   const cardLocked = !cardsEnabled || selected !== null || state.yourCardUsed !== null || state.yourCards <= 0 || beats.active
-  const circleLocked = circleAnswerIsLocked({ answered: state.yourCircleAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
-  const wordLocked = circleAnswerIsLocked({ answered: state.yourWordAnswer !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
-  const numericLocked = circleAnswerIsLocked({ answered: state.yourNumericGuess !== null, revealing: beats.active, spectator: youAreSpectator, waiting })
   // Ondalık virgülle de yazılabilir — gönderimde noktaya çevrilir.
   const numericParsed = Number(circleAnswer.trim().replace(',', '.'))
   const numericReady = circleAnswer.trim() !== '' && Number.isFinite(numericParsed)
@@ -1397,31 +1466,25 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     ? null
     : state.wordReveal?.rankedPlayerIds.includes(state.youId) ? 'right' : 'wrong'
   useEffect(() => {
-    if (!circleInputShouldFocus({ hasPrompt: !!circle || !!word, locked: circleLocked && wordLocked })) return
+    if (!circleInputShouldFocus({ hasPrompt: !!circle || !!word || !!numeric, locked: circle ? circleLocked : word ? wordLocked : numericLocked })) return
     const frame = window.requestAnimationFrame(() => circleInputRef.current?.focus())
     return () => window.cancelAnimationFrame(frame)
-  }, [circle?.deadline, word?.deadline, circleLocked, wordLocked])
+  }, [circle?.deadline, word?.deadline, numeric?.deadline, circleLocked, wordLocked, numericLocked])
   // Hic cevap vermeden reveal'a girdiysen sahne hafifce sallanir — tek sikkin
   // is-wrong sarsintisindan ayri, "hic secmedin" icin daha dramatik bir isaret.
   const youMissed = beats.cards && !isCircle && selected === null && !youAreSpectator
   // Cevap dağılımı (5a): kaç kişi hangi şıkkı seçti. picks[index] = o şıkkı
   // seçenlerin id listesi. Yüzde tabanı = cevap verenlerin toplamı ("%60 B dedi").
   const totalPicks = (state.reveal?.picks ?? []).reduce((sum, ids) => sum + ids.length, 0)
-  const deadline = isCircle ? shownCircle?.deadline : isWord ? shownWord?.deadline : shown?.deadline
-  const durationMs = isCircle ? shownCircle?.durationMs : isWord ? shownWord?.durationMs : shown?.durationMs
   const accent = categoryAccent(isCircle ? shownCircle?.category : isWord ? shownWord?.category : shown?.category)
   const playerById = (id: string) => state.players.find((item) => item.id === id)
 
-  // SFX tetikleri (Web Audio, dosyasız). Her olay BİR kez: geçişleri ref ile
-  // yakala. Saat zaten var; tik için ayrı bir okuma (250ms yeter).
-  const sfxNow = useServerNow(state.serverNow, 250)
   // Bulanık Resim: görsel soru süresi boyunca netleşir. Oran sunucu saatinden
   // türer (sfxNow), transform:scale kenar sızdırmazlığı için blur'le birlikte
   // azalır. Reveal'da (faz=question değil) görsel tamamen net.
   const blurRemain = state.gameMode === 'blur' && state.phase === 'question' && deadline && durationMs
     ? Math.max(0, Math.min(1, (deadline - sfxNow) / durationMs)) : 0
   const blurPx = Math.round(blurRemain * 18 * 10) / 10
-  const secLeft = deadline ? Math.max(0, Math.ceil((deadline - sfxNow) / 1000)) : 99
   const sfxRef = useRef({ revealed: false, gained: false, tick: -1 })
   useEffect(() => {
     const s = sfxRef.current
@@ -1429,8 +1492,8 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (!s.revealed) { s.revealed = true; sfx.play('reveal') }
       if (beats.gains && !s.gained) {
         s.gained = true
-        const answered = isCircle ? state.yourCircleAnswer !== null : state.yourChoice !== null
-        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
+        const answered = isCircle ? state.yourCircleAnswer !== null : isWord ? state.yourWordAnswer !== null : state.yourChoice !== null
+        if (answered) sfx.play((isCircle ? state.circleReveal?.rankedPlayerIds.includes(state.youId) : isWord ? state.wordReveal?.rankedPlayerIds.includes(state.youId) : ((state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0) > 0) ? 'correct' : 'wrong')
       }
     } else {
       s.revealed = false
@@ -1440,15 +1503,33 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       if (secLeft >= 1 && secLeft <= 3 && s.tick !== secLeft) { s.tick = secLeft; sfx.play('tick'); sfx.play(secLeft === 1 ? 'heart3' : secLeft === 2 ? 'heart2' : 'heart') }
       if (secLeft > 3) s.tick = -1
     }
-  }, [beats.active, beats.gains, secLeft, isCircle, state.reveal, state.circleReveal, state.yourChoice, state.yourCircleAnswer, state.youId])
+  }, [beats.active, beats.gains, secLeft, isCircle, isWord, state.reveal, state.circleReveal, state.wordReveal, state.yourChoice, state.yourCircleAnswer, state.yourWordAnswer, state.youId])
+
+  // Zil: Space (veya B) fiziksel buton gibi — tıklamayla aynı şartlarda BAS
+  // yapar. Yarış hızlı olduğu için klavyeden basmak fareyi bulmaktan adil.
+  useEffect(() => {
+    if (!isZil || beats.active || zilYouWon || waiting || zilWinner || zilYouFailed || !self) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.target instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable)) return
+      if (document.querySelector('[role="dialog"]')) return
+      if (event.key !== ' ' && event.key.toLowerCase() !== 'b') return
+      event.preventDefault()
+      sfx.play('lock')
+      onBuzz?.()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [isZil, beats.active, zilYouWon, waiting, zilWinner, zilYouFailed, self, onBuzz])
 
   // Klavye kısayolu: A/B/C/D veya 1/2/3/4 tıklamayla aynı işi yapar (kilitler).
   // Çember modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
   // alanına yazarken ya da masadan-ayrıl onay kutusu açıkken de sessizce yutar.
+  // removedChoices dep'te — %50 jokeri şıkkı sildikten sonra bayat closure
+  // silinmiş index'i hâlâ kilitleyebilirdi.
   useEffect(() => {
     if (isCircle || locked) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.target instanceof HTMLElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName)) return
+      if (event.target instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'SELECT'].includes(event.target.tagName) || event.target.isContentEditable)) return
       if (document.querySelector('[role="dialog"]')) return
       const index = shortcutIndex(event.key, 4)
       if (index === null || state.removedChoices.includes(index)) return
@@ -1457,7 +1538,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [isCircle, locked, onAnswer])
+  }, [isCircle, locked, onAnswer, state.removedChoices])
 
   // Sahne görseli geri geldi: elipsi bunlarda sanıp kaldırmıştım, meğer
   // .qt-timer::after ekrana kaçıyormuş — görsellerin suçu yokmuş.
@@ -1474,6 +1555,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
@@ -1538,7 +1620,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
               })()}
             </div>
           : <div className="qt-circle-entry">
-              <input inputMode="decimal" value={state.yourNumericGuess !== null ? String(state.yourNumericGuess) : circleAnswer} disabled={numericLocked} maxLength={16} onChange={(event) => setCircleAnswer(event.target.value.replace(/[^0-9,.−-]/g, ''))} onKeyDown={(event) => { if (event.key === 'Enter' && numericReady && !numericLocked) { event.preventDefault(); sfx.play('lock'); onNumericAnswer?.(numericParsed) } }} placeholder={t('numeric.placeholder')} aria-label={t('numeric.placeholder')} className={state.yourNumericGuess !== null ? 'is-locked' : ''} />
+              <input ref={circleInputRef} inputMode="decimal" value={state.yourNumericGuess !== null ? String(state.yourNumericGuess) : circleAnswer} disabled={numericLocked} maxLength={16} onChange={(event) => setCircleAnswer(event.target.value.replace(/[^0-9,.−-]/g, ''))} onKeyDown={(event) => { if (event.key === 'Enter' && numericReady && !numericLocked) { event.preventDefault(); sfx.play('lock'); onNumericAnswer?.(numericParsed) } }} placeholder={t('numeric.placeholder')} aria-label={t('numeric.placeholder')} className={state.yourNumericGuess !== null ? 'is-locked' : ''} />
               <span className="qt-numeric-unit">{language === 'en' ? shownNumeric.unitEn : shownNumeric.unit}</span>
               <button className={`qt-button ${numericLocked ? 'qt-circle-lock is-locked' : 'qt-button--primary qt-circle-lock'}`} disabled={!numericReady || numericLocked} onClick={() => { sfx.play('lock'); onNumericAnswer?.(numericParsed) }}>{numericLocked && state.yourNumericGuess !== null ? <><Icon name="check" /> {t('circle.lockedShort')}</> : <><Icon name="lock" /> {t('circle.lock')}</>}</button>
             </div>}
@@ -1617,7 +1699,7 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
               </>
             : null}
       </> : shown ? <>
-        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
+        <div className={`qt-question-head ${shown.image ? 'has-image' : ''}`} key={shown.text}><span className="qt-sr-only" role="status" aria-live="polite">{language === 'en' ? shown.textEn : shown.text}</span><span className="qt-category">{categoryLabel(language, shown.category)}{shown.writtenByName ? <em className="qt-writer-tag"><Icon name="scroll" />{t('writeQ.tag', { name: shown.writtenByName })}</em> : null}</span><div className="qt-question-body">{shown.image && <figure className="qt-question-figure"><button type="button" className="qt-question-imagebtn" onClick={() => { sfx.play('lock'); setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit }) }} aria-label={t('game.imageZoom')}><img className="qt-question-image" src={`/questions/${shown.image}`} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} /></button>{shown.imageCredit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{shown.imageCredit}</span></figcaption>}</figure>}<h1 className={questionLengthClass(language === 'en' ? shown.textEn : shown.text)}>{language === 'en' ? shown.textEn : shown.text}</h1></div></div>
         {cardsEnabled ? <div className="qt-card-bar">
           <span className="qt-card-count" title={t('card.title')}><Icon name="deck" />×{state.yourCards}</span>
           {CARD_TYPES.map((type) => <button key={type} type="button" className={`qt-card ${freezePick && type === 'freeze' ? 'is-picking' : ''}`} title={t(`card.${type}.hint`)} aria-label={t(`card.${type}.hint`)} disabled={cardLocked} onClick={() => {
@@ -1704,10 +1786,10 @@ function GameBoard({ state, onAnswer, onCircleAnswer, onWordAnswer, onWordLetter
         : <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} frozen={false} />}
       <RevealProgress beats={beats} />
     </aside></div>
-    {lightbox && <div className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
+    {lightbox && <div ref={lightboxRef} className="qt-lightbox" role="dialog" aria-modal="true" aria-label={t('game.imageZoom')} onClick={() => setLightbox(null)}>
       <figure className="qt-lightbox-card" onClick={(event) => event.stopPropagation()}>
         <button type="button" className="qt-lightbox-close" onClick={() => setLightbox(null)} aria-label={t('game.imageClose')}><Icon name="close" /></button>
-        <img src={lightbox.src} alt="" />
+        <img src={lightbox.src} alt="" style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: 'scale(1.08)' } : undefined} />
         {lightbox.credit && <figcaption className="qt-question-credit"><Icon name="info" /><span>{lightbox.credit}</span></figcaption>}
       </figure>
     </div>}
@@ -1768,6 +1850,7 @@ function BetBoard({ state, onBet, onLeave, onSpectate, speakingIds }: { state: G
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
@@ -1828,6 +1911,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
       </header>
       <div className="qt-game-controls">
         {!youAreSpectator && <button type="button" className="qt-game-exit qt-game-spectate" onClick={onSpectate} title={t('spectator.become')}>{t('spectator.become')}</button>}
+        <GameHelpButton mode={state.gameMode} />
         <GameLeaveButton onLeave={onLeave} />
       </div>
     </div>
@@ -1858,7 +1942,7 @@ function PickBoard({ state, onPickCell, onLeave, onSpectate, speakingIds }: { st
 function YourGain({ state, beats }: { state: GameState; beats: RevealBeats }) {
   const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const rescued = state.gameMode === 'bet' && !!state.reveal?.rescued?.includes(state.youId)
   if (!beats.gains) return <div className="qt-your-gain" aria-hidden="true" />
   if (rescued && gain <= 0) return <div className="qt-your-gain is-zero"><b>{t('reveal.noGain')}</b><small>{t('reveal.betRescueMiss')}</small></div>
@@ -2088,7 +2172,7 @@ function DailyShare({ day, pattern }: { day: number; pattern: string }) {
   const { t } = useI18n()
   const [copied, setCopied] = useState(false)
   const textRef = useRef<HTMLInputElement>(null)
-  const text = `${pattern} QuizTavern #${day}`
+  const text = `${pattern} Triviara #${day}`
   const copy = async () => {
     try { await navigator.clipboard.writeText(text); setCopied(true) }
     catch { textRef.current?.select() }
@@ -2154,12 +2238,14 @@ function MatchSummaryCard({ state, summary, onAgain, onRematch, onBackToLobby }:
 /**
  * Yükleme iskeleti (3d): soru/oyun gelene kadar boş kart yerine oyun düzeninin
  * shimmer'lı taslağı — durum şeridi + oyuncu paneli + soru kartı (kategori, iki
- * metin satırı, 2×2 şık) + sayaç dairesi. Saf dekor: aria-hidden.
+ * metin satırı, 2×2 şık) + sayaç dairesi. Bloklar dekoratiftir (aria-hidden);
+ * durum, görsel olmayan role="status" metniyle duyurulur.
  */
-function GameSkeleton() {
-  return <main className="qt-activity qt-skeleton" aria-hidden="true">
-    <div className="qt-skeleton__strip qt-shimmer" />
-    <div className="qt-skeleton__grid">
+function GameSkeleton({ loadingLabel }: { loadingLabel: string }) {
+  return <main className="qt-activity qt-skeleton">
+    <span className="qt-sr-only" role="status">{loadingLabel}</span>
+    <div className="qt-skeleton__strip qt-shimmer" aria-hidden="true" />
+    <div className="qt-skeleton__grid" aria-hidden="true">
       <div className="qt-skeleton__side qt-shimmer" />
       <div className="qt-skeleton__card">
         <span className="qt-shimmer qt-skeleton__chip" />
@@ -2185,7 +2271,7 @@ function PipCard({ state }: { state: GameState | null }) {
   if (!state) return null
 
   const self = state.players.find((player) => player.id === state.youId)
-  const gain = (state.reveal?.gains ?? state.circleReveal?.gains)?.[state.youId] ?? 0
+  const gain = (state.reveal?.gains ?? state.circleReveal?.gains ?? state.wordReveal?.gains)?.[state.youId] ?? 0
   const answered = !!self?.answered
 
   let tag: string
@@ -2430,6 +2516,27 @@ export function ActivityApp() {
     else if (phase === 'podium') activity.setPresence(i18n.t('presence.podium'))
     else activity.setPresence(i18n.t('presence.playing', { current: roundIndex ?? 0, total: roundTotal ?? 0 }))
   }, [activity.identity.isDiscord, activity.setPresence, phase, roundIndex, roundTotal, spectating, i18n])
+  // Reaktif SFX: rakip eylemleri de sesle duyulur — zil kazanımı, pano hücresi
+  // açılışı (pick→question), eliminasyon, gelen emote. Her olay BİR kez;
+  // son görülen değerler ref'te tutulur. Etkileşim sesleri ('lock') ayrıca var;
+  // bu katman yalnızca "görmeden duy" bildirimleri içindir.
+  const zilWinner = game.state?.zil?.winnerId ?? null
+  const emoteTopUid = game.emotes.length ? game.emotes[game.emotes.length - 1].uid : 0
+  const livesKey = game.state?.players.map((p) => `${p.id}:${p.lives ?? -1}`).join(',') ?? ''
+  const reactRef = useRef<{ buzz: string | null; prevPhase: string | undefined; dead: ReadonlySet<string>; emoteUid: number }>({ buzz: null, prevPhase: undefined, dead: new Set(), emoteUid: 0 })
+  useEffect(() => {
+    const r = reactRef.current
+    const st = game.state
+    if (!st) return
+    if (zilWinner && r.buzz !== zilWinner) { r.buzz = zilWinner; sfx.play('buzz') }
+    if (!zilWinner) r.buzz = null
+    if (st.gameMode === 'board' && r.prevPhase === 'pick' && st.phase === 'question') sfx.play('flip')
+    r.prevPhase = st.phase
+    const deadNow = new Set(st.players.filter((p) => p.lives === 0).map((p) => p.id))
+    deadNow.forEach((id) => { if (!r.dead.has(id)) sfx.play('elim') })
+    r.dead = deadNow
+    if (emoteTopUid > r.emoteUid) { r.emoteUid = emoteTopUid; sfx.play('pop') }
+  }, [zilWinner, phase, livesKey, emoteTopUid, game.state])
   const isLoading = activity.status === 'booting' || !game.state
   const body = useMemo(() => {
     // PIP tüm fazların önüne geçer: masa o pencereye sığmadığı için hiçbir
@@ -2448,7 +2555,7 @@ export function ActivityApp() {
       }
       return activity.error
         ? <main className="qt-activity qt-boot"><div className="qt-boot-orbit" /><h1>{i18n.t('boot.title')}</h1><p>{activity.error}</p><button type="button" className="qt-button qt-button--primary" onClick={activity.retry}>{i18n.t('boot.retry')}</button></main>
-        : <GameSkeleton />
+        : <GameSkeleton loadingLabel={i18n.t('app.loading')} />
     }
     // Oda lobiye dönmüş olabilir ama bu oyuncu sonuç ekranından henüz çıkmadı:
     // son maçı lastMatch'ten çizmeye devam et (başkası "Lobiye dön" dedi diye

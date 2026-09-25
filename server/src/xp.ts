@@ -1,9 +1,10 @@
 import Database from "better-sqlite3";
-import { mkdirSync } from "node:fs";
+import { mkdirSync, renameSync, rmSync } from "node:fs";
 import { dirname } from "node:path";
 import { GAME } from "./config.js";
 import type {
   BadgeKey,
+  BadgeProgress,
   LeagueKey,
   ProgressBadge,
   ProgressSnapshot,
@@ -108,9 +109,19 @@ interface BadgeStats {
   lastWeekChamp: boolean;
 }
 
+/** Sayısal hedefi olan rozet için ilerleme alanı: BadgeStats içinden bir
+ *  sayaç + hedef. `bestCategory` istisnadır — kategori doğrularının en
+ *  büyüğü BadgeStats'te yok, snapshot'ta ayrıca doldurulur. */
+interface BadgeGoal {
+  stat: keyof BadgeStats | 'bestCategory';
+  target: number;
+}
+
 interface BadgeDef {
   key: BadgeKey;
   earned: (s: BadgeStats, e: MatchFinishedEntry) => boolean;
+  /** Varsa: kazanılmamış rozette gösterilecek n/t ilerlemesi. */
+  goal?: BadgeGoal;
 }
 
 const leagueMinXp = (key: LeagueKey) =>
@@ -120,23 +131,30 @@ const leagueMinXp = (key: LeagueKey) =>
  *  katar üstünden değil, eksik/fazla anahtar derlemede yakalanır. */
 export const BADGE_DEFS: readonly BadgeDef[] = [
   { key: "haftaSampiyonu", earned: (s) => s.lastWeekChamp },
-  { key: "kategoriUstasi", earned: (s) => s.masteryCount >= 1 },
-  { key: "ilkMac", earned: (s) => s.matches >= 1 },
-  { key: "onMac", earned: (s) => s.matches >= 10 },
-  { key: "elliMac", earned: (s) => s.matches >= 50 },
-  { key: "ilkGalibiyet", earned: (s) => s.wins >= 1 },
-  { key: "onGalibiyet", earned: (s) => s.wins >= 10 },
-  { key: "keskin", earned: (s) => s.correctTotal >= 100 },
-  { key: "kartalGoz", earned: (s) => s.correctTotal >= 500 },
-  { key: "seriAvcisi", earned: (s) => s.bestStreak >= 5 },
-  { key: "alev", earned: (s) => s.bestStreak >= 10 },
-  { key: "gunluk3", earned: (s) => s.streakDays >= 3 },
-  { key: "gunluk7", earned: (s) => s.streakDays >= 7 },
+  { key: "kategoriUstasi", earned: (s) => s.masteryCount >= 1, goal: { stat: "bestCategory", target: GAME.MASTERY_CORRECT } },
+  { key: "ilkMac", earned: (s) => s.matches >= 1, goal: { stat: "matches", target: 1 } },
+  { key: "onMac", earned: (s) => s.matches >= 10, goal: { stat: "matches", target: 10 } },
+  { key: "elliMac", earned: (s) => s.matches >= 50, goal: { stat: "matches", target: 50 } },
+  { key: "ilkGalibiyet", earned: (s) => s.wins >= 1, goal: { stat: "wins", target: 1 } },
+  { key: "onGalibiyet", earned: (s) => s.wins >= 10, goal: { stat: "wins", target: 10 } },
+  { key: "keskin", earned: (s) => s.correctTotal >= 100, goal: { stat: "correctTotal", target: 100 } },
+  { key: "kartalGoz", earned: (s) => s.correctTotal >= 500, goal: { stat: "correctTotal", target: 500 } },
+  { key: "seriAvcisi", earned: (s) => s.bestStreak >= 5, goal: { stat: "bestStreak", target: 5 } },
+  { key: "alev", earned: (s) => s.bestStreak >= 10, goal: { stat: "bestStreak", target: 10 } },
+  { key: "gunluk3", earned: (s) => s.streakDays >= 3, goal: { stat: "streakDays", target: 3 } },
+  { key: "gunluk7", earned: (s) => s.streakDays >= 7, goal: { stat: "streakDays", target: 7 } },
   { key: "podyum", earned: (_s, e) => e.placement <= 3 },
+  { key: "tekeTek", earned: (_s, e) => e.won && e.gameMode === "duel" },
+  { key: "zilUstasi", earned: (_s, e) => e.won && e.gameMode === "zil" },
+  { key: "kahin", earned: (_s, e) => e.won && e.gameMode === "numeric" },
+  { key: "kronolog", earned: (_s, e) => e.won && e.gameMode === "timeline" },
+  { key: "panoFatihi", earned: (_s, e) => e.won && e.gameMode === "board" },
+  { key: "sozcu", earned: (_s, e) => e.won && e.gameMode === "word" },
+  { key: "blitzci", earned: (_s, e) => e.won && e.gameMode === "blitz" },
   { key: "tamIsabet", earned: (_s, e) => e.total >= 5 && e.correct === e.total },
-  { key: "ligKalfa", earned: (s) => s.xp >= leagueMinXp("kalfa") },
-  { key: "ligUsta", earned: (s) => s.xp >= leagueMinXp("usta") },
-  { key: "ligEfsane", earned: (s) => s.xp >= leagueMinXp("efsane") },
+  { key: "ligKalfa", earned: (s) => s.xp >= leagueMinXp("kalfa"), goal: { stat: "xp", target: leagueMinXp("kalfa") } },
+  { key: "ligUsta", earned: (s) => s.xp >= leagueMinXp("usta"), goal: { stat: "xp", target: leagueMinXp("usta") } },
+  { key: "ligEfsane", earned: (s) => s.xp >= leagueMinXp("efsane"), goal: { stat: "xp", target: leagueMinXp("efsane") } },
 ];
 
 /** Odanın maç sonunda ilettiği tek oyuncu özeti. `total` = eligible olduğu tur. */
@@ -153,6 +171,8 @@ export interface MatchFinishedEntry {
   won: boolean;
   /** Maç içi kategori bazlı doğru sayıları — ustalık (§6.4) tablosuna yazar. */
   perCategory?: { category: string; correct: number }[];
+  /** Maçın modu — mod-rozetleri (tekeTek, kahin…) buna bakar. */
+  gameMode?: string;
 }
 
 /** Tek maçın XP'si — saf fonksiyon, testlerde de doğrulanır. AFK (total=0) kazanamaz. */
@@ -193,6 +213,10 @@ export interface XpStore {
   /** Unvan seç: yalnız kazanılmış rozet geçerli; null seçimi kaldırır.
    *  Geçersiz/rozet kazanılmamışsa false döner. */
   setTitle(userId: string, title: BadgeKey | null): boolean;
+  /** Kalıcı dosyanın tutarlı kopyasını `dest`'e üretir (VACUUM INTO — çevrimiçi
+   *  yedek; §7.18). `fullMaintenance` ile ayrıca WAL checkpoint(TRUNCATE) ve
+   *  ana dosyaya VACUUM uygulanır (haftalık bakım). */
+  backup(dest: string, fullMaintenance?: boolean): void;
   close(): void;
 }
 
@@ -303,6 +327,9 @@ export function createXpStore(file: string): XpStore {
   const masteryRows = db.prepare(
     "SELECT category FROM category_correct WHERE user_id = ? AND correct >= ? ORDER BY category",
   );
+  const bestCategoryRow = db.prepare(
+    "SELECT MAX(correct) AS best FROM category_correct WHERE user_id = ?",
+  );
   const upsertQuestionStats = db.prepare(`INSERT INTO question_stats (question_id, asked, correct)
     VALUES (@questionId, @asked, @correct)
     ON CONFLICT(question_id) DO UPDATE SET asked = asked + @asked, correct = correct + @correct`);
@@ -347,6 +374,21 @@ export function createXpStore(file: string): XpStore {
     const rankRow = seasonXp > 0
       ? (seasonRank.get(season, userId, season) as { rank: number }).rank
       : null;
+    const badges = badgesFor(userId);
+    const owned = new Set(badges);
+    const stats: Record<string, number> = {
+      xp: row.xp, matches: row.matches, wins: row.wins,
+      correctTotal: row.correct_total, bestStreak: row.best_streak,
+      streakDays: row.streak_days,
+      bestCategory: (bestCategoryRow.get(userId) as { best: number | null }).best ?? 0,
+    };
+    const badgeProgress: BadgeProgress[] = BADGE_DEFS
+      .filter((def) => def.goal && !owned.has(def.key))
+      .map((def) => {
+        const goal = def.goal!;
+        return { key: def.key, current: Math.min(stats[goal.stat] ?? 0, goal.target), target: goal.target };
+      })
+      .sort((a, b) => b.current / b.target - a.current / a.target);
     return {
       xp: row.xp,
       level,
@@ -357,8 +399,9 @@ export function createXpStore(file: string): XpStore {
       seasonXp,
       seasonRank: rankRow,
       streakDays: row.streak_days,
-      badges: badgesFor(userId),
+      badges,
       categoryMastery: categoryMastery(userId),
+      badgeProgress,
     };
   }
 
@@ -455,18 +498,22 @@ export function createXpStore(file: string): XpStore {
       const oldLeague = leagueFor(oldXp);
       const xp = oldXp + amount;
       const now = new Date();
-      upsertPlayer.run({
-        userId, name, avatarUrl, xp,
-        matches: row?.matches ?? 0,
-        wins: row?.wins ?? 0,
-        correctTotal: row?.correct_total ?? 0,
-        bestStreak: row?.best_streak ?? 0,
-        streakDays: row?.streak_days ?? 0,
-        lastDay: row?.last_day ?? null,
-        updatedAt: now.getTime(),
-      });
-      upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
-      upsertWeekly.run({ userId, week: weekKey(now), xp: amount, name });
+      // Üç tablo tek transaction'da: yarıda kesilirse oyuncu XP'siyle sezon/
+      // haftalık toplamları birbirinden ayrılmaz (grantMatch'in writeAll kalıbı).
+      db.transaction(() => {
+        upsertPlayer.run({
+          userId, name, avatarUrl, xp,
+          matches: row?.matches ?? 0,
+          wins: row?.wins ?? 0,
+          correctTotal: row?.correct_total ?? 0,
+          bestStreak: row?.best_streak ?? 0,
+          streakDays: row?.streak_days ?? 0,
+          lastDay: row?.last_day ?? null,
+          updatedAt: now.getTime(),
+        });
+        upsertSeason.run({ userId, season: seasonKey(now), xp: amount, name });
+        upsertWeekly.run({ userId, week: weekKey(now), xp: amount, name });
+      })();
       const level = levelFor(xp);
       const league = leagueFor(xp);
       return { gained: amount, xp, level, league, leveledUp: level > oldLevel, leagueChanged: league !== oldLeague };
@@ -515,6 +562,18 @@ export function createXpStore(file: string): XpStore {
           league: leagueFor(row.totalXp),
         })),
       };
+    },
+    backup(dest, fullMaintenance = false) {
+      if (fullMaintenance) {
+        db.pragma("wal_checkpoint(TRUNCATE)");
+        db.exec("VACUUM");
+      }
+      // VACUUM INTO var olan dosyaya yazamaz — önce geçici dosyaya üret,
+      // sonra atomik rename: hata olursa önceki sağlam kopya korunur.
+      const tmp = `${dest}.tmp`;
+      rmSync(tmp, { force: true });
+      db.exec(`VACUUM INTO '${tmp.replace(/'/g, "''")}'`);
+      renameSync(tmp, dest);
     },
     close() { db.close(); },
   };

@@ -81,8 +81,9 @@ test("Herkes yanarsa tur puansız biter", () => {
   room.buzz("b");
   room.answer("b", wrong);
   assert.equal(room.phase, "reveal");
-  assert.equal(inner.players.get("a")!.score, -GAME.ZIL_PENALTY, "yanlış basan −puan");
-  assert.equal(inner.players.get("b")!.score, -GAME.ZIL_PENALTY);
+  // Cezanın net etkisi −ZIL_PENALTY ama skor 0'ın altına inmez (clamp).
+  assert.equal(inner.players.get("a")!.score, 0, "yanlış basan skor tabana indi (negatif yok)");
+  assert.equal(inner.players.get("b")!.score, 0);
 });
 
 test("Zil yokken cevaplar yutulur", () => {
@@ -127,6 +128,20 @@ test("Lobi dışı fazlarda basmak yutulur", () => {
   assert.equal(internals(room).buzzWinnerId, null);
 });
 
+test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B48)", () => {
+  const room = zilRoom("z-passive", ["a", "b", "c"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.answer("a", (inner.questions[0].correctIndex + 1) % 4); // a: yanlış deneme → yanar
+  room.buzz("b");
+  room.answer("b", inner.questions[0].correctIndex);           // b: doğru → kazanır
+  assert.equal(room.phase, "reveal");
+  const gains = room.stateFor("c").reveal!.gains;
+  assert.equal(gains["a"], -GAME.ZIL_PENALTY, "yanlış basan ceza");
+  assert.ok(gains["b"] > 0, "kazanan değer aldı");
+  assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
+});
+
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

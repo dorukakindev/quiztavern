@@ -120,7 +120,7 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
     captureClientLog(sdk, `[activity] init failed: ${describeError(error)}`)
     // Constructor pencereye message listener ekler; timeout/hata sonrası bırakılırsa
     // her Retry yeni bir listener biriktirir.
-    closeSdk(sdk, 'QuizTavern activity initialization failed')
+    closeSdk(sdk, 'Triviara activity initialization failed')
     throw error
   }
 }
@@ -237,13 +237,22 @@ export function useDiscordActivity() {
   const [attempt, setAttempt] = useState(0)
   const sdkRef = useRef<DiscordSDK | null>(null)
   const retry = useCallback(() => {
-    if (sdkRef.current) closeSdk(sdkRef.current, 'QuizTavern activity session refresh')
+    if (sdkRef.current) closeSdk(sdkRef.current, 'Triviara activity session refresh')
     sdkRef.current = null
+    // Uçuştaki authorize() SDK tarafında hâlâ sürebilir (kullanıcı onay
+    // ekranında takılı kalabilir — timeout'u yok). sessionPromise'i hemen
+    // null'layıp yeni attempt başlatmak ikinci bir authorize() yarıştırır
+    // ve Discord "Already authing (4002)" fırlatır. Yeni attempt önceki
+    // sözün settle'ını bekler; başarı/başarısız fark etmez.
+    const prior = sessionPromise
     sessionPromise = null
     setIdentity((current) => ({ ...current, sessionToken: undefined, user: null }))
     setError(null)
-    setStatus('booting')
-    setAttempt((value) => value + 1)
+    const start = prior ? prior.then(() => undefined, () => undefined) : Promise.resolve()
+    void start.then(() => {
+      setStatus('booting')
+      setAttempt((value) => value + 1)
+    })
   }, [])
 
   useEffect(() => {

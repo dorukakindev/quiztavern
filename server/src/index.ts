@@ -24,7 +24,7 @@ import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
 import { createReportsStore } from "./reports";
 import { createDailyStore, dailyBoard, dailyDayNumber } from "./daily";
-import { setQuestionCalibration } from "./questions";
+import { setQuestionCalibration, setSuppressedQuestions } from "./questions";
 import { createXpStore } from "./xp";
 import { addPack, deletePack, getPack, listPacks, parseCsvQuestions, parseJsonQuestions, updatePack, validatePackQuestions, type StoredPack } from "./packs";
 
@@ -42,10 +42,25 @@ const reports = createReportsStore(process.env.REPORTS_DB_PATH ?? resolve(proces
 // Günlük meydan okuma sonuçları ayrı tabloda — "günde bir kez" kapısı bunu okur.
 const dailyStore = createDailyStore(process.env.DAILY_DB_PATH ?? resolve(process.cwd(), "data", "daily.db"));
 // Kalıcı ilerleme (XP/seviye/lig/sezon/seri) tek dosyada; XP_DB_PATH ile ezilebilir.
-const xpStore = createXpStore(process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db"));
+const xpDbPath = process.env.XP_DB_PATH ?? resolve(process.cwd(), "data", "xp.db");
+const xpStore = createXpStore(xpDbPath);
+// xp.db günlük yedekleme + haftalık bakım (§7.18): tek dosyalık SQLite tek
+// hata noktası — seviye/lig/sezon/rozet hepsi içinde. Kopya xp-backup.db'ye
+// VACUUM INTO ile tutarlı yazılır; Pazar günleri ana dosyaya da bakım yapılır.
+const xpBackupPath = resolve(dirname(xpDbPath), "xp-backup.db");
+const runXpBackup = () => {
+  try { xpStore.backup(xpBackupPath, new Date().getUTCDay() === 0); }
+  catch (backupError) { log.warn({ err: backupError }, "xp.db yedekleme başarısız"); }
+};
+const xpBackupTimer = setInterval(runXpBackup, 24 * 60 * 60 * 1000);
+xpBackupTimer.unref();
+setTimeout(runXpBackup, 60_000).unref();
 // §6.3 zorluk kalibrasyonu: soru istatistiklerinden kalibre etiket haritası
 // (her maç sonunda Room da tazeler — bkz. rooms.ts finish()).
 setQuestionCalibration(xpStore.questionStats());
+// Rapor döngüsü: ≥3 farklı oyuncunun bildirdiği sorular havuzdan düşer;
+// açılışta mevcut raporlar, her yeni raporda yeniden uygulanır.
+setSuppressedQuestions(reports.suppressedQuestionIds());
 const io = new Server(httpServer, {
   // Discord URL Mapping, public `/api` prefixini origin'e iletirken soyar.
   // Bu yüzden origin standart Socket.IO yolunu dinlemeli; istemci Discord
@@ -81,10 +96,22 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 const QT_ADMIN_TOKEN = process.env.QT_ADMIN_TOKEN ?? "";
 const esc = (v: string) => v.replace(/[&<>"']/g, (c) => `&#${c.codePointAt(0)};`);
 
-app.get(["/admin/reports", "/api/admin/reports"], (req, res) => {
+/** Sabit-zamanlı token kıyası: `===` kısa devre yapar ve süre farkıyla
+ *  token'ın doğru önek uzunluğunu sızdırır. */
+const tokenEqual = (a: string, b: string) => {
+  const ba = Buffer.from(a);
+  const bb = Buffer.from(b);
+  return ba.length === bb.length && crypto.timingSafeEqual(ba, bb);
+};
+
+app.get(["/admin/reports", "/api/admin/reports"],
+  createRateLimitMiddleware({ limit: 10, windowMs: 60_000 }),
+  (req, res) => {
   if (!QT_ADMIN_TOKEN) return res.status(503).json({ error: "QT_ADMIN_TOKEN ayarlanmadı." });
   const auth = req.headers.authorization ?? "";
-  if (auth !== `Bearer ${QT_ADMIN_TOKEN}`) return res.status(401).json({ error: "Yetkisiz." });
+  if (!auth.startsWith("Bearer ") || !tokenEqual(auth.slice(7), QT_ADMIN_TOKEN)) {
+    return res.status(401).json({ error: "Yetkisiz." });
+  }
   const rows = reports.list();
   if (!req.accepts("html")) return res.json({ reports: rows });
   const trs = rows.map((r) => `<tr><td>${r.id}</td><td>${new Date(r.reportedAt).toISOString()}</td><td>${esc(r.category)}</td><td>${esc(r.questionText)}</td><td>${esc(r.note)}</td><td>${esc(r.userName)}</td></tr>`).join("");
@@ -117,7 +144,7 @@ function packRequestUser(req: import("express").Request): SessionUser | null {
   const auth = req.headers.authorization ?? "";
   if (auth.startsWith("Bearer ")) {
     const token = auth.slice("Bearer ".length);
-    if (QT_ADMIN_TOKEN && token === QT_ADMIN_TOKEN) {
+    if (QT_ADMIN_TOKEN && tokenEqual(token, QT_ADMIN_TOKEN)) {
       return { id: "admin", name: "admin", avatarUrl: null };
     }
     const session = verifySession(token);
@@ -212,13 +239,20 @@ app.post(
     const body = req.body as { type?: unknown; message?: unknown; stack?: unknown; url?: unknown } | undefined;
     const clip = (v: unknown, max: number) =>
       typeof v === "string" ? v.slice(0, max) : undefined;
+    // Raporlar log'a yazıyor — URL query'sinde (Discord proxy parametreleri,
+    // kanal/sunucu id'leri) veya stack'te token benzeri diziler sızmasın.
+    const redact = (v: unknown, max: number) => {
+      const s = clip(v, max);
+      return s === undefined ? undefined
+        : s.replace(/[?&][^\s?&]*=[^\s?&]+/g, "[q]").replace(/[A-Za-z0-9_-]{24,}/g, "[redacted]");
+    };
     log.warn(
       {
         ip: clientAddressKey(req.headers, req.socket.remoteAddress),
         type: clip(body?.type, 40),
-        message: clip(body?.message, 500),
-        stack: clip(body?.stack, 2000),
-        url: clip(body?.url, 300),
+        message: redact(body?.message, 500),
+        stack: redact(body?.stack, 2000),
+        url: redact(body?.url, 300),
       },
       "istemci hatası raporlandı",
     );
@@ -316,6 +350,23 @@ if (IS_PRODUCTION) {
   });
 }
 
+// API benzeri bilinmeyen yollar gerçek JSON 404 döner (SPA fallback'i dev'de
+// de olmadığından bunu üretim bloğunun dışında tutarız).
+app.use((req, res) => {
+  if (res.headersSent) return;
+  res.status(404).json({ error: "Bulunamadı." });
+});
+
+// Son katman: bir route fırlatırsa Express'in HTML hata sayfası (stack izi
+// sızdırır) yerine tek biçimli JSON döner.
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (res.headersSent) return;
+  log.error({ err }, "işlenmemiş istek hatası");
+  const status = err instanceof Error && "status" in err && typeof err.status === "number" && err.status >= 400 && err.status < 600
+    ? err.status : 500;
+  res.status(status).json({ error: status === 500 ? "Sunucu hatası." : "İstek hatası." });
+});
+
 function getRoom(roomId: string) {
   const id = normalizeRoomId(roomId);
   let room = rooms.get(id);
@@ -333,6 +384,10 @@ function getRoom(roomId: string) {
     room.setEmptiedHandler(() => {
       room?.dispose();
       rooms.delete(id);
+    });
+    room.setToastHandler((playerId, key) => {
+      const socketId = room!.recipients().find((r) => r.id === playerId)?.socketId;
+      if (socketId) toast(socketId, key);
     });
     rooms.set(id, room);
   }
@@ -713,6 +768,7 @@ io.on("connection", (socket) => {
         category: question.category,
         note,
       });
+      if (!duplicate) setSuppressedQuestions(reports.suppressedQuestionIds());
       toast(socket.id, duplicate ? "report.duplicate" : "report.sent");
     } catch (error) {
       log.error({ err: error }, "soru bildirimi yazılamadı");
@@ -746,6 +802,7 @@ let shuttingDown = false;
 function shutdown(signal: NodeJS.Signals) {
   if (shuttingDown) return;
   shuttingDown = true;
+  clearInterval(xpBackupTimer);
   log.info({ signal }, "kapatma sinyali alındı; bağlantılar kontrollü kapatılıyor");
 
   for (const room of rooms.values()) room.dispose();
@@ -756,6 +813,11 @@ function shutdown(signal: NodeJS.Signals) {
     if (finished) return;
     finished = true;
     clearTimeout(forceTimer);
+    // SQLite bağlantılarını kapat: WAL checkpoint'i ve buffer flush'ı ancak
+    // düzgün close() ile garanti edilir — kapatılmazsa son yazılar kaybolabilir.
+    for (const store of [xpStore, dailyStore, reports]) {
+      try { store.close(); } catch (closeError) { log.warn({ err: closeError }, "store kapatma hatası"); }
+    }
     if (error) {
       log.error({ err: error }, "kapanış hatası");
       process.exitCode = 1;

@@ -1,4 +1,4 @@
-# QuizTavern — Fly.io'da kalıcı barındırma
+# Triviara — Fly.io'da kalıcı barındırma
 
 Oyun tek Docker imajında çalışır: Express + Socket.IO sunucusu, production istemci
 build'ini (`client/dist`) aynı porttan servis eder. SQLite dosyaları (XP, günlük

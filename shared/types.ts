@@ -68,6 +68,9 @@ export interface PublicPlayer {
   /** Tavern kartı (joker) sayısı. Maç başında 1, her 3'lü seride +1.
    *  Klasik/Takım dışındaki modlarda 0 kalır. */
   cards?: number;
+  /** Bu tur joker oynadı — kart TÜRÜ sızmasın diye yalnız boolean.
+   *  İstemci koltukta küçük deste ikonu gösterir. */
+  cardPlayed?: boolean;
 }
 
 /** Tavern kartı (joker) türleri — Klasik/Takım maçlarında tur başına bir adet. */
@@ -102,8 +105,18 @@ export const BADGE_KEYS = [
   "gunluk3", "gunluk7",
   "podyum", "tamIsabet",
   "ligKalfa", "ligUsta", "ligEfsane",
+  "tekeTek", "zilUstasi", "kahin", "kronolog", "panoFatihi", "sozcu", "blitzci",
 ] as const;
 export type BadgeKey = (typeof BADGE_KEYS)[number];
+
+/** Henüz kazanılmamış, sayısal hedefi olan rozet — lobide kilitli rozet
+ *  olarak `current/target` çubuğuyla gösterilir. Olay rozetleri (tek maçta
+ *  koşulanlar: podyum, mod galibiyetleri, tamİsabet) buraya girmez. */
+export interface BadgeProgress {
+  key: BadgeKey;
+  current: number;
+  target: number;
+}
 
 /** İzleyen oyuncunun kendi ilerleme özeti — lobide XP bar'ı, podyumda
  *  kazanım satırı ve sezon sırası bununla çizilir. */
@@ -123,6 +136,9 @@ export interface ProgressSnapshot extends ProgressBadge {
   badges: BadgeKey[];
   /** Ustalık kazanılan kategori adları (§6.4): kategori başına 50+ doğru. */
   categoryMastery: string[];
+  /** Kilitli rozetlerin ilerlemesi — orana göre azalan sırada; hedefsiz
+   *  olay rozetleri listeye girmez. */
+  badgeProgress: BadgeProgress[];
 }
 
 /** Maç bitince bir oyuncuya yazılan kazanım — podyumda "+X XP" animasyonu. */
@@ -423,6 +439,7 @@ export type ToastKey =
   | "err.teamFailed"
   | "err.countHostOnly"
   | "err.countInvalid"
+  | "err.countMode"
   | "err.difficultyHostOnly"
   | "err.difficultyInvalid"
   | "err.themeHostOnly"
@@ -453,6 +470,7 @@ export type ToastKey =
   | "err.cardUsed"
   | "err.cardEmpty"
   | "err.invalidInput"
+  | "err.lateAnswer"
   | "err.predictPhase"
   | "err.predictFailed"
   | "err.kicked"
@@ -461,6 +479,7 @@ export type ToastKey =
   | "err.title"
   | "err.dailyDone"
   | "info.kicked"
+  | "info.cardEarned"
   | "report.sent"
   | "report.duplicate"
   | "report.failed"
@@ -555,6 +574,10 @@ export const QUESTION_COUNTS = [5, 10, 15] as const;
 /** Çember'in seçilebilir tur sayıları (klasik setle kesişir ama 20 burada). */
 export const CIRCLE_COUNTS = [10, 15, 20] as const;
 export type QuestionCount = (typeof QUESTION_COUNTS)[number] | (typeof CIRCLE_COUNTS)[number];
+/** Soru sayısı ayarının anlam taşımadığı modlar — tur sayısı mod sözleşmesi ya da
+ *  havuz boyutuyla sabittir: duel hep 7 soru, word/blitz/board sayıyı yok sayar.
+ *  Lobi çipi bu modlarda gizlenir; sunucu da isteği reddeder. */
+export const COUNTLESS_MODES: readonly GameMode[] = ["duel", "word", "blitz", "board"];
 /** §6.3 masa temaları: host'un ligi tema kapısını açar — tema tüm masaya uygulanır. */
 export const TABLE_THEMES = [
   { key: "tavern", league: "acemi" },

@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import Database from "better-sqlite3";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Room } from "../src/rooms";
 import {
   createXpStore,
@@ -298,6 +302,51 @@ test("unvan: odaya yayınlanır, geçersiz seçim err.title fırlatır", () => {
       assert.equal(plain.stateFor("solo", true).players[0].title, "keskin");
     } finally { stop(plain); }
   } finally { stop(room); store.close(); }
+});
+
+test("badgeProgress: hedefli rozetler n/t taşır, kazanılan ve olay rozetleri düşer", () => {
+  const store = createXpStore(":memory:");
+  try {
+    store.recordMatch([entry({ correct: 3, total: 5, bestStreak: 3, placement: 2 })]);
+    const snap = store.snapshot("u1")!;
+    const byKey = new Map(snap.badgeProgress.map((p) => [p.key, p]));
+    assert.equal(byKey.get("onMac")!.current, 1);
+    assert.equal(byKey.get("onMac")!.target, 10);
+    assert.equal(byKey.get("seriAvcisi")!.current, 3);
+    assert.equal(byKey.get("seriAvcisi")!.target, 5);
+    assert.equal(byKey.get("keskin")!.current, 3);
+    // Olay rozetleri (tek maçta koşulanlar) hedefsizdir, listede yok.
+    assert.ok(!byKey.has("podyum"));
+    assert.ok(!byKey.has("tekeTek"));
+    // Kazanılan hedef rozeti artık listede yok (ilkMac bu maçta alındı).
+    assert.ok(!byKey.has("ilkMac"));
+    // Sıralama orana göre azalan: en yakın hedef önde.
+    const ratios = snap.badgeProgress.map((p) => p.current / p.target);
+    assert.ok(ratios.every((r, i) => i === 0 || ratios[i - 1] >= r));
+  } finally { store.close(); }
+});
+
+test("backup: VACUUM INTO tutarlı kopya üretir; haftalık bakım dosyayı tutar", () => {
+  const dir = mkdtempSync(join(tmpdir(), "qt-xp-backup-"));
+  try {
+    const store = createXpStore(join(dir, "xp.db"));
+    try {
+      store.recordMatch([entry({ correct: 3, total: 5, bestStreak: 2, placement: 1, won: true })]);
+      const dest = join(dir, "xp-backup.db");
+      store.backup(dest);
+      assert.ok(existsSync(dest));
+      const copy = new Database(dest, { readonly: true });
+      try {
+        const row = copy.prepare("SELECT user_id, xp, wins FROM players WHERE user_id = 'u1'").get() as
+          { user_id: string; xp: number; wins: number };
+        assert.equal(row.user_id, "u1");
+        assert.equal(row.wins, 1);
+        assert.ok(row.xp > 0);
+      } finally { copy.close(); }
+      // Haftalık bakım yolu: checkpoint+VACUUM sonra kopya yine tutarlı.
+      store.backup(dest, true);
+    } finally { store.close(); }
+  } finally { rmSync(dir, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 }); }
 });
 
 console.log(`\n[xp] sonuç: ${passed} geçti, 0 kaldı`);

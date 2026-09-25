@@ -145,12 +145,12 @@ console.log("SDK uyumluluk — yerleşim / thermal / invite / log\n");
   const calls: string[] = [];
   sdk._updateCommandMocks({
     setActivity: async (args: { activity: { details?: string; state?: string } }) => {
-      calls.push(`${args.activity.details}/${args.activity.state}`); return { type: 0, name: "QuizTavern" };
+      calls.push(`${args.activity.details}/${args.activity.state}`); return { type: 0, name: "Triviara" };
     },
   });
   updatePresence(sdk as never, "Masada bekliyor");
   await new Promise((r) => setTimeout(r, 0));
-  assert(calls[0] === "QuizTavern/Masada bekliyor", `presence taşındı (${calls[0]})`);
+  assert(calls[0] === "Triviara/Masada bekliyor", `presence taşındı (${calls[0]})`);
   sdk._updateCommandMocks({ setActivity: async () => { throw new Error("INVALID_COMMAND") } });
   updatePresence(sdk as never, "yine de sessiz");
   await new Promise((r) => setTimeout(r, 0));

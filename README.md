@@ -1,4 +1,4 @@
-# QuizTavern
+# Triviara
 
 Discord içinde çalışan, çok oyunculu, sunucu-otoriter bir quiz oyunu. İstemci bir
 [Discord Embedded Activity](https://discord.com/developers/docs/activities/overview)

@@ -145,6 +145,13 @@ test("Maç ortasında oturan da izleyici kalır", () => {
   assert.ok(inner.players.get("e")!.eligibleFrom >= inner.roundLimit, "geç katılan izleyici");
 });
 
+test("Countdown'da oturan da izleyici kalır — 3. düellocu çıkmaz", () => {
+  const room = duelRoom("d-cd", ["a", "b"]);
+  room.start("a", "duel"); // faz 'countdown'
+  const late = room.addPlayer({ ...user("cd"), isBot: false });
+  assert.ok(late.eligibleFrom >= internals(room).roundLimit, "countdown katılımcısı bu maçı izler");
+});
+
 test("İzleyici düellocu tahmin ettiğinde predictOpen açık görünür", () => {
   const room = duelRoom("d-open", ["a", "b", "c"]);
   room.start("a", "duel");
@@ -153,5 +160,5 @@ test("İzleyici düellocu tahmin ettiğinde predictOpen açık görünür", () =
 });
 
 console.log(`duel-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

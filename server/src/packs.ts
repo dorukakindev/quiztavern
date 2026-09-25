@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { DIFFICULTIES, type Question } from "./questions";
+import { DIFFICULTIES, shuffleChoices, type Question } from "./questions";
 
 export interface QuestionPackMeta {
   id: string;
@@ -16,7 +15,9 @@ export interface StoredPack extends QuestionPackMeta {
   questions: Question[];
 }
 
-const PACKS_DIR = fileURLToPath(new URL("../data/packs", import.meta.url));
+// cwd tabanlı: geliştirmede server/, üretimde WORKDIR(/app/server) — ikisinde de
+// <cwd>/data/packs; volume'a denk gelir, dist içine yazıp kaybolmaz (PACKS_DIR ezilebilir).
+const PACKS_DIR = process.env.PACKS_DIR ? path.resolve(process.env.PACKS_DIR) : path.resolve(process.cwd(), "data", "packs");
 const packs = new Map<string, StoredPack>();
 
 export interface PackValidation {
@@ -255,5 +256,7 @@ function shuffle<T>(items: T[]): T[] {
 export function samplePackQuestions(n: number, questions: Question[], exclude: Set<string>): Question[] {
   const fresh = shuffle(questions.filter((q) => !exclude.has(q.id)));
   const used = shuffle(questions.filter((q) => exclude.has(q.id)));
-  return [...fresh, ...used].slice(0, n);
+  // Şık sırası da karışır — paket yazarının doğruyu hep aynı index'e
+  // koyması oyuna pozisyon ipucu olarak sızmasın.
+  return [...fresh, ...used].slice(0, n).map(shuffleChoices);
 }

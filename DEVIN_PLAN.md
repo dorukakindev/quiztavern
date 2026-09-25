@@ -1,4 +1,4 @@
-# QuizTavern — İnceleme ve Devin Uygulama Planı
+# Triviara — İnceleme ve Devin Uygulama Planı
 
 > Bu dosya doğrudan Devin'e verilmek üzere yazıldı. En alttaki "Devin'e yapıştırılacak prompt" bölümünü görev başlangıcına koy, dosyanın tamamını da repo köküne `DEVIN_PLAN.md` olarak ekle.
 
@@ -102,7 +102,7 @@ XP, haftalık lig, görevler, seri (streak) ve sıralama sunucu yeniden başlay�
 ## FAZ 4 — Eklenmesi en değerli özellikler (🟢, sırayla)
 
 1. **"Bu soru hatalı" bildirimi** — reveal ekranında küçük bayrak butonu; sunucu `question_reports` tablosuna yazar. İçerik kalitesini oyuncular denetler. (Faz 1.3'teki hataların oyunda fark edilmesini sağlar.)
-2. **Günlük meydan okuma** — herkes için aynı 5 soru (tarih tohumlu seçim), günde bir kez oynanır, Wordle tarzı emoji sonuç metni (`🟩🟩🟥🟩🟩 QuizTavern #42`) kopyalanabilir. En güçlü geri dönme sebebi.
+2. **Günlük meydan okuma** — herkes için aynı 5 soru (tarih tohumlu seçim), günde bir kez oynanır, Wordle tarzı emoji sonuç metni (`🟩🟩🟥🟩🟩 Triviara #42`) kopyalanabilir. En güçlü geri dönme sebebi.
 3. **Maç sonu Discord paylaşımı** — podyumdan sonra "Kanala paylaş" butonu; Embedded App SDK ile sonuç kartı / davet. Yeni oyuncu getiren döngü.
 4. **Sunucuya özel soru paketi** — sunucu yöneticisinin JSON/CSV ile kendi sorularını yüklemesi (Faz 1.4 doğrulayıcısından geçer). Topluluklar için en ayırt edici özellik.
 5. **İzleyici modu** — maç başladıktan sonra gelenler koltuk almadan izler, bir sonraki maça otomatik katılır.

@@ -38,6 +38,8 @@ const fakeStore = {
   seasonBoard: () => ({ season: "x", rows: [] }),
   weeklyBoard: () => ({ season: "x", rows: [] }),
   recordMatch: () => new Map<string, XpGain>(),
+  recordQuestionStats: () => {},
+  questionStats: () => [],
   bonusXp(entry: { userId: string; amount: number }) {
     calls.push({ userId: entry.userId, amount: entry.amount });
     return { gained: entry.amount, xp: entry.amount, level: 1, league: "acemi" as const, leveledUp: false, leagueChanged: false };

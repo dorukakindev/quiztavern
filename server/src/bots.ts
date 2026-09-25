@@ -13,9 +13,21 @@ export const BOT_NAMES = [
 ];
 
 /**
+ * Oyuncu-başı deterministik beceri: her botun isabet oranı id'sinden türetilir,
+ * böylece aynı masadaki botlar farklı güçte oynar ve bir bot maç boyunca
+ * tutarlı kalır. Ortalama ~%45 (klasik taban); modlar üstüne sabit ekler.
+ */
+export function botSkill(id: string): number {
+  let h = 0;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) & 0xffff;
+  return 0.3 + (h % 31) / 100; // 0.30–0.60
+}
+
+/**
  * Soru başladığında botların cevaplarını planlar. Cevaplar rastgele gecikmeli
- * gelir; %45 doğru olasılığı skorları ilginç tutar. Soru erken biterse
- * room.answer() içindeki faz koruması geç kalan bot cevabını zaten reddeder.
+ * gelir; botun becerisine göre doğruluk olasılığı skorları ilginç tutar. Soru
+ * erken biterse room.answer() içindeki faz koruması geç kalan bot cevabını
+ * zaten reddeder.
  */
 /**
  * Cevap gecikmesini modun GERÇEK süresine göre üretir: son %20'lik dilime hiç
@@ -38,7 +50,7 @@ export function scheduleBotAnswers(room: Room): void {
       const roundAtSchedule = room.qIndex;
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
-        room.wordAnswer(p.id, Math.random() < 0.55 ? wp.answer : "bilmiyorum");
+        room.wordAnswer(p.id, Math.random() < botSkill(p.id) + 0.1 ? wp.answer : "bilmiyorum");
       }, delay);
     }
     return;
@@ -52,7 +64,7 @@ export function scheduleBotAnswers(room: Room): void {
       const roundAtSchedule = room.qIndex;
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule || room.gameMode !== "circle") return;
-        room.answerCircle(p.id, Math.random() < 0.55 ? prompt.answer : "bilmiyorum");
+        room.answerCircle(p.id, Math.random() < botSkill(p.id) + 0.1 ? prompt.answer : "bilmiyorum");
       }, delay);
     }
     return;
@@ -62,14 +74,14 @@ export function scheduleBotAnswers(room: Room): void {
   if (room.gameMode === "zil") return;
   if (room.gameMode === "blitz") {
     // Kendi hızında ilerleyen akış: bot zincirleme cevaplar (~1.2–3 sn arayla),
-    // %65 doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
+    // becerisine göre doğru bilgiyle. Zincir pencere kapanınca doğal olarak ölür.
     for (const p of room.players.values()) {
       if (!p.isBot || p.eligibleFrom > room.qIndex) continue;
       const step = () => {
         if (room.phase !== "question" || Date.now() >= room.questionDeadline) return;
         const claim = (p as unknown as { blitzClaim: { truth: boolean } | null }).blitzClaim;
         if (!claim) return;
-        const knows = Math.random() < 0.65;
+        const knows = Math.random() < botSkill(p.id) + 0.2;
         room.answer(p.id, knows ? (claim.truth ? 0 : 1) : (claim.truth ? 1 : 0));
         room.scheduleBotTask(step, 1_200 + Math.random() * 1_800);
       };
@@ -125,12 +137,40 @@ export function scheduleBotAnswers(room: Room): void {
     if (room.gameMode === "elim" && p.lives <= 0) continue;
     const delay = botDelay(room.questionDuration());
     const roundAtSchedule = room.qIndex;
+    // Joker kartı (Klasik/Takım): elinde kart olan bot bazen cevabından hemen
+    // önce oynar. Yarış durumları (kart harcanmış, hedef cevaplamış) yutulur.
+    if ((room.gameMode === "classic" || room.gameMode === "team") && p.cards > 0 && Math.random() < 0.35) {
+      room.scheduleBotTask(() => {
+        if (room.qIndex !== roundAtSchedule) return;
+        try {
+          const roll = Math.random();
+          if (roll < 0.45) {
+            room.useCard(p.id, "fifty");
+          } else if (roll < 0.75) {
+            room.useCard(p.id, "double");
+          } else if (roll < 0.9) {
+            room.useCard(p.id, "shield");
+          } else {
+            const targets = [...room.players.values()].filter(
+              (t) => t.id !== p.id && t.connected && t.eligibleFrom <= room.qIndex && t.choice === null,
+            );
+            if (targets.length === 0) return;
+            room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);
+          }
+        } catch {
+          // Bot yarış durumunu yoksayar.
+        }
+      }, Math.max(300, delay - 400));
+    }
     room.scheduleBotTask(() => {
       if (room.qIndex !== roundAtSchedule) return; // bayat zamanlayıcı
-      const correct = Math.random() < 0.45;
+      const correct = Math.random() < botSkill(p.id);
       let choice = q.correctIndex;
       if (!correct) {
-        const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex);
+        // %50 kullandıysa silinen şıkları seçemez.
+        const removed = new Set(p.fiftyRemoved ?? []);
+        const wrong = [0, 1, 2, 3].filter((i) => i !== q.correctIndex && !removed.has(i));
+        if (wrong.length === 0) return;
         choice = wrong[Math.floor(Math.random() * wrong.length)];
       }
       room.answer(p.id, choice);

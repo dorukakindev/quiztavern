@@ -1,6 +1,8 @@
 import { strict as assert } from 'node:assert'
 import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
+import { GAME } from '../src/config'
+import { effectiveDifficulty } from '../src/questions'
 
 let passed = 0
 const test = (name: string, run: () => void) => {
@@ -55,18 +57,20 @@ test('Ayar değişince hazırlar sıfırlanır', () => {
   assert.equal(r.stateFor('a', true).questionTimeMs, 20_000)
 })
 
-test('Hız bonusu kapalıyken doğru cevap yalnız taban puan verir', () => {
+test('Hız bonusu kapalıyken doğru cevapta hız bileşeni eklenmez', () => {
   const r = lobby('s-flat')
   r.setTableFlag('a', 'speedBonus', false)
   r.setReady('a', true); r.setReady('b', true)
   r.start('a', 'classic')
   stop(r)
   begin(r)
-  r.answer('a', r.currentQuestion()!.correctIndex)
+  const q = r.currentQuestion()!
+  r.answer('a', q.correctIndex)
   const inner = internals(r)
   inner.reveal()
-  // Taban 700; hız bonusu açık olsaydı erken cevap ~1000 olurdu.
-  assert.equal(inner.players.get('a')!.score, 700, `skor 700 olmalı, ${inner.players.get('a')!.score}`)
+  // Hız bonusu kapalıyken kazanç = taban + zorluk bonusu (açık olsaydı ~+300 hız bileşeni de gelirdi).
+  const expected = GAME.BASE_POINTS + GAME.DIFF_BONUS[effectiveDifficulty(q)]
+  assert.equal(inner.players.get('a')!.score, expected, `skor ${expected} olmalı, ${inner.players.get('a')!.score}`)
 })
 
 test('Hız bonusu açıkken erken doğru cevap taban üstü verir', () => {
@@ -94,4 +98,22 @@ test('Non-boolean bayrak reddedilir', () => {
   assert.throws(() => r.setTableFlag('a', 'imageOnly', 'yes'), (e: unknown) => e instanceof GameError && e.key === 'err.settingInvalid')
 })
 
-console.log(`settings-test: ${passed}/8 OK`)
+test('Sayısız modlarda soru sayısı reddedilir (duel/word/blitz/board)', () => {
+  for (const mode of ['duel', 'word', 'blitz', 'board'] as const) {
+    const r = lobby(`s-count-${mode}`)
+    r.setGameMode('a', mode)
+    assert.throws(() => r.setQuestionCount('a', 10), (e: unknown) => e instanceof GameError && e.key === 'err.countMode')
+  }
+})
+
+test('Sayı destekli modda çalışmaya devam eder', () => {
+  const r = lobby('s-count-ok')
+  r.setGameMode('a', 'zil')
+  r.setQuestionCount('a', 15) // zil'de sayı fiilen tur sayısını belirler
+  const c = lobby('s-count-circle')
+  c.setGameMode('a', 'circle')
+  c.setQuestionCount('a', 20) // CIRCLE_COUNTS
+  assert.throws(() => c.setQuestionCount('a', 5), (e: unknown) => e instanceof GameError && e.key === 'err.countInvalid')
+})
+
+console.log(`settings-test: ${passed} OK`)

@@ -1,4 +1,4 @@
-# QuizTavern — Fly.io yapılandırması.
+# Triviara — Fly.io yapılandırması.
 # Kurulum adımları için docs/DEPLOY.md dosyasına bakın.
 
 app = "quiztavern"

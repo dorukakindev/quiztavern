@@ -1,4 +1,4 @@
-# QuizTavern — Doğrulanmış Bug Analizi ve Düzeltme Planı (v4)
+# Triviara — Bug Raporu (A'dan Z'ye Tarama)
 
 > **Bu rapor v1'in (önceki `BUG-RAPORU.md`) yerini alır.** v1 statik bir ön taramaydı ve 40 bulgudan **çoğu kod okunarak doğrulanamadı** — bkz. [Eski raporun akıbeti](#eski-raporun-akıbeti). Bu rapor her bulgunun **kod satırıyla doğrulandığı** ve mümkün olan her yerde **çalıştırılarak yeniden üretildiği** tam bir analizdir.
 >

@@ -104,6 +104,8 @@ export const GAME = {
   // Kelime Oyunu: 14 tur (4-10 harf × 2), tek ortak zaman havuzu, harf başına 100.
   WORD_ROUNDS: 14,
   WORD_LETTER_POINTS: 100,
+  /** Kelime Oyunu: oyuncu başına turda en çok bu kadar harf açtırılabilir. */
+  WORD_LETTER_CAP: 2,
   WORD_POOL_MS: 360_000,
   WORD_ROUND_MS: 45_000,
   // 3000: geri sayim cizgisi ilk karede "3 sn" gosterir. 3500 iken Math.ceil
@@ -172,6 +174,11 @@ export const GAME = {
   TEAM_VOTE_PTS: 100,
   BASE_POINTS: 700,
   SPEED_POINTS: 300,
+  /** Zorluk bonusu: tabana eklenir (hız bileşeni ayrı kalır — hız hâlâ saf
+   *  süreyle ölçülür). Karışık maçta zor soru daha çok kazandırır.
+   *  Yalnız klasik şemalı modlar: zil/pano/blitz/bahis kendi değer
+   *  şemasını kullanır, bunlara dokunmaz. */
+  DIFF_BONUS: { kolay: 0, orta: 60, zor: 120 } as const,
   // Çember: yalnız en hızlı 3 doğru puanlanır — gerisi +0 (doğru bilen 4.+ puansız kalır).
   CIRCLE_RANK_POINTS: [450, 320, 220] as const,
   // Tek kaynak: istemci de aynı sabitten sayar (bkz. shared/types.ts).

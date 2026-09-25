@@ -1,4 +1,4 @@
-# QuizTavern — Railway yapılandırması (https://docs.railway.com/reference/config-as-code)
+# Triviara — Railway yapılandırması (https://docs.railway.com/reference/config-as-code)
 # Railway repo'yu bağlayınca Dockerfile'ı otomatik görür; bu dosya deploy
 # davranışını sabitler. Adımlar: docs/DEPLOY.md §Railway.
 

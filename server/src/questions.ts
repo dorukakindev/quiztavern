@@ -80,11 +80,29 @@ function shuffle<T>(items: T[]): T[] {
   return pool;
 }
 
-/** Kategori + zorluk filtresini uygular. Zorluk seçili ama o havuz boşsa (dar
- *  kategori+zorluk kombinasyonu) kategori havuzuna düşer — maç boş kalmasın. */
+/** Tek bir sorunun şık sırasını karıştırır; doğru index yeni yerine taşınır.
+ *  Standart havuz, özel paket, oyuncu-yazarı ve günlük soruların hepsi bundan
+ *  geçer — verideki pozisyon eğriliği (ilk şık ağırlığı) oyuna sızmasın. */
+export function shuffleChoices(q: Question): Question {
+  const order = shuffle([0, 1, 2, 3]);
+  return {
+    ...q,
+    choices: order.map((k) => q.choices[k]),
+    choicesEn: order.map((k) => q.choicesEn[k]),
+    correctIndex: order.indexOf(q.correctIndex),
+  };
+}
+
 /** §6.3 zorluk kalibrasyonu: istatistiğe göre etiketi düzeltilen sorular.
  *  question_id → kalibre zorluk. Server açılışında ve her maç sonrası tazelenir. */
 const calibrated = new Map<string, Difficulty>();
+/** Rapor döngüsü: en az N farklı oyuncu bildirdiğinde soru servis dışı
+ *  kalır. index.ts her yeni rapor ve açılışta tazeler. */
+const suppressed = new Set<string>();
+export function setSuppressedQuestions(ids: Set<string>): void {
+  suppressed.clear();
+  ids.forEach((id) => suppressed.add(id));
+}
 const DIFF_ORDER: readonly Difficulty[] = ["kolay", "orta", "zor"];
 /** En az bu kadar sorulmuş soru kalibre edilir (az örnekle etiket değiştirme). */
 const CALIBRATION_MIN_ASKED = 20;
@@ -106,16 +124,23 @@ export function setQuestionCalibration(stats: readonly { questionId: string; ask
   }
 }
 
-/** Etiket yerine kalibre değer varsa onu döner. */
-function difficultyOf(q: Question): Difficulty {
+/** Etiket yerine kalibre değer varsa onu döner. Puanlama da aynı etkin
+ *  zorluğu kullanır (etiket yanlışsa ödül de düzelir). */
+export function effectiveDifficulty(q: Question): Difficulty {
   return calibrated.get(q.id) ?? q.difficulty;
 }
 
+/** Kategori + zorluk filtresini uygular. Zorluk seçili ama o havuz boşsa (dar
+ *  kategori+zorluk kombinasyonu) kategori havuzuna düşer — maç boş kalmasın. */
 function effectiveQuestionPool(categories: string[], difficulty: Difficulty | null): Question[] {
-  const byCat = categories.length ? ALL_QUESTIONS.filter((q) => categories.includes(q.category)) : ALL_QUESTIONS;
-  const catPool = byCat.length ? byCat : ALL_QUESTIONS;
+  // Bildirilen sorular havuzdan düşer; havuz tamamen boşalarsa fallback olarak
+  // ham havuza döner (soru hatası maçı hiç kilitlemesin).
+  const visible = ALL_QUESTIONS.filter((q) => !suppressed.has(q.id));
+  const base = visible.length ? visible : ALL_QUESTIONS;
+  const byCat = categories.length ? base.filter((q) => categories.includes(q.category)) : base;
+  const catPool = byCat.length ? byCat : base;
   if (!difficulty) return catPool;
-  const byDiff = catPool.filter((q) => difficultyOf(q) === difficulty);
+  const byDiff = catPool.filter((q) => effectiveDifficulty(q) === difficulty);
   return byDiff.length ? byDiff : catPool;
 }
 
@@ -152,15 +177,49 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   // düşer (min(havuz, hedef)) — zorlama yok, maç normal devam eder.
   const pictures = source.filter((q) => q.image);
   const texts = source.filter((q) => !q.image);
-  const pictureFresh = shuffle(pictures.filter((q) => !exclude.has(q.id)));
-  const pictureUsed = shuffle(pictures.filter((q) => exclude.has(q.id)));
-  const picturePool = [...pictureFresh, ...pictureUsed];
-  const textFresh = shuffle(texts.filter((q) => !exclude.has(q.id)));
-  const textUsed = shuffle(texts.filter((q) => exclude.has(q.id)));
-  const textPool = [...textFresh, ...textUsed];
   const { min, max } = imageOnly ? { min: n, max: n } : pictureQuota(n);
-  const pictureTarget = Math.min(picturePool.length, n, randomInt(min, max));
-  const selected = [...picturePool.slice(0, pictureTarget), ...textPool.slice(0, n - pictureTarget)];
+  const pictureTarget = Math.min(pictures.length, n, randomInt(min, max));
+  // Kategori dengesi: birden çok kategori seçiliyken (ya da seçim yokken tüm
+  // havuzda) sorular havuz boyutuna ORANLI değil, kategorilere NÖBETLEŞEREK
+  // dağılır — küçük kategori de maçta yerini alır. Her kategori için
+  // resimli/resimsiz alt-havuz ayrı tutulur: taze-önce sırası ve resim kotası
+  // korunur; bir kategorinin alt-havuzu tükenince sıra diğerlerine geçer.
+  const perCat = new Map<string, { pics: Question[]; texts: Question[] }>();
+  for (const q of source) {
+    const entry = perCat.get(q.category) ?? { pics: [], texts: [] };
+    (q.image ? entry.pics : entry.texts).push(q);
+    perCat.set(q.category, entry);
+  }
+  // Taze-önce garantisi GLOBAL kalır: önce tüm kategorilerin taze kuyrukları
+  // nöbetleşerek çekilir; toplam taze sayı yetmezse kullanılmış kuyruklar da
+  // aynı nöbetle devam eder. Böylece bir kategorinin tazesi bitince diğer
+  // kategorilerde hâlâ taze varken erken tekrar başlamaz (küresel semantik).
+  const subpools = shuffle([...perCat.keys()]).map((name) => {
+    const entry = perCat.get(name)!;
+    const split = (list: Question[]) => ({
+      fresh: shuffle(list.filter((q) => !exclude.has(q.id))),
+      used: shuffle(list.filter((q) => exclude.has(q.id))),
+    });
+    return { pics: split(entry.pics), texts: split(entry.texts) };
+  });
+  const drawRoundRobin = (key: "pics" | "texts", count: number): Question[] => {
+    const out: Question[] = [];
+    let remaining = count;
+    for (const queue of ["fresh", "used"] as const) {
+      while (remaining > 0) {
+        let progressed = false;
+        for (const sub of subpools) {
+          if (remaining <= 0) break;
+          const q = sub[key][queue].shift();
+          if (q) { out.push(q); remaining -= 1; progressed = true; }
+        }
+        if (!progressed) break;
+      }
+      if (remaining <= 0) break;
+    }
+    return out;
+  };
+  const selected = [...drawRoundRobin("pics", pictureTarget), ...drawRoundRobin("texts", n - pictureTarget)];
   // Resimli sorular maçın sabit bir yerinde (ör. hep ilk sıralarda) kümelenmesin
   // diye seçilenler tekrar karıştırılır — sıra tamamen rastgele.
   const pool = shuffle(selected);
@@ -168,15 +227,7 @@ export function sampleQuestions(n: number, categories: string[] = [], exclude: S
   // kategori/zorluk) maç kısalır ama aynı soru iki kez çıkmaz — eski modulo
   // tek-kategoride tekrar ediyordu. Çağıran gerçek uzunluğu sonuç.length'ten okur
   // (rooms: klasik roundLimit = questions.length). Çemberle aynı davranış.
-  return pool.slice(0, n).map((q) => {
-    const order = shuffle([0, 1, 2, 3]);
-    return {
-      ...q,
-      choices: order.map((k) => q.choices[k]),
-      choicesEn: order.map((k) => q.choicesEn[k]),
-      correctIndex: order.indexOf(q.correctIndex),
-    };
-  });
+  return pool.slice(0, n).map(shuffleChoices);
 }
 
 /** Verilen kategori+zorluk için etkin havuzdaki TÜM soru id'leri (sampleQuestions

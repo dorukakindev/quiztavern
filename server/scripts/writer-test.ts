@@ -85,7 +85,8 @@ test('Yazar kendi sorusunda cevap veremez; ortalama kazanç alır', () => {
   r.answer('a', 0)
   assert.equal(inner.players.get('a')!.score, 0)
   // Diğer oyuncu doğru cevaplar → yazar ortalama alır (tek kişi → onun kazancı).
-  r.answer('b', 1) // correctIndex = 1
+  // (Şık sırası enjeksiyonda karıştırılır — doğru index sorudan okunur.)
+  r.answer('b', inner.questions[idx].correctIndex)
   inner.reveal()
   const writer = inner.players.get('a')!
   const other = inner.players.get('b')!

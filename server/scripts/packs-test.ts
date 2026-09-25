@@ -91,6 +91,19 @@ async function unitTests() {
   const seen = new Set(fromCsv.map((q) => q.id));
   const resampled = samplePackQuestions(2, fromCsv, seen);
   assert(resampled.length === 2, "örnekleme: hepsi görülmüşse yine de doldurur");
+
+  // Şık karıştırma: doğru metin korunur ve pozisyon çekilişten çekilişe değişir.
+  const mono = Array.from({ length: 4 }, (_, i) => ({
+    id: `mono-${i}`, text: `Mono soru ${i}?`, textEn: `Mono q ${i}?`,
+    category: "K", difficulty: "kolay" as const,
+    choices: ["doğru", "y1", "y2", "y3"], choicesEn: ["right", "w1", "w2", "w3"], correctIndex: 0,
+  }));
+  const idxSet = new Set<number>();
+  for (let r = 0; r < 8; r++) samplePackQuestions(4, mono, new Set()).forEach((q) => {
+    assert(q.choices[q.correctIndex] === "doğru", "şık karıştırma: doğru metin korunur");
+    idxSet.add(q.correctIndex);
+  });
+  assert(idxSet.size > 1, "şık karıştırma: doğru hep aynı pozisyonda kalmaz");
 }
 
 // ── HTTP + socket katmanı ──────────────────────────────────────────────────
@@ -101,7 +114,7 @@ async function main() {
   const { rmSync, readdirSync } = await import("node:fs");
   const packsDir = fileURLToPath(new URL("../src/../data/packs", import.meta.url));
   try {
-    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`);
+    for (const file of readdirSync(packsDir)) if (file.startsWith("test-paketi") || file.startsWith("editor-paketi")) rmSync(`${packsDir}/${file}`, { force: true, maxRetries: 5, retryDelay: 200 });
   } catch { /* dizin henüz yok */ }
 
   const port = await findFreePort();
@@ -109,7 +122,7 @@ async function main() {
   console.log("\n[packs] sunucu başlatılıyor…");
   const tsxCli = fileURLToPath(new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url));
   const server = spawn(process.execPath, [tsxCli, "src/index.ts"], {
-    cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+    cwd: fileURLToPath(new URL("..", import.meta.url)),
     env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", ALLOW_MOCK_AUTH: "1" },
     stdio: ["ignore", "pipe", "pipe"],
   });

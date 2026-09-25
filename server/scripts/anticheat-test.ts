@@ -81,7 +81,7 @@ test('reveal doğru cevabı ancak süre bitince açıklar', () => {
   // kazanç yalnız sunucunun hesapladığı puan: gains sözlüğü mevcut ve sınırlı.
   const gains = reveal.gains
   for (const [id, gain] of Object.entries(gains)) {
-    assert.ok(gain >= 0 && gain <= GAME.BASE_POINTS + GAME.SPEED_POINTS, `${id} kazancı sınır içinde`)
+    assert.ok(gain >= 0 && gain <= GAME.BASE_POINTS + GAME.SPEED_POINTS + GAME.DIFF_BONUS.zor, `${id} kazancı sınır içinde`)
   }
 })
 stop(room)

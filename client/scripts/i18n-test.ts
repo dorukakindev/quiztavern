@@ -6,6 +6,7 @@
  * Çalıştırma: npx tsx scripts/i18n-test.ts
  */
 import { STRINGS, translate, type StringKey } from "../src/activity/i18n";
+import { BADGE_KEYS } from "../../shared/types";
 
 let passed = 0;
 let failed = 0;
@@ -60,6 +61,21 @@ assert(!translate("en", "err.needPlayers", { count: 2 }).includes("{"), "sunucu 
 
 // 7) Eksik parametre metni bozmaz (yer tutucu olduğu gibi kalır, patlamaz)
 assert(translate("tr", "game.questionOf", { index: 1 }) === "Soru 1 / {total}", "eksik parametre güvenli düşer");
+
+// 8) Rozet × i18n kesişimi: BADGE_KEYS'in her anahtarı ad + hint ister —
+// `as StringKey` cast'leri eksik anahtarı derleyiciden saklar, bu kontrol
+// "undefined · Unvan olarak tak" tooltip'ini (haftaSampiyonu.desc vakası) yakalar.
+const badgeMissing = BADGE_KEYS.flatMap((b) => {
+  const name = `badge.${b}` as StringKey;
+  const hint = `badge.${b}.hint` as StringKey;
+  return [
+    STRINGS.tr[name] ? null : `${name} (tr)`,
+    STRINGS.en[name] ? null : `${name} (en)`,
+    STRINGS.tr[hint] ? null : `${hint} (tr)`,
+    STRINGS.en[hint] ? null : `${hint} (en)`,
+  ].filter(Boolean) as string[];
+});
+assert(badgeMissing.length === 0, `her rozetin adı ve hint'i iki dilde tam${badgeMissing.length ? ` (${badgeMissing})` : ""}`);
 
 console.log(`\n[i18n] sonuç: ${passed} geçti, ${failed} kaldı`);
 process.exit(failed ? 1 : 0);
