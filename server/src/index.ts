@@ -326,6 +326,23 @@ if (IS_PRODUCTION) {
   });
 }
 
+// API benzeri bilinmeyen yollar gerçek JSON 404 döner (SPA fallback'i dev'de
+// de olmadığından bunu üretim bloğunun dışında tutarız).
+app.use((req, res) => {
+  if (res.headersSent) return;
+  res.status(404).json({ error: "Bulunamadı." });
+});
+
+// Son katman: bir route fırlatırsa Express'in HTML hata sayfası (stack izi
+// sızdırır) yerine tek biçimli JSON döner.
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (res.headersSent) return;
+  log.error({ err }, "işlenmemiş istek hatası");
+  const status = err instanceof Error && "status" in err && typeof err.status === "number" && err.status >= 400 && err.status < 600
+    ? err.status : 500;
+  res.status(status).json({ error: status === 500 ? "Sunucu hatası." : "İstek hatası." });
+});
+
 function getRoom(roomId: string) {
   const id = normalizeRoomId(roomId);
   let room = rooms.get(id);
