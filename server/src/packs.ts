@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { DIFFICULTIES, type Question } from "./questions";
+import { DIFFICULTIES, shuffleChoices, type Question } from "./questions";
 
 export interface QuestionPackMeta {
   id: string;
@@ -256,5 +256,7 @@ function shuffle<T>(items: T[]): T[] {
 export function samplePackQuestions(n: number, questions: Question[], exclude: Set<string>): Question[] {
   const fresh = shuffle(questions.filter((q) => !exclude.has(q.id)));
   const used = shuffle(questions.filter((q) => exclude.has(q.id)));
-  return [...fresh, ...used].slice(0, n);
+  // Şık sırası da karışır — paket yazarının doğruyu hep aynı index'e
+  // koyması oyuna pozisyon ipucu olarak sızmasın.
+  return [...fresh, ...used].slice(0, n).map(shuffleChoices);
 }
