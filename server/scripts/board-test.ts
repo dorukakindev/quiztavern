@@ -185,6 +185,25 @@ test("seçici sırası eligibleFrom sıfırlandıktan sonra örneklenir", () => 
   assert.deepEqual(inner.boardPickerOrder.sort(), ["a", "b"]);
 });
 
+test("pick turundaki seçici ayrılınca sıra hemen ilerler (B60)", () => {
+  // boardPickerOrder maç anlığına sabitlenmişti: seçici çıkınca slotu
+  // PICK_MS kadar ölü bekletiyordu — artık ayrılışta sıra ilerler.
+  const room = boardRoom("b13", ["a", "b", "c"]);
+  const inner = startPick(room);
+  assert.equal(inner.boardPickerId(), "a");
+  room.removePlayer("a");
+  assert.equal(inner.boardPickerId(), "b", "sıra anında b'ye geçti");
+  room.pickCell("b", 3);
+  assert.equal(inner.phase, "question", "yeni seçicinin hücresi açılır — ölü pencere yok");
+});
+
+test("maç ortasında katılan oyuncu pano sırasına girer (B60)", () => {
+  const room = boardRoom("b14", ["a", "b"]);
+  const inner = startPick(room);
+  room.addPlayer({ ...user("c"), isBot: false });
+  assert.ok(inner.boardPickerOrder.includes("c"), "katılan kuyruğun sonunda");
+});
+
 console.log(`board-test: ${passed} geçti`);
-assert.equal(passed, 12);
+assert.equal(passed, 14);
 process.exit(0);
