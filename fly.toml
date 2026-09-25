@@ -1,5 +1,7 @@
 # Triviara — Fly.io yapılandırması.
 # Kurulum adımları için docs/DEPLOY.md dosyasına bakın.
+# Ortam değişkenlerinin kanonik listesi: deploy/env.list — değişken
+# eklerken/değiştirirken üç platform config'i de ona uyar.
 
 app = "quiztavern"
 primary_region = "fra"
@@ -10,6 +12,8 @@ primary_region = "fra"
   NODE_ENV = "production"
   HOST = "0.0.0.0"
   PORT = "8080"
+# DISCORD_* / SESSION_SECRET / PUBLIC_BASE_URL: `fly secrets set` ile
+# (deploy/env.list); VITE_DISCORD_CLIENT_ID build-arg olarak verilir.
 
 # SQLite dosyaları (xp.db, daily.db, question-reports.db) burada tutulur —
 # restart/deploy'da kaybolmaz. İlk deploy öncesi:

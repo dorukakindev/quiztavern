@@ -12,6 +12,8 @@ de Activity çalışmaya devam eder ve App Directory başvurusu için sabit URL'
 - `flyctl` kurulu ve `fly auth login` yapılmış olmalı.
 - Discord Developer Portal'da uygulamanın şunları hazır olmalı:
   `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_BOT_TOKEN`.
+- Ortam değişkenlerinin kanonik listesi `deploy/env.list`'tir; `fly.toml`,
+  `railway.toml`, `render.yaml` ve Oracle paketi ona uyar.
 
 ## 2. Uygulamayı oluştur (ilk kez)
 
