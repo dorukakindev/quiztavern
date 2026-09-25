@@ -1018,7 +1018,7 @@ export class Room {
     }
     this.writtenQuestions.set(playerId, {
       id: `written-${playerId}`,
-      category: "community",
+      category: "Topluluk",
       text, textEn: text,
       choices: choices.map((c) => (c as string).trim()),
       choicesEn: choices.map((c) => (c as string).trim()),
