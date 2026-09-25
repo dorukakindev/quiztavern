@@ -88,11 +88,7 @@ function connect() {
         } else if (msg.t === "RESUMED") {
           backoff = 1000;
           log.info("discord gateway: RESUMED");
-        } else if (
-          msg.t === "INTERACTION_CREATE" &&
-          msg.d?.type === 2 &&
-          msg.d?.data?.name === COMMAND_NAME
-        ) {
+        } else if (msg.t === "INTERACTION_CREATE" && msg.d?.type === 2 && msg.d?.data?.name === COMMAND_NAME) {
           void answerInteraction(msg.d.id, msg.d.token);
         }
         break;
