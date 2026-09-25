@@ -38,7 +38,7 @@ console.log("Yakın Tahmin regresyonları");
 
 test("En yakın tahmin kazanır; puan taban değerdir", () => {
   const room = numericRoom("n-closest", ["a", "b", "c"]);
-  const inner = startRound(room);
+  startRound(room);
   const answer = inner.numericQuestions[0].answer;
   room.numericAnswer("a", answer + 10);
   room.numericAnswer("b", answer - 3);
@@ -53,7 +53,7 @@ test("En yakın tahmin kazanır; puan taban değerdir", () => {
 
 test("Tam isabet taban + bonus alır", () => {
   const room = numericRoom("n-exact", ["a", "b"]);
-  const inner = startRound(room);
+  startRound(room);
   const answer = inner.numericQuestions[0].answer;
   room.numericAnswer("a", answer);
   room.numericAnswer("b", answer + 5);
@@ -62,7 +62,7 @@ test("Tam isabet taban + bonus alır", () => {
 
 test("Eşit mesafe berabere — ikisi de kazanır", () => {
   const room = numericRoom("n-tie", ["a", "b"]);
-  const inner = startRound(room);
+  startRound(room);
   const answer = inner.numericQuestions[0].answer;
   room.numericAnswer("a", answer + 5);
   room.numericAnswer("b", answer - 5);
@@ -74,7 +74,7 @@ test("Eşit mesafe berabere — ikisi de kazanır", () => {
 
 test("Tahmin bir kez kilitlenir; ikinci giriş yutulur", () => {
   const room = numericRoom("n-lock", ["a", "b"]);
-  const inner = startRound(room);
+  startRound(room);
   const answer = inner.numericQuestions[0].answer;
   room.numericAnswer("a", answer + 10);
   room.numericAnswer("a", answer); // geç değiştirme girişimi
@@ -83,7 +83,7 @@ test("Tahmin bir kez kilitlenir; ikinci giriş yutulur", () => {
 
 test("Sayı olmayan/saçma girişler yutulur", () => {
   const room = numericRoom("n-nan", ["a"]);
-  const inner = startRound(room);
+  startRound(room);
   room.numericAnswer("a", NaN);
   room.numericAnswer("a", 1e20);
   assert.equal(inner.numericGuesses.size, 0);
@@ -92,7 +92,7 @@ test("Sayı olmayan/saçma girişler yutulur", () => {
 
 test("Uygun olmayan oyuncu tahmin giremez (geç katılan)", () => {
   const room = numericRoom("n-late", ["a"]);
-  const inner = startRound(room);
+  startRound(room);
   room.addPlayer({ ...user("b"), isBot: false });
   room.numericAnswer("b", 42);
   assert.equal(inner.numericGuesses.has("b"), false);
@@ -108,7 +108,7 @@ test("Doğru cevap soru payload'ında istemciye gönderilmez", () => {
 
 test("stateFor yourNumericGuess ve zil ile çakışmaz", () => {
   const room = numericRoom("n-state", ["a"]);
-  const inner = startRound(room);
+  startRound(room);
   room.numericAnswer("a", 7);
   // Tek oyuncu kilitlediği için tur doğrudan reveal olur — istatistik burada sayılır.
   assert.equal(room.stateFor("a").yourNumericGuess, 7);
@@ -118,7 +118,7 @@ test("stateFor yourNumericGuess ve zil ile çakışmaz", () => {
 
 test("choice emit'i numeric modda state'i kirletmez", () => {
   const room = numericRoom("n-choice", ["a"]);
-  const inner = startRound(room);
+  startRound(room);
   room.answer("a", 2); // numeric modda indeks cevap yutulmalı
   const internals2 = internals(room) as unknown as {
     players: Map<string, { choice: number | null }>;
@@ -131,7 +131,7 @@ test("choice emit'i numeric modda state'i kirletmez", () => {
 
 test("süresi geçmiş cevap: reveal + err.lateAnswer toast'ı", () => {
   const room = numericRoom("n-late", ["a"]);
-  const inner = startRound(room);
+  startRound(room);
   const toasts: string[] = [];
   room.setToastHandler((playerId, key) => { if (playerId === "a") toasts.push(key) });
   inner.questionDeadline = Date.now() - 1; // süre doldu, timer henüz ateşlenmemiş

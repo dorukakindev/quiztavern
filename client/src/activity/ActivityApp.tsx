@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, typ
 import { createPortal } from 'react-dom'
 import { sfx } from '../lib/sfx'
 import { storageGet, storageSet } from '../lib/storage'
-import { CARD_TYPES, CIRCLE_COUNTS, COUNTLESS_MODES, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type BlitzLivePayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
+import { CARD_TYPES, CIRCLE_COUNTS, COUNTLESS_MODES, EMOTE_KEYS, LEAGUE_ORDER, QUESTION_COUNTS, QUESTION_TIMES, TABLE_THEMES, RECONNECT_GRACE_MS, type CardType, type CategoryOption, type CirclePayload, type Difficulty, type EmoteKey, type GameMode, type GameState, type LeagueKey, type MatchSummary, type PodiumEntry, type ProgressBadge, type ProgressSnapshot, type PublicPlayer, type NumericQuestionPayload, type QuestionPayload, type ReviewItem, type BadgeKey, type TableTheme, type WordPayload, type XpGain } from '../../../shared/types'
 import { getDevIdentity, useRealtimeGame, type LiveEmote } from '../lib/realtime'
 import { useDiscordActivity } from './useDiscordActivity'
 import { AmbientShader } from './AmbientShader'
@@ -1067,7 +1067,6 @@ function ActivityLobby({ state, status, identity, language, onLanguageChange, on
     if (canStart && !wasCanStart.current) setStartBurst(Date.now())
     wasCanStart.current = canStart
   }, [canStart])
-  const selected = MODE_KEYS[modeKeyOf(mode)]
   const compatible = (category: CategoryOption) => mode === 'circle' ? category.circleCount > 0 : category.classicCount > 0
   // Oynanabilir kategoriler + henüz tamamen boş (planlanmış) kategoriler. Boşlar
   // pasif "yakında" gösterilir; soru eklenince otomatik oynanabilir olur.
@@ -1986,7 +1985,7 @@ function RevealProgress({ beats }: { beats: RevealBeats }) {
 }
 
 function Podium({ state, onAgain, onRematch, onBackToLobby, onLeave, speakingIds, isDiscord, onShare }: { state: GameState; onAgain?: () => void; onRematch?: () => void; onBackToLobby: () => void; onLeave: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
-  const { language, t } = useI18n()
+  const { t } = useI18n()
   const winner = state.podium?.[0]
   const rest = state.podium?.slice(1) ?? []
   useEffect(() => { sfx.play('podium') }, []) // maç sonu fanfarı (bir kez)
@@ -2098,7 +2097,7 @@ function Confetti() {
 }
 
 function PodiumRanking({ state, winner, rest, onAgain, onRematch, onBackToLobby, speakingIds, isDiscord, onShare }: { state: GameState; winner: PodiumEntry | undefined; rest: PodiumEntry[]; onAgain?: () => void; onRematch?: () => void; onBackToLobby: () => void; speakingIds?: ReadonlySet<string>; isDiscord?: boolean; onShare?: (message: string) => Promise<boolean> }) {
-  const { language, t } = useI18n()
+  const { t, language } = useI18n()
   const reduced = usePrefersReducedMotion()
   const winnerScore = useCountUp(winner?.score ?? 0, reduced)
   const isHost = state.youId === state.hostId

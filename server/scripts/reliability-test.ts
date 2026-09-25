@@ -9,10 +9,8 @@ import { GameError } from '../src/errors'
 import { Room } from '../src/rooms'
 import { questionPoolIds, resetExhaustedSubpools, sampleQuestions } from '../src/questions'
 
-let passed = 0
 const test = (name: string, run: () => void) => {
   run()
-  passed += 1
   console.log(`  ✓ ${name}`)
 }
 const player = (id: string, name: string) => ({ id, name, avatarUrl: null, socketId: `socket:${id}`, isBot: false })
