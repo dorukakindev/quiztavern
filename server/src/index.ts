@@ -215,13 +215,20 @@ app.post(
     const body = req.body as { type?: unknown; message?: unknown; stack?: unknown; url?: unknown } | undefined;
     const clip = (v: unknown, max: number) =>
       typeof v === "string" ? v.slice(0, max) : undefined;
+    // Raporlar log'a yazıyor — URL query'sinde (Discord proxy parametreleri,
+    // kanal/sunucu id'leri) veya stack'te token benzeri diziler sızmasın.
+    const redact = (v: unknown, max: number) => {
+      const s = clip(v, max);
+      return s === undefined ? undefined
+        : s.replace(/[?&][^\s?&]*=[^\s?&]+/g, "[q]").replace(/[A-Za-z0-9_-]{24,}/g, "[redacted]");
+    };
     log.warn(
       {
         ip: clientAddressKey(req.headers, req.socket.remoteAddress),
         type: clip(body?.type, 40),
-        message: clip(body?.message, 500),
-        stack: clip(body?.stack, 2000),
-        url: clip(body?.url, 300),
+        message: redact(body?.message, 500),
+        stack: redact(body?.stack, 2000),
+        url: redact(body?.url, 300),
       },
       "istemci hatası raporlandı",
     );
