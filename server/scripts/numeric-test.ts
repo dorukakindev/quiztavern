@@ -15,6 +15,7 @@ const internals = (room: Room) => room as unknown as {
   numericQuestions: { id: string; answer: number }[];
   numericGuesses: Map<string, number>;
   qIndex: number;
+  questionDeadline: number;
   beginQuestion(): void;
   reveal(reason?: "timeout" | "allAnswered"): void;
 };
@@ -128,6 +129,18 @@ test("choice emit'i numeric modda state'i kirletmez", () => {
   assert.equal(room.phase, "question"); // erken reveal da tetiklenmez
 });
 
+test("süresi geçmiş cevap: reveal + err.lateAnswer toast'ı", () => {
+  const room = numericRoom("n-late", ["a"]);
+  const inner = startRound(room);
+  const toasts: string[] = [];
+  room.setToastHandler((playerId, key) => { if (playerId === "a") toasts.push(key) });
+  inner.questionDeadline = Date.now() - 1; // süre doldu, timer henüz ateşlenmemiş
+  room.numericAnswer("a", 42);
+  assert.equal(room.phase, "reveal");
+  assert.deepEqual(toasts, ["err.lateAnswer"]);
+  assert.equal(inner.numericGuesses.has("a"), false);
+});
+
 console.log(`numeric-test: ${passed} geçti`);
-assert.equal(passed, 9);
+assert.equal(passed, 10);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

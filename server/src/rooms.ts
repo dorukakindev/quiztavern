@@ -663,7 +663,7 @@ export class Room {
    *  yeniden açılır. İkinci basan kuyruğa girmez — sonrakiler yeniden basar. */
   buzz(playerId: string): void {
     if (this.gameMode !== "zil" || this.phase !== "question" || this.buzzWinnerId) return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || !player.connected || this.buzzFailed.has(playerId)) return;
     this.buzzWinnerId = playerId;
@@ -1258,7 +1258,7 @@ export class Room {
   answer(playerId: string, choice: number): void {
     if (!CHOICE_MODES.has(this.gameMode) || this.phase !== "question" || !Number.isInteger(choice) || choice < 0 || choice > (this.gameMode === "blitz" ? 1 : 3)) return;
     // Karar deadline'a göre: timer gecikmiş olsa bile süre dolduysa cevap yerine reveal işler.
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.choice !== null) return;
     if (this.gameMode === "zil") return this.zilAnswer(playerId, choice, player);
@@ -1278,7 +1278,7 @@ export class Room {
 
   answerCircle(playerId: string, answer: string): void {
     if (this.gameMode !== "circle" || this.phase !== "question") return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     const prompt = this.currentCirclePrompt();
     const clean = answer.trim().slice(0, 48);
@@ -1298,7 +1298,7 @@ export class Room {
    */
   wordAnswer(playerId: string, answer: string): void {
     if (this.gameMode !== "word" || this.phase !== "question") return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     const prompt = this.currentWordPrompt();
     const clean = answer.trim().slice(0, 48);
@@ -1319,7 +1319,7 @@ export class Room {
    */
   wordLetter(playerId: string): void {
     if (this.gameMode !== "word" || this.phase !== "question") return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     const prompt = this.currentWordPrompt();
     if (!player || !prompt || player.eligibleFrom > this.qIndex) return;
@@ -2161,7 +2161,7 @@ export class Room {
    */
   numericAnswer(playerId: string, value: number): void {
     if (this.gameMode !== "numeric" || this.phase !== "question") return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     const prompt = this.currentNumeric();
     if (!player || !prompt || player.eligibleFrom > this.qIndex || !player.connected || this.numericGuesses.has(playerId)) return;
@@ -2217,7 +2217,7 @@ export class Room {
    */
   orderAnswer(playerId: string, order: unknown): void {
     if (this.gameMode !== "timeline" || this.phase !== "question") return;
-    if (Date.now() >= this.questionDeadline) return this.reveal();
+    if (Date.now() >= this.questionDeadline) return this.lateReveal(playerId);
     const player = this.players.get(playerId);
     const prompt = this.currentOrder();
     if (!player || !prompt || player.eligibleFrom > this.qIndex || !player.connected || this.orderGuesses.has(playerId)) return;
@@ -2465,6 +2465,13 @@ export class Room {
     let seat = 0;
     while (taken.has(seat)) seat += 1;
     return seat;
+  }
+
+  /** Süresi geçmiş eylem: turu reveal'a taşır VE oyuncuya geç kaldığını
+   *  bildirir — sessiz yutulursa oyuncu basmasının neden tutmadığını anlamaz. */
+  private lateReveal(playerId: string) {
+    this.onToast?.(playerId, "err.lateAnswer");
+    this.reveal();
   }
 
   private revealIfEveryoneAnswered() {
