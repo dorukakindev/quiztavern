@@ -563,6 +563,9 @@ export class Room {
     this.rematchVotes.delete(userId);
     this.writtenQuestions.delete(userId);
     if (this.hostId === userId) this.reassignHost();
+    // Zil kazananı izleyiciye geçtiyse denemesi yanmış sayılır — yoksa zil
+    // buzzWinnerId'de takılır ve masa ~5 sn zilTimer bekler (B61).
+    if (this.buzzWinnerId === userId) this.zilFailWinner();
     if (this.handleNoPlayersLeft()) return;
     this.checkRematchTrigger();
     this.spectators.set(id, { id, name, avatarUrl, socketId }); // artık izleyici olduğu için oda kapanmaz, lobiye döner
@@ -768,8 +771,11 @@ export class Room {
   private checkRematchTrigger(): void {
     if (this.phase !== "podium" || !this.rematchVotes.size) return;
     if (this.rematchVotes.size < this.rematchNeeded()) return;
+    // İlk oyu clear'dan önce oku — clear sonrası values() boştu; host yoksa
+    // başlatıcı hep "ilk bağlı insan"a düşüyordu, ilk oy veren olmalı (B55).
+    const firstVoter = this.rematchVotes.values().next().value;
     this.rematchVotes.clear();
-    const by = this.hostId && this.players.has(this.hostId) ? this.hostId : this.rematchVotes.values().next().value;
+    const by = this.hostId && this.players.has(this.hostId) ? this.hostId : firstVoter;
     // Oylar temizlendi; tetikleyici kalmadıysa ilk bağlı oyuncu adına başlat.
     const requester = by ?? [...this.players.values()].find((p) => p.connected && !p.isBot)?.id;
     if (!requester) return;
