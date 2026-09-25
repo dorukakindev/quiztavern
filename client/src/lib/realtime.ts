@@ -63,7 +63,12 @@ export const getDevIdentity = () => {
 };
 
 /** Oyun görsellerinden bağımsız, tek yerden yönetilen Socket.IO bağlantısı. */
-export function useRealtimeGame(roomId = "ana-lobi", identity?: ActivityRealtimeIdentity, onAuthRequired?: () => void) {
+export function useRealtimeGame(
+  roomId = "ana-lobi",
+  identity?: ActivityRealtimeIdentity,
+  onAuthRequired?: () => void,
+  privateRoom?: string | null,
+) {
   const [state, setState] = useState<GameState | null>(null);
   const [status, setStatus] = useState<ConnectionStatus>("connecting");
   // Mesaj çevrilmemiş olarak taşınır: anahtarı sunucu verir, metnini arayüz
@@ -110,12 +115,15 @@ export function useRealtimeGame(roomId = "ana-lobi", identity?: ActivityRealtime
         : {
             roomId,
             instanceId: identity?.instanceId,
+            // Discord/dev oyuncusu özel masa koduyla katılabilir: sunucu üyelik
+            // doğrulamasından sonra geçerliyse `web-<kod>` odasına yerleştirir.
+            privateRoom: privateRoom || undefined,
             devId: identity?.user?.id || dev.id,
             devName: identity?.user?.name || dev.name,
             sessionToken: identity?.sessionToken || undefined,
           },
     });
-  }, [roomId, identity?.instanceId, identity?.sessionToken, identity?.user?.id, identity?.user?.name]);
+  }, [roomId, identity?.instanceId, identity?.sessionToken, identity?.user?.id, identity?.user?.name, privateRoom]);
 
   useEffect(() => {
     // Discord içinde kimlik doğrulanmadan bağlanma: sessionToken'sız bağlantı
