@@ -1233,6 +1233,7 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   'Olimpiyatlar': 'Olympics',
   'Orta Çağ': 'Middle Ages',
   'İklim & Hava': 'Weather & Climate',
+  'Topluluk': 'Community',
 }
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
