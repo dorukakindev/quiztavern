@@ -782,3 +782,7 @@
   font-size: 0.95rem;
 }
 .qt-game-help { padding-inline: 8px; }
+
+/* Joker kullanan oyuncunun koltuğunda küçük deste ikonu (kart türü gizli kalır) */
+.qt-card-played { display: inline-flex; align-items: center; color: #b7a7ff; opacity: .9; margin-right: 4px; }
+.qt-card-played svg { width: 13px; height: 13px; }

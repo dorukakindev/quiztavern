@@ -2523,6 +2523,8 @@ export class Room {
       ...(this.gameMode === "team" ? { captain: this.teamCaptainId(player.team) === player.id } : {}),
       ...(this.phase === "lobby" && this.inResults.has(player.id) ? { inResults: true } : {}),
       cards: player.cards,
+      // Joker kullanımı görünür ama kart türü gizli kalır.
+      ...(player.cardUsed ? { cardPlayed: true } : {}),
       ...(player.isBot ? {} : {
         progress: this.progress?.badge(player.id) ?? undefined,
         ...(player.title ? { title: player.title } : {}),

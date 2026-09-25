@@ -162,6 +162,18 @@ test('yeni turda kart etkileri sıfırlanır', () => {
   assert.equal(s.youFrozen, false)
 })
 
+test("joker kullanımı rakibe yalnız boolean sızar (tür/şıklar gizli)", () => {
+  const r = room('cards-visibility')
+  r.useCard('a', 'fifty')
+  const bView = r.stateFor('b', true)
+  const aRow = bView.players.find((p) => p.id === 'a')!
+  assert.equal(aRow.cardPlayed, true)
+  assert.ok(!('removedChoices' in aRow))
+  assert.ok(!('cardUsed' in aRow))
+  // Henüz oynamayan 'b' kendi state'inde cardPlayed taşımaz.
+  assert.equal(bView.players.find((p) => p.id === 'b')!.cardPlayed, undefined)
+})
+
 test("3'lü seri kart kazanımı oyuncuya toast olarak gider", () => {
   const r = new Room('cards-toast', () => {}, { minPlayers: 1, questionCount: 10 })
   const seen: [string, string][] = []
