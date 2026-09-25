@@ -57,8 +57,15 @@ for (const q of ALL_QUESTIONS) {
   }
 
   const textKey = q.text.trim().toLocaleLowerCase("tr-TR");
-  if (seenTexts.has(textKey)) warn(`${where}: "${seenTexts.get(textKey)}" ile aynı soru metni`);
-  seenTexts.set(textKey, where);
+  const priorText = seenTexts.get(textKey);
+  if (priorText !== undefined) {
+    // Aynı metin + farklı görsel = bilinçli desen (logo/görsel soruları metni
+    // paylaşır); yalnız iki kayıt da görsel taşıyorsa uyarı üretme.
+    const priorHadImage = priorText.endsWith("|img");
+    const bothHaveImage = priorHadImage && Boolean(q.image);
+    if (!bothHaveImage) warn(`${where}: "${priorText.split("|")[0]}" ile aynı soru metni`);
+  }
+  seenTexts.set(textKey, `${where}${q.image ? "|img" : ""}`);
 
   for (const choice of q.choices) {
     if (choice.length > 40) warn(`${where}: şık 40 karakterden uzun ("${choice.slice(0, 30)}…")`);
@@ -72,6 +79,7 @@ for (const q of ALL_QUESTIONS) {
 
 // ── Çember prompt'ları ──────────────────────────────────────────────────────
 const seenCircle = new Set<string>();
+const seenCircleEn = new Set<string>();
 for (const p of ALL_CIRCLE_PROMPTS) {
   const where = `${p.letter} → ${p.answer}`;
   const key = normalizeCircleAnswer(p.answer);
@@ -83,12 +91,23 @@ for (const p of ALL_CIRCLE_PROMPTS) {
     warn(`${where}: kategori "${p.category}" tanımlı değil — EXTRA_CATEGORIES'a ve EN etiket/ikon ekleyin (yazım hatası olabilir)`);
   }
 
+  // İpucu boşluk/uzunluk: boş ipucu ya da cevabı neredeyse tekrarlayan kısa ipucu.
+  if (!p.clue.trim()) err(`${where}: clue boş`);
+  else if (p.clue.trim().length < 15) warn(`${where}: clue 15 karakterden kısa ("${p.clue.trim()}")`);
+
   // TR kuralı: normalize edilmiş cevap, harfle başlamalı.
   const normalizedAnswer = normalizeCircleAnswer(p.answer);
   const normalizedLetter = normalizeCircleAnswer(p.letter);
   if (!normalizedLetter || normalizedLetter.length !== 1) err(`${where}: letter tek harf olmalı`);
   if (!normalizedAnswer.startsWith(normalizedLetter)) {
     err(`${where}: cevap "${normalizedAnswer}" harf "${normalizedLetter}" ile başlamıyor`);
+  }
+
+  // Gerçek harf kuralı (normalize etmeden): TR'de i→İ ve ı→I ayrımı korunur —
+  // letter:"I" + answer:"istanbul" normalize'da geçer ama gerçekte yanlış.
+  const rawFirst = p.answer.trim().toLocaleUpperCase("tr").charAt(0);
+  if (rawFirst !== p.letter.trim().toLocaleUpperCase("tr")) {
+    err(`${where}: cevap "${p.answer}" ham harf "${p.letter}" ile başlamıyor (I/İ ayrımı)`);
   }
 
   // EN çifti (varsa) da aynı kurala uymalı; letterEn varsa answerEn/clueEn de olmalı.
@@ -102,6 +121,11 @@ for (const p of ALL_CIRCLE_PROMPTS) {
     if (!enAnswer.startsWith(enLetter)) {
       err(`${where}: EN cevap "${enAnswer}" harf "${enLetter}" ile başlamıyor`);
     }
+    // answerEn tekilleştirme: aynı EN cevap iki prompt'ta geçerse EN arayüzde
+    // maç içi dedup (B3 düzeltmesi) birini eler — havuz etkin küçülür.
+    if (seenCircleEn.has(enAnswer)) warn(`${where}: EN cevap "${enAnswer}" başka bir prompt'ta da var`);
+    seenCircleEn.add(enAnswer);
+    if (!p.clueEn?.trim()) err(`${where}: clueEn boş`);
   }
 
   if (p.answer.length > 20) warn(`${where}: cevap 20 karakterden uzun ("${p.answer}")`);
