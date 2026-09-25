@@ -28,7 +28,7 @@ async function startServer(env: Record<string, string>) {
   const baseUrl = `http://127.0.0.1:${port}`;
   const tsxCli = fileURLToPath(new URL("../../node_modules/tsx/dist/cli.mjs", import.meta.url));
   const server = spawn(process.execPath, [tsxCli, "src/index.ts"], {
-    cwd: new URL("..", import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, "$1"),
+    cwd: fileURLToPath(new URL("..", import.meta.url)),
     env: { ...process.env, PORT: String(port), HOST: "127.0.0.1", ...env },
     stdio: ["ignore", "pipe", "pipe"],
   });
