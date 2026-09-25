@@ -2397,3 +2397,49 @@
 .qt-card-count.is-empty {
   opacity: 0.45;
 }
+
+/* ── Cevap sonucu ekranı tasarım turu (kullanıcı geri bildirimi) ─────── */
+
+/* Reveal'de mini sayaç yok olmak yerine sonuç rozetine dönüşür: aynı köşe,
+   aynı boy — ✓ doğru, ✗ yanlış/kaçırıldı. Düzen soru↔sonuç arasında tutarlı. */
+.qt-result-mark {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 3;
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, #10293b 61%, transparent 63%);
+}
+.qt-result-mark .qt-icon {
+  width: 24px;
+  height: 24px;
+}
+.qt-result-mark.is-right {
+  color: #6fe3a5;
+  box-shadow: 0 0 22px rgba(95, 227, 165, 0.45);
+}
+.qt-result-mark.is-wrong {
+  color: #ef8674;
+  box-shadow: 0 0 22px rgba(239, 134, 116, 0.4);
+  opacity: 0.85;
+}
+
+/* Skor sütunu: rakamın altında "toplam" mikro-etiketi — reveal'daki
+   "+N bu sorudan" kazancıyla karışmasın diye ayrımı görünür kılar. */
+.qt-player-scorecol {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.05;
+}
+.qt-player-total {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(159, 182, 198, 0.6);
+}
