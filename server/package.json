@@ -44,7 +44,8 @@
     "test:board": "tsx scripts/board-test.ts",
     "test:catbalance": "tsx scripts/category-balance-test.ts",
     "test:diffbonus": "tsx scripts/difficulty-bonus-test.ts",
-    "test:botskill": "tsx scripts/bot-skill-test.ts"
+    "test:botskill": "tsx scripts/bot-skill-test.ts",
+    "test:botcards": "tsx scripts/bot-cards-test.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
