@@ -16,12 +16,28 @@ export type SfxName = 'lock' | 'tick' | 'correct' | 'wrong' | 'reveal' | 'podium
 let ctx: AudioContext | null = null
 let enabled = storageGet('qt-sfx') !== 'off'
 
+let unlockBound = false
+/** Jest olmadan kurulan context `suspended` kalır ve ilk maç sessiz geçer;
+ *  ilk kullanıcı jestinde (pointerdown/keydown) tek seferlik resume'a bağlanır. */
+function bindUnlock() {
+  if (unlockBound || typeof window === 'undefined') return
+  unlockBound = true
+  const unlock = () => {
+    window.removeEventListener('pointerdown', unlock)
+    window.removeEventListener('keydown', unlock)
+    if (ctx?.state === 'suspended') ctx.resume().catch(() => {})
+  }
+  window.addEventListener('pointerdown', unlock, { once: false })
+  window.addEventListener('keydown', unlock, { once: false })
+}
+
 function audio(): AudioContext | null {
   if (typeof window === 'undefined') return null
   if (!ctx) {
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
     if (!AC) return null
     try { ctx = new AC() } catch { return null }
+    bindUnlock()
   }
   if (ctx.state === 'suspended') ctx.resume().catch(() => {})
   return ctx
