@@ -1172,9 +1172,12 @@ export class Room {
         const pool = [...this.players.keys()]
           .filter((id) => this.writtenQuestions.has(id))
           .map((id) => this.writtenQuestions.get(id)!);
-        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length);
+        const count = Math.min(GAME.WRITTEN_PER_MATCH, this.roundLimit, pool.length, this.questions.length);
         if (count > 0) {
-          const slots = shuffleIdx(this.roundLimit).slice(0, count);
+          // Slotlar dizi sınırından örneklenmeli — roundLimit istenen sayıdır
+          // ama dar havuzda questions.length daha kısa olur; slot ≥ length
+          // yazımı sparse delik açar ve maç ilk delikte erken biter (B59).
+          const slots = shuffleIdx(this.questions.length).slice(0, count);
           shuffleIdx(pool.length).slice(0, count).forEach((poolIdx, i) => {
             // Şık sırası da karışır — yazan "doğru hep ilk sırada" diye
             // arkadaşına pozisyonla cevabı işaret edemesin.
