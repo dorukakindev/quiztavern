@@ -128,6 +128,22 @@ test("istatistik ve iz sürümü doğru sayılır", () => {
   assert.equal(p.blitzTrail.length, 2);
 });
 
+test("kopuş pencereyi erken kapatmaz — reveal yalnız 60 sn timer'ıyla", () => {
+  const room = blitzRoom("b8", ["a", "b", "c"]);
+  const inner = startRound(room);
+  // Üçü de 1. ifadeyi cevapladı → hepsi "cevapladı" sayılır; biri kopunca
+  // eski davranış pencereyi anında kapatırdı.
+  for (const id of ["a", "b", "c"]) room.answer(id, inner.players.get(id)!.blitzClaim!.truth ? 0 : 1);
+  room.markDisconnected("c");
+  assert.equal(inner.phase, "question", "kopuş blitz penceresini erken kapatmamalı");
+  // İzleyiciye geçiş de aynı korumanın altında.
+  room.becomeSpectator("b");
+  assert.equal(inner.phase, "question", "izleyiciye geçiş de kapatmamalı");
+  // Süre dolunca normal reveal akışı çalışmaya devam eder.
+  inner.reveal();
+  assert.equal(inner.phase, "reveal");
+});
+
 console.log(`blitz-test: ${passed} geçti`);
-assert.equal(passed, 7);
+assert.equal(passed, 8);
 process.exit(0);

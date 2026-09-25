@@ -2455,6 +2455,10 @@ export class Room {
 
   private revealIfEveryoneAnswered() {
     if (this.phase !== "question") return;
+    // Blitz yalnız kendi 60 sn penceresiyle biter — "cevapladı" ölçütü
+    // "en az 1 ifade" olduğundan bir kopuş/izleyiciye geçiş pencereyi
+    // saniyeler içinde kapatıp herkesin skorunu düşürürdü.
+    if (this.gameMode === "blitz") return;
     // BEKLEME listesi ≠ puanlama listesi: bağlantısı kopan oyuncu cevap veremez,
     // o yüzden onu bekleme dışı bırak — bağlı herkes cevaplayınca tur deadline'ı
     // beklemeden reveal olur. (Kopan oyuncu yine eligible; o tur 0 alır.)
