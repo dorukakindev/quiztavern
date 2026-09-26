@@ -1995,6 +1995,7 @@ export class Room {
             index: self?.blitzIdx ?? 0,
             correct: self?.blitzCorrect ?? 0,
             streak: self?.blitzStreak ?? 0,
+            streakAtCap: (self?.blitzStreak ?? 0) > GAME.BLITZ_STREAK_CAP,
           }
         : null;
     // Maç bitince dondurulan özet önceliklidir: podyumda masadan çıkıp geri
