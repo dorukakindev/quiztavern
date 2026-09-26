@@ -369,9 +369,43 @@ export function useDiscordActivity() {
     return shareResult(sdk, message);
   }, []);
 
-  /** Discord durum çubuğunda görünen satır; SDK yoksa no-op. */
+  /** Discord durum çubuğunda görünen satır; SDK yoksa no-op.
+   *  setActivity'ye Discord oran sınırı uygular: aynı metin tekrar gönderilmez,
+   *  hızlı ardışık güncellemeler ~1 sn'lik sondaki tek çağrıya toplanır. */
+  const presenceRef = useRef<{ pending: string | null; sent: string; at: number; timer: number | null }>({
+    pending: null,
+    sent: "",
+    at: 0,
+    timer: null,
+  });
   const setPresence = useCallback((state: string): void => {
-    if (sdkRef.current) updatePresence(sdkRef.current, state);
+    const p = presenceRef.current;
+    if (state === p.sent || state === p.pending) return;
+    if (!sdkRef.current) return;
+    if (p.timer !== null) {
+      // Zamanlanmış sonda güncelleme var — en güncel metin ona yazılır.
+      p.pending = state;
+      return;
+    }
+    const wait = 1000 - (Date.now() - p.at);
+    if (wait <= 0) {
+      p.at = Date.now();
+      p.sent = state;
+      updatePresence(sdkRef.current, state);
+      return;
+    }
+    p.pending = state;
+    p.timer = window.setTimeout(() => {
+      p.timer = null;
+      p.at = Date.now();
+      const cur = sdkRef.current;
+      const next = p.pending;
+      p.pending = null;
+      if (cur && next !== null && next !== p.sent) {
+        p.sent = next;
+        updatePresence(cur, next);
+      }
+    }, wait);
   }, []);
 
   useEffect(() => {
