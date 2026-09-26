@@ -106,6 +106,25 @@ test("Sadece resimli: seçilen tüm soruların görseli var", () => {
   assert.equal(r.stateFor("a", true).imageOnly, true);
 });
 
+test("Masa ayarları tableTuning'siz moda geçince varsayılana döner", () => {
+  const r = lobby("s-tuning");
+  r.setTableFlag("a", "speedBonus", false);
+  r.setTableFlag("a", "imageOnly", true);
+  r.setQuestionTime("a", 20_000);
+  r.setGameMode("a", "lightning");
+  const inner = internals(r);
+  assert.equal(inner.speedBonus, true);
+  assert.equal(inner.imageOnly, false);
+  assert.equal(inner.questionTimeMs, null);
+  // tuning'li modlar arasında geçişte tercih korunur
+  r.setGameMode("a", "team");
+  r.setTableFlag("a", "speedBonus", false);
+  r.setGameMode("a", "elim");
+  assert.equal(internals(r).speedBonus, false);
+  r.setGameMode("a", "zil");
+  assert.equal(internals(r).speedBonus, true);
+});
+
 test("Non-boolean bayrak reddedilir", () => {
   const r = lobby("s-flag");
   assert.throws(

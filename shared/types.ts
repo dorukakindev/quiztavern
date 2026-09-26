@@ -53,6 +53,10 @@ export interface ModeContract {
   usesCards: boolean;
   /** Can sistemi kullanır (Son Masa). */
   usesLives: boolean;
+  /** Lobide masa ayar çipleri (soru süresi, hız bonusu, sadece resimli)
+   *  görünür. false ise mod değişiminde bu ayarlar varsayılana döner —
+   *  gizli kalmış bir "kapalı" diğer modun mekaniğini sessizce bozmasın. */
+  tableTuning: boolean;
 }
 
 export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
@@ -64,6 +68,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   classic: {
     choiceAnswers: true,
@@ -73,6 +78,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: true,
     usesLives: false,
+    tableTuning: true,
   },
   lightning: {
     choiceAnswers: true,
@@ -82,6 +88,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   circle: {
     choiceAnswers: false,
@@ -91,6 +98,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: false,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   bet: {
     choiceAnswers: true,
@@ -100,6 +108,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: true,
   },
   team: {
     choiceAnswers: true,
@@ -109,6 +118,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: true,
     usesLives: false,
+    tableTuning: true,
   },
   elim: {
     choiceAnswers: true,
@@ -118,6 +128,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: true,
+    tableTuning: true,
   },
   blur: {
     choiceAnswers: true,
@@ -127,6 +138,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   word: {
     choiceAnswers: false,
@@ -136,6 +148,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: false,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   duel: {
     choiceAnswers: true,
@@ -145,6 +158,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   zil: {
     choiceAnswers: true,
@@ -154,6 +168,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   numeric: {
     choiceAnswers: false,
@@ -163,6 +178,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: false,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   blitz: {
     choiceAnswers: true,
@@ -172,6 +188,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: false,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   timeline: {
     choiceAnswers: false,
@@ -181,6 +198,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: false,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
   board: {
     choiceAnswers: true,
@@ -190,6 +208,7 @@ export const MODE_CONTRACT: Record<GameMode, ModeContract> = {
     feedsCalibration: true,
     usesCards: false,
     usesLives: false,
+    tableTuning: false,
   },
 };
 
