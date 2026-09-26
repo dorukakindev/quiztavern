@@ -1353,6 +1353,14 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   Tarım: "Agriculture",
   Jeoloji: "Geology",
   Oyuncaklar: "Toys",
+  Osmanlı: "Ottoman",
+  "Halk Kültürü": "Folk Culture",
+  "Sosyal Medya": "Social Media",
+  Programlama: "Programming",
+  "Sahne Sanatları": "Stage Arts",
+  Efsaneler: "Legends",
+  "Kış Sporları": "Winter Sports",
+  "Çocuk Oyunları": "Children's Games",
 };
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.

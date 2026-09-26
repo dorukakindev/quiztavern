@@ -54064,5 +54064,2565 @@
       "Inca",
       "Viking"
     ]
+  },
+  {
+    "id": "osm-kurucu",
+    "category": "Osmanlı",
+    "difficulty": "kolay",
+    "text": "Osmanlı Devleti'nin kurucusu kimdir?",
+    "choices": [
+      "Osman Gazi",
+      "Orhan Gazi",
+      "I. Murat",
+      "Fatih"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who founded the Ottoman Empire?",
+    "choicesEn": [
+      "Osman Ghazi",
+      "Orhan Ghazi",
+      "Murad I",
+      "Mehmed II"
+    ]
+  },
+  {
+    "id": "osm-fatih",
+    "category": "Osmanlı",
+    "difficulty": "kolay",
+    "text": "İstanbul'u 1453'te fetheden padişah kimdir?",
+    "choices": [
+      "Fatih Sultan Mehmet",
+      "Kanuni",
+      "Yavuz",
+      "II. Abdülhamid"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which sultan conquered Constantinople in 1453?",
+    "choicesEn": [
+      "Mehmed the Conqueror",
+      "Suleiman",
+      "Selim I",
+      "Abdulhamid II"
+    ]
+  },
+  {
+    "id": "osm-kanuni",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Osmanlı tarihinde en uzun süre tahtta kalan padişah kimdir?",
+    "choices": [
+      "Kanuni Sultan Süleyman",
+      "Fatih",
+      "III. Selim",
+      "II. Mahmut"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who was the longest-reigning Ottoman sultan?",
+    "choicesEn": [
+      "Suleiman the Magnificent",
+      "Mehmed II",
+      "Selim III",
+      "Mahmud II"
+    ]
+  },
+  {
+    "id": "osm-devsirme",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Osmanlı'da 'devşirme' sistemi neydi?",
+    "choices": [
+      "Hristiyan çocukların askeri/bürokrasiye alınması",
+      "Vergi toplama usulü",
+      "Toprak dağıtımı",
+      "Saray düğünü"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was the Ottoman 'devshirme' system?",
+    "choicesEn": [
+      "Recruiting Christian boys into the military/administration",
+      "A tax method",
+      "Land distribution",
+      "A palace wedding"
+    ]
+  },
+  {
+    "id": "osm-yeniceri",
+    "category": "Osmanlı",
+    "difficulty": "zor",
+    "text": "Yeniçeri ordusunun mensup olduğu ocak grubunun adı nedir?",
+    "choices": [
+      "Kapıkulu ocakları",
+      "Sipahi ocağı",
+      "Tımarlı ocakları",
+      "Azap ocağı"
+    ],
+    "correctIndex": 0,
+    "textEn": "The Janissary corps belonged to which group of regiments?",
+    "choicesEn": [
+      "The Kapıkulu corps",
+      "The Sipahi",
+      "The Timarlı",
+      "The Azab"
+    ]
+  },
+  {
+    "id": "osm-topkapi",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Topkapı Sarayı'nı inşa ettiren padişah kimdir?",
+    "choices": [
+      "Fatih Sultan Mehmet",
+      "Kanuni",
+      "I. Murat",
+      "II. Bayezid"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which sultan commissioned Topkapı Palace?",
+    "choicesEn": [
+      "Mehmed II",
+      "Suleiman",
+      "Murad I",
+      "Bayezid II"
+    ]
+  },
+  {
+    "id": "osm-sadrazam",
+    "category": "Osmanlı",
+    "difficulty": "kolay",
+    "text": "Osmanlı'da 'sadrazam' bugünkü hangi göreve denk gelir?",
+    "choices": [
+      "Başbakan",
+      "Cumhurbaşkanı",
+      "Genelkurmay Başkanı",
+      "İçişleri Bakanı"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which modern office corresponds to the Ottoman 'grand vizier'?",
+    "choicesEn": [
+      "Prime Minister",
+      "President",
+      "Chief of Staff",
+      "Interior Minister"
+    ]
+  },
+  {
+    "id": "osm-tanzimat",
+    "category": "Osmanlı",
+    "difficulty": "zor",
+    "text": "Tanzimat Fermanı hangi yılda ilan edilmiştir?",
+    "choices": [
+      "1839",
+      "1453",
+      "1808",
+      "1876"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which year was the Tanzimat edict proclaimed?",
+    "choicesEn": [
+      "1839",
+      "1453",
+      "1808",
+      "1876"
+    ]
+  },
+  {
+    "id": "osm-muhtesem",
+    "category": "Osmanlı",
+    "difficulty": "kolay",
+    "text": "Batı'da Kanuni Sultan Süleyman hangi lakapla bilinir?",
+    "choices": [
+      "Muhteşem Süleyman",
+      "Korkusuz Süleyman",
+      "Adil Süleyman",
+      "Veli Süleyman"
+    ],
+    "correctIndex": 0,
+    "textEn": "By what epithet is Suleiman known in the West?",
+    "choicesEn": [
+      "Suleiman the Magnificent",
+      "Suleiman the Fearless",
+      "Suleiman the Just",
+      "Suleiman the Saint"
+    ]
+  },
+  {
+    "id": "osm-son",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Osmanlı Devleti'nin son padişahı kimdir?",
+    "choices": [
+      "VI. Mehmet (Vahdeddin)",
+      "II. Abdülhamid",
+      "V. Murat",
+      "Abdülmecid"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who was the last Ottoman sultan?",
+    "choicesEn": [
+      "Mehmed VI (Vahdeddin)",
+      "Abdulhamid II",
+      "Murad V",
+      "Abdulmecid"
+    ]
+  },
+  {
+    "id": "osm-lale",
+    "category": "Osmanlı",
+    "difficulty": "zor",
+    "text": "Lale Devri hangi padişah döneminde yaşanmıştır?",
+    "choices": [
+      "III. Ahmet",
+      "Kanuni",
+      "II. Mahmut",
+      "I. Abdülhamid"
+    ],
+    "correctIndex": 0,
+    "textEn": "During whose reign did the Tulip Era occur?",
+    "choicesEn": [
+      "Ahmed III",
+      "Suleiman",
+      "Mahmud II",
+      "Abdulhamid I"
+    ]
+  },
+  {
+    "id": "osm-valide",
+    "category": "Osmanlı",
+    "difficulty": "kolay",
+    "text": "Osmanlı'da padişahın annesine verilen unvan nedir?",
+    "choices": [
+      "Valide Sultan",
+      "Sultan Hatun",
+      "Haseki Ağa",
+      "Hatice"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was the title of the Ottoman sultan's mother?",
+    "choicesEn": [
+      "Valide Sultan",
+      "Sultan Hatun",
+      "Haseki Agha",
+      "Hatice"
+    ]
+  },
+  {
+    "id": "osm-divan",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Osmanlı'da 'Divan-ı Hümayun' neydi?",
+    "choices": [
+      "Devlet işlerinin görüşüldüğü konsey",
+      "Saray mutfağı",
+      "Padişahın kütüphanesi",
+      "Tımar defteri"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was the Ottoman 'Divan-ı Hümayun'?",
+    "choicesEn": [
+      "The council for state affairs",
+      "The palace kitchen",
+      "The sultan's library",
+      "A land registry"
+    ]
+  },
+  {
+    "id": "osm-kizilelma",
+    "category": "Osmanlı",
+    "difficulty": "zor",
+    "text": "Osmanlı fetih geleneğinde 'Kızıl Elma' neyi simgeler?",
+    "choices": [
+      "Bir sonraki büyük fetih hedefini",
+      "Altın sikkeyi",
+      "Padişah tacını",
+      "Topkapı hazinesini"
+    ],
+    "correctIndex": 0,
+    "textEn": "In Ottoman tradition, what did the 'Red Apple' symbolize?",
+    "choicesEn": [
+      "The next great conquest target",
+      "A gold coin",
+      "The sultan's crown",
+      "The Topkapı treasury"
+    ]
+  },
+  {
+    "id": "osm-baskent",
+    "category": "Osmanlı",
+    "difficulty": "orta",
+    "text": "Osmanlı'nın İstanbul'dan önceki başkenti hangi şehirdi?",
+    "choices": [
+      "Edirne",
+      "Bursa",
+      "Konya",
+      "Kütahya"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which city was the Ottoman capital before Constantinople?",
+    "choicesEn": [
+      "Edirne",
+      "Bursa",
+      "Konya",
+      "Kütahya"
+    ]
+  },
+  {
+    "id": "osm-donanim",
+    "category": "Osmanlı",
+    "difficulty": "zor",
+    "text": "Osmanlı donanmasının başkomutanına verilen unvan nedir?",
+    "choices": [
+      "Kaptan-ı Derya",
+      "Reis Paşa",
+      "Serdar-ı Ekrem",
+      "Derya Beyi"
+    ],
+    "correctIndex": 0,
+    "textEn": "What title was given to the Ottoman fleet commander?",
+    "choicesEn": [
+      "Kapudan Pasha",
+      "Reis Pasha",
+      "Serdar",
+      "Sea Bey"
+    ]
+  },
+  {
+    "id": "halk-karagoz",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Hacivat ve Karagöz ne tür bir gösteridir?",
+    "choices": [
+      "Gölge oyunu",
+      "Kukla operası",
+      "Pandomim",
+      "Meddah dinletisi"
+    ],
+    "correctIndex": 0,
+    "textEn": "What kind of show is Hacivat and Karagöz?",
+    "choicesEn": [
+      "A shadow play",
+      "A puppet opera",
+      "A pantomime",
+      "A storyteller recital"
+    ]
+  },
+  {
+    "id": "halk-nasreddin",
+    "category": "Halk Kültürü",
+    "difficulty": "orta",
+    "text": "Nasreddin Hoca fıkraları hangi döneme ve devlete dayanır?",
+    "choices": [
+      "13. yüzyıl Selçuklu",
+      "19. yüzyıl Osmanlı",
+      "8. yüzyıl Abbasi",
+      "Cumhuriyet dönemi"
+    ],
+    "correctIndex": 0,
+    "textEn": "Nasreddin Hodja tales date to which era?",
+    "choicesEn": [
+      "13th-century Seljuks",
+      "19th-century Ottomans",
+      "8th-century Abbasids",
+      "The Republic era"
+    ]
+  },
+  {
+    "id": "halk-zeybek",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Zeybek oyunu Türkiye'nin hangi bölgesine aittir?",
+    "choices": [
+      "Ege",
+      "İç Anadolu",
+      "Karadeniz",
+      "Doğu Anadolu"
+    ],
+    "correctIndex": 0,
+    "textEn": "The zeybek dance belongs to which Turkish region?",
+    "choicesEn": [
+      "The Aegean",
+      "Central Anatolia",
+      "The Black Sea",
+      "Eastern Anatolia"
+    ]
+  },
+  {
+    "id": "halk-horon",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Horon halk oyunu hangi bölgenin kültürüdür?",
+    "choices": [
+      "Karadeniz",
+      "Akdeniz",
+      "Ege",
+      "Güneydoğu"
+    ],
+    "correctIndex": 0,
+    "textEn": "The horon folk dance is from which region?",
+    "choicesEn": [
+      "The Black Sea",
+      "The Mediterranean",
+      "The Aegean",
+      "The Southeast"
+    ]
+  },
+  {
+    "id": "halk-meddah",
+    "category": "Halk Kültürü",
+    "difficulty": "orta",
+    "text": "'Meddah' geleneğinde gösteri nasıl yapılır?",
+    "choices": [
+      "Tek kişi taklitlerle hikaye anlatır",
+      "Koro şarkı söyler",
+      "İki kişi diyalog oynar",
+      "Kukla oynatılır"
+    ],
+    "correctIndex": 0,
+    "textEn": "How is a 'meddah' performance done?",
+    "choicesEn": [
+      "One person tells tales with impressions",
+      "A choir sings",
+      "Two people play a dialogue",
+      "Puppets are used"
+    ]
+  },
+  {
+    "id": "halk-elibelinde",
+    "category": "Halk Kültürü",
+    "difficulty": "zor",
+    "text": "Türk halılarındaki ünlü kadın figürlü motif hangisidir?",
+    "choices": [
+      "Elibelinde",
+      "Kuşkanat",
+      "Su yolu",
+      "Ağaç hayat"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the famous woman-figure motif on Turkish carpets?",
+    "choicesEn": [
+      "Elibelinde",
+      "Birdwing",
+      "Waterway",
+      "Tree of life"
+    ]
+  },
+  {
+    "id": "halk-ebru",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Ebru sanatı hangi teknikle yapılır?",
+    "choices": [
+      "Su yüzeyine boya dökme",
+      "Çamur şekillendirme",
+      "Ahşap yakma",
+      "Tezhip"
+    ],
+    "correctIndex": 0,
+    "textEn": "How is the art of ebru (marbling) made?",
+    "choicesEn": [
+      "Floating paint on water",
+      "Shaping clay",
+      "Burning wood",
+      "Illumination"
+    ]
+  },
+  {
+    "id": "halk-saz",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Aşık geleneğinde ozanların temel çalgısı hangisidir?",
+    "choices": [
+      "Saz (bağlama)",
+      "Ney",
+      "Kemençe",
+      "Davul"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the main instrument of the ashik (bard) tradition?",
+    "choicesEn": [
+      "The saz (baglama)",
+      "The ney",
+      "The kemence",
+      "The drum"
+    ]
+  },
+  {
+    "id": "halk-nevruz",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Nevruz hangi mevsimin gelişini kutlar?",
+    "choices": [
+      "Bahar",
+      "Yaz",
+      "Kış",
+      "Sonbahar"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which season does Nowruz celebrate the arrival of?",
+    "choicesEn": [
+      "Spring",
+      "Summer",
+      "Winter",
+      "Autumn"
+    ]
+  },
+  {
+    "id": "halk-asik",
+    "category": "Halk Kültürü",
+    "difficulty": "orta",
+    "text": "Köroğlu ve Dadaloğlu hangi geleneğin ozanlarıdır?",
+    "choices": [
+      "Aşık (ozan) edebiyatı",
+      "Divan edebiyatı",
+      "Tekke edebiyatı",
+      "Servet-i Fünun"
+    ],
+    "correctIndex": 0,
+    "textEn": "Koroglu and Dadaloglu are bards of which tradition?",
+    "choicesEn": [
+      "The ashik (minstrel) literature",
+      "Divan literature",
+      "Tekke literature",
+      "Servet-i Fünun"
+    ]
+  },
+  {
+    "id": "halk-ortaoyunu",
+    "category": "Halk Kültürü",
+    "difficulty": "zor",
+    "text": "Orta oyunundaki iki baş karakter hangileridir?",
+    "choices": [
+      "Kavuklu ve Pişekar",
+      "Hacivat ve Karagöz",
+      "Karagöz ve Tuzsuz",
+      "Pulat ve Naşit"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who are the two main characters of the orta oyunu?",
+    "choicesEn": [
+      "Kavuklu and Pisekar",
+      "Hacivat and Karagoz",
+      "Karagoz and Tuzsuz",
+      "Pulat and Nasit"
+    ]
+  },
+  {
+    "id": "halk-hidrellez",
+    "category": "Halk Kültürü",
+    "difficulty": "orta",
+    "text": "Hıdrellez geleneksel olarak hangi gün kutlanır?",
+    "choices": [
+      "6 Mayıs",
+      "21 Mart",
+      "23 Nisan",
+      "30 Ağustos"
+    ],
+    "correctIndex": 0,
+    "textEn": "Hidrellez is traditionally celebrated on which day?",
+    "choicesEn": [
+      "May 6",
+      "March 21",
+      "April 23",
+      "August 30"
+    ]
+  },
+  {
+    "id": "halk-nazar",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Nazar boncuğu ne amaçla taşınır?",
+    "choices": [
+      "Kem gözden korunmak",
+      "Şans getirsin diye",
+      "Süs eşyası",
+      "Tılsım"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the evil-eye bead (nazar) worn for?",
+    "choicesEn": [
+      "Protection from the evil eye",
+      "Good luck",
+      "Decoration",
+      "As a talisman"
+    ]
+  },
+  {
+    "id": "halk-kinagecesi",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Kına gecesi hangi törenin parçasıdır?",
+    "choices": [
+      "Düğün",
+      "Nişan",
+      "Sünnet",
+      "Mevlit"
+    ],
+    "correctIndex": 0,
+    "textEn": "The henna night is part of which ceremony?",
+    "choicesEn": [
+      "The wedding",
+      "The engagement",
+      "Circumcision",
+      "The mevlit"
+    ]
+  },
+  {
+    "id": "halk-baspehlivan",
+    "category": "Halk Kültürü",
+    "difficulty": "orta",
+    "text": "Kırkpınar yağlı güreşlerinde şampiyona verilen unvan nedir?",
+    "choices": [
+      "Başpehlivan",
+      "Çağatay",
+      "Deliormanlı",
+      "Yiğit"
+    ],
+    "correctIndex": 0,
+    "textEn": "What title goes to the Kirkpinar oil-wrestling champion?",
+    "choicesEn": [
+      "Baspehlivan (chief wrestler)",
+      "Cagatay",
+      "Deliormanli",
+      "Yigit"
+    ]
+  },
+  {
+    "id": "halk-turku",
+    "category": "Halk Kültürü",
+    "difficulty": "kolay",
+    "text": "Anadolu'da sözlü gelenekte aktarılan halk şarkılarına ne denir?",
+    "choices": [
+      "Türkü",
+      "İlahi",
+      "Mars",
+      "Longa"
+    ],
+    "correctIndex": 0,
+    "textEn": "What are Anatolian orally transmitted folk songs called?",
+    "choicesEn": [
+      "Türkü",
+      "Hymns",
+      "Marches",
+      "Longa"
+    ]
+  },
+  {
+    "id": "sos-twitter-x",
+    "category": "Sosyal Medya",
+    "difficulty": "orta",
+    "text": "Twitter hangi yılda 'X' adını aldı?",
+    "choices": [
+      "2023",
+      "2021",
+      "2025",
+      "2019"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which year did Twitter become 'X'?",
+    "choicesEn": [
+      "2023",
+      "2021",
+      "2025",
+      "2019"
+    ]
+  },
+  {
+    "id": "sos-instakurucu",
+    "category": "Sosyal Medya",
+    "difficulty": "zor",
+    "text": "Instagram'ın iki kurucusu kimlerdir?",
+    "choices": [
+      "Kevin Systrom ve Mike Krieger",
+      "Mark Zuckerberg ve Eduardo Saverin",
+      "Evan Spiegel ve Bobby Murphy",
+      "Jack Dorsey ve Biz Stone"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who are Instagram's two founders?",
+    "choicesEn": [
+      "Kevin Systrom and Mike Krieger",
+      "Mark Zuckerberg and Eduardo Saverin",
+      "Evan Spiegel and Bobby Murphy",
+      "Jack Dorsey and Biz Stone"
+    ]
+  },
+  {
+    "id": "sos-yilkvideo",
+    "category": "Sosyal Medya",
+    "difficulty": "orta",
+    "text": "YouTube'a yüklenen ilk videonun adı nedir?",
+    "choices": [
+      "Me at the Zoo",
+      "Charlie Bit My Finger",
+      "Baby Shark",
+      "Gangnam Style"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was the first video ever uploaded to YouTube?",
+    "choicesEn": [
+      "Me at the Zoo",
+      "Charlie Bit My Finger",
+      "Baby Shark",
+      "Gangnam Style"
+    ]
+  },
+  {
+    "id": "sos-tiktok",
+    "category": "Sosyal Medya",
+    "difficulty": "orta",
+    "text": "TikTok'un birleştiği ve adını aldığı uygulama hangisiydi?",
+    "choices": [
+      "Musical.ly",
+      "Vine",
+      "Dubsmash",
+      "Byte"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which app merged into and became TikTok?",
+    "choicesEn": [
+      "Musical.ly",
+      "Vine",
+      "Dubsmash",
+      "Byte"
+    ]
+  },
+  {
+    "id": "sos-whatsapp",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "WhatsApp'ı 2014'te satın alan şirket hangisidir?",
+    "choices": [
+      "Meta (Facebook)",
+      "Google",
+      "Apple",
+      "Microsoft"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which company bought WhatsApp in 2014?",
+    "choicesEn": [
+      "Meta (Facebook)",
+      "Google",
+      "Apple",
+      "Microsoft"
+    ]
+  },
+  {
+    "id": "sos-mrbeast",
+    "category": "Sosyal Medya",
+    "difficulty": "orta",
+    "text": "Bireysel olarak en çok aboneye sahip YouTube kanalı kimindir?",
+    "choices": [
+      "MrBeast",
+      "PewDiePie",
+      "T-Series",
+      "Markiplier"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who runs the most-subscribed individual YouTube channel?",
+    "choicesEn": [
+      "MrBeast",
+      "PewDiePie",
+      "T-Series",
+      "Markiplier"
+    ]
+  },
+  {
+    "id": "sos-facebook",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "Facebook'un kurucusu kimdir?",
+    "choices": [
+      "Mark Zuckerberg",
+      "Bill Gates",
+      "Elon Musk",
+      "Jeff Bezos"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who founded Facebook?",
+    "choicesEn": [
+      "Mark Zuckerberg",
+      "Bill Gates",
+      "Elon Musk",
+      "Jeff Bezos"
+    ]
+  },
+  {
+    "id": "sos-hashtag",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "'Hashtag' simgesi hangi işarettir?",
+    "choices": [
+      "# (diyez)",
+      "@ (at)",
+      "& (ve)",
+      "* (yıldız)"
+    ],
+    "correctIndex": 0,
+    "textEn": "What symbol is a hashtag?",
+    "choicesEn": [
+      "# (number sign)",
+      "@ (at)",
+      "& (ampersand)",
+      "* (asterisk)"
+    ]
+  },
+  {
+    "id": "sos-viral",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "İçeriğin hızla milyonlarca kişiye yayılmasına ne denir?",
+    "choices": [
+      "Viral olmak",
+      "Trend olmak",
+      "Fenomenlik",
+      "Akorlanmak"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is it called when content rapidly spreads to millions?",
+    "choicesEn": [
+      "Going viral",
+      "Trending",
+      "Becoming famous",
+      "Tuning"
+    ]
+  },
+  {
+    "id": "sos-reddit",
+    "category": "Sosyal Medya",
+    "difficulty": "zor",
+    "text": "Reddit'in ünlü sloganı nedir?",
+    "choices": [
+      "'The front page of the internet'",
+      "'What's happening'",
+      "'Share everything'",
+      "'Connect the world'"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is Reddit's famous slogan?",
+    "choicesEn": [
+      "'The front page of the internet'",
+      "'What's happening'",
+      "'Share everything'",
+      "'Connect the world'"
+    ]
+  },
+  {
+    "id": "sos-discord",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "Discord ilk olarak hangi kitle için tasarlanmıştı?",
+    "choices": [
+      "Oyuncular",
+      "İş insanları",
+      "Öğretmenler",
+      "Müzisyenler"
+    ],
+    "correctIndex": 0,
+    "textEn": "Discord was originally designed for which audience?",
+    "choicesEn": [
+      "Gamers",
+      "Businesspeople",
+      "Teachers",
+      "Musicians"
+    ]
+  },
+  {
+    "id": "sos-twitch",
+    "category": "Sosyal Medya",
+    "difficulty": "zor",
+    "text": "Twitch'in ilk adı ve kök platformu hangisidir?",
+    "choices": [
+      "Justin.tv",
+      "Ustream",
+      "Periscope",
+      "Mixer"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was Twitch originally called?",
+    "choicesEn": [
+      "Justin.tv",
+      "Ustream",
+      "Periscope",
+      "Mixer"
+    ]
+  },
+  {
+    "id": "sos-myspace",
+    "category": "Sosyal Medya",
+    "difficulty": "zor",
+    "text": "Facebook'tan önce dünyanın en büyük sosyal ağı hangisiydi?",
+    "choices": [
+      "MySpace",
+      "Friendster",
+      "Orkut",
+      "Hi5"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which was the world's biggest social network before Facebook?",
+    "choicesEn": [
+      "MySpace",
+      "Friendster",
+      "Orkut",
+      "Hi5"
+    ]
+  },
+  {
+    "id": "sos-influencer",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "Çevrim içi takipçi kitlesini etkileyen kişilere ne denir?",
+    "choices": [
+      "İnfluencer (fenomen)",
+      "Moderatör",
+      "Editör",
+      "Blog yazarı"
+    ],
+    "correctIndex": 0,
+    "textEn": "What are people who influence online follower bases called?",
+    "choicesEn": [
+      "Influencers",
+      "Moderators",
+      "Editors",
+      "Bloggers"
+    ]
+  },
+  {
+    "id": "sos-snap",
+    "category": "Sosyal Medya",
+    "difficulty": "kolay",
+    "text": "Snapchat'in ayırt edici özelliği nedir?",
+    "choices": [
+      "Kendini imha eden mesajlar",
+      "Uzun blog yazıları",
+      "Haber akışı",
+      "Profesyonel ağ"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is Snapchat's signature feature?",
+    "choicesEn": [
+      "Self-destructing messages",
+      "Long blog posts",
+      "A news feed",
+      "Professional networking"
+    ]
+  },
+  {
+    "id": "sos-insta-yil",
+    "category": "Sosyal Medya",
+    "difficulty": "orta",
+    "text": "Facebook Instagram'ı hangi yılda satın aldı?",
+    "choices": [
+      "2012",
+      "2010",
+      "2014",
+      "2016"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which year did Facebook acquire Instagram?",
+    "choicesEn": [
+      "2012",
+      "2010",
+      "2014",
+      "2016"
+    ]
+  },
+  {
+    "id": "prog-python",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "Python dilinin adı nereden gelir?",
+    "choices": [
+      "Monty Python komedi grubu",
+      "Piton yılanı",
+      "Kurucusunun soyadı",
+      "Yunanca 'kod' kelimesi"
+    ],
+    "correctIndex": 0,
+    "textEn": "Where does the Python language's name come from?",
+    "choicesEn": [
+      "The Monty Python comedy group",
+      "The python snake",
+      "Its creator's surname",
+      "Greek for 'code'"
+    ]
+  },
+  {
+    "id": "prog-bug",
+    "category": "Programlama",
+    "difficulty": "zor",
+    "text": "'Bug' (hata) teriminin kökeni nedir?",
+    "choices": [
+      "Bilgisayar rölesine giren gerçek bir güve",
+      "Bir programcının lakabı",
+      "Bir klavye tuşu",
+      "İlk bilgisayar oyunu"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the origin of the term 'bug'?",
+    "choicesEn": [
+      "A real moth in a computer relay",
+      "A programmer's nickname",
+      "A keyboard key",
+      "The first computer game"
+    ]
+  },
+  {
+    "id": "prog-html",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "HTML ne tür bir dildir?",
+    "choices": [
+      "İşaretleme (markup) dili",
+      "Programlama dili",
+      "Veritabanı dili",
+      "Derleyici"
+    ],
+    "correctIndex": 0,
+    "textEn": "What kind of language is HTML?",
+    "choicesEn": [
+      "A markup language",
+      "A programming language",
+      "A database language",
+      "A compiler"
+    ]
+  },
+  {
+    "id": "prog-ada",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "Tarihin ilk bilgisayar programcısı sayılan kişi kimdir?",
+    "choices": [
+      "Ada Lovelace",
+      "Alan Turing",
+      "Charles Babbage",
+      "Grace Hopper"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who is regarded as the first computer programmer?",
+    "choicesEn": [
+      "Ada Lovelace",
+      "Alan Turing",
+      "Charles Babbage",
+      "Grace Hopper"
+    ]
+  },
+  {
+    "id": "prog-helloworld",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "'Hello, World!' geleneği hangi dil kitabıyla ünlendi?",
+    "choices": [
+      "C (Kernighan & Ritchie)",
+      "Python",
+      "BASIC",
+      "Pascal"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which language's book popularized 'Hello, World!'?",
+    "choicesEn": [
+      "C (Kernighan & Ritchie)",
+      "Python",
+      "BASIC",
+      "Pascal"
+    ]
+  },
+  {
+    "id": "prog-js",
+    "category": "Programlama",
+    "difficulty": "zor",
+    "text": "JavaScript'in ilk adı nedir?",
+    "choices": [
+      "Mocha / LiveScript",
+      "ECMA",
+      "JavaLite",
+      "NetScript"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was JavaScript's original name?",
+    "choicesEn": [
+      "Mocha / LiveScript",
+      "ECMA",
+      "JavaLite",
+      "NetScript"
+    ]
+  },
+  {
+    "id": "prog-git",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "Git sürüm kontrol sistemini kim yazdı?",
+    "choices": [
+      "Linus Torvalds",
+      "Richard Stallman",
+      "Dennis Ritchie",
+      "Ken Thompson"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who wrote the Git version-control system?",
+    "choicesEn": [
+      "Linus Torvalds",
+      "Richard Stallman",
+      "Dennis Ritchie",
+      "Ken Thompson"
+    ]
+  },
+  {
+    "id": "prog-compile",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "'Derleme' (compile) ne demektir?",
+    "choices": [
+      "Kaynak kodu makine diline çevirmek",
+      "Programı silemek",
+      "Kodu sıkıştırmak",
+      "Test yazmak"
+    ],
+    "correctIndex": 0,
+    "textEn": "What does 'compiling' mean?",
+    "choicesEn": [
+      "Translating source code into machine code",
+      "Deleting a program",
+      "Compressing code",
+      "Writing tests"
+    ]
+  },
+  {
+    "id": "prog-sql",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "SQL ne işe yarar?",
+    "choices": [
+      "Veritabanlarını sorgular",
+      "Grafik çizer",
+      "Web sayfası tasarlar",
+      "İşletim sistemi yazar"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is SQL used for?",
+    "choicesEn": [
+      "Querying databases",
+      "Drawing graphics",
+      "Designing web pages",
+      "Writing operating systems"
+    ]
+  },
+  {
+    "id": "prog-foobar",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "Kodlarda yer tutucu olarak kullanılan klasik ikili nedir?",
+    "choices": [
+      "Foo ve Bar",
+      "Ali ve Veli",
+      "X ve Y",
+      "Tom ve Jerry"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which classic pair serves as placeholder names in code?",
+    "choicesEn": [
+      "Foo and Bar",
+      "Ali and Veli",
+      "X and Y",
+      "Tom and Jerry"
+    ]
+  },
+  {
+    "id": "prog-tux",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "Linux'un penguen maskotunun adı nedir?",
+    "choices": [
+      "Tux",
+      "Pingu",
+      "Skipper",
+      "Tuxedo"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the name of Linux's penguin mascot?",
+    "choicesEn": [
+      "Tux",
+      "Pingu",
+      "Skipper",
+      "Tuxedo"
+    ]
+  },
+  {
+    "id": "prog-pip",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "Python'un resmi paket yöneticisi hangisidir?",
+    "choices": [
+      "pip",
+      "npm",
+      "apt",
+      "brew"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is Python's official package manager?",
+    "choicesEn": [
+      "pip",
+      "npm",
+      "apt",
+      "brew"
+    ]
+  },
+  {
+    "id": "prog-stack",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "'Stack overflow' teknik anlamda nedir?",
+    "choices": [
+      "Çağrı yığınının belleği taşırması",
+      "Site adı",
+      "Klavye kısayolu",
+      "Ekran kartı hatası"
+    ],
+    "correctIndex": 0,
+    "textEn": "Technically, what is a 'stack overflow'?",
+    "choicesEn": [
+      "The call stack exceeding its memory",
+      "A website name",
+      "A keyboard shortcut",
+      "A GPU error"
+    ]
+  },
+  {
+    "id": "prog-creeper",
+    "category": "Programlama",
+    "difficulty": "zor",
+    "text": "Bilinen ilk bilgisayar virüsünün (1971) adı nedir?",
+    "choices": [
+      "Creeper",
+      "ILOVEYOU",
+      "Morris",
+      "Stuxnet"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was the name of the first known computer virus (1971)?",
+    "choicesEn": [
+      "Creeper",
+      "ILOVEYOU",
+      "Morris",
+      "Stuxnet"
+    ]
+  },
+  {
+    "id": "prog-json",
+    "category": "Programlama",
+    "difficulty": "orta",
+    "text": "JSON'un açılımı nedir?",
+    "choices": [
+      "JavaScript Object Notation",
+      "Java Standard Object Network",
+      "Joint System Open Notation",
+      "Java Serial Output Notation"
+    ],
+    "correctIndex": 0,
+    "textEn": "What does JSON stand for?",
+    "choicesEn": [
+      "JavaScript Object Notation",
+      "Java Standard Object Network",
+      "Joint System Open Notation",
+      "Java Serial Output Notation"
+    ]
+  },
+  {
+    "id": "prog-mavi",
+    "category": "Programlama",
+    "difficulty": "kolay",
+    "text": "'Mavi ölüm ekranı' (BSOD) hangi işletim sistemiyle özdeşleşir?",
+    "choices": [
+      "Windows",
+      "Linux",
+      "macOS",
+      "DOS"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which operating system is associated with the 'blue screen of death'?",
+    "choicesEn": [
+      "Windows",
+      "Linux",
+      "macOS",
+      "DOS"
+    ]
+  },
+  {
+    "id": "sahne-soprano",
+    "category": "Sahne Sanatları",
+    "difficulty": "kolay",
+    "text": "Operada en tiz (en yüksek) kadın sesi hangisidir?",
+    "choices": [
+      "Soprano",
+      "Alto",
+      "Mezzo-soprano",
+      "Kontralto"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the highest female voice type in opera?",
+    "choicesEn": [
+      "Soprano",
+      "Alto",
+      "Mezzo-soprano",
+      "Contralto"
+    ]
+  },
+  {
+    "id": "sahne-balerin",
+    "category": "Sahne Sanatları",
+    "difficulty": "kolay",
+    "text": "Balede kadın dansçıya ne denir?",
+    "choices": [
+      "Balerin",
+      "Dansöz",
+      "Primadonna",
+      "Koro"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is a female ballet dancer called?",
+    "choicesEn": [
+      "Ballerina",
+      "Dancer",
+      "Prima donna",
+      "Chorus"
+    ]
+  },
+  {
+    "id": "sahne-kugu",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "'Kuğu Gölü' balesinin bestecisi kimdir?",
+    "choices": [
+      "Çaykovski",
+      "Mozart",
+      "Bach",
+      "Ravel"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who composed the 'Swan Lake' ballet?",
+    "choicesEn": [
+      "Tchaikovsky",
+      "Mozart",
+      "Bach",
+      "Ravel"
+    ]
+  },
+  {
+    "id": "sahne-operaulk",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "Opera hangi ülkede doğmuştur?",
+    "choices": [
+      "İtalya",
+      "Fransa",
+      "Avusturya",
+      "Almanya"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which country was opera born?",
+    "choicesEn": [
+      "Italy",
+      "France",
+      "Austria",
+      "Germany"
+    ]
+  },
+  {
+    "id": "sahne-pointe",
+    "category": "Sahne Sanatları",
+    "difficulty": "zor",
+    "text": "Balerinlerin parmak uçlarında dans etmesine ne denir?",
+    "choices": [
+      "Pointe",
+      "Plié",
+      "Pirouette",
+      "Arabesque"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is dancing on the tips of the toes called in ballet?",
+    "choicesEn": [
+      "Pointe",
+      "Plié",
+      "Pirouette",
+      "Arabesque"
+    ]
+  },
+  {
+    "id": "sahne-sef",
+    "category": "Sahne Sanatları",
+    "difficulty": "kolay",
+    "text": "Orkestrayı yöneten kişiye ne denir?",
+    "choices": [
+      "Şef (maestro)",
+      "Solist",
+      "Besteci",
+      "Sponsor"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the person conducting an orchestra called?",
+    "choicesEn": [
+      "The conductor (maestro)",
+      "The soloist",
+      "The composer",
+      "The sponsor"
+    ]
+  },
+  {
+    "id": "sahne-arya",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "Opera içinde tek başına söylenen uzun soloya ne denir?",
+    "choices": [
+      "Arya",
+      "Resitatif",
+      "Uvertür",
+      "Koro"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is a long solo song within an opera called?",
+    "choicesEn": [
+      "An aria",
+      "A recitative",
+      "An overture",
+      "A chorus"
+    ]
+  },
+  {
+    "id": "sahne-broadway",
+    "category": "Sahne Sanatları",
+    "difficulty": "kolay",
+    "text": "Broadway müzikal bölgesi hangi şehirdedir?",
+    "choices": [
+      "New York",
+      "Londra",
+      "Paris",
+      "Los Angeles"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which city is the Broadway theater district?",
+    "choicesEn": [
+      "New York",
+      "London",
+      "Paris",
+      "Los Angeles"
+    ]
+  },
+  {
+    "id": "sahne-rossini",
+    "category": "Sahne Sanatları",
+    "difficulty": "zor",
+    "text": "'Sevil Berberi' operasının bestecisi kimdir?",
+    "choices": [
+      "Rossini",
+      "Verdi",
+      "Puccini",
+      "Bizet"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who composed 'The Barber of Seville'?",
+    "choicesEn": [
+      "Rossini",
+      "Verdi",
+      "Puccini",
+      "Bizet"
+    ]
+  },
+  {
+    "id": "sahne-pandomim",
+    "category": "Sahne Sanatları",
+    "difficulty": "kolay",
+    "text": "Sözsüz, yalnız beden diliyle yapılan sahne sanatı nedir?",
+    "choices": [
+      "Pandomim (mime)",
+      "Stand-up",
+      "Operet",
+      "Kabare"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the wordless stage art using only body language?",
+    "choicesEn": [
+      "Pantomime (mime)",
+      "Stand-up",
+      "Operetta",
+      "Cabaret"
+    ]
+  },
+  {
+    "id": "sahne-findikkiran",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "'Fındıkkıran' balesi geleneksel olarak hangi dönemde sahnelenir?",
+    "choices": [
+      "Yılbaşı",
+      "Ramazan",
+      "Yaz sonu",
+      "Doğuş"
+    ],
+    "correctIndex": 0,
+    "textEn": "When is 'The Nutcracker' ballet traditionally staged?",
+    "choicesEn": [
+      "At New Year / Christmas",
+      "During Ramadan",
+      "Late summer",
+      "Easter"
+    ]
+  },
+  {
+    "id": "sahne-bariton",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "Operada tenor ile bas arasındaki orta kalınlıktaki erkek sesi nedir?",
+    "choices": [
+      "Bariton",
+      "Kastenato",
+      "Falsetto",
+      "Kontrbas"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the medium male voice between tenor and bass?",
+    "choicesEn": [
+      "Baritone",
+      "Castrato",
+      "Falsetto",
+      "Contrabass"
+    ]
+  },
+  {
+    "id": "sahne-balekok",
+    "category": "Sahne Sanatları",
+    "difficulty": "zor",
+    "text": "'Bale' kelimesi hangi dilden gelir?",
+    "choices": [
+      "İtalyanca (ballo — dans)",
+      "Fransızca (belle — güzel)",
+      "Yunanca (ballizein)",
+      "İspanyolca (baile)"
+    ],
+    "correctIndex": 0,
+    "textEn": "The word 'ballet' comes from which language?",
+    "choicesEn": [
+      "Italian (ballo — dance)",
+      "French (belle — beautiful)",
+      "Greek (ballizein)",
+      "Spanish (baile)"
+    ]
+  },
+  {
+    "id": "sahne-aksam",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "Müzikli sahnede perde arasındaki ara neye denir?",
+    "choices": [
+      "Antrakt",
+      "Fuaye",
+      "Kulis",
+      "Jenerik"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the break between acts on stage called?",
+    "choicesEn": [
+      "Intermission",
+      "Foyer",
+      "Backstage",
+      "Credits"
+    ]
+  },
+  {
+    "id": "sahne-mezzo",
+    "category": "Sahne Sanatları",
+    "difficulty": "zor",
+    "text": "Operada soprano ile kontralto arasındaki kadın sesi hangisidir?",
+    "choices": [
+      "Mezzo-soprano",
+      "Koloratur",
+      "Dramatik soprano",
+      "Lirik alto"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which female voice sits between soprano and contralto?",
+    "choicesEn": [
+      "Mezzo-soprano",
+      "Coloratura",
+      "Dramatic soprano",
+      "Lyric alto"
+    ]
+  },
+  {
+    "id": "sahne-turkiye",
+    "category": "Sahne Sanatları",
+    "difficulty": "orta",
+    "text": "İstanbul'daki ünlü opera ve sahne binası hangisidir?",
+    "choices": [
+      "Atatürk Kültür Merkezi (AKM)",
+      "Haliç Kongre Merkezi",
+      "Zorlu PSM",
+      "Harbiye Açıkhava"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which is Istanbul's famous opera and stage venue?",
+    "choicesEn": [
+      "Ataturk Cultural Center (AKM)",
+      "Halic Congress Center",
+      "Zorlu PSM",
+      "Harbiye Open-Air"
+    ]
+  },
+  {
+    "id": "efs-lochness",
+    "category": "Efsaneler",
+    "difficulty": "kolay",
+    "text": "Loch Ness canavarı efsanesi hangi ülkeye aittir?",
+    "choices": [
+      "İskoçya",
+      "İrlanda",
+      "Kanada",
+      "Norveç"
+    ],
+    "correctIndex": 0,
+    "textEn": "The Loch Ness monster legend belongs to which country?",
+    "choicesEn": [
+      "Scotland",
+      "Ireland",
+      "Canada",
+      "Norway"
+    ]
+  },
+  {
+    "id": "efs-bermuda",
+    "category": "Efsaneler",
+    "difficulty": "kolay",
+    "text": "'Bermuda Şeytan Üçgeni' hangi okyanustadır?",
+    "choices": [
+      "Atlantik",
+      "Pasifik",
+      "Hint Okyanusu",
+      "Arktik"
+    ],
+    "correctIndex": 0,
+    "textEn": "In which ocean is the 'Bermuda Triangle'?",
+    "choicesEn": [
+      "The Atlantic",
+      "The Pacific",
+      "The Indian Ocean",
+      "The Arctic"
+    ]
+  },
+  {
+    "id": "efs-yeti",
+    "category": "Efsaneler",
+    "difficulty": "kolay",
+    "text": "Yeti (korkunç kardan adam) hangi dağların efsanesidir?",
+    "choices": [
+      "Himalayalar",
+      "Alpler",
+      "And Dağları",
+      "Ural"
+    ],
+    "correctIndex": 0,
+    "textEn": "The Yeti (abominable snowman) is a legend of which mountains?",
+    "choicesEn": [
+      "The Himalayas",
+      "The Alps",
+      "The Andes",
+      "The Urals"
+    ]
+  },
+  {
+    "id": "efs-bigfoot",
+    "category": "Efsaneler",
+    "difficulty": "kolay",
+    "text": "Bigfoot (Koca Ayak) efsanesi hangi coğrafyada anlatılır?",
+    "choices": [
+      "Kuzey Amerika",
+      "Afrika",
+      "Avustralya",
+      "Avrupa"
+    ],
+    "correctIndex": 0,
+    "textEn": "The Bigfoot legend is told in which region?",
+    "choicesEn": [
+      "North America",
+      "Africa",
+      "Australia",
+      "Europe"
+    ]
+  },
+  {
+    "id": "efs-excalibur",
+    "category": "Efsaneler",
+    "difficulty": "orta",
+    "text": "Kral Arthur'un efsanevi kılıcının adı nedir?",
+    "choices": [
+      "Excalibur",
+      "Anduril",
+      "Glamdring",
+      "Gram"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the name of King Arthur's legendary sword?",
+    "choicesEn": [
+      "Excalibur",
+      "Anduril",
+      "Glamdring",
+      "Gram"
+    ]
+  },
+  {
+    "id": "efs-robin",
+    "category": "Efsaneler",
+    "difficulty": "orta",
+    "text": "Robin Hood'un üssü olan orman hangisidir?",
+    "choices": [
+      "Sherwood Ormanı",
+      "Black Forest",
+      "Sherk Ormanı",
+      "Nottingham Korusu"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which forest was Robin Hood's base?",
+    "choicesEn": [
+      "Sherwood Forest",
+      "Black Forest",
+      "Sherk Forest",
+      "Nottingham Grove"
+    ]
+  },
+  {
+    "id": "efs-platon",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "Atlantis efsanesini ilk yazan filozof kimdir?",
+    "choices": [
+      "Platon",
+      "Aristoteles",
+      "Sokrates",
+      "Herodot"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which philosopher first wrote about Atlantis?",
+    "choicesEn": [
+      "Plato",
+      "Aristotle",
+      "Socrates",
+      "Herodotus"
+    ]
+  },
+  {
+    "id": "efs-eldorado",
+    "category": "Efsaneler",
+    "difficulty": "orta",
+    "text": "'El Dorado' efsanesinde aranan şey nedir?",
+    "choices": [
+      "Altın şehir",
+      "Ölümsüzlük suyu",
+      "Kayıp kıta",
+      "Kristal kafatası"
+    ],
+    "correctIndex": 0,
+    "textEn": "What was sought in the 'El Dorado' legend?",
+    "choicesEn": [
+      "A city of gold",
+      "The fountain of youth",
+      "A lost continent",
+      "Crystal skulls"
+    ]
+  },
+  {
+    "id": "efs-genclik",
+    "category": "Efsaneler",
+    "difficulty": "kolay",
+    "text": "Ponce de León'un aradığı efsanevi kaynak hangisidir?",
+    "choices": [
+      "Gençlik Pınarı",
+      "Sonsuz nehir",
+      "Altın kuyu",
+      "Gökkuşağı"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which legendary spring did Ponce de León search for?",
+    "choicesEn": [
+      "The Fountain of Youth",
+      "An endless river",
+      "A golden well",
+      "A rainbow"
+    ]
+  },
+  {
+    "id": "efs-drakula",
+    "category": "Efsaneler",
+    "difficulty": "orta",
+    "text": "Drakula efsanesinin tarihî ilham kaynağı kimdir?",
+    "choices": [
+      "Kazıklı Voyvoda (Vlad III)",
+      "IV. İvan",
+      "Macar kralı",
+      "Ölümsüz Kont"
+    ],
+    "correctIndex": 0,
+    "textEn": "Who was the historical inspiration for the Dracula legend?",
+    "choicesEn": [
+      "Vlad the Impaler (Vlad III)",
+      "Ivan IV",
+      "A Hungarian king",
+      "Count Immortal"
+    ]
+  },
+  {
+    "id": "efs-hollanda",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "'Uçan Hollandalı' nedir?",
+    "choices": [
+      "Lanetli hayalet gemi",
+      "Bir korsan adı",
+      "Yelken sporu",
+      "Deniz feneri"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the 'Flying Dutchman'?",
+    "choicesEn": [
+      "A cursed ghost ship",
+      "A pirate's name",
+      "A sailing sport",
+      "A lighthouse"
+    ]
+  },
+  {
+    "id": "efs-shangrila",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "Ütopik Şangri-La efsanesi ilk hangi romanda geçti?",
+    "choices": [
+      "Kayıp Ufuklar (Lost Horizon)",
+      "Utopia",
+      "Gulliver",
+      "Yerdeniz"
+    ],
+    "correctIndex": 0,
+    "textEn": "The utopian Shangri-La first appeared in which novel?",
+    "choicesEn": [
+      "Lost Horizon",
+      "Utopia",
+      "Gulliver's Travels",
+      "Earthsea"
+    ]
+  },
+  {
+    "id": "efs-avalon",
+    "category": "Efsaneler",
+    "difficulty": "orta",
+    "text": "Efsanevi Avalon adası hangi kahramanın son dinlenme yeridir?",
+    "choices": [
+      "Kral Arthur",
+      "Robin Hood",
+      "Beowulf",
+      "Odysseus"
+    ],
+    "correctIndex": 0,
+    "textEn": "The legendary isle of Avalon is the resting place of which hero?",
+    "choicesEn": [
+      "King Arthur",
+      "Robin Hood",
+      "Beowulf",
+      "Odysseus"
+    ]
+  },
+  {
+    "id": "efs-chupacabra",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "Keçi emici 'Chupacabra' efsanesi hangi bölgeye aittir?",
+    "choices": [
+      "Latin Amerika",
+      "İskandinavya",
+      "Doğu Asya",
+      "Orta Doğu"
+    ],
+    "correctIndex": 0,
+    "textEn": "The goat-sucking 'Chupacabra' legend comes from where?",
+    "choicesEn": [
+      "Latin America",
+      "Scandinavia",
+      "East Asia",
+      "The Middle East"
+    ]
+  },
+  {
+    "id": "efs-beowulf",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "'Beowulf' destanı hangi kültüre aittir?",
+    "choices": [
+      "Anglo-Sakson (İngiliz)",
+      "Norse",
+      "Kelt",
+      "Frank"
+    ],
+    "correctIndex": 0,
+    "textEn": "The epic 'Beowulf' belongs to which culture?",
+    "choicesEn": [
+      "Anglo-Saxon (English)",
+      "Norse",
+      "Celtic",
+      "Frankish"
+    ]
+  },
+  {
+    "id": "efs-ouroboros",
+    "category": "Efsaneler",
+    "difficulty": "zor",
+    "text": "Kendi kuyruğunu yiyen yılan simgesinin adı nedir?",
+    "choices": [
+      "Ouroboros",
+      "Basilisk",
+      "Leviathan",
+      "Naga"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the symbol of a snake eating its own tail called?",
+    "choicesEn": [
+      "Ouroboros",
+      "Basilisk",
+      "Leviathan",
+      "Naga"
+    ]
+  },
+  {
+    "id": "kis-alpkuzye",
+    "category": "Kış Sporları",
+    "difficulty": "orta",
+    "text": "Kayak sporundaki iki ana disiplin hangileridir?",
+    "choices": [
+      "Alp ve Kuzey disiplini",
+      "Serbest ve klasik",
+      "Hız ve slalom",
+      "Yokuş ve düz"
+    ],
+    "correctIndex": 0,
+    "textEn": "What are the two main skiing disciplines?",
+    "choicesEn": [
+      "Alpine and Nordic",
+      "Freestyle and classic",
+      "Speed and slalom",
+      "Downhill and flat"
+    ]
+  },
+  {
+    "id": "kis-curlingtas",
+    "category": "Kış Sporları",
+    "difficulty": "zor",
+    "text": "Curling taşları hangi malzemeden yapılır?",
+    "choices": [
+      "Granit",
+      "Mermer",
+      "Obsidyen",
+      "Steatit"
+    ],
+    "correctIndex": 0,
+    "textEn": "What material are curling stones made of?",
+    "choicesEn": [
+      "Granite",
+      "Marble",
+      "Obsidian",
+      "Steatite"
+    ]
+  },
+  {
+    "id": "kis-puck",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Buz hokeyinde top yerine kullanılan cismin adı nedir?",
+    "choices": [
+      "Pak (puck)",
+      "Disk",
+      "Pul",
+      "Palet"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the disc used in ice hockey called?",
+    "choicesEn": [
+      "A puck",
+      "A disk",
+      "A pellet",
+      "A plate"
+    ]
+  },
+  {
+    "id": "kis-biatlon",
+    "category": "Kış Sporları",
+    "difficulty": "orta",
+    "text": "Biatlon hangi iki sporu birleştirir?",
+    "choices": [
+      "Kayak ve tüfek atışı",
+      "Paten ve kayak",
+      "Snowboard ve kayak",
+      "Kızak ve okçuluk"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which two sports does biathlon combine?",
+    "choicesEn": [
+      "Skiing and rifle shooting",
+      "Skating and skiing",
+      "Snowboard and skiing",
+      "Sledding and archery"
+    ]
+  },
+  {
+    "id": "kis-skeleton",
+    "category": "Kış Sporları",
+    "difficulty": "orta",
+    "text": "Skeleton kızağında sporcu nasıl kayar?",
+    "choices": [
+      "Yüzüstü, baş önde",
+      "Sırtüstü, ayak önde",
+      "Oturmuş",
+      "Yanlamasına"
+    ],
+    "correctIndex": 0,
+    "textEn": "How does a skeleton sledder ride?",
+    "choicesEn": [
+      "Headfirst, face down",
+      "Feet first, on the back",
+      "Seated",
+      "Sideways"
+    ]
+  },
+  {
+    "id": "kis-bobsled",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Bobsled takımları kaç kişiliktir?",
+    "choices": [
+      "2 veya 4",
+      "Yalnız 1",
+      "3",
+      "5"
+    ],
+    "correctIndex": 0,
+    "textEn": "How many athletes make a bobsled team?",
+    "choicesEn": [
+      "2 or 4",
+      "Only 1",
+      "3",
+      "5"
+    ]
+  },
+  {
+    "id": "kis-olimpiyat",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Kış Olimpiyatları kaç yılda bir düzenlenir?",
+    "choices": [
+      "4 yılda bir",
+      "2 yılda bir",
+      "Yılda bir",
+      "6 yılda bir"
+    ],
+    "correctIndex": 0,
+    "textEn": "How often are the Winter Olympics held?",
+    "choicesEn": [
+      "Every 4 years",
+      "Every 2 years",
+      "Yearly",
+      "Every 6 years"
+    ]
+  },
+  {
+    "id": "kis-inis",
+    "category": "Kış Sporları",
+    "difficulty": "orta",
+    "text": "Alp disiplininin en hızlı yarış türü hangisidir?",
+    "choices": [
+      "İniş (downhill)",
+      "Slalom",
+      "Dev slalom",
+      "Süper G"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the fastest Alpine skiing event?",
+    "choicesEn": [
+      "Downhill",
+      "Slalom",
+      "Giant slalom",
+      "Super-G"
+    ]
+  },
+  {
+    "id": "kis-slalom",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Slalom yarışında sporcular ne yapar?",
+    "choices": [
+      "Bayraklar arasında zigzag iner",
+      "Dümdüz iner",
+      "Havada takla atar",
+      "Takım hâlinde kayar"
+    ],
+    "correctIndex": 0,
+    "textEn": "What do slalom skiers do?",
+    "choicesEn": [
+      "Zigzag between gates",
+      "Go straight down",
+      "Do flips",
+      "Race in teams"
+    ]
+  },
+  {
+    "id": "kis-curlingtakim",
+    "category": "Kış Sporları",
+    "difficulty": "zor",
+    "text": "Curling'de her takım bir turda kaç taş atar?",
+    "choices": [
+      "8",
+      "4",
+      "6",
+      "10"
+    ],
+    "correctIndex": 0,
+    "textEn": "How many stones does each curling team throw per end?",
+    "choicesEn": [
+      "8",
+      "4",
+      "6",
+      "10"
+    ]
+  },
+  {
+    "id": "kis-turkiye",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Türkiye'nin en bilinen kayak merkezlerinden biri hangisidir?",
+    "choices": [
+      "Palandöken",
+      "Toros",
+      "Kaçkar",
+      "Ilgaz Dağı"
+    ],
+    "correctIndex": 0,
+    "textEn": "Which is one of Turkey's best-known ski resorts?",
+    "choicesEn": [
+      "Palandoken",
+      "Taurus",
+      "Kackar",
+      "Ilgaz Mountain"
+    ]
+  },
+  {
+    "id": "kis-atlama",
+    "category": "Kış Sporları",
+    "difficulty": "orta",
+    "text": "Kayakla atlamada puan hangi iki kritere göre verilir?",
+    "choices": [
+      "Mesafe ve stil",
+      "Süre ve hız",
+      "Yükseklik ve takla",
+      "Takım uyumu"
+    ],
+    "correctIndex": 0,
+    "textEn": "In ski jumping, points are given for which two criteria?",
+    "choicesEn": [
+      "Distance and style",
+      "Time and speed",
+      "Height and flips",
+      "Team harmony"
+    ]
+  },
+  {
+    "id": "kis-langlauf",
+    "category": "Kış Sporları",
+    "difficulty": "zor",
+    "text": "'Langlauf' (kuzey disiplini) hangi spordur?",
+    "choices": [
+      "Kayaklı uzun mesafe koşusu",
+      "Kısa paten",
+      "Kızak",
+      "Buz tırmanışı"
+    ],
+    "correctIndex": 0,
+    "textEn": "What sport is 'langlauf' (Nordic)?",
+    "choicesEn": [
+      "Long-distance cross-country skiing",
+      "Short-track skating",
+      "Sledding",
+      "Ice climbing"
+    ]
+  },
+  {
+    "id": "kis-mogul",
+    "category": "Kış Sporları",
+    "difficulty": "zor",
+    "text": "Kayakta 'mogul' parkuru ne demektir?",
+    "choices": [
+      "Tümseklerle dolu pist",
+      "Buzlu pist",
+      "Orman pisti",
+      "Gece pisti"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is a 'mogul' course in skiing?",
+    "choicesEn": [
+      "A slope full of bumps",
+      "An icy slope",
+      "A forest run",
+      "A night slope"
+    ]
+  },
+  {
+    "id": "kis-zamboni",
+    "category": "Kış Sporları",
+    "difficulty": "zor",
+    "text": "Buz pistini düzeltip cilalayan makinenin adı nedir?",
+    "choices": [
+      "Zamboni",
+      "Pistbully",
+      "Groomer X",
+      "Snowcat"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the machine that resurfaces an ice rink called?",
+    "choicesEn": [
+      "Zamboni",
+      "Pistbully",
+      "Groomer X",
+      "Snowcat"
+    ]
+  },
+  {
+    "id": "kis-cig",
+    "category": "Kış Sporları",
+    "difficulty": "kolay",
+    "text": "Kayakçıların dağda en korktuğu doğal tehlike nedir?",
+    "choices": [
+      "Çığ (avalanche)",
+      "Ayı",
+      "Fırtına",
+      "Yıldırım"
+    ],
+    "correctIndex": 0,
+    "textEn": "What natural danger do skiers fear most in mountains?",
+    "choicesEn": [
+      "Avalanche",
+      "Bears",
+      "Storms",
+      "Lightning"
+    ]
+  },
+  {
+    "id": "cocuk-korebe",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Körebe oyununda ebe nasıl oynar?",
+    "choices": [
+      "Gözleri bağlı yakalamaya çalışır",
+      "Sayı sayar",
+      "Saklanır",
+      "İp çevirir"
+    ],
+    "correctIndex": 0,
+    "textEn": "In blind man's buff, how does the chaser play?",
+    "choicesEn": [
+      "Catches with eyes blindfolded",
+      "Counts",
+      "Hides",
+      "Turns a rope"
+    ]
+  },
+  {
+    "id": "cocuk-seksek",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Sek sek oyununda yere ne çizilir?",
+    "choices": [
+      "Numaralı kareler",
+      "Daireler",
+      "Harita",
+      "Labirent"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is drawn on the ground in hopscotch?",
+    "choicesEn": [
+      "Numbered squares",
+      "Circles",
+      "A map",
+      "A maze"
+    ]
+  },
+  {
+    "id": "cocuk-saklambac",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Saklambaçta ebe sayıyı bitirince ne der?",
+    "choices": [
+      "'Sağım solum sobe'",
+      "'Hazır mısınız'",
+      "'Buldum sizi'",
+      "'Bir iki üç'"
+    ],
+    "correctIndex": 0,
+    "textEn": "What does the seeker say after counting in hide-and-seek?",
+    "choicesEn": [
+      "'Ready or not'",
+      "'Are you ready'",
+      "'Found you'",
+      "'One two three'"
+    ]
+  },
+  {
+    "id": "cocuk-yakartop",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Yakar top oyununda topa değen oyuncuya ne olur?",
+    "choices": [
+      "Oyun dışı kalır (yanar)",
+      "Ebe olur",
+      "Puan alır",
+      "Takım değiştirir"
+    ],
+    "correctIndex": 0,
+    "textEn": "In dodgeball, what happens to a player hit by the ball?",
+    "choicesEn": [
+      "They're out (burned)",
+      "They become it",
+      "They score",
+      "They switch teams"
+    ]
+  },
+  {
+    "id": "cocuk-istop",
+    "category": "Çocuk Oyunları",
+    "difficulty": "orta",
+    "text": "'İstanbul'dan dağa taşa' sözü hangi oyunla özdeşleşir?",
+    "choices": [
+      "İstop",
+      "Saklambaç",
+      "Yakar top",
+      "Körebe"
+    ],
+    "correctIndex": 0,
+    "textEn": "The phrase is associated with which Turkish game?",
+    "choicesEn": [
+      "Istop",
+      "Hide-and-seek",
+      "Dodgeball",
+      "Blind man's buff"
+    ]
+  },
+  {
+    "id": "cocuk-misket",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Misket oyununda kullanılan oyuncak nedir?",
+    "choices": [
+      "Cam bilyeler",
+      "Kartlar",
+      "Taşlar",
+      "Zarlar"
+    ],
+    "correctIndex": 0,
+    "textEn": "What toy is used in the game of marbles?",
+    "choicesEn": [
+      "Glass marbles",
+      "Cards",
+      "Stones",
+      "Dice"
+    ]
+  },
+  {
+    "id": "cocuk-birdirbir",
+    "category": "Çocuk Oyunları",
+    "difficulty": "orta",
+    "text": "'Birdirbir' oyununda oyuncular ne yapar?",
+    "choices": [
+      "Eğilenin sırtından atlar",
+      "İp atlar",
+      "Saklanır",
+      "Top yuvarlar"
+    ],
+    "correctIndex": 0,
+    "textEn": "In 'birdirbir' (leapfrog), what do players do?",
+    "choicesEn": [
+      "Jump over bent backs",
+      "Skip rope",
+      "Hide",
+      "Roll a ball"
+    ]
+  },
+  {
+    "id": "cocuk-celikcomak",
+    "category": "Çocuk Oyunları",
+    "difficulty": "zor",
+    "text": "Çelik çomak oyununda kullanılan aletler nelerdir?",
+    "choices": [
+      "Uzun değnek ve kısa çomak",
+      "Top ve sopalar",
+      "İp ve kukla",
+      "Tasolar"
+    ],
+    "correctIndex": 0,
+    "textEn": "What tools does çelik çomak (tip-cat) use?",
+    "choicesEn": [
+      "A long stick and a short peg",
+      "A ball and bats",
+      "A rope and puppet",
+      "Cards"
+    ]
+  },
+  {
+    "id": "cocuk-yagsatar",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "'Yağ satarım bal satarım' oyununda mendil nereye bırakılır?",
+    "choices": [
+      "Arkada, sırtına",
+      "Önüne",
+      "Başına",
+      "Elinde"
+    ],
+    "correctIndex": 0,
+    "textEn": "In 'drop the handkerchief', where is the cloth left?",
+    "choicesEn": [
+      "Behind the player's back",
+      "In front",
+      "On the head",
+      "In the hand"
+    ]
+  },
+  {
+    "id": "cocuk-hideandseek",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Saklambaç oyununun İngilizcesi nedir?",
+    "choices": [
+      "Hide and seek",
+      "Tag",
+      "Catch",
+      "Peek-a-boo"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is hide-and-seek called in English?",
+    "choicesEn": [
+      "Hide and seek",
+      "Tag",
+      "Catch",
+      "Peek-a-boo"
+    ]
+  },
+  {
+    "id": "cocuk-uzunesek",
+    "category": "Çocuk Oyunları",
+    "difficulty": "orta",
+    "text": "'Uzun eşek' oyununda oyuncular nasıl sıralanır?",
+    "choices": [
+      "Eğilerek birbirine binerler",
+      "Ele tutuşur",
+      "Dağ çizer",
+      "Halka olur"
+    ],
+    "correctIndex": 0,
+    "textEn": "In 'long donkey', how do players line up?",
+    "choicesEn": [
+      "Bent over for others to vault",
+      "Holding hands",
+      "Drawing a mountain",
+      "In a circle"
+    ]
+  },
+  {
+    "id": "cocuk-bezirgan",
+    "category": "Çocuk Oyunları",
+    "difficulty": "zor",
+    "text": "Bezirganbaşı oyununda iki takım ne yapar?",
+    "choices": [
+      "El ele tutuşup tünel yapar, diğerleri geçer",
+      "Top atar",
+      "Koşar",
+      "Saklanır"
+    ],
+    "correctIndex": 0,
+    "textEn": "In bezirganbasi, what do the two teams do?",
+    "choicesEn": [
+      "Form a tunnel for others to pass",
+      "Throw a ball",
+      "Run",
+      "Hide"
+    ]
+  },
+  {
+    "id": "cocuk-asik",
+    "category": "Çocuk Oyunları",
+    "difficulty": "zor",
+    "text": "Aşık oyununda atılan kemik parçası nedir?",
+    "choices": [
+      "Koyun bilek kemiği",
+      "Değnek",
+      "Zar",
+      "Kibrit"
+    ],
+    "correctIndex": 0,
+    "textEn": "What piece is thrown in the game of asik (knucklebones)?",
+    "choicesEn": [
+      "A sheep ankle bone",
+      "A stick",
+      "A die",
+      "A matchstick"
+    ]
+  },
+  {
+    "id": "cocuk-ebe",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Çocuk oyunlarında 'ebe' ne demektir?",
+    "choices": [
+      "Oyunu kovalayan/seçilen kişi",
+      "Hakem",
+      "Lider",
+      "Hoca"
+    ],
+    "correctIndex": 0,
+    "textEn": "What does 'ebe' (it) mean in children's games?",
+    "choicesEn": [
+      "The chaser/selected player",
+      "A referee",
+      "A leader",
+      "A teacher"
+    ]
+  },
+  {
+    "id": "cocuk-halat",
+    "category": "Çocuk Oyunları",
+    "difficulty": "kolay",
+    "text": "Halat çekme oyununda iki takım ne yapar?",
+    "choices": [
+      "Halatı karşılıklı çeker",
+      "İp atlar",
+      "Düğüm çözer",
+      "Sopra yarışır"
+    ],
+    "correctIndex": 0,
+    "textEn": "In tug of war, what do the two teams do?",
+    "choicesEn": [
+      "Pull the rope opposite ways",
+      "Skip rope",
+      "Untie knots",
+      "Fence"
+    ]
+  },
+  {
+    "id": "cocuk-elim-sende",
+    "category": "Çocuk Oyunları",
+    "difficulty": "orta",
+    "text": "'Elim sende' oyununun amacı nedir?",
+    "choices": [
+      "Eli çekilmeden şaplak atmak",
+      "Topu tutmak",
+      "Göz kırpmamak",
+      "Sayı tutmak"
+    ],
+    "correctIndex": 0,
+    "textEn": "What is the aim of the 'elim sende' (slap hands) game?",
+    "choicesEn": [
+      "Slapping before the hand is pulled away",
+      "Holding the ball",
+      "Not blinking",
+      "Guessing a number"
+    ]
   }
 ]
