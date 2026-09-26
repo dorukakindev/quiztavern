@@ -201,6 +201,45 @@ test("Yanlış basma cezası denemeyle büyür (kör basma caydırılır)", () =
   assert.ok(gains["c"] > 0);
 });
 
+test("Art arda 2. turu kazanan zil ikramiyesi alır; yanlış basan serisi kırılır", () => {
+  const room = zilRoom("z-streak", ["a", "b"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.answer("a", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  assert.equal(inner.players.get("a")!.score, GAME.ZIL_BASE, "1. tur seri bonusu yok");
+  inner.advanceFromReveal();
+  inner.beginQuestion();
+  room.buzz("a");
+  room.answer("a", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  assert.equal(
+    inner.players.get("a")!.score,
+    GAME.ZIL_BASE + GAME.ZIL_BASE + GAME.ZIL_STREAK_BONUS,
+    "2. turda seri ikramiyesi",
+  );
+  inner.advanceFromReveal();
+  inner.beginQuestion();
+  // a bu turda yanlış basar → seri kırılır; b doğru bilir.
+  room.buzz("a");
+  room.answer("a", (room.currentQuestion()!.correctIndex + 1) % 4);
+  room.buzz("b");
+  room.answer("b", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  inner.advanceFromReveal();
+  inner.beginQuestion();
+  room.buzz("a");
+  room.answer("a", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  const aScore = inner.players.get("a")!.score;
+  // 500 + (500+75) − 200 + 500 → seri kırıldıktan sonra ikramiye yok.
+  assert.equal(
+    aScore,
+    GAME.ZIL_BASE + GAME.ZIL_BASE + GAME.ZIL_STREAK_BONUS - GAME.ZIL_PENALTY + GAME.ZIL_BASE,
+    "kırılan seri sonrası ikramiye yok",
+  );
+});
+
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 13);
+assert.equal(passed, 14);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

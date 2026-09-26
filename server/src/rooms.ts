@@ -86,6 +86,8 @@ export interface RoomPlayer {
   bet: number | null;
   /** Çifte Bahis sigortası: üst üste kayıp tur sayısı (doğru cevapta sıfırlanır). */
   betLossStreak: number;
+  /** Zil: art arda basıp doğru bilinen tur sayısı (yanlış basışta sıfırlanır; basamamak kırmaz). */
+  zilWinStreak: number;
   /** Takım modu: oyuncunun takımı (0/1). Katılınca küçük takıma atanır; host değiştirebilir. */
   team: number;
   /** Maç sırasında bağlantısı kopan oyuncunun grace süresinin başlangıcı */
@@ -416,6 +418,7 @@ export class Room {
       | "circleCorrectAt"
       | "bet"
       | "betLossStreak"
+      | "zilWinStreak"
       | "team"
       | "disconnectedAt"
       | "lastEmoteAt"
@@ -476,6 +479,7 @@ export class Room {
       circleCorrectAt: null,
       bet: null,
       betLossStreak: 0,
+      zilWinStreak: 0,
       team: this.smallerTeam(),
       disconnectedAt: null,
       lastEmoteAt: 0,
@@ -2637,6 +2641,14 @@ export class Room {
             : this.buzzFailed.has(player.id)
               ? -(GAME.ZIL_PENALTY + GAME.ZIL_PENALTY_STEP * (attemptNo - 1))
               : 0;
+          // Seri ikramiyesi: üst üste 2.+ turu kazanan +ZIL_STREAK_BONUS alır.
+          // Basmamak seriyi kırmaz (tur "denenmedi" sayılır); yanlış basan kırılır.
+          if (correct) {
+            player.zilWinStreak += 1;
+            if (player.zilWinStreak >= 2) gain += GAME.ZIL_STREAK_BONUS;
+          } else if (this.buzzFailed.has(player.id)) {
+            player.zilWinStreak = 0;
+          }
         }
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
         if (this.gameMode === "board") gain = correct ? (this.boardCells[this.currentCell]?.value ?? 0) : 0;
