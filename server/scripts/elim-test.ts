@@ -191,6 +191,28 @@ test("countdown katılımcısı 0 canlı hayalet olmaz — bu maçı izler", () 
 });
 stop(room5);
 
+// Ani ölüm: tam 2 kişi kalınca tur süresi ELIM_SUDDEN_MS'e iner.
+const roomSd = new Room("elim-sd", () => {}, { minPlayers: 2, questionCount: 10 });
+roomSd.addPlayer(player("x", "Xi"));
+roomSd.addPlayer(player("y", "Yi"));
+roomSd.addPlayer(player("z", "Zed"));
+roomSd.setGameMode("x", "elim");
+roomSd.setReady("x", true);
+roomSd.setReady("y", true);
+roomSd.setReady("z", true);
+roomSd.start("x", "elim");
+stop(roomSd);
+
+test("3 canlıda süre normal, 2'ye düşünce ani ölüm süresi", () => {
+  const int = roomSd as unknown as { players: Map<string, { lives: number }> };
+  assert.ok(roomSd.questionDuration() > GAME.ELIM_SUDDEN_MS, "3 kişi normal süre");
+  int.players.get("z")!.lives = 0;
+  assert.equal(roomSd.questionDuration(), GAME.ELIM_SUDDEN_MS, "ani ölüm");
+  int.players.get("y")!.lives = 0;
+  assert.ok(roomSd.questionDuration() > GAME.ELIM_SUDDEN_MS, "tek kişi normal süre");
+});
+stop(roomSd);
+
 stop(room);
 stop(room2);
 console.log(`\n[elim] sonuç: ${passed} geçti, 0 kaldı`);

@@ -133,6 +133,8 @@ export const GAME = {
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */
   ELIM_LIVES: 3,
+  /** Son Masa'da tam 2 kişi kalınca "ani ölüm": tur süresi bununla sınırlı. */
+  ELIM_SUDDEN_MS: 8_000,
   /** Düello (§6.1): 1'e 1, 7 soru — masadaki ilk iki oyuncu kapışır, gerisi
    *  izleyici olarak kazananı tahmin eder. */
   DUEL_QUESTIONS: 7,
