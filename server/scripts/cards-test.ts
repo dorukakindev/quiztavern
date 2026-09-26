@@ -237,6 +237,34 @@ test("3'lü seri kart kazanımı oyuncuya toast olarak gider", () => {
   assert.deepEqual(seen, [["a", "info.cardEarned"]]);
 });
 
+test("Takım modunda kartlar ortak havuzdan: kazanç takıma, harcama havuzu düşürür", () => {
+  const r = new Room("cards-pool", () => {}, { minPlayers: 2, questionCount: 5 });
+  r.addPlayer(player("a", "Ada"));
+  r.addPlayer(player("b", "Bora"));
+  r.addPlayer(player("c", "Cem"));
+  r.setGameMode("a", "team");
+  r.setTeam("a", "b", 1);
+  r.setTeam("a", "c", 1); // a=0, b=c=1
+  r.setReady("a", true);
+  r.setReady("b", true);
+  r.setReady("c", true);
+  r.start("a", "team");
+  stop(r);
+  // Takım 1 havuzu 1 kartla başlar; üyelerin kişisel sayacı 0 kalır.
+  assert.equal(r.stateFor("b", true).yourCards, 1);
+  assert.equal(internals(r).players.get("b")!.cards, 0);
+  begin(r);
+  // b takım havuzundan fifty harcar → c de aynı havuzu görür, havuz 0'a iner.
+  r.useCard("b", "fifty");
+  assert.equal(r.stateFor("b", true).yourCards, 0);
+  assert.equal(r.stateFor("c", true).yourCards, 0);
+  // Havuz boşken aynı takımdan yeni harcama reddedilir.
+  assert.throws(
+    () => r.useCard("c", "fifty"),
+    (e) => e instanceof GameError && e.key === "err.cardEmpty",
+  );
+});
+
 test("Zor soru doğrusu kart sayacını 2 adım ilerletir", () => {
   const r = new Room("cards-hard", () => {}, { minPlayers: 1, questionCount: 5 });
   r.addPlayer(player("a", "Ada"));

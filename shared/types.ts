@@ -419,6 +419,8 @@ export interface QuestionPayload {
   writtenByName?: string | null;
   /** Fitil modunda fitil minimuma ulaştıysa true — istemci kritik eşik efekti yapar. */
   fuseCritical?: boolean;
+  /** Tavern Panosu 'Daily Double' hücresi açıldı — bu sorunun kazancı ×2. */
+  dailyDouble?: boolean;
   /** Soru yazarı turu: bu soruyu SEN yazdın — istemci cevap yerine izleme ekranı gösterir. */
   writtenByYou?: boolean;
 }
@@ -557,6 +559,9 @@ export interface BoardCellState {
   /** Hücre puan değeri (100..500). */
   value: number;
   used: boolean;
+  /** 'Daily Double' hücresi — açılana dek gizli; ancak `used` olduktan sonra
+   *  istemciye gider ki seçim sırasında kör şans olarak kalsın. */
+  dailyDouble?: boolean;
 }
 
 export interface BoardPayload {
@@ -853,6 +858,10 @@ export interface GameState {
   bet: BetPayload | null;
   /** Çifte Bahis: bu tur kilitlediğin bahis (null = henüz yatırmadın). */
   yourBet: number | null;
+  /** Çifte Bahis: soru fazının ilk ~2,5 sn'sinde herkesin kilitli bahsi
+   *  görünür ("bahisler açıklandı" anı); sonra yine gizlenir. Reveal'daki
+   *  kalıcı liste `reveal.bets`'te. */
+  betStakes?: Record<string, number> | null;
   /** Sadece kendi seçimin; başkalarınınki reveal'a kadar görünmez */
   yourChoice: number | null;
   /** Çemberde yalnızca oyuncunun kendi kilitlediği cevap görünür. */

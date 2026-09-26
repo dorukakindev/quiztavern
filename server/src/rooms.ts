@@ -293,7 +293,7 @@ export class Room {
   private orderShuffle: number[] = [];
   // Tavern Panosu (§6.1): 5 kategori x 5 değer panosu. Sorular soru fazına
   // kadar sunucuda kalır — pick fazında yalnız değer+kullanılmışlık sızar.
-  private boardCells: (BoardCellSpec & { used: boolean })[] = [];
+  private boardCells: (BoardCellSpec & { used: boolean; dailyDouble?: boolean })[] = [];
   private boardCategories: string[] = [];
   private boardAsked: Question[] = []; // açılan hücrelerin soruları, açılış sırasıyla
   private boardPickerOrder: string[] = [];
@@ -331,6 +331,9 @@ export class Room {
   private zilTimer: NodeJS.Timeout | null = null;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
+  /** Takım modunda jokerler kişiye değil takıma aittir: ortak havuz.
+   *  Kazanımı yapan üye puanı alır, kartı takımın herhangi biri harcayabilir. */
+  private teamCardPool: [number, number] = [0, 0];
   /** Freeze the finishing order; podium departures must not rewrite the result or MVP. */
   private podiumSnapshot: PodiumEntry[] | null = null;
   /** Günlük Meydan Okuma maçı mı — klasik kurallar, tarih tohumlu sabit soru
@@ -1399,6 +1402,11 @@ export class Room {
         this.lastQuestionIds = new Set(this.boardAsked.map((q) => q.id));
         const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
         this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
+        // 'Daily Double': rastgele tek hücre gizli ×2 taşır — açıldığında
+        // soruya çıkan hücre kazancı ikiye katlanır (Jeopardy geleneği).
+        if (this.boardCells.length) {
+          this.boardCells[Math.floor(Math.random() * this.boardCells.length)].dailyDouble = true;
+        }
         this.boardCategories = spec.categories;
         this.boardAsked = [];
         this.currentCell = -1;
@@ -1502,9 +1510,9 @@ export class Room {
       player.bet = null;
       player.wordGain = 0;
       player.lives = MODE_CONTRACT[this.gameMode].usesLives ? GAME.ELIM_LIVES : 0;
-      // Tavern kartları: Klasik/Takım maçında herkes 1 jokerle başlar;
-      // diğer modlarda kart mekaniği yok (sıfırda kalır, kazanılamaz da).
-      player.cards = MODE_CONTRACT[this.gameMode].usesCards ? 1 : 0;
+      // Tavern kartları: Klasik maçında herkes 1 jokerle başlar; Takım'da
+      // kişisel sayaç 0 kalır — jokerler ortak takım havuzuna (teamCardPool) gider.
+      player.cards = this.gameMode === "classic" ? 1 : 0;
       player.cardUsed = null;
       player.fiftyRemoved = [];
       player.frozen = false;
@@ -1516,6 +1524,8 @@ export class Room {
       player.typed = [];
       player.orderAnswers = [];
     }
+    // Takım modunda ortak havuz: her takım maça 1 paylaşımlı jokerle başlar.
+    if (this.gameMode === "team") this.teamCardPool = [1, 1];
     // Düello (§6.1): masadaki ilk iki oyuncu kapışır; fazlası izleyici olur —
     // oturma sırası karar verir, ayrılanların yerine yeni düellocu çekilmez.
     if (this.gameMode === "duel") {
@@ -1786,6 +1796,11 @@ export class Room {
           ...(this.gameMode === "lightning" && this.questionDuration() <= GAME.LIGHTNING_MIN_MS
             ? { fuseCritical: true }
             : {}),
+          ...(this.gameMode === "board" &&
+          this.currentCell >= 0 &&
+          this.boardCells[this.currentCell]?.dailyDouble
+            ? { dailyDouble: true }
+            : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle
@@ -1877,7 +1892,13 @@ export class Room {
       this.gameMode === "board" && this.phase === "pick"
         ? {
             categories: this.boardCategories,
-            cells: this.boardCells.map((cell) => ({ value: cell.value, used: cell.used })),
+            cells: this.boardCells.map((cell) => ({
+              value: cell.value,
+              used: cell.used,
+              // Çift hücre açılana dek gizli kalır — pick fazında sızarsa
+              // seçici en değerlisini bilir, kör şans bozulur.
+              ...(cell.used && cell.dailyDouble ? { dailyDouble: true } : {}),
+            })),
             pickerId,
             pickerName: (pickerId && this.players.get(pickerId)?.name) || "",
             deadline: this.pickDeadline,
@@ -1908,6 +1929,14 @@ export class Room {
       countdown,
       bet,
       yourBet: null,
+      // "Bahisler açıklandı" anı: soru fazının ilk ~2,5 sn'sinde kilitli
+      // bahisler masada görünür — kumar gerilimi; sonra yine saklanır.
+      betStakes:
+        this.gameMode === "bet" &&
+        this.phase === "question" &&
+        Date.now() - this.questionStartedAt < GAME.BET_REVEAL_MS
+          ? Object.fromEntries(this.eligiblePlayers().map((p) => [p.id, p.bet ?? 0]))
+          : null,
       yourChoice: null,
       yourCircleAnswer: null,
       yourWordAnswer: null,
@@ -2051,7 +2080,8 @@ export class Room {
       yourChoice: self?.choice ?? null,
       yourCircleAnswer: self?.circleAnswer ?? null,
       yourWordAnswer: this.gameMode === "word" ? (self?.circleAnswer ?? null) : null,
-      yourCards: self?.cards ?? 0,
+      yourCards:
+        this.gameMode === "team" && self ? (this.teamCardPool[self.team] ?? 0) : (self?.cards ?? 0),
       yourCardUsed: self?.cardUsed ?? null,
       removedChoices: self?.fiftyRemoved ?? [],
       youFrozen: self?.frozen ?? false,
@@ -2409,11 +2439,14 @@ export class Room {
         s.fastestMs = s.fastestMs === null ? correctElapsedMs : Math.min(s.fastestMs, correctElapsedMs);
       // Tavern kartları: sayaç 3'e ulaşınca 1 joker (yalnız Klasik/Takım).
       // Zor sorular 2 adım ilerletir — zoru bilmek daha hızlı ödüllenir.
+      // Takım'da kart kişiye değil ortak havuza girer — takımın herhangi bir
+      // üyesi harcayabilir; toast yine kazanan üyeye gider.
       if (this.gameMode === "classic" || this.gameMode === "team") {
         player.cardProgress += hardStep ? 2 : 1;
         if (player.cardProgress >= 3) {
           player.cardProgress -= 3;
-          player.cards += 1;
+          if (this.gameMode === "team") this.teamCardPool[player.team] += 1;
+          else player.cards += 1;
           this.onToast?.(player.id, "info.cardEarned");
         }
       }
@@ -2441,7 +2474,10 @@ export class Room {
     if (!player || !question || player.eligibleFrom > this.qIndex) return;
     if (player.choice !== null) throw new GameError("err.cardLate");
     if (player.cardUsed !== null) throw new GameError("err.cardUsed");
-    if (player.cards <= 0) throw new GameError("err.cardEmpty");
+    // Takım modunda harcama ortak havuzdan; diğer modda kişisel sayaçtan.
+    const shared = this.gameMode === "team";
+    if (shared && this.teamCardPool[player.team] <= 0) throw new GameError("err.cardEmpty");
+    if (!shared && player.cards <= 0) throw new GameError("err.cardEmpty");
     if (type === "fifty") {
       // Yanlış iki şık oyuncu için silinir — indeksler yalnız kendi payload'ında görünür.
       const wrong = [0, 1, 2, 3].filter((index) => index !== question.correctIndex);
@@ -2468,7 +2504,8 @@ export class Room {
     }
     // double/shield: işaret yeter — etki reveal'de uygulanır.
     player.cardUsed = type;
-    player.cards -= 1;
+    if (shared) this.teamCardPool[player.team] -= 1;
+    else player.cards -= 1;
     this.broadcast();
   }
 
@@ -2698,7 +2735,10 @@ export class Room {
           }
         }
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
-        if (this.gameMode === "board") gain = correct ? (this.boardCells[this.currentCell]?.value ?? 0) : 0;
+        if (this.gameMode === "board") {
+          const cell = this.boardCells[this.currentCell];
+          gain = correct ? (cell?.value ?? 0) * (cell?.dailyDouble ? 2 : 1) : 0;
+        }
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         // Skor negatife inmez — Zil'in -200 cezası düşük skorlu oyuncuyu eksiye taşırdı.

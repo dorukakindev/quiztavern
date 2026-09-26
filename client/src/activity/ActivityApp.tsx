@@ -1317,12 +1317,17 @@ function RoomStrip({
                 ))}
               </span>
             )}
-            {state.gameMode === "bet" && beats.active && state.reveal?.bets?.[player.id] !== undefined && (
-              <span className="qt-player-bet" title={t("bet.stakedTitle")}>
-                <Icon name="coins" />
-                {formatNumber(language, state.reveal.bets[player.id])}
-              </span>
-            )}
+            {state.gameMode === "bet" &&
+              (state.betStakes?.[player.id] !== undefined ||
+                (beats.active && state.reveal?.bets?.[player.id] !== undefined)) && (
+                <span
+                  className={`qt-player-bet ${state.betStakes ? "qt-bet-stake-reveal" : ""}`}
+                  title={t("bet.stakedTitle")}
+                >
+                  <Icon name="coins" />
+                  {formatNumber(language, state.betStakes?.[player.id] ?? state.reveal!.bets![player.id])}
+                </span>
+              )}
             {player.cardPlayed && (
               <span className="qt-card-played" title={t("card.played")}>
                 <Icon name="deck" />
@@ -4032,6 +4037,12 @@ function GameBoard({
                 </span>
                 <span className="qt-category">
                   {categoryLabel(language, shown.category)}
+                  {shown.dailyDouble ? (
+                    <em className="qt-dd-tag" role="note" aria-label={t("board.dailyDoubleAria")}>
+                      <Icon name="star" />
+                      {t("board.dailyDouble")}
+                    </em>
+                  ) : null}
                   {shown.writtenByName ? (
                     <em className="qt-writer-tag">
                       <Icon name="scroll" />
@@ -4679,15 +4690,21 @@ function PickBoard({
                       key={ri}
                       type="button"
                       role="gridcell"
-                      className={`qt-board-cell ${cell.used ? "is-used" : ""} ${youPick && !cell.used ? "is-pickable" : ""}`}
+                      className={`qt-board-cell ${cell.used ? "is-used" : ""} ${cell.dailyDouble ? "is-dd" : ""} ${youPick && !cell.used ? "is-pickable" : ""}`}
                       disabled={cell.used || !youPick}
-                      aria-label={cell.used ? t("board.cellUsed") : t("board.cellAria", { value: cell.value })}
+                      aria-label={
+                        cell.dailyDouble
+                          ? t("board.dailyDoubleAria")
+                          : cell.used
+                            ? t("board.cellUsed")
+                            : t("board.cellAria", { value: cell.value })
+                      }
                       onClick={() => {
                         sfx.play("lock");
                         onPickCell?.(index);
                       }}
                     >
-                      {cell.used ? "·" : cell.value}
+                      {cell.dailyDouble ? <Icon name="star" /> : cell.used ? "·" : cell.value}
                     </button>
                   );
                 })}
