@@ -2252,10 +2252,22 @@ export class Room {
     }
     this.scheduleNext(() => {
       if (this.phase !== "pick") return;
-      // Sıradaki pasif kalırsa masa beklemez: kalan hücrelerden biri rastgele açılır.
-      const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
-      if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
+      // Sıradaki pasif kalırsa masa beklemez: rastgele değil, en yüksek değerli
+      // açık hücre yanar — pasiflik cezalı, pano stratejik kalır.
+      const idle = this.idleBoardCell();
+      if (idle !== null) this.openCell(idle);
     }, GAME.PICK_MS);
+  }
+
+  /** Pasif seçicide yakılacak hücre: en yüksek değerli açık hücre. */
+  private idleBoardCell(): number | null {
+    let best: number | null = null;
+    for (let i = 0; i < this.boardCells.length; i += 1) {
+      const cell = this.boardCells[i];
+      if (cell.used) continue;
+      if (best === null || cell.value > this.boardCells[best].value) best = i;
+    }
+    return best;
   }
 
   /** Sıradaki oyuncu bu turda hücre seçebilir mi? Masada olmalı ve bu soruya

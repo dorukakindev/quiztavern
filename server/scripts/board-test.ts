@@ -126,12 +126,17 @@ test("reveal sonrası kalan hücre varsa pick fazına dönülür", () => {
   assert.equal(board.pickerId, "b", "sıra ikinci oyuncuda");
 });
 
-test("pasif picker için süre dolunca sunucu rastgele açar (openCell)", () => {
+test("pasif picker için süre dolunca sunucu en değerli hücreyi açar", () => {
   const room = boardRoom("b7", ["a"]);
   const inner = startPick(room);
-  inner.openCell(0); // timer'un yaptığı çağrıyla aynı yol
+  // Pasif seçici artık rastgele değil en yüksek değerli açık hücreyi yakar.
+  const open = inner.boardCells.map((cell, i) => ({ ...cell, i })).filter((cell) => !cell.used);
+  const top = open.reduce((a, b) => (a.value >= b.value ? a : b));
+  const idle = (room as unknown as { idleBoardCell(): number | null }).idleBoardCell();
+  assert.equal(idle, top.i);
+  inner.openCell(idle!);
   assert.equal(inner.phase, "question");
-  assert.ok(inner.boardCells[0].used);
+  assert.ok(inner.boardCells[top.i].used);
 });
 
 test("tüm hücreler kullanınca maç biter (podium)", () => {
