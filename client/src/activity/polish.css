@@ -968,113 +968,6 @@
   margin-left: 4px;
   white-space: nowrap;
 }
-/* Tavern kartları (joker) — soru fazında, cevaptan önce; tur başına bir. */
-.qt-card-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin: 4px 0 8px;
-}
-.qt-card-count {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: var(--qt-text-dim, #b9a98c);
-  padding: 4px 8px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.25);
-}
-.qt-card {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 10px;
-  border: 1px solid rgba(210, 170, 90, 0.35);
-  background: linear-gradient(160deg, rgba(78, 55, 24, 0.55), rgba(40, 28, 14, 0.55));
-  color: #e8d9b8;
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    transform 120ms ease,
-    border-color 120ms ease,
-    opacity 120ms ease;
-}
-.qt-card:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: rgba(230, 190, 110, 0.7);
-}
-.qt-card:disabled {
-  opacity: 0.38;
-  cursor: default;
-}
-.qt-card.is-picking {
-  border-color: #7ec8ff;
-  color: #cfe8ff;
-}
-.qt-card-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-style: normal;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #9fe6a0;
-}
-.qt-card-tag.is-frozen {
-  color: #8fd4ff;
-}
-.qt-card-targets {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  z-index: 30;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 180px;
-  padding: 6px;
-  border-radius: 12px;
-  border: 1px solid rgba(126, 200, 255, 0.4);
-  background: rgba(22, 18, 12, 0.97);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-.qt-card-target {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 6px 8px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: #e8dcc2;
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-}
-.qt-card-target:hover {
-  background: rgba(126, 200, 255, 0.12);
-}
-
-/* %50 jokeriyle silinen şık — kartı tutar ama seçilemez ve içeriği gizlenir. */
-.qt-answer.is-removed {
-  opacity: 0.32;
-  filter: grayscale(0.8);
-  pointer-events: none;
-}
-.qt-answer.is-removed .qt-answer__text {
-  visibility: hidden;
-}
-
 /* İzleyici kazanan tahmini (§6.3) — SpectatorBar içindeki çip sırası. */
 .qt-predict-bar {
   display: inline-flex;
@@ -2010,19 +1903,6 @@
   padding-inline: 8px;
 }
 
-/* Joker kullanan oyuncunun koltuğunda küçük deste ikonu (kart türü gizli kalır) */
-.qt-card-played {
-  display: inline-flex;
-  align-items: center;
-  color: #b7a7ff;
-  opacity: 0.9;
-  margin-right: 4px;
-}
-.qt-card-played svg {
-  width: 13px;
-  height: 13px;
-}
-
 /* ==========================================================================
    Denetim tasarım turu (T3–T8)
    ========================================================================== */
@@ -2131,7 +2011,6 @@
   .qt-question-stage:has(.qt-question-image) .qt-locked-note {
     grid-area: note;
   }
-  .qt-question-stage:has(.qt-question-image) .qt-card-bar,
   .qt-question-stage:has(.qt-question-image) .qt-writer-note,
   .qt-question-stage:has(.qt-question-image) .qt-zil-status {
     grid-column: 2;
@@ -2409,19 +2288,6 @@
 /* ::before için konum gerekli (flex kutusu göreli değilse hat mutlak kapanır) */
 .qt-game-exit {
   position: relative;
-}
-
-/* Joker destesi sayacı: diğer kart butonlarıyla aynı format (ikon + isim +
-   adet). 0 kartta soluk — zaten kullanılamayan bir şey aktif gibi durmasın. */
-.qt-card-count b {
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-.qt-card-count em {
-  font-style: normal;
-}
-.qt-card-count.is-empty {
-  opacity: 0.45;
 }
 
 /* ── Cevap sonucu ekranı tasarım turu (kullanıcı geri bildirimi) ─────── */

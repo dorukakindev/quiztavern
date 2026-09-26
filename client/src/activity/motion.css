@@ -274,19 +274,6 @@
     animation-delay: 0.16s;
   }
 
-  /* 10 · Jokerler: üzerine gelince kalkar, ikon kıpırdar */
-  .qt-activity .qt-card {
-    transition:
-      transform 160ms var(--ease),
-      border-color 160ms ease;
-  }
-  .qt-activity .qt-card:hover:not(:disabled) {
-    transform: translateY(-2px);
-  }
-  .qt-activity .qt-card:hover:not(:disabled) .qt-icon {
-    animation: moNudge 0.45s var(--ease);
-  }
-
   /* 11 · İkincil tuşlar: basılmadan önce 1px kalkar (kabartma hissi artar) */
   .qt-activity .qt-button:not(.qt-button--gold):hover:not(:disabled),
   .qt-activity .qt-icon-button:hover:not(:disabled) {

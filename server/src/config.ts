@@ -192,7 +192,6 @@ export const GAME = {
   BOARD_COLS: 5,
   BOARD_VALUES: [100, 200, 300, 400, 500] as const,
   /** Tavern kartı Dondur: yiyen oyuncunun cevap süresi bu kadar kısalır. */
-  CARD_FREEZE_MS: 3_000,
   /** İzleyici kazanan tahmini: doğru bilene verilen XP. */
   PREDICT_XP: 25,
   /** Kategori ustalığı (§6.4): kategori başına bu kadar doğruyu geçen

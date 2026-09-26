@@ -250,18 +250,7 @@ export interface PublicPlayer {
   progress?: ProgressBadge;
   /** Oyuncunun taktığı unvan (kazanılmış rozetlerden biri). Seçilmemişse yok. */
   title?: BadgeKey;
-  /** Tavern kartı (joker) sayısı. Maç başında 1, her 3'lü seride +1.
-   *  Klasik/Takım dışındaki modlarda 0 kalır. */
-  cards?: number;
-  /** Bu tur joker oynadı — kart TÜRÜ sızmasın diye yalnız boolean.
-   *  İstemci koltukta küçük deste ikonu gösterir. */
-  cardPlayed?: boolean;
 }
-
-/** Tavern kartı (joker) türleri — Klasik/Takım maçlarında tur başına bir adet. */
-export type CardType = "fifty" | "double" | "shield" | "freeze";
-export const CARD_TYPES: readonly CardType[] = ["fifty", "double", "shield", "freeze"];
-
 /** Kalıcı ilerleme meta'sı: lig kademeleri. XP eşikleri sunucudaki
  *  sıralamayla aynıdır (server/src/xp.ts LEAGUE_THRESHOLDS). */
 export type LeagueKey = "acemi" | "cirak" | "kalfa" | "usta" | "efsane";
@@ -680,13 +669,7 @@ export type ToastKey =
   | "err.packUnknown"
   | "err.packEmpty"
   | "err.teamNeedsBothSides"
-  | "err.cardFailed"
-  | "err.cardMode"
-  | "err.cardPhase"
   | "err.rematchPhase"
-  | "err.cardLate"
-  | "err.cardUsed"
-  | "err.cardEmpty"
   | "err.invalidInput"
   | "err.lateAnswer"
   | "err.predictPhase"
@@ -697,7 +680,6 @@ export type ToastKey =
   | "err.title"
   | "err.dailyDone"
   | "info.kicked"
-  | "info.cardEarned"
   | "report.sent"
   | "report.duplicate"
   | "report.failed"
@@ -870,15 +852,6 @@ export interface GameState {
   yourWordAnswer: string | null;
   /** Yakın Tahmin: bu tur kilitlediğin tahmin (null = henüz girmedin). */
   yourNumericGuess: number | null;
-  /** Tavern kartları: elindeki joker sayısı (Klasik/Takım'da maç başı 1,
-   *  her 3'lü seride +1; diğer modlarda 0). */
-  yourCards: number;
-  /** Bu tur kullandığın joker türü (tur başına bir kart). */
-  yourCardUsed: CardType | null;
-  /** %50 jokeriyle silinen şık indeksleri — yalnızca jokeri kullanan görür. */
-  removedChoices: number[];
-  /** Dondur jokeri yedin: bu tur deadline'ın diğerlerinden kısa. */
-  youFrozen: boolean;
   reveal: RevealPayload | null;
   circleReveal: CircleRevealPayload | null;
   /** Kelime Oyunu reveal'ı: tam kelime + kazançlar. Yalnız word modunda dolu. */
@@ -967,8 +940,6 @@ export const EV = {
   SET_TEAM: "set-team",
   /** Takım modu, yalnız host, lobide: {} — koltukları rastgele ve dengeli yeniden dağıtır */
   TEAM_SHUFFLE: "team-shuffle",
-  /** Tavern kartı: { type: CardType, targetId? } — soru fazında, cevaptan önce, tur başına bir. */
-  USE_CARD: "use-card",
   /** Podyumda rövanş oyu: {} — çoğunluk sağlanırsa sunucu yeni maçı başlatır. */
   REMATCH: "rematch",
   /** İzleyici kazanan tahmini: { targetId } — maç başında, pencere kapanmadan. */

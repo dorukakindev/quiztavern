@@ -21,16 +21,14 @@ import { startDiscordCommands, stopDiscordCommands } from "./discordCommands";
 import { Room } from "./rooms";
 import {
   BADGE_KEYS,
-  CARD_TYPES,
   EMOTE_KEYS,
   EV,
   type BadgeKey,
-  type CardType,
   type EmoteKey,
   type ToastKey,
   type ToastPayload,
 } from "../../shared/types";
-import { GameError, toToast } from "./errors";
+import { toToast } from "./errors";
 import { clientAddressKey, createRateLimitMiddleware, createSecurityHeaders, FixedWindowRateLimiter } from "./security";
 import { normalizeRoomId } from "./room-id";
 import { log } from "./logger";
@@ -823,20 +821,6 @@ io.on("connection", (socket) => {
     EV.BET,
     guarded("bet", (amount: unknown) => room.placeBet(user.id, Number(amount))),
   );
-  socket.on(EV.USE_CARD, (payload: unknown) => {
-    try {
-      const body = (payload ?? {}) as { type?: unknown; targetId?: unknown };
-      const type =
-        typeof body.type === "string" && (CARD_TYPES as readonly string[]).includes(body.type)
-          ? (body.type as CardType)
-          : null;
-      if (!type) throw new GameError("err.invalidInput");
-      room.useCard(user.id, type, typeof body.targetId === "string" ? body.targetId : undefined);
-    } catch (error) {
-      const t = toToast(error, "err.cardFailed");
-      toast(socket.id, t.key, t.params);
-    }
-  });
   socket.on(EV.ADD_BOT, () => {
     if (!ALLOW_MOCK_AUTH || room.hostId !== user.id) return;
     try {

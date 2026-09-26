@@ -36,7 +36,6 @@ const TESTS = [
   { name: "test:elim", ws: "server" },
   { name: "test:blur", ws: "server" },
   { name: "test:word", ws: "server" },
-  { name: "test:cards", ws: "server" },
   { name: "test:rematch", ws: "server" },
   { name: "test:predict", ws: "server" },
   { name: "test:mastery", ws: "server" },
@@ -56,7 +55,6 @@ const TESTS = [
   { name: "test:catbalance", ws: "server" },
   { name: "test:diffbonus", ws: "server" },
   { name: "test:botskill", ws: "server" },
-  { name: "test:botcards", ws: "server" },
 ];
 
 const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";

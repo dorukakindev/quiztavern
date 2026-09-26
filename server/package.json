@@ -28,7 +28,6 @@
     "test:elim": "tsx scripts/elim-test.ts",
     "test:blur": "tsx scripts/blur-test.ts",
     "test:word": "tsx scripts/word-test.ts",
-    "test:cards": "tsx scripts/cards-test.ts",
     "test:rematch": "tsx scripts/rematch-test.ts",
     "test:predict": "tsx scripts/predict-test.ts",
     "test:mastery": "tsx scripts/mastery-test.ts",
@@ -47,7 +46,6 @@
     "test:catbalance": "tsx scripts/category-balance-test.ts",
     "test:diffbonus": "tsx scripts/difficulty-bonus-test.ts",
     "test:botskill": "tsx scripts/bot-skill-test.ts",
-    "test:botcards": "tsx scripts/bot-cards-test.ts",
     "register:command": "tsx scripts/register-command.ts"
   },
   "dependencies": {
