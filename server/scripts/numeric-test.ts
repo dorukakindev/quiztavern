@@ -79,7 +79,7 @@ test("Tam isabet taban + bonus alır", () => {
   assert.equal(inner.players.get("a")!.score, GAME.NUMERIC_BASE + GAME.NUMERIC_EXACT);
 });
 
-test("Eşit mesafe berabere — ikisi de kazanır", () => {
+test("Eşit mesafe — önce kilitleyen kazanır, diğeri teselli dilimine düşer", () => {
   const room = numericRoom("n-tie", ["a", "b"]);
   const inner = startRound(room);
   const answer = inner.numericQuestions[0].answer;
@@ -88,9 +88,10 @@ test("Eşit mesafe berabere — ikisi de kazanır", () => {
   room.numericAnswer("a", answer + 5);
   room.numericAnswer("b", answer + 5);
   const nr = room.stateFor("a").reveal?.numeric;
-  assert.equal(nr?.winnerIds.length, 2);
+  assert.deepEqual(nr?.winnerIds, ["a"], "önce kilitleyen tek kazanan");
+  assert.ok(nr?.runnerUpIds.includes("b"), "eşit mesafe ikincisi teselli");
   assert.equal(inner.players.get("a")!.score, GAME.NUMERIC_BASE);
-  assert.equal(inner.players.get("b")!.score, GAME.NUMERIC_BASE);
+  assert.equal(inner.players.get("b")!.score, GAME.NUMERIC_RUNNER_UP);
 });
 
 test("Tahmin bir kez kilitlenir; ikinci giriş yutulur", () => {

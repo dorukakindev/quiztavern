@@ -2833,6 +2833,14 @@ export class Room {
             .filter(([, guess]) => Math.abs(guess - prompt.answer) === secondBest)
             .map(([id]) => id)
         : [];
+    // Tam beraberlikte ikincil kilit-süresi kriteri: aynı mesafeyi önce
+    // kilitliyen tek kazanır, geri kalanlar teselli dilimine düşer.
+    if (winnerIds.length > 1) {
+      winnerIds.sort(
+        (a, b) => (this.players.get(a)?.answeredAt ?? Infinity) - (this.players.get(b)?.answeredAt ?? Infinity),
+      );
+      runnerUpIds.push(...winnerIds.splice(1));
+    }
     const gains: Record<string, number> = {};
     for (const player of this.eligiblePlayers()) {
       const guessed = this.numericGuesses.get(player.id);
