@@ -46,10 +46,13 @@ export function scheduleBotAnswers(room: Room): void {
         // masadaki herkese ufak bir bedava ipucu sızar.
         if (!knows && Math.random() < 0.45) {
           room.wordLetter(p.id);
-          room.scheduleBotTask(() => {
-            if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
-            room.wordAnswer(p.id, "bilmiyorum");
-          }, 700 + Math.random() * 800);
+          room.scheduleBotTask(
+            () => {
+              if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
+              room.wordAnswer(p.id, "bilmiyorum");
+            },
+            700 + Math.random() * 800,
+          );
         } else {
           room.wordAnswer(p.id, knows ? wp.answer : "bilmiyorum");
         }

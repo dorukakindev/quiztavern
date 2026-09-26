@@ -56,6 +56,24 @@ Production mod sunucusu `client/dist`'i statik servis eder; `/privacy` ve
 `PUBLIC_BASE_URL` (https), `ALLOWED_ORIGINS`, `PORT`, `HOST`,
 `ALLOW_MOCK_AUTH` (production'da `0`).
 
+## Arayüz stilleri
+
+`client/src/activity-main.tsx` stilleri şu sırayla yükler; sonraki dosya
+öncekini ezer:
+
+| Dosya              | Rolü                                                                    |
+| ------------------ | ----------------------------------------------------------------------- |
+| `activity.css`     | Temel yerleşim ve bileşenler                                            |
+| `layout-fixes.css` | Kırılım (ekran boyutu) düzeltmeleri                                     |
+| `polish.css`       | Mod ekranları ve ayrıntılar                                             |
+| `fixes.css`        | Görsel dili değiştirmeyen hata düzeltmeleri (her birinin nedeni yazılı) |
+| `arena.css`        | **Tasarım sistemi**: renk, yüzey, tipografi ve animasyon kararları      |
+
+Renk kuralı: zemin lacivert, "canlı" bilgi ve seçim turkuaz, **altın yalnız
+ana eylemde** (Masayı Başlat, Aynı masayla devam). Yeni bir yüzey
+eklerken `arena.css`'teki `--ar-*` token'larını kullanın. Animasyonların
+tamamı `prefers-reduced-motion: no-preference` içindedir.
+
 ## Yayınlama
 
 Tek süreç, tek port (varsayılan 3001). Önerilen yol

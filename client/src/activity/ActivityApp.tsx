@@ -4103,7 +4103,7 @@ function GameBoard({
                     <button
                       key={type}
                       type="button"
-                      className={`qt-card ${freezePick && type === "freeze" ? "is-picking" : ""}`}
+                      className={`qt-card is-${type} ${freezePick && type === "freeze" ? "is-picking" : ""}`}
                       title={t(`card.${type}.hint`)}
                       aria-label={t(`card.${type}.hint`)}
                       disabled={cardLocked}
