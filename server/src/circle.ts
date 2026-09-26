@@ -5316,10 +5316,10 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
     answerEn: "stealth",
   },
   {
-    letter: "H",
+    letter: "S",
     clue: "Oyuncunun kaynak toplayıp yapı kurduğu oyun türü.",
-    answer: "hayatta kalma",
-    aliases: ["survival", "hayattakalmak"],
+    answer: "survival",
+    aliases: ["hayatta kalma", "hayattakalma", "hayattakalmak"],
     category: "Video Oyunları",
     difficulty: "orta",
     letterEn: "S",
