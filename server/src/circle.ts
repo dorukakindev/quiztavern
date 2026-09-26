@@ -25991,6 +25991,9 @@ const CIRCLE_PROMPTS_B: CirclePrompt[] = [
     clueEn: "The card that plays any role.",
     answerEn: "wild",
   },
+];
+
+const CIRCLE_PROMPTS_C: CirclePrompt[] = [
   // Masonluk
   {
     letter: "G",
@@ -27127,7 +27130,7 @@ const CIRCLE_PROMPTS_B: CirclePrompt[] = [
   },
 ];
 
-export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [...CIRCLE_PROMPTS_A, ...CIRCLE_PROMPTS_B];
+export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [...CIRCLE_PROMPTS_A, ...CIRCLE_PROMPTS_B, ...CIRCLE_PROMPTS_C];
 
 export const normalizeCircleAnswer = (value: string) =>
   value
