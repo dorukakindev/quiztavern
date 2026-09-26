@@ -2688,8 +2688,9 @@ export class Room {
       .sort((a, b) => (a.circleCorrectAt ?? 0) - (b.circleCorrectAt ?? 0));
     const gains: Record<string, number> = {};
     correct.forEach((player, rank) => {
-      // Yalnız en hızlı 3 puanlanır — sıralama listesi tüm doğruları taşır, 4.+ +0.
-      const gain = rank < GAME.CIRCLE_RANK_POINTS.length ? GAME.CIRCLE_RANK_POINTS[rank] : 0;
+      // En hızlı 3 tam puan; 4-5'e küçük teselli — sıfır çekenler masada kalır.
+      const gain =
+        rank < GAME.CIRCLE_RANK_POINTS.length ? GAME.CIRCLE_RANK_POINTS[rank] : rank < 5 ? GAME.CIRCLE_TAIL_POINTS : 0;
       player.score += gain;
       gains[player.id] = gain;
     });

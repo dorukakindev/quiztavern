@@ -1,5 +1,6 @@
 import { strict as assert } from "node:assert";
 import { ALL_CIRCLE_PROMPTS, normalizeCircleAnswer, sampleCirclePrompts, type CirclePrompt } from "../src/circle";
+import { GAME } from "../src/config.js";
 import { Room } from "../src/rooms";
 import type { Question } from "../src/questions";
 
@@ -115,7 +116,7 @@ test("Çember tur sayısı: host 10/15/20 seçebilir, klasik set reddedilir", ()
   assert.equal(room.stateFor("h", true).round.total, 15);
 });
 
-test("Çemberde yalnız en hızlı 3 puanlanır, 4. doğru +0 kalır", () => {
+test("Çemberde en hızlı 3 tam puan, 4. teselli (CIRCLE_TAIL_POINTS) alır", () => {
   const top3 = new Room("edge-top3", () => {}, { minPlayers: 1 });
   ["a", "b", "c", "d"].forEach((id) => top3.addPlayer(player(id, id.toUpperCase())));
   top3.gameMode = "circle";
@@ -131,8 +132,8 @@ test("Çemberde yalnız en hızlı 3 puanlanır, 4. doğru +0 kalır", () => {
   (top3 as unknown as { revealCircle: () => void }).revealCircle();
   const reveal = top3.stateFor("a", true).circleReveal!;
   assert.deepEqual(reveal.rankedPlayerIds, ["a", "b", "c", "d"]);
-  assert.deepEqual(reveal.gains, { a: 450, b: 320, c: 220, d: 0 });
-  assert.equal(top3.players.get("d")!.score, 0);
+  assert.deepEqual(reveal.gains, { a: 450, b: 320, c: 220, d: GAME.CIRCLE_TAIL_POINTS });
+  assert.equal(top3.players.get("d")!.score, GAME.CIRCLE_TAIL_POINTS);
 });
 
 test("Çember örnekleme EN cevabı da tekilleştirir (galibiyet/zafer→victory)", () => {
