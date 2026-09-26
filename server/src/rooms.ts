@@ -290,7 +290,7 @@ export class Room {
   private orderShuffle: number[] = [];
   // Tavern Panosu (§6.1): 5 kategori x 5 değer panosu. Sorular soru fazına
   // kadar sunucuda kalır — pick fazında yalnız değer+kullanılmışlık sızar.
-  private boardCells: (BoardCellSpec & { used: boolean })[] = [];
+  private boardCells: (BoardCellSpec & { used: boolean; dailyDouble?: boolean })[] = [];
   private boardCategories: string[] = [];
   private boardAsked: Question[] = []; // açılan hücrelerin soruları, açılış sırasıyla
   private boardPickerOrder: string[] = [];
@@ -1394,6 +1394,11 @@ export class Room {
         this.lastQuestionIds = new Set(this.boardAsked.map((q) => q.id));
         const spec = sampleBoardCells(compatibleCategories, this.seenQuestionIds, this.lastQuestionIds);
         this.boardCells = spec.cells.map((cell) => ({ ...cell, used: false }));
+        // 'Daily Double': rastgele tek hücre gizli ×2 taşır — açıldığında
+        // soruya çıkan hücre kazancı ikiye katlanır (Jeopardy geleneği).
+        if (this.boardCells.length) {
+          this.boardCells[Math.floor(Math.random() * this.boardCells.length)].dailyDouble = true;
+        }
         this.boardCategories = spec.categories;
         this.boardAsked = [];
         this.currentCell = -1;
@@ -1780,6 +1785,11 @@ export class Room {
           ...(this.gameMode === "lightning" && this.questionDuration() <= GAME.LIGHTNING_MIN_MS
             ? { fuseCritical: true }
             : {}),
+          ...(this.gameMode === "board" &&
+          this.currentCell >= 0 &&
+          this.boardCells[this.currentCell]?.dailyDouble
+            ? { dailyDouble: true }
+            : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle
@@ -1871,7 +1881,13 @@ export class Room {
       this.gameMode === "board" && this.phase === "pick"
         ? {
             categories: this.boardCategories,
-            cells: this.boardCells.map((cell) => ({ value: cell.value, used: cell.used })),
+            cells: this.boardCells.map((cell) => ({
+              value: cell.value,
+              used: cell.used,
+              // Çift hücre açılana dek gizli kalır — pick fazında sızarsa
+              // seçici en değerlisini bilir, kör şans bozulur.
+              ...(cell.used && cell.dailyDouble ? { dailyDouble: true } : {}),
+            })),
             pickerId,
             pickerName: (pickerId && this.players.get(pickerId)?.name) || "",
             deadline: this.pickDeadline,
@@ -2684,7 +2700,10 @@ export class Room {
           }
         }
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
-        if (this.gameMode === "board") gain = correct ? (this.boardCells[this.currentCell]?.value ?? 0) : 0;
+        if (this.gameMode === "board") {
+          const cell = this.boardCells[this.currentCell];
+          gain = correct ? (cell?.value ?? 0) * (cell?.dailyDouble ? 2 : 1) : 0;
+        }
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
         if (correct && player.cardUsed === "double") gain *= 2;
         // Skor negatife inmez — Zil'in -200 cezası düşük skorlu oyuncuyu eksiye taşırdı.
