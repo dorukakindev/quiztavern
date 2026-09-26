@@ -42,6 +42,14 @@ const startRound = (room: Room) => {
   return inner;
 };
 const ids0 = (room: Room) => internals(room).players.keys().next().value!;
+/** Sunucuyla aynı kural: pozisyon başına TIMELINE_PER_POS + doğru komşu çift başına bonus. */
+const expectedGain = (order: number[], sol: number[]) => {
+  const rank = new Map<number, number>();
+  sol.forEach((ev, i) => rank.set(ev, i));
+  const hits = order.filter((ev, i) => ev === sol[i]).length;
+  const pairs = order.slice(0, -1).filter((ev, i) => (rank.get(ev) ?? -1) < (rank.get(order[i + 1]) ?? -1)).length;
+  return hits * GAME.TIMELINE_PER_POS + pairs * GAME.TIMELINE_PAIR_BONUS;
+};
 const solution = (room: Room) => {
   const q = internals(room).orderQuestions[internals(room).qIndex];
   return q.events.map((_, i) => i).sort((a, b) => q.events[a].year - q.events[b].year);
@@ -79,9 +87,21 @@ test("doğru sıra: her doğru pozisyon +100, tam isabet 400", () => {
   room.orderAnswer("b", wrong);
   const a = inner.players.get("a")!,
     b = inner.players.get("b")!;
-  assert.equal(a.score, 4 * GAME.TIMELINE_PER_POS);
-  assert.equal(b.score, 2 * GAME.TIMELINE_PER_POS);
+  assert.equal(a.score, expectedGain(sol, sol), "tam isabet = pozisyonlar + 3 çift");
+  assert.equal(b.score, expectedGain(wrong, sol), "2 isabet + doğru komşu çiftler");
   assert.equal(inner.phase, "reveal", "herkes dizince reveal");
+});
+
+test("pozisyon isabetsiz ama komşu-çiftli dizim bonus alır", () => {
+  const room = timelineRoom("t3b", ["a"]);
+  const inner = startRound(room);
+  const sol = solution(room);
+  // [1,2,0,3]: hiçbir pozisyon doğru değil ama (1,2) ve (0,3) çiftleri doğru.
+  const order = [sol[1], sol[2], sol[0], sol[3]];
+  assert.equal(order.filter((ev, i) => ev === sol[i]).length, 0, "hiç pozisyon isabeti yok");
+  room.orderAnswer("a", order);
+  const a = inner.players.get("a")!;
+  assert.equal(a.score, 2 * GAME.TIMELINE_PAIR_BONUS, "sadece çift bonusu");
 });
 
 test("cevap vermeyen 0 alır; istatistik doğru", () => {
@@ -117,7 +137,7 @@ test("kilitli cevap değiştirilemez", () => {
   room.orderAnswer("a", sol);
   room.orderAnswer("a", [sol[3], sol[2], sol[1], sol[0]]);
   const p = internals(room).players.get("a")!;
-  assert.equal(p.score, 4 * GAME.TIMELINE_PER_POS, "ilk dizim kalır");
+  assert.equal(p.score, expectedGain(sol, sol), "ilk dizim kalır");
 });
 
 test("round.total havuz büyüklüğünü yansıtır (Soru 1/0 bug'ı)", () => {
