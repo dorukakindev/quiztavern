@@ -165,7 +165,10 @@ export function scheduleBotAnswers(room: Room): void {
     }
     room.scheduleBotTask(() => {
       if (room.qIndex !== roundAtSchedule) return; // bayat zamanlayıcı
-      const correct = Math.random() < botSkill(p.id);
+      // Kelime/Çember/Blitz/Zil botları +0.1/+0.2 mod ekleriyle oynuyor; klasik
+      // şema (classic/team/elim/blur/duel/bet/board) çıplak beceriyle kalıyordu —
+      // en çok oynanan modlarda botlar sistemli en zayıf gruptu.
+      const correct = Math.random() < botSkill(p.id) + 0.05;
       let choice = q.correctIndex;
       if (!correct) {
         // %50 kullandıysa silinen şıkları seçemez.
