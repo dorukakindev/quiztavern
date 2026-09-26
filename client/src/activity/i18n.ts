@@ -1345,6 +1345,14 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   Tiyatro: "Theater",
   Kaşifler: "Explorers",
   Denizcilik: "Seafaring",
+  Bayraklar: "Flags",
+  Savaşlar: "Wars",
+  Dinler: "Religions",
+  Fotoğrafçılık: "Photography",
+  Sihir: "Magic",
+  Tarım: "Agriculture",
+  Jeoloji: "Geology",
+  Oyuncaklar: "Toys",
 };
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
