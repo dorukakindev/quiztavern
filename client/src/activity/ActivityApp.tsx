@@ -68,6 +68,7 @@ import {
   nextMenuIndex,
   questionIsLocked,
   shortcutIndex,
+  isPlainShortcut,
 } from "./gameLogic";
 import {
   deletePack,
@@ -3443,6 +3444,7 @@ function GameBoard({
       )
         return;
       if (document.querySelector('[role="dialog"]')) return;
+      if (!isPlainShortcut(event)) return;
       const index = shortcutIndex(event.key, 4);
       if (index === null || state.removedChoices.includes(index)) return;
       sfx.play("lock");
@@ -4448,6 +4450,7 @@ function BetBoard({
     const onKey = (event: KeyboardEvent) => {
       if (event.target instanceof HTMLElement && ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) return;
       if (document.querySelector('[role="dialog"]')) return;
+      if (!isPlainShortcut(event)) return;
       if (isFinal) {
         if (event.key !== "Enter") return;
         event.preventDefault();

@@ -611,6 +611,18 @@ io.use(async (socket, next) => {
   next();
 });
 
+/** Oyun eylemi dinleyicisi: Room metodu beklenmedik şekilde fırlatırsa hata
+ *  Socket.IO'nun paket döngüsüne sızmasın (sessiz yut + logla). */
+function guarded<A extends unknown[]>(label: string, fn: (...args: A) => void) {
+  return (...args: A) => {
+    try {
+      fn(...args);
+    } catch (error) {
+      log.error({ err: error, event: label }, "socket olayı işlenemedi");
+    }
+  };
+}
+
 io.on("connection", (socket) => {
   const user = socket.data.user as SessionUser;
   const roomId =
@@ -737,7 +749,7 @@ io.on("connection", (socket) => {
   });
 
   // Koltuğu bırakıp izleyiciye geç (oynamadan izle).
-  socket.on(EV.SPECTATE, () => room.becomeSpectator(user.id));
+  socket.on(EV.SPECTATE, guarded("spectate", () => room.becomeSpectator(user.id)));
   // İzleyiciyken boş koltuğa otur; masa doluysa bilgilendir.
   socket.on(EV.TAKE_SEAT, () => {
     try {
@@ -771,17 +783,21 @@ io.on("connection", (socket) => {
       toast(socket.id, t.key, t.params);
     }
   });
-  socket.on(EV.ANSWER, (choice: unknown) => room.answer(user.id, Number(choice)));
-  socket.on(EV.BUZZ, () => room.buzz(user.id));
-  socket.on(EV.CIRCLE_ANSWER, (answer: unknown) =>
-    room.answerCircle(user.id, typeof answer === "string" ? answer : ""),
+  socket.on(EV.ANSWER, guarded("answer", (choice: unknown) => room.answer(user.id, Number(choice))));
+  socket.on(EV.BUZZ, guarded("buzz", () => room.buzz(user.id)));
+  socket.on(
+    EV.CIRCLE_ANSWER,
+    guarded("circle", (answer: unknown) => room.answerCircle(user.id, typeof answer === "string" ? answer : "")),
   );
-  socket.on(EV.WORD_ANSWER, (answer: unknown) => room.wordAnswer(user.id, typeof answer === "string" ? answer : ""));
-  socket.on(EV.NUMERIC_ANSWER, (value: unknown) => room.numericAnswer(user.id, Number(value)));
-  socket.on(EV.ORDER_ANSWER, (order: unknown) => room.orderAnswer(user.id, order));
-  socket.on(EV.PICK_CELL, (cell: unknown) => room.pickCell(user.id, Number(cell)));
-  socket.on(EV.WORD_LETTER, () => room.wordLetter(user.id));
-  socket.on(EV.BET, (amount: unknown) => room.placeBet(user.id, Number(amount)));
+  socket.on(
+    EV.WORD_ANSWER,
+    guarded("word", (answer: unknown) => room.wordAnswer(user.id, typeof answer === "string" ? answer : "")),
+  );
+  socket.on(EV.NUMERIC_ANSWER, guarded("numeric", (value: unknown) => room.numericAnswer(user.id, Number(value))));
+  socket.on(EV.ORDER_ANSWER, guarded("order", (order: unknown) => room.orderAnswer(user.id, order)));
+  socket.on(EV.PICK_CELL, guarded("pick", (cell: unknown) => room.pickCell(user.id, Number(cell))));
+  socket.on(EV.WORD_LETTER, guarded("letter", () => room.wordLetter(user.id)));
+  socket.on(EV.BET, guarded("bet", (amount: unknown) => room.placeBet(user.id, Number(amount))));
   socket.on(EV.USE_CARD, (payload: unknown) => {
     try {
       const body = (payload ?? {}) as { type?: unknown; targetId?: unknown };
@@ -808,9 +824,10 @@ io.on("connection", (socket) => {
       toast(socket.id, t.key, t.params);
     }
   });
-  socket.on(EV.READY, (payload: unknown) => {
-    room.setReady(user.id, Boolean(payload));
-  });
+  socket.on(
+    EV.READY,
+    guarded("ready", (payload: unknown) => room.setReady(user.id, Boolean(payload))),
+  );
   socket.on(EV.SET_QUESTION_COUNT, (payload: unknown) => {
     try {
       room.setQuestionCount(user.id, (payload as { count?: unknown } | undefined)?.count);
@@ -897,7 +914,7 @@ io.on("connection", (socket) => {
     socket.leave(room.id);
     socket.disconnect(true);
   });
-  socket.on(EV.RETURN_TO_LOBBY, () => room.returnToLobby(user.id));
+  socket.on(EV.RETURN_TO_LOBBY, guarded("lobby", () => room.returnToLobby(user.id)));
   socket.on(EV.REMATCH, () => {
     try {
       room.voteRematch(user.id);
