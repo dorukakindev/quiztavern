@@ -16,6 +16,7 @@ import {
   CIRCLE_COUNTS,
   COUNTLESS_MODES,
   EMOTE_KEYS,
+  MODE_CONTRACT,
   LEAGUE_ORDER,
   QUESTION_COUNTS,
   QUESTION_TIMES,
@@ -2638,7 +2639,7 @@ function ActivityLobby({
 
                   {/* Süre/bonus/resim ayarları: süreye bağlı modlar (Çember/Fitil/
                 Bulanık/Kelime) kendi sabitini kullanır; yalnız soru modlarında. */}
-                  {["classic", "team", "elim", "bet"].includes(mode) && (
+                  {MODE_CONTRACT[mode].tableTuning && (
                     <>
                       <div className="qt-settings__group">
                         <span>{t("table.questionTime")}</span>

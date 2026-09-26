@@ -1020,6 +1020,14 @@ export class Room {
       throw new GameError("err.modeInvalid");
     if (this.gameMode === mode) return;
     this.gameMode = mode;
+    // Masa ayar çipleri (süre/hız bonusu/resim) yalnız tableTuning modlarında
+    // görünür; diğerlerine geçerken gizli kalan "kapalı" değer Fitil/Bulanık/
+    // Düello'nun hız puanını ya da süresini sessizce kırmasın — varsayılana dön.
+    if (!MODE_CONTRACT[mode].tableTuning) {
+      this.speedBonus = true;
+      this.questionTimeMs = null;
+      this.imageOnly = false;
+    }
     if (mode === "classic") this.questionCount = 10;
     if (mode === "lightning") this.questionCount = 5;
     if (mode === "bet") this.questionCount = 10;
