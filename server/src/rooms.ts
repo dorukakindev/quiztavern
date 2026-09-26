@@ -2699,7 +2699,12 @@ export class Room {
           members.find((m) => m.id === this.teamCaptainId(team)) ??
           members.reduce((a, b) => (a.seat <= b.seat ? a : b));
         const teamChoice = tied && captain.choice !== null ? captain.choice : votes.indexOf(max);
-        if (teamChoice === question.correctIndex) this.teamScores[team] += GAME.TEAM_VOTE_PTS;
+        // Takımdan biri Çifte jokeri oynadıysa takım kazancı da ikiye katlanır —
+        // joker artık yalnız kişisel skoru değil galibiyeti de etkiler.
+        const doubled = members.some((m) => m.cardUsed === "double");
+        if (teamChoice === question.correctIndex) {
+          this.teamScores[team] += GAME.TEAM_VOTE_PTS * (doubled ? 2 : 1);
+        }
       }
     }
     // Fitil: doğru cevap çıkan tur fitili bir kademe kısaltır; kimsenin

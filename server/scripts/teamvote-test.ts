@@ -13,7 +13,7 @@ const internals = (room: Room) =>
   room as unknown as {
     beginQuestion(): void;
     reveal(): void;
-    players: Map<string, { choice: number | null; team: number; score: number }>;
+    players: Map<string, { choice: number | null; team: number; score: number; cardUsed: string | null }>;
     teamScores: [number, number];
   };
 
@@ -105,6 +105,21 @@ test("Oy vermeyen takım puan almaz", () => {
   r.answer("d", cq.correctIndex);
   inner.reveal();
   assert.equal(inner.teamScores[0], 0);
+  assert.equal(inner.teamScores[1], GAME.TEAM_VOTE_PTS);
+});
+
+test("Takımda Çifte jokeri oynayan varsa takım kazancı 2x olur", () => {
+  const { r, inner } = teamRoom(["a", "b", "c", "d"]);
+  inner.beginQuestion();
+  const cq = r.currentQuestion()!;
+  const wrong = (cq.correctIndex + 1) % 4;
+  inner.players.get("a")!.cardUsed = "double"; // takım0'dan biri çifte oynadı
+  r.answer("a", cq.correctIndex);
+  r.answer("b", wrong);
+  r.answer("c", cq.correctIndex);
+  r.answer("d", cq.correctIndex);
+  inner.reveal();
+  assert.equal(inner.teamScores[0], GAME.TEAM_VOTE_PTS * 2, "çifte takım kazancını katlar");
   assert.equal(inner.teamScores[1], GAME.TEAM_VOTE_PTS);
 });
 
