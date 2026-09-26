@@ -716,10 +716,8 @@ textarea:focus-visible,
   animation:
     qtDotDrift 24s ease-in-out infinite alternate,
     qtDotPulse 4.5s ease-in-out infinite;
-} /* Lobi çocukları içeriktir ve arka planın üstünde durur; sahne dekoru (.qt-backdrop) hariç — o en arkada, kendi absolute konumunda kalır.
-   Baykuş da hariç: position:absolute olmalı — relative'e düşünce akışa girip
-   masayı 101px aşağı itiyor ve alttaki içeriği fold'un dışına atıyordu. */
-.qt-lobby > :not(.qt-lobby-dot-field):not(.qt-backdrop):not(.qt-lobby-owl) {
+} /* Lobi çocukları içeriktir ve arka planın üstünde durur; sahne dekoru (.qt-backdrop) hariç — o en arkada, kendi absolute konumunda kalır. */
+.qt-lobby > :not(.qt-lobby-dot-field):not(.qt-backdrop) {
   position: relative;
   z-index: 1;
 }

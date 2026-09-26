@@ -2468,7 +2468,6 @@ function ActivityLobby({
   return (
     <main className="qt-activity qt-lobby">
       <TableBackdrop />
-      <img className="qt-lobby-owl" src="/emblems/owl.webp" alt="" aria-hidden="true" />
       {/* Marka şeridi yok: Discord uygulamanın adını zaten kendi arayüzünde
         gösteriyor, içeride tekrarı alçak iframe'de masadan yer çalıyordu.
         İşlevsel olanlar (müzik, dil) köşede yüzer; bağlantı rozeti yalnızca
