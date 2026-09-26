@@ -2191,10 +2191,13 @@ export class Room {
         this.rescueRound.add(player.id);
       }
     }
-    // Botlar hemen yatırır: bankrollerinin rastgele bir dilimini (¼–hepsi arası).
+    // Botlar hemen yatırır: bankrollerinin konum-bilinçli bir dilimi — geride
+    // olan agresifleşir (liderden kopmamak için), önde olan temkinli kalır.
+    const topScore = Math.max(0, ...this.eligiblePlayers().map((player) => player.score));
     for (const player of this.eligiblePlayers()) {
       if (!player.isBot || this.rescueRound.has(player.id)) continue;
-      const fraction = 0.25 + Math.random() * 0.75;
+      const deficit = topScore > 0 ? Math.min(1, Math.max(0, (topScore - player.score) / topScore)) : 0;
+      const fraction = 0.3 + Math.random() * 0.3 + deficit * 0.4;
       player.bet = Math.max(0, Math.min(player.score, Math.round(player.score * fraction)));
     }
     this.broadcast();
