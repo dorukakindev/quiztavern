@@ -337,6 +337,8 @@ export class Room {
   /** Oyuncunun basışı kaçıncı denemeydi — ceza o denemenin eğrisinden yazılır. */
   private buzzAttemptNo = new Map<string, number>();
   private zilTimer: NodeJS.Timeout | null = null;
+  /** Blitz cevap yayınlarını toplayan yardımcı zamanlayıcı (broadcastSoon). */
+  private coalesceTimer: NodeJS.Timeout | null = null;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
   /** Takım modunda jokerler kişiye değil takıma aittir: ortak havuz.
@@ -1748,7 +1750,7 @@ export class Room {
     this.recordStat(player, right, claim.category, right ? Date.now() - this.questionStartedAt : null);
     player.blitzIdx++;
     this.blitzAssign(player);
-    this.broadcast();
+    this.broadcastSoon();
   }
 
   /** D/Y Blitz kapanışı: canlı akışlar donar, skor sıralı özet taşınır. */
@@ -3369,6 +3371,20 @@ export class Room {
     this.timer = null;
     if (this.zilTimer) clearTimeout(this.zilTimer);
     this.zilTimer = null;
+    if (this.coalesceTimer) clearTimeout(this.coalesceTimer);
+    this.coalesceTimer = null;
+  }
+
+  /** Ard arda gelen yayınları kısa bir pencerede tek yayına indirger. İlk
+   *  çağrı pencereyi açar; pencere dolmadan gelen ek çağrılar aynı yayına
+   *  katılır, gönderimde en güncel state çıkar. Yalnız Blitz'in yüksek
+   *  frekanslı cevap yolu kullanır (tur/hız hassasiyeti olan fazlar değil). */
+  private broadcastSoon() {
+    if (this.coalesceTimer) return;
+    this.coalesceTimer = setTimeout(() => {
+      this.coalesceTimer = null;
+      this.broadcast();
+    }, GAME.BLITZ_BROADCAST_MS);
   }
 
   /** clearTimer + this.timer = setTimeout desenini tek yerde toplar (§7.4).

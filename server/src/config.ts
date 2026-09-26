@@ -176,6 +176,9 @@ export const GAME = {
   /** Ardışık iki cevap arası en düşük süre (ms) — okumadan hızlı otomasyon
    *  spam'ini kırar; insan tempo sınırının altında. */
   BLITZ_MIN_INTERVAL_MS: 250,
+  /** Blitz cevap yayınlarının toplandığı pencere (ms): her cevap ayrı tam
+   *  state yayını yerine ~100 ms'de bir tek yayın gönderilir. */
+  BLITZ_BROADCAST_MS: 100,
   /** Zaman Çizelgesi (§6.1): 4 olayı sıralama süresi; her doğru pozisyon ayrı puan. */
   TIMELINE_MS: 20_000,
   TIMELINE_PER_POS: 100,
