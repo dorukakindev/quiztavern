@@ -191,6 +191,8 @@ export const GAME = {
   DIFF_BONUS: { kolay: 0, orta: 60, zor: 120 } as const,
   // Çember: yalnız en hızlı 3 doğru puanlanır — gerisi +0 (doğru bilen 4.+ puansız kalır).
   CIRCLE_RANK_POINTS: [450, 320, 220] as const,
+  /** 4. ve 5. sıraya teselli — sıfır çekmemek katılımı canlı tutar. */
+  CIRCLE_TAIL_POINTS: 60,
   // Tek kaynak: istemci de aynı sabitten sayar (bkz. shared/types.ts).
   RECONNECT_GRACE_MS,
   ROOM_TTL_MS: 5 * 60_000,
