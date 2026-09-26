@@ -7052,3 +7052,24 @@ button.qt-badge:focus-visible {
     height: 110px;
   }
 }
+
+/* Fitil kritik eşik: süre minimumda — sayaç ve kart kenarı alarm verir. */
+.qt-game--fuse-critical .qt-timer {
+  box-shadow:
+    0 0 24px rgba(252, 74, 26, 0.85),
+    0 0 48px rgba(247, 183, 51, 0.4);
+  animation: qt-fuse-flash 0.8s ease-in-out infinite;
+}
+.qt-game--fuse-critical .qt-question-stage {
+  outline: 1px solid rgba(252, 74, 26, 0.5);
+  outline-offset: -1px;
+}
+@keyframes qt-fuse-flash {
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5);
+  }
+}

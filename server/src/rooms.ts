@@ -1753,6 +1753,9 @@ export class Room {
           ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
           // writtenByYou kişisel — personalStateFor yazar.
           ...(writerId ? { writtenByName: this.players.get(writerId)?.name ?? null } : {}),
+          ...(this.gameMode === "lightning" && this.questionDuration() <= GAME.LIGHTNING_MIN_MS
+            ? { fuseCritical: true }
+            : {}),
         }
       : null;
     const circle: CirclePayload | null = inCircle
@@ -2653,8 +2656,13 @@ export class Room {
         if (teamChoice === question.correctIndex) this.teamScores[team] += GAME.TEAM_VOTE_PTS;
       }
     }
-    // Fitil: doğru cevap çıkan her tur fitili bir kademe kısaltır.
-    if (this.gameMode === "lightning" && picks[question.correctIndex].length > 0) this.lightningBurn++;
+    // Fitil: doğru cevap çıkan tur fitili bir kademe kısaltır; kimsenin
+    // bilemediği turda fitil bir kademe rahatlar — erken tur başarısı geç
+    // turları oynanamaz kılmaz.
+    if (this.gameMode === "lightning") {
+      if (picks[question.correctIndex].length > 0) this.lightningBurn++;
+      else this.lightningBurn = Math.max(0, this.lightningBurn - 1);
+    }
     this.phase = "reveal";
     // Trivia notu taşıyan turda reveal 2 sn uzar — satırı okumaya vakit kalsın.
     const revealMs = GAME.REVEAL_MS + (question.fact ? 2_000 : 0);
