@@ -175,6 +175,8 @@ export const GAME = {
   TIMELINE_PER_POS: 100,
   /** Komşu iki olay doğru sırada dizildiyse çift başına ek puan (kısmi dizim adaleti). */
   TIMELINE_PAIR_BONUS: 40,
+  /** 4/4 tam doğru dizime ekstra 'kusursuz dizim' ikramiyesi. */
+  TIMELINE_PERFECT: 150,
   /** Tavern Panosu: hücre seçim süresi (sırası gelen oyuncu için). */
   PICK_MS: 10_000,
   /** Pano sütun sayısı ve satır değerleri (değer arttıkça soru zorlaşır). */

@@ -48,7 +48,11 @@ const expectedGain = (order: number[], sol: number[]) => {
   sol.forEach((ev, i) => rank.set(ev, i));
   const hits = order.filter((ev, i) => ev === sol[i]).length;
   const pairs = order.slice(0, -1).filter((ev, i) => (rank.get(ev) ?? -1) < (rank.get(order[i + 1]) ?? -1)).length;
-  return hits * GAME.TIMELINE_PER_POS + pairs * GAME.TIMELINE_PAIR_BONUS;
+  return (
+    hits * GAME.TIMELINE_PER_POS +
+    pairs * GAME.TIMELINE_PAIR_BONUS +
+    (hits === sol.length ? GAME.TIMELINE_PERFECT : 0)
+  );
 };
 const solution = (room: Room) => {
   const q = internals(room).orderQuestions[internals(room).qIndex];
