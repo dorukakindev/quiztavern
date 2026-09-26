@@ -96,8 +96,8 @@ test("pozisyon isabetsiz ama komşu-çiftli dizim bonus alır", () => {
   const room = timelineRoom("t3b", ["a"]);
   const inner = startRound(room);
   const sol = solution(room);
-  // [1,2,0,3]: hiçbir pozisyon doğru değil ama (1,2) ve (0,3) çiftleri doğru.
-  const order = [sol[1], sol[2], sol[0], sol[3]];
+  // [1,2,3,0] rotasyonu: hiçbir pozisyon doğru değil ama (1,2) ve (2,3) çiftleri doğru.
+  const order = [sol[1], sol[2], sol[3], sol[0]];
   assert.equal(order.filter((ev, i) => ev === sol[i]).length, 0, "hiç pozisyon isabeti yok");
   room.orderAnswer("a", order);
   const a = inner.players.get("a")!;
@@ -161,5 +161,5 @@ test("2. turda dizimler sıfırlanır — eski tur 'zaten cevapladı' sanıp yut
 });
 
 console.log(`timeline-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0);
