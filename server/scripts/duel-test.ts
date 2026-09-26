@@ -59,11 +59,14 @@ const duelRoom = (id: string, ids: string[]) => {
   for (const pid of ids) room.setReady(pid, true);
   return room;
 };
-/** Son turu oynatıp maçı podyuma taşır. */
+/** Son turu oynatıp maçı podyuma taşır (a kazanır — beraberlik ani ölüme girer). */
 const toPodium = (room: Room) => {
   const inner = internals(room);
   inner.qIndex = inner.roundLimit - 1;
   inner.beginQuestion();
+  const correct = inner.questions[inner.qIndex].correctIndex;
+  room.answer("a", correct);
+  room.answer("b", (correct + 1) % 4);
   inner.reveal("allAnswered");
   inner.revealUntil = 0;
   inner.advanceFromReveal();
@@ -164,6 +167,33 @@ test("Countdown'da oturan da izleyici kalır — 3. düellocu çıkmaz", () => {
   assert.ok(late.eligibleFrom >= internals(room).roundLimit, "countdown katılımcısı bu maçı izler");
 });
 
+test("Son turda beraberlik → ani ölüm sorusu; izleyici katılamaz", () => {
+  const room = duelRoom("d-sd", ["a", "b", "c"]);
+  room.start("a", "duel");
+  const inner = internals(room);
+  inner.qIndex = inner.roundLimit - 1;
+  inner.beginQuestion();
+  const correct = inner.questions[inner.qIndex].correctIndex;
+  room.answer("a", correct);
+  room.answer("b", correct); // aynı kazanç → eşit skor
+  inner.reveal("allAnswered");
+  inner.revealUntil = 0;
+  inner.advanceFromReveal();
+  assert.equal(room.phase, "question", "ani ölüm turu başladı");
+  assert.equal(inner.roundLimit, GAME.DUEL_QUESTIONS + 1);
+  assert.ok(
+    inner.players.get("c")!.eligibleFrom >= inner.roundLimit,
+    "izleyici ani ölüme katılamaz",
+  );
+  const sdCorrect = inner.questions[inner.qIndex].correctIndex;
+  room.answer("a", sdCorrect);
+  room.answer("b", (sdCorrect + 1) % 4);
+  inner.reveal("allAnswered");
+  inner.revealUntil = 0;
+  inner.advanceFromReveal();
+  assert.equal(room.phase, "podium");
+});
+
 test("İzleyici düellocu tahmin ettiğinde predictOpen açık görünür", () => {
   const room = duelRoom("d-open", ["a", "b", "c"]);
   room.start("a", "duel");
@@ -172,5 +202,5 @@ test("İzleyici düellocu tahmin ettiğinde predictOpen açık görünür", () =
 });
 
 console.log(`duel-test: ${passed} geçti`);
-assert.equal(passed, 9);
+assert.equal(passed, 10);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

@@ -3025,6 +3025,35 @@ export class Room {
     if (this.gameMode === "word" && this.wordPoolMs <= 0) return this.finish();
     // D/Y Blitz tek 60 sn'lik penceredir — özeti gösterdikten sonra maç biter.
     if (this.gameMode === "blitz") return this.finish();
+    // Düello: son turun sonunda iki düellocu eşitse ani ölüm — en çok 2 ek
+    // soru. 2 oyuncu + az tam sayı puan beraberliği sık yapar; sessiz
+    // tiebreak yerine görünür bir final turu gerilimi korur.
+    if (
+      this.gameMode === "duel" &&
+      this.qIndex + 1 >= this.roundLimit &&
+      this.roundLimit < GAME.DUEL_QUESTIONS + 2
+    ) {
+      const [first, second] = this.sortedPlayers();
+      if (first && second && first.score === second.score && second.eligibleFrom <= this.qIndex) {
+        const pack = this.packId && MODE_CONTRACT.duel.packCompatible ? getPack(this.packId) : null;
+        const compat = this.categorySelection.filter(
+          (name) => !!CATEGORY_CATALOG.find((item) => item.name === name)?.classicCount,
+        );
+        const extra = pack
+          ? samplePackQuestions(1, pack.questions, this.seenQuestionIds, this.imageOnly)
+          : sampleQuestions(1, compat, this.seenQuestionIds, this.difficulty, this.imageOnly);
+        if (extra.length) {
+          this.questions.push(extra[0]);
+          this.seenQuestionIds.add(extra[0].id);
+          this.roundLimit += 1;
+          // İzleyiciler eligibleFrom=eski limitte takılı (düello koruması);
+          // ani ölüm turuna katılımcı girmesin diye yeni limite taşı.
+          for (const p of this.players.values()) {
+            if (p.eligibleFrom > this.qIndex) p.eligibleFrom = this.roundLimit;
+          }
+        }
+      }
+    }
     this.qIndex += 1;
     // Tavern Panosu: hücre kaldıysa sıradaki oyuncu seçer, bittiyse podyum.
     if (this.gameMode === "board") {
