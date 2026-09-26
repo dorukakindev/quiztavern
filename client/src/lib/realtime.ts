@@ -3,7 +3,6 @@ import { io, type Socket } from "socket.io-client";
 import {
   EV,
   type BadgeKey,
-  type CardType,
   type Difficulty,
   type EmoteKey,
   type EmotePayload,
@@ -309,9 +308,6 @@ export function useRealtimeGame(
       },
       shuffleTeams: () => {
         if (socket.connected) socket.emit(EV.TEAM_SHUFFLE);
-      },
-      useCard: (type: CardType, targetId?: string) => {
-        if (socket.connected) socket.emit(EV.USE_CARD, { type, ...(targetId ? { targetId } : {}) });
       },
       // Host araçları. Yetki ve ban süresi SUNUCUDA (rooms.ts kick/transferHost);
       // burası yalnızca hedefi bildirir. Reddedilirse sunucu toast döndürür.

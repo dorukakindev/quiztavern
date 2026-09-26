@@ -12,7 +12,6 @@ import { createPortal } from "react-dom";
 import { sfx } from "../lib/sfx";
 import { storageGet, storageSet } from "../lib/storage";
 import {
-  CARD_TYPES,
   CIRCLE_COUNTS,
   COUNTLESS_MODES,
   EMOTE_KEYS,
@@ -22,7 +21,6 @@ import {
   QUESTION_TIMES,
   TABLE_THEMES,
   RECONNECT_GRACE_MS,
-  type CardType,
   type CategoryOption,
   type CirclePayload,
   type Difficulty,
@@ -1337,15 +1335,6 @@ function RoomStrip({
                   {formatNumber(language, state.betStakes?.[player.id] ?? state.reveal!.bets![player.id])}
                 </span>
               )}
-            {player.cardPlayed && (
-              <span className="qt-card-played" title={t("card.played")}>
-                <Icon name="deck" />
-              </span>
-            )}
-            <span className="qt-player-scorecol" title={t("game.totalScore")}>
-              <b className="qt-player-score">{formatNumber(language, player.score)}</b>
-              <small className="qt-player-total">{t("game.total")}</small>
-            </span>
             {player.answered && !beats.gains && <Icon name="check" />}
           </div>
         ))}
@@ -3077,7 +3066,6 @@ function GameBoard({
   onWordLetter,
   onNumericAnswer,
   onOrderAnswer,
-  onUseCard,
   onLeave,
   onSpectate,
   onReport,
@@ -3093,7 +3081,6 @@ function GameBoard({
   onWordLetter: () => void;
   onNumericAnswer?: (value: number) => void;
   onOrderAnswer?: (order: number[]) => void;
-  onUseCard: (type: CardType, targetId?: string) => void;
   onLeave: () => void;
   onSpectate: () => void;
   onReport: () => void;
@@ -3224,12 +3211,6 @@ function GameBoard({
     };
   }, [lightbox]);
 
-  // Tavern kartları (joker): yalnız Klasik/Takım, soru fazında, cevaptan önce,
-  // tur başına bir. Dondur için rakip hedefi isteyen küçük seçici.
-  const [freezePick, setFreezePick] = useState(false);
-  useEffect(() => {
-    setFreezePick(false);
-  }, [state.round.index]);
   const correctIndex = state.reveal?.correctIndex;
   const selected = state.yourChoice;
   // Her soru tipi kendi deadline'ını taşır: numeric/blitz/timeline payload'ları
@@ -3286,13 +3267,6 @@ function GameBoard({
     waiting,
     expired,
   });
-  const cardsEnabled =
-    (state.gameMode === "classic" || state.gameMode === "team") &&
-    state.phase === "question" &&
-    !waiting &&
-    !youAreSpectator;
-  const cardLocked =
-    !cardsEnabled || selected !== null || state.yourCardUsed !== null || state.yourCards <= 0 || beats.active;
   // Ondalık virgülle de yazılabilir — gönderimde noktaya çevrilir.
   const numericParsed = Number(circleAnswer.trim().replace(",", "."));
   const numericReady = circleAnswer.trim() !== "" && Number.isFinite(numericParsed);
@@ -3445,7 +3419,6 @@ function GameBoard({
   // Klavye kısayolu: A/B/C/D veya 1/2/3/4 tıklamayla aynı işi yapar (kilitler).
   // Çember modunda serbest metin girişi var, kısayol orada devre dışı. Bir form
   // alanına yazarken ya da masadan-ayrıl onay kutusu açıkken de sessizce yutar.
-  // removedChoices dep'te — %50 jokeri şıkkı sildikten sonra bayat closure
   // silinmiş index'i hâlâ kilitleyebilirdi.
   useEffect(() => {
     if (isCircle || locked) return;
@@ -3458,13 +3431,13 @@ function GameBoard({
       if (document.querySelector('[role="dialog"]')) return;
       if (!isPlainShortcut(event)) return;
       const index = shortcutIndex(event.key, 4);
-      if (index === null || state.removedChoices.includes(index)) return;
+      if (index === null) return;
       sfx.play("lock");
       onAnswer(index);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [isCircle, locked, onAnswer, state.removedChoices]);
+  }, [isCircle, locked, onAnswer]);
 
   // Sahne görseli geri geldi: elipsi bunlarda sanıp kaldırmıştım, meğer
   // .qt-timer::after ekrana kaçıyormuş — görsellerin suçu yokmuş.
@@ -4106,88 +4079,6 @@ function GameBoard({
                   </h1>
                 </div>
               </div>
-              {cardsEnabled ? (
-                <div className="qt-card-bar">
-                  <span className={`qt-card-count ${state.yourCards <= 0 ? "is-empty" : ""}`} title={t("card.title")}>
-                    <Icon name="deck" />
-                    <b>{t("card.deck")}</b>
-                    <em>×{state.yourCards}</em>
-                  </span>
-                  {CARD_TYPES.map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      className={`qt-card is-${type} ${freezePick && type === "freeze" ? "is-picking" : ""}`}
-                      title={t(`card.${type}.hint`)}
-                      aria-label={t(`card.${type}.hint`)}
-                      disabled={cardLocked}
-                      onClick={() => {
-                        if (type === "freeze") {
-                          setFreezePick((open) => !open);
-                          return;
-                        }
-                        sfx.play("lock");
-                        onUseCard(type);
-                      }}
-                    >
-                      <Icon
-                        name={
-                          type === "fifty"
-                            ? "percent"
-                            : type === "double"
-                              ? "double"
-                              : type === "shield"
-                                ? "shield"
-                                : "snowflake"
-                        }
-                      />
-                      <b>{t(`card.${type}`)}</b>
-                    </button>
-                  ))}
-                  {state.yourCardUsed ? (
-                    <em className="qt-card-tag">
-                      <Icon name="check" />
-                      {t(`card.${state.yourCardUsed}`)}
-                    </em>
-                  ) : null}
-                  {state.youFrozen ? (
-                    <em className="qt-card-tag is-frozen">
-                      <Icon name="snowflake" />
-                      {t("card.frozenYou")}
-                    </em>
-                  ) : null}
-                  {freezePick && !cardLocked ? (
-                    <div className="qt-card-targets" role="group" aria-label={t("card.freeze.pick")}>
-                      {state.players
-                        .filter(
-                          (item) =>
-                            item.id !== state.youId &&
-                            item.connected &&
-                            !item.waiting &&
-                            !item.answered &&
-                            (state.gameMode !== "team" ||
-                              item.team === undefined ||
-                              item.team !== state.players.find((p) => p.id === state.youId)?.team),
-                        )
-                        .map((item) => (
-                          <button
-                            key={item.id}
-                            type="button"
-                            className="qt-card-target"
-                            onClick={() => {
-                              sfx.play("lock");
-                              onUseCard("freeze", item.id);
-                              setFreezePick(false);
-                            }}
-                          >
-                            <Avatar player={item} compact />
-                            {item.name}
-                          </button>
-                        ))}
-                    </div>
-                  ) : null}
-                </div>
-              ) : null}
               {/* Zil (§6.1): henüz kimse basmadıysa herkes BAS'a yarışır; zili
             kazanan şıkları görür, diğerleri "X cevaplıyor" izler. Reveal'de
             grid herkese döner (sonuç gösterimi). */}
@@ -4229,10 +4120,6 @@ function GameBoard({
               ) : (
                 <div className="qt-answers">
                   {(language === "en" ? shown.choicesEn : shown.choices).map((choice, index) => {
-                    const removed = state.removedChoices.includes(index);
-                    // %50 jokerinin sildiği şık artık hiç render edilmez —
-                    // soluk boş kutu "doldurulmamış C/D" gibi okunuyordu.
-                    if (removed) return null;
                     const isCorrect = beats.cards && index === correctIndex;
                     const isWrong = beats.cards && selected === index && index !== correctIndex;
                     const isDimmed = beats.cards && !isCorrect;
@@ -4246,8 +4133,8 @@ function GameBoard({
                     const showPct = showDist && (picks.length > 0 || index === correctIndex);
                     return (
                       <button
-                        className={`qt-answer ${selected === index ? "is-selected" : ""} ${isCorrect ? "is-correct" : ""} ${isWrong ? "is-wrong" : ""} ${isDimmed || removed ? "is-dimmed" : ""} ${removed ? "is-removed" : ""}`}
-                        disabled={locked || removed}
+                        className={`qt-answer ${selected === index ? "is-selected" : ""} ${isCorrect ? "is-correct" : ""} ${isWrong ? "is-wrong" : ""} ${isDimmed ? "is-dimmed" : ""}`}
+                        disabled={locked}
                         aria-pressed={selected === index}
                         data-answer-state={
                           isCorrect ? "correct" : isWrong ? "wrong" : selected === index ? "locked" : "idle"
@@ -6243,7 +6130,6 @@ export function ActivityApp() {
           onCircleAnswer={game.answerCircle}
           onWordAnswer={game.answerWord}
           onWordLetter={game.wordLetter}
-          onUseCard={game.useCard}
           onLeave={() => setLeaveConfirmOpen(true)}
           onSpectate={game.spectate}
           onReport={() => game.reportQuestion()}
