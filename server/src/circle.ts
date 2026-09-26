@@ -13112,6 +13112,54 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
     clueEn: "Turkey's oldest bank still in operation, founded in 1863.",
     answerEn: "ziraatbank",
   },
+
+  // İçecekler
+  { letter: "C", clue: "Türk kahvesinin pişirildiği bakır, uzun saplı kap.", answer: "cezve", category: "İçecekler", difficulty: "kolay", letterEn: "I", clueEn: "The small long-handled copper pot used to brew Turkish coffee.", answerEn: "ibrik" },
+  { letter: "Ç", clue: "İnce belli bardakta ikram edilen Türkiye'nin milli sıcak içeceği.", answer: "çay", category: "İçecekler", difficulty: "kolay", letterEn: "T", clueEn: "Turkey's national hot drink, served in tulip-shaped glasses.", answerEn: "tea" },
+  { letter: "B", clue: "Arpa ve şerbetçiotundan mayalanan köpüklü içecek.", answer: "bira", category: "İçecekler", difficulty: "kolay", letterEn: "B", clueEn: "Foamy drink fermented from barley and hops.", answerEn: "beer" },
+  { letter: "K", clue: "Cezvede pişen, fal bakılan geleneksel içecek.", answer: "kahve", category: "İçecekler", difficulty: "kolay", letterEn: "C", clueEn: "The traditional Turkish drink brewed in a cezve, used for fortune-telling.", answerEn: "coffee" },
+  { letter: "S", clue: "Kışın üzerine tarçın serpilerek içilen sıcak sütlü içecek.", answer: "salep", category: "İçecekler", difficulty: "orta", letterEn: "S", clueEn: "Warm milky winter drink dusted with cinnamon, made from orchid tuber flour.", answerEn: "sahlep" },
+  { letter: "L", clue: "Limon, su ve şekerle hazırlanan serinletici yaz içeceği.", answer: "limonata", category: "İçecekler", difficulty: "kolay", letterEn: "L", clueEn: "Refreshing summer drink made of lemon, water and sugar.", answerEn: "lemonade" },
+  { letter: "A", clue: "Yoğurt, su ve tuzla yapılan milli soğuk içecek.", answer: "ayran", category: "İçecekler", difficulty: "kolay", letterEn: "A", clueEn: "Turkey's national cold drink of yogurt, water and salt.", answerEn: "ayran" },
+  { letter: "R", clue: "Anason aromalı, suyla karışınca beyazlaşan geleneksel içki.", answer: "rakı", category: "İçecekler", difficulty: "orta", letterEn: "R", clueEn: "Anise-flavored traditional Turkish spirit that turns milky with water.", answerEn: "raki" },
+  { letter: "B", clue: "Kışın içilen, mayalanmış darıdan yapılan koyu geleneksel içecek.", answer: "boza", category: "İçecekler", difficulty: "orta", letterEn: "B", clueEn: "Thick traditional winter drink made from fermented millet.", answerEn: "boza" },
+  { letter: "E", clue: "İtalyan usulü, basınçlı suyla hazırlanan yoğun kahve.", answer: "espresso", category: "İçecekler", difficulty: "orta", letterEn: "E", clueEn: "Intense Italian-style coffee made with pressurized water.", answerEn: "espresso" },
+
+  // Tiyatro
+  { letter: "K", clue: "Geleneksel gölge oyununun hazırcevap, zıpır kahramanı.", answer: "karagöz", category: "Tiyatro", difficulty: "kolay", letterEn: "K", clueEn: "The witty, rough-edged hero of traditional Turkish shadow theater.", answerEn: "karagoz" },
+  { letter: "H", clue: "Karagöz'ün kitabi dille konuşan gölge oyunu arkadaşı.", answer: "hacivat", category: "Tiyatro", difficulty: "kolay", letterEn: "H", clueEn: "Karagöz's scholarly-spoken counterpart in Turkish shadow theater.", answerEn: "hacivat" },
+  { letter: "H", clue: "Shakespeare'in 'Olmak ya da olmamak' tiradını içeren oyunu.", answer: "hamlet", category: "Tiyatro", difficulty: "kolay", letterEn: "H", clueEn: "Shakespeare's play containing the 'To be or not to be' soliloquy.", answerEn: "hamlet" },
+  { letter: "M", clue: "Antik Yunan'da oyuncuların yüzüne taktığı ifade aracı.", answer: "maske", category: "Tiyatro", difficulty: "kolay", letterEn: "M", clueEn: "What ancient Greek actors wore on their faces.", answerEn: "mask" },
+  { letter: "M", clue: "Tek kişilik geleneksel Türk sahne hikâye anlatıcısı.", answer: "meddah", category: "Tiyatro", difficulty: "orta", letterEn: "M", clueEn: "Traditional Turkish one-man storyteller on stage.", answerEn: "meddah" },
+  { letter: "P", clue: "Bir oyunun ilk kez seyirci önüne çıktığı gösterim.", answer: "prömiyer", category: "Tiyatro", difficulty: "orta", letterEn: "P", clueEn: "The first performance of a play before an audience.", answerEn: "premiere" },
+  { letter: "S", clue: "Oyuncuya unuttuğu repliği fısıldayan sahne görevlisi.", answer: "suflör", category: "Tiyatro", difficulty: "orta", letterEn: "P", clueEn: "The stagehand who whispers forgotten lines to actors.", answerEn: "prompter" },
+  { letter: "B", clue: "'Godot'yu Beklerken'in absürt yazarı.", answer: "beckett", category: "Tiyatro", difficulty: "zor", letterEn: "B", clueEn: "The absurdist author of 'Waiting for Godot'.", answerEn: "beckett" },
+  { letter: "Ç", clue: "'Martı' ve 'Vişne Bahçesi'nin Rus yazarı.", answer: "çehov", category: "Tiyatro", difficulty: "zor", letterEn: "C", clueEn: "The Russian playwright of 'The Seagull' and 'The Cherry Orchard'.", answerEn: "chekhov" },
+  { letter: "M", clue: "'Tartuffe' ve 'Cimri'nin Fransız komedi yazarı.", answer: "moliere", category: "Tiyatro", difficulty: "zor", letterEn: "M", clueEn: "The French comedy master who wrote 'Tartuffe' and 'The Miser'.", answerEn: "moliere" },
+
+  // Kaşifler
+  { letter: "K", clue: "1492'de Amerika'ya ulaşan Cenovalı denizci.", answer: "kolomb", aliases: ["kristofkolomb"], category: "Kaşifler", difficulty: "kolay", letterEn: "C", clueEn: "The Genoese navigator who reached the Americas in 1492.", answerEn: "columbus" },
+  { letter: "M", clue: "Dünyayı dolaşan ilk seferi başlatan Portekizli kaşif.", answer: "macellan", aliases: ["magellan"], category: "Kaşifler", difficulty: "kolay", letterEn: "M", clueEn: "The Portuguese explorer who launched the first circumnavigation.", answerEn: "magellan" },
+  { letter: "E", clue: "10 ciltlik Seyahatname'nin yazarı Osmanlı gezgin.", answer: "evliyaçelebi", aliases: ["evliya"], category: "Kaşifler", difficulty: "kolay", letterEn: "E", clueEn: "The Ottoman traveler who wrote the 10-volume Book of Travels.", answerEn: "evliyacelebi" },
+  { letter: "M", clue: "Asya'ya gidip Harikalar Kitabı'nı anlatan Venedikli gezgin.", answer: "marcopolo", aliases: ["marco polo"], category: "Kaşifler", difficulty: "kolay", letterEn: "M", clueEn: "The Venetian traveler who described Asia in 'The Travels'.", answerEn: "marcopolo" },
+  { letter: "V", clue: "Hindistan'a deniz yolunu açan Portekizli kaşif.", answer: "vascodagama", aliases: ["vasko", "vasco"], category: "Kaşifler", difficulty: "orta", letterEn: "V", clueEn: "The Portuguese explorer who opened the sea route to India.", answerEn: "vascodagama" },
+  { letter: "C", clue: "Avustralya'nın doğu kıyısını haritalayan İngiliz kaptan.", answer: "cook", aliases: ["jamescook"], category: "Kaşifler", difficulty: "orta", letterEn: "C", clueEn: "The English captain who charted Australia's east coast.", answerEn: "cook" },
+  { letter: "P", clue: "Dünya haritası ve Kitab-ı Bahriye'nin Osmanlı çizeri.", answer: "pirireis", aliases: ["piri"], category: "Kaşifler", difficulty: "orta", letterEn: "P", clueEn: "The Ottoman admiral who drew a world map and the Book of the Sea.", answerEn: "pirireis" },
+  { letter: "A", clue: "1911'de Güney Kutbu'na ilk ulaşan Norveçli kaşif.", answer: "amundsen", aliases: ["roald"], category: "Kaşifler", difficulty: "orta", letterEn: "A", clueEn: "The Norwegian explorer who first reached the South Pole in 1911.", answerEn: "amundsen" },
+  { letter: "B", clue: "Pasifik Okyanusu'nu ilk gören Avrupalı kaşif.", answer: "balboa", category: "Kaşifler", difficulty: "zor", letterEn: "B", clueEn: "The first European explorer to see the Pacific Ocean.", answerEn: "balboa" },
+  { letter: "İ", clue: "Rihla adlı seyahatnamesiyle ünlü Faslı gezgin.", answer: "ibnibatuta", aliases: ["ibnibattuta", "batuta"], category: "Kaşifler", difficulty: "zor", letterEn: "I", clueEn: "The Moroccan traveler famous for his book 'Rihla'.", answerEn: "ibnbattuta" },
+
+  // Denizcilik
+  { letter: "Ç", clue: "Gemiyi yerinde sabitlemek için denize atılan metal alet.", answer: "çapa", category: "Denizcilik", difficulty: "kolay", letterEn: "A", clueEn: "The heavy metal device dropped to hold a ship in place.", answerEn: "anchor" },
+  { letter: "D", clue: "Gemiye yön veren, suya dalan yassı parça.", answer: "dümen", category: "Denizcilik", difficulty: "kolay", letterEn: "R", clueEn: "The underwater blade used to steer a ship.", answerEn: "rudder" },
+  { letter: "F", clue: "Kayalık kıyıda gemilere yol gösteren ışıklı kule.", answer: "fener", category: "Denizcilik", difficulty: "kolay", letterEn: "L", clueEn: "The illuminated tower guiding ships along rocky shores.", answerEn: "lighthouse" },
+  { letter: "Y", clue: "Rüzgârı yakalayıp tekneyi ilerleten bez parçası.", answer: "yelken", category: "Denizcilik", difficulty: "kolay", letterEn: "S", clueEn: "The cloth that catches wind to propel a boat.", answerEn: "sail" },
+  { letter: "P", clue: "Denizde yön bulmaya yarayan manyetik alet.", answer: "pusula", category: "Denizcilik", difficulty: "kolay", letterEn: "C", clueEn: "The magnetic instrument for finding direction at sea.", answerEn: "compass" },
+  { letter: "İ", clue: "Denizcilikte geminin sol tarafının adı.", answer: "iskele", category: "Denizcilik", difficulty: "orta", letterEn: "P", clueEn: "The nautical term for a ship's left side.", answerEn: "port" },
+  { letter: "S", clue: "Denizcilikte geminin sağ tarafının adı.", answer: "sancak", category: "Denizcilik", difficulty: "orta", letterEn: "S", clueEn: "The nautical term for a ship's right side.", answerEn: "starboard" },
+  { letter: "G", clue: "Geminin üst açık katı, günlük hayattaki adıyla.", answer: "güverte", category: "Denizcilik", difficulty: "orta", letterEn: "D", clueEn: "The open upper surface of a ship.", answerEn: "deck" },
+  { letter: "B", clue: "Preveze'nin kahramanı, Akdeniz'i 'Türk gölü' yapan amiral.", answer: "barbaros", aliases: ["barbaroshayreddin", "hayreddin"], category: "Denizcilik", difficulty: "zor", letterEn: "B", clueEn: "The admiral who made the Mediterranean a 'Turkish lake' at Preveza.", answerEn: "barbarossa" },
+  { letter: "K", clue: "Geminin arkasına verilen denizci terimi.", answer: "kıç", category: "Denizcilik", difficulty: "zor", letterEn: "S", clueEn: "The nautical term for the back of a ship.", answerEn: "stern" },
 ];
 
 export const normalizeCircleAnswer = (value: string) =>
