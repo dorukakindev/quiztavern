@@ -2404,7 +2404,7 @@ function ActivityLobby({
   const categorySummaryLabel = selectedCategories.length
     ? selectedCategories.map((name) => categoryLabel(language, name)).join(" · ")
     : t("category.mixed");
-  const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
+  const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 5;
   const orbitSize = useOrbitSize();
   const orbitRadius = Math.round(orbitSize / 2 - 30);
   // Masaüstünde ayarlar paneli hep açık olmalı. CSS-only zorlama (display:grid
@@ -2578,7 +2578,7 @@ function ActivityLobby({
                       ? t("category.limit.two")
                       : mode === "lightning"
                         ? t("category.limit.one")
-                        : t("category.limit.three")
+                        : t("category.limit.five")
                   }
                   mode={mode}
                   mastery={state?.progress?.categoryMastery}
@@ -2590,7 +2590,7 @@ function ActivityLobby({
                     ? t("category.limit.two")
                     : mode === "lightning"
                       ? t("category.limit.one")
-                      : t("category.limit.three")}{" "}
+                      : t("category.limit.five")}{" "}
                   · {t("table.timeFixed")}
                 </small>
               </div>

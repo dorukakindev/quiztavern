@@ -324,6 +324,7 @@ const tr = {
   "category.limit.one": "Tek kategori",
   "category.limit.two": "En fazla 2 kategori",
   "category.limit.three": "En fazla 3 kategori",
+  "category.limit.five": "En fazla 5 kategori",
   "category.readyNote": "Kategori değişirse herkesin hazır durumu yeniden onaylanır.",
 
   // Geri sayım
@@ -938,6 +939,7 @@ const en: Record<StringKey, string> = {
   "category.limit.one": "One category",
   "category.limit.two": "Up to 2 categories",
   "category.limit.three": "Up to 3 categories",
+  "category.limit.five": "Up to 5 categories",
   "category.readyNote": "Changing categories asks everyone to confirm readiness again.",
 
   "countdown.tableReady": "TABLE READY",

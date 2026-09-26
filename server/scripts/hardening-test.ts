@@ -56,11 +56,11 @@ await check("sunucu mod başına kategori sınırını yetkili olarak uygular", 
   const classicNames = room
     .stateFor("host", true)
     .availableCategories.filter((category) => category.classicCount > 0)
-    .slice(0, 3)
+    .slice(0, 6)
     .map((category) => category.name);
-  assert.equal(classicNames.length, 3);
+  assert.equal(classicNames.length, 6);
   room.setCategories("host", classicNames);
-  assert.equal(room.categorySelection.length, 3);
+  assert.equal(room.categorySelection.length, 5);
   room.setGameMode("host", "lightning");
   assert.equal(room.categorySelection.length, 1);
   room.setCategories("host", classicNames);

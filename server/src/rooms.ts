@@ -1056,7 +1056,7 @@ export class Room {
     if (mode === "timeline") this.questionCount = 10;
     if (mode === "board") this.questionCount = 25 as QuestionCount; // 5x5 pano — fiili limit hücre sayısı
     if (mode === "circle") this.questionCount = 20;
-    const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 3;
+    const maxCategories = mode === "lightning" ? 1 : mode === "circle" ? 2 : 5;
     this.categorySelection = this.categorySelection
       .filter((name) => {
         const category = CATEGORY_CATALOG.find((item) => item.name === name);
@@ -1245,7 +1245,7 @@ export class Room {
     if (this.phase !== "lobby") throw new GameError("err.lobbyOnly");
     if (this.hostId !== playerId) throw new GameError("err.categoryHostOnly");
     if (!Array.isArray(categories)) throw new GameError("err.categoryInvalid");
-    const maxCategories = this.gameMode === "lightning" ? 1 : this.gameMode === "circle" ? 2 : 3;
+    const maxCategories = this.gameMode === "lightning" ? 1 : this.gameMode === "circle" ? 2 : 5;
     const next = [...new Set(categories.filter((value): value is string => typeof value === "string"))]
       .filter((name) => {
         if (!CATEGORY_NAMES.has(name)) return false;
