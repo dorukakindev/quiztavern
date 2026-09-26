@@ -3520,6 +3520,14 @@ function GameBoard({
           {!beats.active && deadline ? (
             <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} compact />
           ) : null}
+          {/* Son Masa ani ölüm: 2 kişi kaldıysa sayacın yanında işaret. */}
+          {state.gameMode === "elim" &&
+          !beats.active &&
+          state.players.filter((p) => (p.lives ?? 0) > 0).length === 2 ? (
+            <span className="qt-sudden-death" role="note">
+              {t("elim.suddenDeath")}
+            </span>
+          ) : null}
           {resultMark ? (
             <div
               className={`qt-result-mark is-${resultMark}`}

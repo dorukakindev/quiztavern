@@ -3204,6 +3204,11 @@ export class Room {
       // Her doğrulu tur fitili 0,5 sn kısaltır; 4 sn'de durur.
       return Math.max(GAME.LIGHTNING_MIN_MS, GAME.LIGHTNING_START_MS - this.lightningBurn * GAME.LIGHTNING_STEP_MS);
     }
+    // Son Masa ani ölüm: tam 2 kişi kalınca tur süresi kısalır — gerilim.
+    if (this.gameMode === "elim") {
+      const alive = [...this.players.values()].filter((p) => p.eligibleFrom <= this.qIndex && p.lives > 0).length;
+      if (alive === 2) return GAME.ELIM_SUDDEN_MS;
+    }
     return this.questionTimeMs ?? GAME.QUESTION_MS;
   }
 
