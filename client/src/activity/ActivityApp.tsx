@@ -63,6 +63,7 @@ import {
   BET_MIN_STAKE_PCT,
   betOptionSpecs,
   bothTeamsPresent,
+  isSuddenDeath,
   circleAnswerIsLocked,
   circleInputShouldFocus,
   nextMenuIndex,
@@ -1259,11 +1260,11 @@ function RoomStrip({
         <div className="qt-strip-teams">
           <span className="qt-strip-team is-team0">
             <b>{t("team.a")}</b>
-            <em>{formatNumber(language, teamA)}</em>
+            <em key={teamA}>{formatNumber(language, teamA)}</em>
           </span>
           <span className="qt-strip-team is-team1">
             <b>{t("team.b")}</b>
-            <em>{formatNumber(language, teamB)}</em>
+            <em key={teamB}>{formatNumber(language, teamB)}</em>
           </span>
         </div>
       ) : (
@@ -1495,10 +1496,16 @@ function OrbitSeats({
   onManage,
   openManageId,
   speakingIds,
+  onAddBot,
 }: {
   state: GameState | null;
   radius: number;
   onInvite: () => void;
+  /** Yalnız yerel mock modda (Discord/web misafiri değil) verilir: host boş
+   *  koltuğa tıklayınca davet yerine bot oturur. Yetki yine sunucuda
+   *  (ALLOW_MOCK_AUTH + host). Takım modu gibi 2+ kişi isteyen modlar
+   *  böylece tek tarayıcıda denenebilir. */
+  onAddBot?: () => void;
   viewerIsHost: boolean;
   onManage: (player: PublicPlayer, x: number, y: number, trigger: HTMLElement) => void;
   openManageId: string | null;
@@ -1556,18 +1563,19 @@ function OrbitSeats({
         const player = state?.players.find((item) => item.seat === seat);
         const transform = `translate(-50%, -50%) rotate(${angle}deg) translateY(-${radius}px) rotate(-${angle}deg)`;
         if (!player) {
+          const seatsBot = !!onAddBot && viewerIsHost;
           return (
             <button
               key={seat}
-              className="qt-seat qt-seat--empty"
+              className={`qt-seat qt-seat--empty ${seatsBot ? "is-bot-seat" : ""}`}
               style={{ transform }}
-              onClick={onInvite}
-              title={t("table.emptySeat")}
+              onClick={seatsBot ? onAddBot : onInvite}
+              title={t(seatsBot ? "table.addBotTitle" : "table.emptySeat")}
             >
               <i aria-hidden="true">
-                <Icon name="seat" />
+                <Icon name={seatsBot ? "people" : "seat"} />
               </i>
-              <span>{t("table.invite")}</span>
+              <span>{t(seatsBot ? "table.addBot" : "table.invite")}</span>
             </button>
           );
         }
@@ -2325,6 +2333,7 @@ function ActivityLobby({
   onHelp,
   onJoinPrivateRoom,
   onLeavePrivateRoom,
+  onAddBot,
 }: {
   state: GameState | null;
   status: string;
@@ -2358,6 +2367,8 @@ function ActivityLobby({
   onLeavePrivateRoom: () => void;
   onDeleteQuestion: () => void;
   onHelp?: () => void;
+  /** Yerel mock mod: boş koltuk bot oturtur (bkz. OrbitSeats). */
+  onAddBot?: () => void;
 }) {
   const { t } = useI18n();
   // Mod masa AYARIDIR ve sunucudan okunur: yerel state olsaydı host Fitil'i
@@ -2804,6 +2815,7 @@ function ActivityLobby({
             onManage={(player, x, y, trigger) => setHostMenu({ player, x, y, trigger })}
             openManageId={hostMenu?.player.id ?? null}
             speakingIds={speakingIds}
+            onAddBot={onAddBot}
           />
         </div>
 
@@ -3344,6 +3356,7 @@ function GameBoard({
   // Bulanık Resim: görsel soru süresi boyunca netleşir. Oran sunucu saatinden
   // türer (sfxNow), transform:scale kenar sızdırmazlığı için blur'le birlikte
   // azalır. Reveal'da (faz=question değil) görsel tamamen net.
+  const suddenDeath = state.gameMode === "elim" && !beats.active && isSuddenDeath(state.players);
   const blurRemain =
     state.gameMode === "blur" && state.phase === "question" && deadline && durationMs
       ? Math.max(0, Math.min(1, (deadline - sfxNow) / durationMs))
@@ -3538,19 +3551,6 @@ function GameBoard({
             kaldırıldı, kart merkezi tek odak. Reveal'de yerini sonuç/gain alır. */}
           {!beats.active && deadline ? (
             <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} compact />
-          ) : null}
-          {/* Son Masa ani ölüm: 2 kişi kaldıysa sayacın yanında işaret. */}
-          {/* Yalnız gerçekten ani ölümdeyken: masa 2'ye inmişse ya da iki canlının
-            da tek canı kalmışsa. 2 kişilik masada 1. sorudan yanmıyor. */}
-          {state.gameMode === "elim" &&
-          !beats.active &&
-          (() => {
-            const alive = state.players.filter((p) => (p.lives ?? 0) > 0);
-            return alive.length === 2 && (state.players.length > 2 || alive.every((p) => p.lives === 1));
-          })() ? (
-            <span className="qt-sudden-death" role="note">
-              {t("elim.suddenDeath")}
-            </span>
           ) : null}
           {resultMark ? (
             <div
@@ -3899,7 +3899,7 @@ function GameBoard({
                         : state.blitz.statement.text}
                     </h1>
                   </div>
-                  <p className="qt-blitz-claim">
+                  <p className="qt-blitz-claim" key={state.blitz.index}>
                     <span>{t("blitz.claim")}</span>
                     <b>
                       {language === "en" && state.blitz.statement.claimEn
@@ -4051,6 +4051,16 @@ function GameBoard({
                 </span>
                 <span className="qt-category">
                   {categoryLabel(language, shown.category)}
+                  {/* Son Masa ani ölüm: masa ikiye indiyse ya da iki kişilik masada
+                    ikisinin de tek canı kaldıysa (isSuddenDeath). Eskiden sahnenin
+                    üst kenarına mutlak konumluydu: kaydırma kabı onu kırpıyor,
+                    telefonda bu çipin üstüne biniyordu — artık çipin parçası. */}
+                  {suddenDeath ? (
+                    <em className="qt-sudden-death" role="note">
+                      <Icon name="heart" weight="fill" />
+                      {t("elim.suddenDeath")}
+                    </em>
+                  ) : null}
                   {shown.dailyDouble ? (
                     <em className="qt-dd-tag" role="note" aria-label={t("board.dailyDoubleAria")}>
                       <Icon name="star" />
@@ -6196,6 +6206,9 @@ export function ActivityApp() {
           onHelp={() => setHowToOpen(true)}
           onJoinPrivateRoom={(code) => setPrivateRoom(code)}
           onLeavePrivateRoom={() => setPrivateRoom(null)}
+          // Yalnız yerel mock mod: Discord iframe'inde ya da üretimdeki web
+          // misafirinde boş koltuk her zamanki gibi davet açar.
+          onAddBot={activity.identity.isDiscord || activity.identity.webGuest ? undefined : game.addBot}
         />
       );
 

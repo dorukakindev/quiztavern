@@ -84,6 +84,80 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Hareketsiz dokunuşlar
+   --------------------------------------------------------------------------- */
+
+/* Oyuncu şeridi: her satırdaki "TOPLAM" ismi "Robo…", durumu "Düşü…" diye
+   kesiyordu. Başlıktaki title zaten "toplam puan" diyor. */
+.qt-activity .qt-player-total {
+  display: none;
+}
+
+/* Klavye odağı: tarayıcının kalın mavi çerçevesi yerine temanın turkuazı */
+.qt-activity .qt-button:focus-visible,
+.qt-activity .qt-answer:focus-visible,
+.qt-activity .qt-mode-card:focus-visible,
+.qt-activity .qt-count-chip:focus-visible,
+.qt-activity .qt-icon-button:focus-visible,
+.qt-activity .qt-seat--empty:focus-visible {
+  outline: 2px solid var(--ar-teal);
+  outline-offset: 3px;
+}
+
+/* Açılışta sönen şıklar anında değil yumuşakça geri çekilir */
+.qt-activity .qt-answer {
+  transition:
+    transform 90ms ease,
+    box-shadow 90ms ease,
+    filter 120ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    opacity 380ms ease;
+}
+.qt-activity .qt-answer.is-dimmed:not(.is-wrong) {
+  filter: saturate(0.6);
+}
+
+/* İlerleme noktaları: dolan nokta renk değiştirirken hafifçe büyür */
+.qt-activity .qt-progress i {
+  transition:
+    background 240ms var(--ease),
+    box-shadow 240ms var(--ease),
+    transform 240ms var(--ease);
+}
+
+/* Boş koltuk: "Davet et" yazısı biraz geri çekilir, oyuncular öne çıkar */
+.qt-activity .qt-seat--empty > span {
+  color: var(--ar-text-3);
+  transition: color 160ms ease;
+}
+.qt-activity .qt-seat--empty:hover > span {
+  color: var(--ar-text);
+}
+
+/* ---------------------------------------------------------------------------
+   HATA DÜZELTMESİ · Dar dikey ekranda soru kartı 84px'e çöküyordu.
+   layout-fixes.css ızgaraya "auto 84px 1fr auto" satırları veriyor; sağdaki
+   puan kutusu o anda yoksa soru kartı otomatik yerleşimle 84px'lik satıra
+   düşüyor, şıklar görünmüyordu. Kart kendi satırına sabitlenir.
+   --------------------------------------------------------------------------- */
+@media (max-width: 560px) and (orientation: portrait) {
+  .qt-activity .qt-game-grid > .qt-table-strip {
+    grid-row: 1;
+  }
+  .qt-activity .qt-game-grid > .qt-question-stage {
+    grid-row: 3;
+  }
+}
+
+/* HATA DÜZELTMESİ · Telefonda görselli soruda C/D şıkları ekranın altında
+   kalıyordu (375×667'de ikisi de görünmüyor, 390×844'te D'nin üstüne emoji
+   çubuğu biniyordu). Kart 1fr satırına oturmuş ama align-items:start yüzünden
+   satırdan taşıp ızgarayı ekran dışına uzatıyordu; kartın kendi
+   overflow:auto'su hiç devreye girmiyordu. Kart satırına sığar, sığmazsa
+   İÇİNDE kayar; kısa ekranda görsel küçülür ki çoğu zaman kaymaya gerek
+   kalmasın. */
+/* ---------------------------------------------------------------------------
    Hareket
    --------------------------------------------------------------------------- */
 @media (prefers-reduced-motion: no-preference) {
@@ -321,32 +395,399 @@
 /* ---------------------------------------------------------------------------
    HATA DÜZELTMELERİ · Mod şeritleri
    --------------------------------------------------------------------------- */
-/* Çifte Bahis / Son Masa: bahis çipi ve kalpler oyuncu adını "A", "S…"
-   diye yutuyordu. İsim sütunu en az kendi payını alır, ekler küçülür. */
-.qt-activity .qt-player-card > div {
-  min-width: 36px;
-  flex: 1 1 auto;
+/* Çifte Bahis / Son Masa: bahis çipi ve kalpler isim sütunuyla aynı satırda
+   yarışıp adı "B.", "S." diye yutuyordu. Masaüstünde (isim sütununun göründüğü
+   tek düzen; ≤900px'te şerit avatar çubuğuna döner ve kalpler zaten avatarın
+   altındadır) kart ikinci satıra kırılır: ::before tam genişlikte sıfır
+   yükseklikli bir satır sonu, ekler onun ardından isim hizasında durur. */
+@media (min-width: 901px) {
+  .qt-activity .qt-player-card:has(> .qt-player-lives, > .qt-player-bet) {
+    flex-wrap: wrap;
+    row-gap: 3px;
+    align-content: center;
+  }
+  .qt-activity .qt-player-card:has(> .qt-player-lives, > .qt-player-bet)::before {
+    content: "";
+    order: 5;
+    flex: 0 0 100%;
+    height: 0;
+  }
+  .qt-activity .qt-player-card > .qt-player-lives,
+  .qt-activity .qt-player-card > .qt-player-bet {
+    order: 6;
+    margin-left: calc(var(--qt-strip-avatar, 30px) + 8px);
+    margin-top: -1px;
+  }
+  .qt-activity .qt-player-card > .qt-player-lives {
+    gap: 2px;
+  }
 }
-.qt-activity .qt-player-bet {
-  flex: none;
-  gap: 3px;
-  padding: 1px 6px;
-  font-size: 10px;
+
+/* Son Masa: "ANİ ÖLÜM" rozeti sahnenin üst kenarına mutlak konumluydu;
+   sahne bir kaydırma kabı (overflow: hidden/auto) olduğu için kesik
+   görünüyor, telefonda kategori çipinin üstüne biniyordu. Artık kategori
+   çipinin içinde, Günlük Çift etiketiyle aynı desende akan bir ek. */
+.qt-activity .qt-category .qt-sudden-death {
+  position: static;
+  transform: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding: 2px 9px 2px 7px;
+  border-radius: 999px;
+  font-style: normal;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #ffe3df;
+  background: linear-gradient(180deg, rgba(196, 46, 58, 0.95), rgba(140, 24, 36, 0.95));
+  border: 1px solid rgba(255, 140, 130, 0.5);
+  box-shadow: 0 0 0 0 rgba(230, 60, 70, 0.5);
+  animation: none;
+  pointer-events: none;
 }
-.qt-activity .qt-player-bet .qt-icon {
+.qt-activity .qt-category .qt-sudden-death .qt-icon {
   width: 10px;
   height: 10px;
+  color: #ffb3a8;
 }
-.qt-activity .qt-player-lives {
-  flex: none;
-  gap: 0;
+@media (prefers-reduced-motion: no-preference) {
+  /* Opaklıkla sönmek yerine kalp atışı: ikon iki kez vurur, hale yayılır. */
+  .qt-activity .qt-category .qt-sudden-death {
+    animation:
+      moTagIn 0.45s var(--ease) both,
+      moSuddenHalo 1.2s ease-out 0.45s infinite;
+  }
+  .qt-activity .qt-category .qt-sudden-death .qt-icon {
+    animation: moHeartBeat 1.2s ease-in-out 0.45s infinite;
+  }
 }
-.qt-activity .qt-player-lives .qt-icon {
-  width: 10px;
-  height: 10px;
+@keyframes moTagIn {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
-/* Son Masa: "ANİ ÖLÜM" rozeti kartın üst kenarında kesiliyordu */
-.qt-activity .qt-sudden-death {
-  top: 14px;
-  z-index: 3;
+@keyframes moSuddenHalo {
+  0% {
+    box-shadow: 0 0 0 0 rgba(230, 60, 70, 0.55);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 7px rgba(230, 60, 70, 0);
+  }
+}
+@keyframes moHeartBeat {
+  0%,
+  30%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  15%,
+  45% {
+    transform: scale(1.3);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   MODA ÖZEL HAREKET — her mod kendi mekaniğini anlatan tek bir jest alır.
+   Renkler arena dilinde: turkuaz canlı bilgi, altın yalnız ana eylem.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Zil · BAS düğmesi hazırda nabız halkası yayar; basınca (zil sende)
+     durum satırı halka dalgasıyla açılır. */
+  .qt-activity .qt-zil-buzz:not(:disabled) {
+    position: relative;
+  }
+  .qt-activity .qt-zil-buzz:not(:disabled)::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    border: 2px solid rgba(243, 195, 98, 0.7);
+    pointer-events: none;
+    animation: moRing 1.6s ease-out infinite;
+  }
+  .qt-activity .qt-zil-buzz:active:not(:disabled) {
+    transform: translateY(2px) scale(0.97);
+  }
+  .qt-activity .qt-zil-status.is-you {
+    position: relative;
+    animation: moTagIn 0.35s var(--ease) both;
+  }
+  .qt-activity .qt-zil-status.is-you::before,
+  .qt-activity .qt-zil-status.is-you::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    border: 2px solid rgba(92, 231, 239, 0.8);
+    pointer-events: none;
+    animation: moRing 0.9s ease-out both;
+  }
+  .qt-activity .qt-zil-status.is-you::after {
+    animation-delay: 0.18s;
+  }
+  .qt-activity .qt-zil-status:not(.is-you):not(.is-out) .qt-icon {
+    animation: moHeartBeat 1s ease-in-out infinite;
+  }
+
+  /* Bulanık Resim · net görsel (açılış) geldiğinde buğudan netliğe geçer;
+     soru boyunca blur zaten sunucu saatine bağlı inline stille azalıyor. */
+  .qt-activity.qt-game--blur .qt-question-image {
+    transition:
+      filter 0.25s linear,
+      transform 0.25s linear;
+  }
+  .qt-activity.qt-game--blur.is-revealing .qt-question-image {
+    animation: moFocusIn 0.7s var(--ease) both;
+  }
+  .qt-activity.qt-game--blur.is-revealing .qt-question-figure {
+    position: relative;
+  }
+  .qt-activity.qt-game--blur.is-revealing .qt-question-figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    pointer-events: none;
+    background: linear-gradient(105deg, transparent 35%, rgba(191, 246, 250, 0.35) 50%, transparent 65%);
+    background-size: 250% 100%;
+    animation: moSheen 0.9s ease-out 0.25s both;
+  }
+
+  /* Kelime Oyunu · açılan harf kutusu jeton gibi döner */
+  .qt-activity .qt-word-letters i.is-open {
+    animation: moTileFlip 0.45s var(--ease) both;
+  }
+  .qt-activity.is-revealing .qt-word-letters i:nth-child(2) {
+    animation-delay: 0.05s;
+  }
+  .qt-activity.is-revealing .qt-word-letters i:nth-child(3) {
+    animation-delay: 0.1s;
+  }
+  .qt-activity.is-revealing .qt-word-letters i:nth-child(4) {
+    animation-delay: 0.15s;
+  }
+  .qt-activity.is-revealing .qt-word-letters i:nth-child(n + 5) {
+    animation-delay: 0.2s;
+  }
+
+  /* Düello · izleyen tarafın paneli iki kılıç gibi ortadan açılır */
+  .qt-activity .qt-duel-watch {
+    animation: moSplitIn 0.45s var(--ease) both;
+  }
+  .qt-activity.qt-game--duel .qt-player-card.is-locked {
+    animation: moClash 0.35s var(--ease);
+  }
+
+  /* Yakın Tahmin · sonuç çubukları soldan dolar, en yakın tahmin parlar */
+  .qt-activity .qt-numeric-bar {
+    transform-origin: left center;
+    animation: moBarGrow 0.7s var(--ease) both;
+  }
+  .qt-activity .qt-numeric-row:nth-child(2) .qt-numeric-bar {
+    animation-delay: 0.08s;
+  }
+  .qt-activity .qt-numeric-row:nth-child(3) .qt-numeric-bar {
+    animation-delay: 0.16s;
+  }
+  .qt-activity .qt-numeric-row:nth-child(n + 4) .qt-numeric-bar {
+    animation-delay: 0.24s;
+  }
+  .qt-activity .qt-numeric-answer {
+    animation: moTagIn 0.4s var(--ease) both;
+  }
+
+  /* D/Y Blitz · her yeni iddia kartı yana kayarak gelir (ifade = key) */
+  .qt-activity .qt-blitz-claim {
+    animation: moSlideIn 0.3s var(--ease) both;
+  }
+  .qt-activity .qt-blitz-btn:active:not(:disabled) {
+    transform: translateY(2px) scale(0.97);
+  }
+  .qt-activity .qt-blitz-mark {
+    animation: moTagIn 0.35s var(--ease) both;
+  }
+
+  /* Zaman Çizelgesi · seçilen olay sıra rozetiyle "yerine oturur";
+     açılışta doğru dizilim satır satır iner */
+  .qt-activity .qt-order-item.is-picked {
+    animation: moSnap 0.32s var(--ease);
+  }
+  .qt-activity .qt-order-badge {
+    animation: moTagIn 0.3s var(--ease) both;
+  }
+  .qt-activity .qt-order-solrow {
+    animation: moDropIn 0.4s var(--ease) both;
+  }
+  .qt-activity .qt-order-solrow:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+  .qt-activity .qt-order-solrow:nth-child(3) {
+    animation-delay: 0.16s;
+  }
+  .qt-activity .qt-order-solrow:nth-child(n + 4) {
+    animation-delay: 0.24s;
+  }
+
+  /* Tavern Panosu · hücreler açılışta sırayla çevrilir; kullanılmış hücre
+     arkasını döner; seçilebilir hücre üstüne gelince kalkar */
+  .qt-activity .qt-board-col .qt-board-cell {
+    animation: moCellFlip 0.45s var(--ease) both;
+  }
+  .qt-activity .qt-board-col:nth-child(2) .qt-board-cell {
+    animation-delay: 0.05s;
+  }
+  .qt-activity .qt-board-col:nth-child(3) .qt-board-cell {
+    animation-delay: 0.1s;
+  }
+  .qt-activity .qt-board-col:nth-child(4) .qt-board-cell {
+    animation-delay: 0.15s;
+  }
+  .qt-activity .qt-board-col:nth-child(n + 5) .qt-board-cell {
+    animation-delay: 0.2s;
+  }
+  .qt-activity .qt-board-cell.is-used {
+    animation: moCellUsed 0.5s var(--ease) both;
+  }
+  .qt-activity .qt-board-cell.is-pickable {
+    transition: transform 140ms var(--ease);
+  }
+  .qt-activity .qt-board-cell.is-pickable:hover {
+    transform: translateY(-2px);
+  }
+
+  /* Takım · takım puanı değişince skor kutusu bir kez parlar */
+  .qt-activity .qt-strip-team em {
+    display: inline-block;
+    animation: moTagIn 0.4s var(--ease);
+  }
+
+  /* Yerel test: bot oturtulabilir boş koltuk turkuaz kesikli halka */
+  .qt-activity .qt-seat--empty.is-bot-seat i {
+    border-color: rgba(92, 231, 239, 0.35);
+  }
+}
+
+@keyframes moRing {
+  from {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.35, 1.8);
+  }
+}
+@keyframes moFocusIn {
+  from {
+    filter: blur(6px) saturate(0.6);
+    transform: scale(1.05);
+  }
+  to {
+    filter: none;
+    transform: none;
+  }
+}
+@keyframes moSheen {
+  from {
+    background-position: 120% 0;
+    opacity: 1;
+  }
+  to {
+    background-position: -40% 0;
+    opacity: 0;
+  }
+}
+@keyframes moTileFlip {
+  from {
+    transform: rotateX(90deg);
+    opacity: 0.3;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes moSplitIn {
+  from {
+    clip-path: inset(0 50% 0 50%);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+@keyframes moClash {
+  30% {
+    transform: translateX(3px);
+  }
+  60% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes moBarGrow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes moSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes moSnap {
+  0% {
+    transform: scale(0.97);
+  }
+  60% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes moDropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes moCellFlip {
+  from {
+    opacity: 0;
+    transform: perspective(400px) rotateX(-80deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes moCellUsed {
+  from {
+    transform: perspective(400px) rotateY(0);
+  }
+  to {
+    transform: perspective(400px) rotateY(180deg) scaleX(-1);
+  }
 }
