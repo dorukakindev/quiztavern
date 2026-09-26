@@ -49504,5 +49504,2005 @@
    "Çeşme",
    "Sinop"
   ]
+ },
+ {
+  "id": "tatli-baklava",
+  "category": "Tatlılar",
+  "difficulty": "kolay",
+  "text": "Kat kat açılmış yufka, fıstık ve şerbetle hazırlanan ünlü Türk tatlısı hangisidir?",
+  "choices": [
+   "Baklava",
+   "Revani",
+   "Kazandibi",
+   "Tulumba"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which famous Turkish dessert is made with layered phyllo, pistachios and syrup?",
+  "choicesEn": [
+   "Baklava",
+   "Revani",
+   "Kazandibi",
+   "Tulumba"
+  ]
+ },
+ {
+  "id": "tatli-kunefe",
+  "category": "Tatlılar",
+  "difficulty": "kolay",
+  "text": "Tel kadayıf arasında eriyen peynirle sıcak servis edilen Hatay tatlısı hangisidir?",
+  "choices": [
+   "Künefe",
+   "Şöbiyet",
+   "Lokma",
+   "Aşure"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Hatay dessert is served hot with melted cheese between shredded kadayıf?",
+  "choicesEn": [
+   "Künefe",
+   "Şöbiyet",
+   "Lokma",
+   "Aşure"
+  ]
+ },
+ {
+  "id": "tatli-tiramisu",
+  "category": "Tatlılar",
+  "difficulty": "kolay",
+  "text": "Mascarpone peyniri ve kahveye batırılmış savoiardi bisküvisiyle yapılan İtalyan tatlısı hangisidir?",
+  "choices": [
+   "Tiramisu",
+   "Panna cotta",
+   "Cannoli",
+   "Gelato"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Italian dessert is made with mascarpone and espresso-soaked ladyfingers?",
+  "choicesEn": [
+   "Tiramisu",
+   "Panna cotta",
+   "Cannoli",
+   "Gelato"
+  ]
+ },
+ {
+  "id": "tatli-sutlac",
+  "category": "Tatlılar",
+  "difficulty": "kolay",
+  "text": "Süt, pirinç ve şekerle pişirilen klasik Türk fırın tatlısı hangisidir?",
+  "choices": [
+   "Sütlaç",
+   "Keşkül",
+   "Muhallebi",
+   "Supangle"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which classic Turkish baked pudding is cooked with milk, rice and sugar?",
+  "choicesEn": [
+   "Sütlaç",
+   "Keşkül",
+   "Muhallebi",
+   "Supangle"
+  ]
+ },
+ {
+  "id": "tatli-kazandibi",
+  "category": "Tatlılar",
+  "difficulty": "orta",
+  "text": "Tabanı karamelize olana dek yakılan ve adını bu özelliğinden alan sütlü tatlı hangisidir?",
+  "choices": [
+   "Kazandibi",
+   "Güllaç",
+   "Zerde",
+   "İrmik helvası"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Turkish milk pudding takes its name from its deliberately caramelized, scorched bottom?",
+  "choicesEn": [
+   "Kazandibi",
+   "Güllaç",
+   "Zerde",
+   "İrmik helvası"
+  ]
+ },
+ {
+  "id": "tatli-cremebrulee",
+  "category": "Tatlılar",
+  "difficulty": "orta",
+  "text": "Üzerinde porsiyon başına karamelize kırılgan bir şeker tabakası bulunan Fransız muhallebisi hangisidir?",
+  "choices": [
+   "Crème brûlée",
+   "Profiterol",
+   "Éclair",
+   "Soufflé"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which French custard has a brittle caramelized sugar crust on top?",
+  "choicesEn": [
+   "Crème brûlée",
+   "Profiterol",
+   "Éclair",
+   "Soufflé"
+  ]
+ },
+ {
+  "id": "tatli-tulumba",
+  "category": "Tatlılar",
+  "difficulty": "orta",
+  "text": "Yağda kızartılıp soğuk şerbete atılan, yıldız uçlu huniyle sıkılan uzun tatlı hangisidir?",
+  "choices": [
+   "Tulumba",
+   "Baklava",
+   "Revani",
+   "Kadayıf"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which dessert is piped through a star nozzle, fried and dunked in cold syrup?",
+  "choicesEn": [
+   "Tulumba",
+   "Baklava",
+   "Revani",
+   "Kadayıf"
+  ]
+ },
+ {
+  "id": "tatli-asure",
+  "category": "Tatlılar",
+  "difficulty": "orta",
+  "text": "Nuh'un Gemisi efsanesiyle anılan, tahıl-kuruyemiş-kuru meyve karışımı tatlı hangisidir?",
+  "choices": [
+   "Aşure",
+   "Zerde",
+   "Helva",
+   "Pelte"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which dessert linked to Noah's Ark legend mixes grains, nuts and dried fruit?",
+  "choicesEn": [
+   "Aşure",
+   "Zerde",
+   "Helva",
+   "Pelte"
+  ]
+ },
+ {
+  "id": "tatli-tartetatin",
+  "category": "Tatlılar",
+  "difficulty": "zor",
+  "text": "Elmalıları karamelize edip hamuru üstüne örterek ters çevrilen Fransız tartı hangisidir?",
+  "choices": [
+   "Tarte Tatin",
+   "Clafoutis",
+   "Mille-feuille",
+   "Galette"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which French tart is baked upside-down with caramelized apples?",
+  "choicesEn": [
+   "Tarte Tatin",
+   "Clafoutis",
+   "Mille-feuille",
+   "Galette"
+  ]
+ },
+ {
+  "id": "tatli-sacher",
+  "category": "Tatlılar",
+  "difficulty": "zor",
+  "text": "Kayısı marmelatlı ve çikolata kaplı ünlü Viyana pastası hangisidir?",
+  "choices": [
+   "Sacher torte",
+   "Schwarzwald",
+   "Dobos",
+   "Linzer"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which famous Viennese cake has apricot jam and chocolate glaze?",
+  "choicesEn": [
+   "Sacher torte",
+   "Schwarzwald",
+   "Dobos",
+   "Linzer"
+  ]
+ },
+ {
+  "id": "korsan-karasakal",
+  "category": "Korsanlar",
+  "difficulty": "kolay",
+  "text": "Gerçek adı Edward Teach olan ve sakalına fitil bağladığı söylenen ünlü korsan kimdir?",
+  "choices": [
+   "Karasakal",
+   "Kaptan Kidd",
+   "Henry Morgan",
+   "Bartholomew Roberts"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which famous pirate, real name Edward Teach, allegedly tied fuses into his beard?",
+  "choicesEn": [
+   "Blackbeard",
+   "Captain Kidd",
+   "Henry Morgan",
+   "Bartholomew Roberts"
+  ]
+ },
+ {
+  "id": "korsan-sparrow",
+  "category": "Korsanlar",
+  "difficulty": "kolay",
+  "text": "'Karayip Korsanları' filmlerinde Johnny Depp'in canlandırdığı kaptan kimdir?",
+  "choices": [
+   "Jack Sparrow",
+   "Will Turner",
+   "Barbossa",
+   "Davy Jones"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which captain did Johnny Depp play in the Pirates of the Caribbean films?",
+  "choicesEn": [
+   "Jack Sparrow",
+   "Will Turner",
+   "Barbossa",
+   "Davy Jones"
+  ]
+ },
+ {
+  "id": "korsan-bayrak",
+  "category": "Korsanlar",
+  "difficulty": "kolay",
+  "text": "Korsan bayraklarındaki klasik simge olan çapraz kemikli figür hangisidir?",
+  "choices": [
+   "Kurukafa",
+   "Kılıç",
+   "Kraken",
+   "Çapa"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which classic figure with crossed bones appears on pirate flags?",
+  "choicesEn": [
+   "Skull",
+   "Sword",
+   "Kraken",
+   "Anchor"
+  ]
+ },
+ {
+  "id": "korsan-stevenson",
+  "category": "Korsanlar",
+  "difficulty": "orta",
+  "text": "'Define Adası' romanının yazarı kimdir?",
+  "choices": [
+   "Robert Louis Stevenson",
+   "Daniel Defoe",
+   "Jules Verne",
+   "Herman Melville"
+  ],
+  "correctIndex": 0,
+  "textEn": "Who wrote the novel 'Treasure Island'?",
+  "choicesEn": [
+   "Robert Louis Stevenson",
+   "Daniel Defoe",
+   "Jules Verne",
+   "Herman Melville"
+  ]
+ },
+ {
+  "id": "korsan-altincag",
+  "category": "Korsanlar",
+  "difficulty": "orta",
+  "text": "17. yüzyıl sonu–18. yüzyıl başında Karayipler'de korsanlığın zirve yaptığı dönem nasıl anılır?",
+  "choices": [
+   "Korsanlığın Altın Çağı",
+   "Büyük Keşifler Çağı",
+   "Karanlık Çağ",
+   "Tüccar Çağı"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the era of peak Caribbean piracy around 1690–1730 called?",
+  "choicesEn": [
+   "The Golden Age of Piracy",
+   "The Age of Discovery",
+   "The Dark Ages",
+   "The Merchant Era"
+  ]
+ },
+ {
+  "id": "korsan-gozbandi",
+  "category": "Korsanlar",
+  "difficulty": "orta",
+  "text": "Denizciler arası efsaneye göre korsanlar göz bandını hangi amaçla takardı?",
+  "choices": [
+   "Karanlık güverte altında gözü hazır tutmak",
+   "Eksik gözü saklamak",
+   "Rüzgârdan korumak",
+   "Rütbe işareti"
+  ],
+  "correctIndex": 0,
+  "textEn": "According to sailors' lore, why did pirates wear an eye patch?",
+  "choicesEn": [
+   "To keep one eye ready for dark decks",
+   "To hide a missing eye",
+   "Against the wind",
+   "As a rank badge"
+  ]
+ },
+ {
+  "id": "korsan-kaper",
+  "category": "Korsanlar",
+  "difficulty": "zor",
+  "text": "Devlet izniyle düşman ticaret gemilerine saldıran 'yasal' korsanlara ne denir?",
+  "choices": [
+   "Kaper",
+   "Filibustiyer",
+   "Vizier",
+   "Kalyoncu"
+  ],
+  "correctIndex": 0,
+  "textEn": "What were state-licensed attackers of enemy merchant ships called?",
+  "choicesEn": [
+   "Privateers",
+   "Buccaneers",
+   "Viziers",
+   "Galleon men"
+  ]
+ },
+ {
+  "id": "korsan-tuzuk",
+  "category": "Korsanlar",
+  "difficulty": "zor",
+  "text": "Korsan gemilerinde ganimet paylaşımı ve düzeni sağlayan yazılı kurallara ne denir?",
+  "choices": [
+   "Korsan tüzüğü",
+   "Deniz fermanı",
+   "Liman sicili",
+   "Gemi pusulası"
+  ],
+  "correctIndex": 0,
+  "textEn": "What were the written ship rules governing plunder shares called?",
+  "choicesEn": [
+   "Pirate articles",
+   "Sea decrees",
+   "Harbor registers",
+   "Ship logs"
+  ]
+ },
+ {
+  "id": "korsan-blackbart",
+  "category": "Korsanlar",
+  "difficulty": "zor",
+  "text": "'Black Bart' lakabıyla bilinen ve 400'den fazla gemi yağmalayan Galli korsan kimdir?",
+  "choices": [
+   "Bartholomew Roberts",
+   "Charles Vane",
+   "Calico Jack",
+   "Samuel Bellamy"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Welsh pirate known as 'Black Bart' captured over 400 ships?",
+  "choicesEn": [
+   "Bartholomew Roberts",
+   "Charles Vane",
+   "Calico Jack",
+   "Samuel Bellamy"
+  ]
+ },
+ {
+  "id": "korsan-tortuga",
+  "category": "Korsanlar",
+  "difficulty": "zor",
+  "text": "Karayip korsanlarının ünlü üs adası olan, Hispaniola kuzeyindeki ada hangisidir?",
+  "choices": [
+   "Tortuga",
+   "Jamaika",
+   "Bahamalar",
+   "Barbados"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which island north of Hispaniola was the famous pirate base?",
+  "choicesEn": [
+   "Tortuga",
+   "Jamaica",
+   "Bahamas",
+   "Barbados"
+  ]
+ },
+ {
+  "id": "masa-dnd",
+  "category": "Masa Oyunları",
+  "difficulty": "kolay",
+  "text": "1974'te Gary Gygax ve Dave Arneson'ın yarattığı efsanevi rol yapma oyunu hangisidir?",
+  "choices": [
+   "Dungeons & Dragons",
+   "Pathfinder",
+   "Warhammer",
+   "Gloomhaven"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which legendary role-playing game was created by Gygax and Arneson in 1974?",
+  "choicesEn": [
+   "Dungeons & Dragons",
+   "Pathfinder",
+   "Warhammer",
+   "Gloomhaven"
+  ]
+ },
+ {
+  "id": "masa-catan",
+  "category": "Masa Oyunları",
+  "difficulty": "kolay",
+  "text": "Koyun, kereste ve tuğla toplayıp yol ve yerleşim kurulan ada oyunu hangisidir?",
+  "choices": [
+   "Catan",
+   "Carcassonne",
+   "Risk",
+   "Ticket to Ride"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which island-settling game has players collect sheep, wood and brick?",
+  "choicesEn": [
+   "Catan",
+   "Carcassonne",
+   "Risk",
+   "Ticket to Ride"
+  ]
+ },
+ {
+  "id": "masa-scrabble",
+  "category": "Masa Oyunları",
+  "difficulty": "kolay",
+  "text": "Puanlı harf taşlarıyla kelime dizmeye dayanan klasik masa oyunu hangisidir?",
+  "choices": [
+   "Scrabble",
+   "Boggle",
+   "Bananagrams",
+   "Tabu"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which classic board game uses letter tiles with point values?",
+  "choicesEn": [
+   "Scrabble",
+   "Boggle",
+   "Bananagrams",
+   "Taboo"
+  ]
+ },
+ {
+  "id": "masa-monopoly",
+  "category": "Masa Oyunları",
+  "difficulty": "kolay",
+  "text": "Sokak satın alıp kira topladığınız, Türkçede 'Tekel' anlamına gelen oyun hangisidir?",
+  "choices": [
+   "Monopoly",
+   "Yahtzee",
+   "Hotel",
+   "Payday"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which property-trading game literally means 'tekel' in Turkish?",
+  "choicesEn": [
+   "Monopoly",
+   "Yahtzee",
+   "Hotel",
+   "Payday"
+  ]
+ },
+ {
+  "id": "masa-go",
+  "category": "Masa Oyunları",
+  "difficulty": "orta",
+  "text": "19x19 tahtada siyah-beyaz taşlarla oynanan kadim Çin strateji oyunu hangisidir?",
+  "choices": [
+   "Go",
+   "Shogi",
+   "Xiangqi",
+   "Mah-jong"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which ancient Chinese strategy game uses black and white stones on a 19x19 board?",
+  "choicesEn": [
+   "Go",
+   "Shogi",
+   "Xiangqi",
+   "Mah-jong"
+  ]
+ },
+ {
+  "id": "masa-risk",
+  "category": "Masa Oyunları",
+  "difficulty": "orta",
+  "text": "Kıtaları fethetmeye dayanan orduların savaştığı klasik dünya hakimiyeti oyunu hangisidir?",
+  "choices": [
+   "Risk",
+   "Diplomacy",
+   "Axis & Allies",
+   "Stratego"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which classic world-domination game is about conquering continents with armies?",
+  "choicesEn": [
+   "Risk",
+   "Diplomacy",
+   "Axis & Allies",
+   "Stratego"
+  ]
+ },
+ {
+  "id": "masa-cluedo",
+  "category": "Masa Oyunları",
+  "difficulty": "orta",
+  "text": "'Katil kim?' sorusunu malikânede silah ve oda tahminleriyle çözen oyun hangisidir?",
+  "choices": [
+   "Cluedo",
+   "Mysterium",
+   "Guess Who",
+   "Scotland Yard"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which game solves 'whodunit' by guessing weapon and room in a mansion?",
+  "choicesEn": [
+   "Cluedo",
+   "Mysterium",
+   "Guess Who",
+   "Scotland Yard"
+  ]
+ },
+ {
+  "id": "masa-jenga",
+  "category": "Masa Oyunları",
+  "difficulty": "kolay",
+  "text": "Tahta blokları kuleden çekip üste dizerek yıkmamaya çalıştığınız oyun hangisidir?",
+  "choices": [
+   "Jenga",
+   "Kapla",
+   "Kerplunk",
+   "Pick-up sticks"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which game has you pull wooden blocks from a tower without toppling it?",
+  "choicesEn": [
+   "Jenga",
+   "Kapla",
+   "Kerplunk",
+   "Pick-up sticks"
+  ]
+ },
+ {
+  "id": "masa-mangala",
+  "category": "Masa Oyunları",
+  "difficulty": "zor",
+  "text": "Oyuklara taş dağıtarak oynanan, Türk kültüründen bilinen kadim zeka oyunu hangisidir?",
+  "choices": [
+   "Mangala",
+   "Nine Men's Morris",
+   "Senet",
+   "Hnefatafl"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which ancient pit-and-seed game is part of Turkish heritage?",
+  "choicesEn": [
+   "Mangala",
+   "Nine Men's Morris",
+   "Senet",
+   "Hnefatafl"
+  ]
+ },
+ {
+  "id": "masa-ludo",
+  "category": "Masa Oyunları",
+  "difficulty": "zor",
+  "text": "Türkçede 'Kızma Birader' olarak bilinen oyunun uluslararası adı hangisidir?",
+  "choices": [
+   "Ludo",
+   "Parcheesi",
+   "Sorry",
+   "Aggravation"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the international name of the game Turks call 'Kızma Birader'?",
+  "choicesEn": [
+   "Ludo",
+   "Parcheesi",
+   "Sorry",
+   "Aggravation"
+  ]
+ },
+ {
+  "id": "cizgi-tintin",
+  "category": "Çizgi Roman",
+  "difficulty": "kolay",
+  "text": "Hergé'nin yarattığı, köpeği Milu ile maceralar yaşayan muhabir kahraman kimdir?",
+  "choices": [
+   "Tenten",
+   "Asteriks",
+   "Lucky Luke",
+   "Spirou"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which reporter hero created by Hergé adventures with his dog Snowy?",
+  "choicesEn": [
+   "Tintin",
+   "Asterix",
+   "Lucky Luke",
+   "Spirou"
+  ]
+ },
+ {
+  "id": "cizgi-stanlee",
+  "category": "Çizgi Roman",
+  "difficulty": "kolay",
+  "text": "Spider-Man, X-Men ve Fantastik Dörtlü'nün arkasındaki efsane Marvel ismi kimdir?",
+  "choices": [
+   "Stan Lee",
+   "Jack Kirby",
+   "Bob Kane",
+   "Will Eisner"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which legendary Marvel figure co-created Spider-Man, X-Men and the Fantastic Four?",
+  "choicesEn": [
+   "Stan Lee",
+   "Jack Kirby",
+   "Bob Kane",
+   "Will Eisner"
+  ]
+ },
+ {
+  "id": "cizgi-asteriks",
+  "category": "Çizgi Roman",
+  "difficulty": "kolay",
+  "text": "Sihirli iksirle güçlenen Galyalı savaşçının adı nedir?",
+  "choices": [
+   "Asteriks",
+   "Oburiks",
+   "İdefiks",
+   "Abraracourcix"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the name of the Gaulish warrior strengthened by a magic potion?",
+  "choicesEn": [
+   "Asterix",
+   "Obelix",
+   "Dogmatix",
+   "Vitalstatistix"
+  ]
+ },
+ {
+  "id": "cizgi-manga",
+  "category": "Çizgi Roman",
+  "difficulty": "kolay",
+  "text": "Japon çizgi romanlarına verilen genel ad nedir?",
+  "choices": [
+   "Manga",
+   "Anime",
+   "Manhwa",
+   "Manhua"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the general term for Japanese comics?",
+  "choicesEn": [
+   "Manga",
+   "Anime",
+   "Manhwa",
+   "Manhua"
+  ]
+ },
+ {
+  "id": "cizgi-smurfs",
+  "category": "Çizgi Roman",
+  "difficulty": "orta",
+  "text": "Peyo'nun yarattığı küçük mavi yaratıklar hangisidir?",
+  "choices": [
+   "Şirinler",
+   "Minyonlar",
+   "Troller",
+   "Snorkyler"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which small blue creatures did Peyo create?",
+  "choicesEn": [
+   "The Smurfs",
+   "Minions",
+   "Trolls",
+   "Snorks"
+  ]
+ },
+ {
+  "id": "cizgi-watchmen",
+  "category": "Çizgi Roman",
+  "difficulty": "orta",
+  "text": "Alan Moore ve Dave Gibbons'ın alternatif 1985'te geçen süper kahraman klasiği hangisidir?",
+  "choices": [
+   "Watchmen",
+   "V for Vendetta",
+   "Sandman",
+   "Preacher"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Moore-Gibbons classic deconstructs superheroes in an alternate 1985?",
+  "choicesEn": [
+   "Watchmen",
+   "V for Vendetta",
+   "Sandman",
+   "Preacher"
+  ]
+ },
+ {
+  "id": "cizgi-frankmiller",
+  "category": "Çizgi Roman",
+  "difficulty": "orta",
+  "text": "'Sin City' ve '300'ün yazarı/çizeri kimdir?",
+  "choices": [
+   "Frank Miller",
+   "Alan Moore",
+   "Neil Gaiman",
+   "Grant Morrison"
+  ],
+  "correctIndex": 0,
+  "textEn": "Who wrote and drew 'Sin City' and '300'?",
+  "choicesEn": [
+   "Frank Miller",
+   "Alan Moore",
+   "Neil Gaiman",
+   "Grant Morrison"
+  ]
+ },
+ {
+  "id": "cizgi-bant",
+  "category": "Çizgi Roman",
+  "difficulty": "orta",
+  "text": "Gazetelerde günlük yayınlanan kısa çizgi roman formatına ne denir?",
+  "choices": [
+   "Bant karikatür",
+   "Çerçeve hikâye",
+   "Fanzin",
+   "Webtoon"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the daily newspaper comics format called?",
+  "choicesEn": [
+   "Comic strip",
+   "Frame story",
+   "Fanzine",
+   "Webtoon"
+  ]
+ },
+ {
+  "id": "cizgi-fantastikdortlu",
+  "category": "Çizgi Roman",
+  "difficulty": "zor",
+  "text": "1961'de Marvel evrenini başlatan ilk büyük süper kahraman ekibi hangisidir?",
+  "choices": [
+   "Fantastik Dörtlü",
+   "Avengers",
+   "X-Men",
+   "Justice League"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which 1961 superhero team launched the Marvel universe?",
+  "choicesEn": [
+   "Fantastic Four",
+   "Avengers",
+   "X-Men",
+   "Justice League"
+  ]
+ },
+ {
+  "id": "cizgi-maus",
+  "category": "Çizgi Roman",
+  "difficulty": "zor",
+  "text": "Art Spiegelman'ın Holokost'u fare ve kedilerle anlatan Pulitzer ödüllü eseri hangisidir?",
+  "choices": [
+   "Maus",
+   "Palestine",
+   "Persepolis",
+   "Fun Home"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Pulitzer-winning graphic novel by Spiegelman depicts the Holocaust with mice and cats?",
+  "choicesEn": [
+   "Maus",
+   "Palestine",
+   "Persepolis",
+   "Fun Home"
+  ]
+ },
+ {
+  "id": "kus-dogan",
+  "category": "Kuşlar",
+  "difficulty": "orta",
+  "text": "Dalışta 380 km/s'i aşan hızıyla dünyanın en hızlı hayvanı sayılan kuş hangisidir?",
+  "choices": [
+   "Bayağı doğan",
+   "Kara kartal",
+   "Albatros",
+   "Saz horozu"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which bird is the fastest animal on Earth in a 380 km/h dive?",
+  "choicesEn": [
+   "Peregrine falcon",
+   "Golden eagle",
+   "Albatross",
+   "Prairie chicken"
+  ]
+ },
+ {
+  "id": "kus-devekusu",
+  "category": "Kuşlar",
+  "difficulty": "kolay",
+  "text": "Uçamayan en büyük kuş hangisidir?",
+  "choices": [
+   "Deve kuşu",
+   "Emu",
+   "Kivi",
+   "Kaz"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which is the largest flightless bird?",
+  "choicesEn": [
+   "Ostrich",
+   "Emu",
+   "Kiwi",
+   "Goose"
+  ]
+ },
+ {
+  "id": "kus-baykus",
+  "category": "Kuşlar",
+  "difficulty": "kolay",
+  "text": "Başını yaklaşık 270 derece çevirebilen gece avcısı kuş grubu hangisidir?",
+  "choices": [
+   "Baykuş",
+   "Doğan",
+   "Karga",
+   "Akbaba"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which nocturnal bird group can rotate its head about 270 degrees?",
+  "choicesEn": [
+   "Owl",
+   "Falcon",
+   "Crow",
+   "Vulture"
+  ]
+ },
+ {
+  "id": "kus-jako",
+  "category": "Kuşlar",
+  "difficulty": "orta",
+  "text": "Ses taklit yeteneğiyle tanınan gri papağan türü hangisidir?",
+  "choices": [
+   "Jako",
+   "Kakadu",
+   "Ara",
+   "Muhabbet kuşu"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which grey parrot species is famous for mimicking speech?",
+  "choicesEn": [
+   "African grey",
+   "Cockatoo",
+   "Macaw",
+   "Budgerigar"
+  ]
+ },
+ {
+  "id": "kus-guguk",
+  "category": "Kuşlar",
+  "difficulty": "orta",
+  "text": "Yumurtasını başka kuşların yuvasına bırakan asalak kuş hangisidir?",
+  "choices": [
+   "Guguk kuşu",
+   "Ağlak",
+   "Kırlangıç",
+   "Serçe"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which bird lays its eggs in other birds' nests?",
+  "choicesEn": [
+   "Cuckoo",
+   "Cormorant",
+   "Swallow",
+   "Sparrow"
+  ]
+ },
+ {
+  "id": "kus-sinekkusu",
+  "category": "Kuşlar",
+  "difficulty": "kolay",
+  "text": "Geri geri uçabilen tek kuş grubu hangisidir?",
+  "choices": [
+   "Sinek kuşu",
+   "Kırlangıç",
+   "Kanarya",
+   "İbibik"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which bird group is the only one that can fly backwards?",
+  "choicesEn": [
+   "Hummingbird",
+   "Swallow",
+   "Canary",
+   "Hoopoe"
+  ]
+ },
+ {
+  "id": "kus-puffin",
+  "category": "Kuşlar",
+  "difficulty": "orta",
+  "text": "Renkli üçgen gagasıyla 'deniz papağanı' diye bilinen kuzey kuşu hangisidir?",
+  "choices": [
+   "Puffin",
+   "Albatros",
+   "Pelikan",
+   "Martı"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which northern seabird with a colorful triangular beak is nicknamed 'sea parrot'?",
+  "choicesEn": [
+   "Puffin",
+   "Albatross",
+   "Pelican",
+   "Gull"
+  ]
+ },
+ {
+  "id": "kus-leylek",
+  "category": "Kuşlar",
+  "difficulty": "kolay",
+  "text": "Yuvalarını baca ve direklere kuran, göçüyle bilinen büyük beyaz kuş hangisidir?",
+  "choices": [
+   "Leylek",
+   "Turna",
+   "Flamingo",
+   "Balıkçıl"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which large white migratory bird nests on chimneys and poles?",
+  "choicesEn": [
+   "Stork",
+   "Crane",
+   "Flamingo",
+   "Heron"
+  ]
+ },
+ {
+  "id": "kus-tavus",
+  "category": "Kuşlar",
+  "difficulty": "kolay",
+  "text": "Erkeği kuyruk teleğini yelpaze gibi açarak dans eden kuş hangisidir?",
+  "choices": [
+   "Tavus kuşu",
+   "Sülün",
+   "Hindi",
+   "Paradise bird"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which bird's male dances with a fanned tail?",
+  "choicesEn": [
+   "Peacock",
+   "Pheasant",
+   "Turkey",
+   "Bird-of-paradise"
+  ]
+ },
+ {
+  "id": "kus-albatros",
+  "category": "Kuşlar",
+  "difficulty": "zor",
+  "text": "Kanat açıklığı 3,5 metreyi bulan ve yıllarca okyanus üstünde yaşayan dev kuş hangisidir?",
+  "choices": [
+   "Albatros",
+   "Pelikan",
+   "Dev akbaba",
+   "And kondoru"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which giant seabird with a 3.5 m wingspan can live over the ocean for years?",
+  "choicesEn": [
+   "Albatross",
+   "Pelican",
+   "Giant vulture",
+   "Andean condor"
+  ]
+ },
+ {
+  "id": "bocek-atesbocegi",
+  "category": "Böcekler",
+  "difficulty": "kolay",
+  "text": "Geceleri yeşilimsi ışık saçan böceklerin genel adı nedir?",
+  "choices": [
+   "Ateşböceği",
+   "Yusufçuk",
+   "Uğurböceği",
+   "Cırcır böceği"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the general name of insects that glow greenish at night?",
+  "choicesEn": [
+   "Firefly",
+   "Dragonfly",
+   "Ladybug",
+   "Cricket"
+  ]
+ },
+ {
+  "id": "bocek-karincakralice",
+  "category": "Böcekler",
+  "difficulty": "kolay",
+  "text": "Karınca kolonisinde tek üreme yapan dişi hangisidir?",
+  "choices": [
+   "Kraliçe karınca",
+   "İşçi karınca",
+   "Asker karınca",
+   "Drone"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which female is the sole reproducer in an ant colony?",
+  "choicesEn": [
+   "Queen ant",
+   "Worker ant",
+   "Soldier ant",
+   "Drone"
+  ]
+ },
+ {
+  "id": "bocek-mantis",
+  "category": "Böcekler",
+  "difficulty": "orta",
+  "text": "Çiftleşme sonrası erkeğini yiyebilmesiyle ünlü yeşil avcı böcek hangisidir?",
+  "choices": [
+   "Peygamberdevesi",
+   "Kızıl örümcek",
+   "Çekirge",
+   "Sivrisinek"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which green predator insect is famous for eating its mate?",
+  "choicesEn": [
+   "Praying mantis",
+   "Red spider",
+   "Grasshopper",
+   "Mosquito"
+  ]
+ },
+ {
+  "id": "bocek-pire",
+  "category": "Böcekler",
+  "difficulty": "kolay",
+  "text": "Kendi boyunun 100 katından fazla sıçrayabilen kan emici böcek hangisidir?",
+  "choices": [
+   "Pire",
+   "Bit",
+   "Kene",
+   "Tahtakurusu"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which blood-sucking insect can jump over 100 times its body length?",
+  "choicesEn": [
+   "Flea",
+   "Louse",
+   "Tick",
+   "Bedbug"
+  ]
+ },
+ {
+  "id": "bocek-aribal",
+  "category": "Böcekler",
+  "difficulty": "kolay",
+  "text": "Petek gözlü kovanlarda bal üreten böcek hangisidir?",
+  "choices": [
+   "Bal arısı",
+   "Eşek arısı",
+   "Yaban arısı",
+   "Mason arı"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which insect produces honey in wax combs?",
+  "choicesEn": [
+   "Honeybee",
+   "Hornet",
+   "Wasp",
+   "Mason bee"
+  ]
+ },
+ {
+  "id": "bocek-hamambocegi",
+  "category": "Böcekler",
+  "difficulty": "orta",
+  "text": "300 milyon yıldır neredeyse değişmeden yaşayan ve direnciyle ünlü böcek hangisidir?",
+  "choices": [
+   "Hamamböceği",
+   "Gümüş böceği",
+   "Kulağakaçan",
+   "Meyve sineği"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which insect has survived nearly unchanged for 300 million years?",
+  "choicesEn": [
+   "Cockroach",
+   "Silverfish",
+   "Earwig",
+   "Fruit fly"
+  ]
+ },
+ {
+  "id": "bocek-sivrisinek",
+  "category": "Böcekler",
+  "difficulty": "orta",
+  "text": "Sivrisineklerin kan emmesinin temel nedeni nedir?",
+  "choices": [
+   "Yumurta üretimi için protein",
+   "Besin ihtiyacı",
+   "Kışın depo",
+   "Savunma"
+  ],
+  "correctIndex": 0,
+  "textEn": "Why do mosquitoes bite for blood?",
+  "choicesEn": [
+   "Protein for egg production",
+   "Food",
+   "Winter storage",
+   "Defense"
+  ]
+ },
+ {
+  "id": "bocek-yusufcuk",
+  "category": "Böcekler",
+  "difficulty": "orta",
+  "text": "Saatte 50 km/s'yi aşan hızıyla böceklerin 'jet'i sayılan tür hangisidir?",
+  "choices": [
+   "Yusufçuk",
+   "At sineği",
+   "Bocuruk",
+   "Tırtıl"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which insect 'jet' can exceed 50 km/h?",
+  "choicesEn": [
+   "Dragonfly",
+   "Horsefly",
+   "Maybug",
+   "Caterpillar"
+  ]
+ },
+ {
+  "id": "bocek-ugurbocegi",
+  "category": "Böcekler",
+  "difficulty": "kolay",
+  "text": "Kırmızı kanatlı, benekli ve uğur getirdiğine inanılan böcek hangisidir?",
+  "choices": [
+   "Uğurböceği",
+   "Hanım böceği",
+   "Kızıl böcek",
+   "Alev böceği"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which red spotted beetle is believed to bring luck?",
+  "choicesEn": [
+   "Ladybug",
+   "Lady beetle",
+   "Scarlet bug",
+   "Fire bug"
+  ]
+ },
+ {
+  "id": "bocek-ormekdegil",
+  "category": "Böcekler",
+  "difficulty": "zor",
+  "text": "Biyolojik olarak 'böcek' olmayan, 8 bacaklı eklembacaklı sınıfı hangisidir?",
+  "choices": [
+   "Örümceğimsiler",
+   "Kırkayaklar",
+   "Kabuklular",
+   "Solucanlar"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which arthropod class with 8 legs is technically NOT insects?",
+  "choicesEn": [
+   "Arachnids",
+   "Millipedes",
+   "Crustaceans",
+   "Worms"
+  ]
+ },
+ {
+  "id": "baharat-safran",
+  "category": "Baharatlar",
+  "difficulty": "orta",
+  "text": "Gramı altından pahalı olabilen, pilavı sarıya boyayan dünyanın en pahalı baharatı hangisidir?",
+  "choices": [
+   "Safran",
+   "Vanilya",
+   "Kakule",
+   "Karabiber"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which is the world's most expensive spice, coloring rice golden yellow?",
+  "choicesEn": [
+   "Saffron",
+   "Vanilla",
+   "Cardamom",
+   "Black pepper"
+  ]
+ },
+ {
+  "id": "baharat-tarcin",
+  "category": "Baharatlar",
+  "difficulty": "kolay",
+  "text": "Rulo kabuklar hâlinde satılan, tatlıların vazgeçilmez aromatik baharatı hangisidir?",
+  "choices": [
+   "Tarçın",
+   "Karanfil",
+   "Muskat",
+   "Zencefil"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which aromatic spice is sold as rolled bark sticks for desserts?",
+  "choicesEn": [
+   "Cinnamon",
+   "Clove",
+   "Nutmeg",
+   "Ginger"
+  ]
+ },
+ {
+  "id": "baharat-pulbiber",
+  "category": "Baharatlar",
+  "difficulty": "kolay",
+  "text": "Menemen ve kahvaltıya karakter veren kırık kırmızı biber hangisidir?",
+  "choices": [
+   "Pul biber",
+   "Kimyon",
+   "Köri",
+   "Sumak"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which crushed red chili gives character to Turkish breakfast dishes?",
+  "choicesEn": [
+   "Pul biber (chili flakes)",
+   "Cumin",
+   "Curry",
+   "Sumac"
+  ]
+ },
+ {
+  "id": "baharat-zerdecal",
+  "category": "Baharatlar",
+  "difficulty": "orta",
+  "text": "Köriye sarı rengini veren, 'Hint safranı' da denen kök baharat hangisidir?",
+  "choices": [
+   "Zerdeçal",
+   "Zencefil",
+   "Galangal",
+   "Turunç"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which root spice gives curry its yellow color, also called 'Indian saffron'?",
+  "choicesEn": [
+   "Turmeric",
+   "Ginger",
+   "Galangal",
+   "Curcuma"
+  ]
+ },
+ {
+  "id": "baharat-karanfil",
+  "category": "Baharatlar",
+  "difficulty": "orta",
+  "text": "Karanfil baharatı ağacın hangi kısmının kurutulmuş hâlidir?",
+  "choices": [
+   "Çiçek tomurcuğu",
+   "Kabuk",
+   "Yaprak",
+   "Kök"
+  ],
+  "correctIndex": 0,
+  "textEn": "Cloves are the dried version of which part of the tree?",
+  "choicesEn": [
+   "Flower bud",
+   "Bark",
+   "Leaf",
+   "Root"
+  ]
+ },
+ {
+  "id": "baharat-paprika",
+  "category": "Baharatlar",
+  "difficulty": "orta",
+  "text": "Macar mutfağıyla özdeşleşen öğütülmüş kırmızı biber hangisidir?",
+  "choices": [
+   "Paprika",
+   "Chili",
+   "Kajen",
+   "Aleppo"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which ground red pepper is synonymous with Hungarian cuisine?",
+  "choicesEn": [
+   "Paprika",
+   "Chili",
+   "Cayenne",
+   "Aleppo"
+  ]
+ },
+ {
+  "id": "baharat-karabiber",
+  "category": "Baharatlar",
+  "difficulty": "zor",
+  "text": "Orta Çağ'da para yerine geçen ve savaşlara konu olan 'siyah altın' hangisidir?",
+  "choices": [
+   "Karabiber",
+   "Safran",
+   "Tarçın",
+   "Kakule"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which 'black gold' spice was once used as currency in the Middle Ages?",
+  "choicesEn": [
+   "Black pepper",
+   "Saffron",
+   "Cinnamon",
+   "Cardamom"
+  ]
+ },
+ {
+  "id": "baharat-yildizanason",
+  "category": "Baharatlar",
+  "difficulty": "zor",
+  "text": "Çin beş baharatının bileşeni olan yıldız biçimli meyve baharatı hangisidir?",
+  "choices": [
+   "Yıldız anason",
+   "Rezene",
+   "Anason tohumu",
+   "Kimyon"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which star-shaped fruit spice is part of Chinese five-spice?",
+  "choicesEn": [
+   "Star anise",
+   "Fennel",
+   "Aniseed",
+   "Cumin"
+  ]
+ },
+ {
+  "id": "baharat-muskat",
+  "category": "Baharatlar",
+  "difficulty": "zor",
+  "text": "Béchamel sosun olmazsa olmazı, rendelenerek kullanılan ceviz benzeri çekirdek hangisidir?",
+  "choices": [
+   "Muskat",
+   "Hindistan cevizi",
+   "Badem",
+   "Kaju"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which grated nut-like seed is essential for béchamel sauce?",
+  "choicesEn": [
+   "Nutmeg",
+   "Coconut",
+   "Almond",
+   "Cashew"
+  ]
+ },
+ {
+  "id": "baharat-sumak",
+  "category": "Baharatlar",
+  "difficulty": "orta",
+  "text": "Ekşili tadıyla salata ve soğana serpilerek kullanılan bordo baharat hangisidir?",
+  "choices": [
+   "Sumak",
+   "Nar ekşisi",
+   "Paprika",
+   "Kekik"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which dark red tangy spice is sprinkled on salads and onions?",
+  "choicesEn": [
+   "Sumac",
+   "Pomegranate molasses",
+   "Paprika",
+   "Thyme"
+  ]
+ },
+ {
+  "id": "fest-rio",
+  "category": "Festivaller",
+  "difficulty": "kolay",
+  "text": "Samba okullarının geçit töreniyle dünyanın en ünlü karnavalı hangi şehirdedir?",
+  "choices": [
+   "Rio de Janeiro",
+   "Venedik",
+   "New Orleans",
+   "Köln"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which city hosts the world's most famous carnival with samba school parades?",
+  "choicesEn": [
+   "Rio de Janeiro",
+   "Venice",
+   "New Orleans",
+   "Cologne"
+  ]
+ },
+ {
+  "id": "fest-tomatina",
+  "category": "Festivaller",
+  "difficulty": "orta",
+  "text": "İspanya'nın Buñol kasabasında her yıl domates savaşı yapılan festival hangisidir?",
+  "choices": [
+   "La Tomatina",
+   "San Fermín",
+   "Feria de Abril",
+   "Las Fallas"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which festival in Buñol, Spain involves a massive tomato fight?",
+  "choicesEn": [
+   "La Tomatina",
+   "San Fermín",
+   "Feria de Abril",
+   "Las Fallas"
+  ]
+ },
+ {
+  "id": "fest-oktoberfest",
+  "category": "Festivaller",
+  "difficulty": "kolay",
+  "text": "Münih'te her yıl düzenlenen dev bira festivali hangisidir?",
+  "choices": [
+   "Oktoberfest",
+   "Karneval der Kulturen",
+   "Weihnachtsmarkt",
+   "Kölner Karneval"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which giant beer festival is held annually in Munich?",
+  "choicesEn": [
+   "Oktoberfest",
+   "Karneval der Kulturen",
+   "Christmas market",
+   "Cologne Carnival"
+  ]
+ },
+ {
+  "id": "fest-kirkpinar",
+  "category": "Festivaller",
+  "difficulty": "kolay",
+  "text": "650 yıldır Edirne'de düzenlenen geleneksel yağlı güreş festivali hangisidir?",
+  "choices": [
+   "Kırkpınar",
+   "Selçuk Efes",
+   "Aspendos",
+   "Mesir Macunu"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which 650-year-old oil wrestling festival is held in Edirne?",
+  "choicesEn": [
+   "Kırkpınar",
+   "Selçuk Efes",
+   "Aspendos",
+   "Mesir Macunu"
+  ]
+ },
+ {
+  "id": "fest-holi",
+  "category": "Festivaller",
+  "difficulty": "orta",
+  "text": "Hindistan'da renkli tozların havada uçuştuğu 'renkler festivali' hangisidir?",
+  "choices": [
+   "Holi",
+   "Diwali",
+   "Navratri",
+   "Pongal"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Indian 'festival of colors' fills the air with colored powder?",
+  "choicesEn": [
+   "Holi",
+   "Diwali",
+   "Navratri",
+   "Pongal"
+  ]
+ },
+ {
+  "id": "fest-muertos",
+  "category": "Festivaller",
+  "difficulty": "orta",
+  "text": "Meksika'da ölenleri renkli sunaklar ve şeker kafataslarıyla anan bayram hangisidir?",
+  "choices": [
+   "Día de los Muertos",
+   "Cinco de Mayo",
+   "Carnaval",
+   "Las Posadas"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Mexican holiday honors the dead with colorful altars and sugar skulls?",
+  "choicesEn": [
+   "Día de los Muertos",
+   "Cinco de Mayo",
+   "Carnaval",
+   "Las Posadas"
+  ]
+ },
+ {
+  "id": "fest-nevruz",
+  "category": "Festivaller",
+  "difficulty": "kolay",
+  "text": "Baharın gelişini ve doğanın uyanışını kutlayan kadim bayram hangisidir?",
+  "choices": [
+   "Nevruz",
+   "Hıdırellez",
+   "Ramazan Bayramı",
+   "Kurban Bayramı"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which ancient festival celebrates the arrival of spring?",
+  "choicesEn": [
+   "Nowruz",
+   "Hıdırellez",
+   "Eid al-Fitr",
+   "Eid al-Adha"
+  ]
+ },
+ {
+  "id": "fest-venedik",
+  "category": "Festivaller",
+  "difficulty": "orta",
+  "text": "Maske ve kostümleriyle ünlü İtalyan karnavalı hangi şehirdedir?",
+  "choices": [
+   "Venedik",
+   "Roma",
+   "Milano",
+   "Floransa"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Italian city is famous for its masked carnival?",
+  "choicesEn": [
+   "Venice",
+   "Rome",
+   "Milan",
+   "Florence"
+  ]
+ },
+ {
+  "id": "fest-portakal",
+  "category": "Festivaller",
+  "difficulty": "zor",
+  "text": "Adana'nın her nisan portakal çiçeği kokusuyla ünlü karnavalı hangisidir?",
+  "choices": [
+   "Portakal Çiçeği Karnavalı",
+   "Turunç Fest",
+   "Akdeniz Karnavalı",
+   "Çukurova Bahar"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which April carnival in Adana is scented with orange blossoms?",
+  "choicesEn": [
+   "Orange Blossom Carnival",
+   "Citrus Fest",
+   "Mediterranean Carnival",
+   "Çukurova Spring"
+  ]
+ },
+ {
+  "id": "fest-runningbulls",
+  "category": "Festivaller",
+  "difficulty": "zor",
+  "text": "Pamplona'da boğalarla koşulan ünlü İspanyol festivali hangisidir?",
+  "choices": [
+   "San Fermín",
+   "La Tomatina",
+   "Feria",
+   "Semana Santa"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which festival in Pamplona features the running of the bulls?",
+  "choicesEn": [
+   "San Fermín",
+   "La Tomatina",
+   "Feria",
+   "Semana Santa"
+  ]
+ },
+ {
+  "id": "viking-valhalla",
+  "category": "Vikingler",
+  "difficulty": "kolay",
+  "text": "Viking mitolojisinde savaşta ölenlerin gittiği büyük salon hangisidir?",
+  "choices": [
+   "Valhalla",
+   "Asgard",
+   "Midgard",
+   "Helheim"
+  ],
+  "correctIndex": 0,
+  "textEn": "In Norse myth, which great hall receives warriors who die in battle?",
+  "choicesEn": [
+   "Valhalla",
+   "Asgard",
+   "Midgard",
+   "Helheim"
+  ]
+ },
+ {
+  "id": "viking-odin",
+  "category": "Vikingler",
+  "difficulty": "kolay",
+  "text": "Tek gözlü, bilgelik ve savaş tanrısı olan Vikinglerin baş tanrısı kimdir?",
+  "choices": [
+   "Odin",
+   "Thor",
+   "Loki",
+   "Tyr"
+  ],
+  "correctIndex": 0,
+  "textEn": "Who is the one-eyed chief god of wisdom and war in Norse myth?",
+  "choicesEn": [
+   "Odin",
+   "Thor",
+   "Loki",
+   "Tyr"
+  ]
+ },
+ {
+  "id": "viking-drakkar",
+  "category": "Vikingler",
+  "difficulty": "orta",
+  "text": "Vikinglerin uzun, ejder başlı savaş gemilerine verilen ad nedir?",
+  "choices": [
+   "Drakkar",
+   "Kalyon",
+   "Karaka",
+   "Trireme"
+  ],
+  "correctIndex": 0,
+  "textEn": "What were the Vikings' long dragon-headed warships called?",
+  "choicesEn": [
+   "Drakkar (longship)",
+   "Galleon",
+   "Carrack",
+   "Trireme"
+  ]
+ },
+ {
+  "id": "viking-leif",
+  "category": "Vikingler",
+  "difficulty": "orta",
+  "text": "Kolomb'dan yaklaşık 500 yıl önce Amerika'ya ulaşan Viking kaşifi kimdir?",
+  "choices": [
+   "Leif Erikson",
+   "Erik the Red",
+   "Ragnar Lothbrok",
+   "Harald Hardrada"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Viking explorer reached America ~500 years before Columbus?",
+  "choicesEn": [
+   "Leif Erikson",
+   "Erik the Red",
+   "Ragnar Lothbrok",
+   "Harald Hardrada"
+  ]
+ },
+ {
+  "id": "viking-run",
+  "category": "Vikingler",
+  "difficulty": "orta",
+  "text": "Vikinglerin taşlara kazıdığı yazı alfabesi hangisidir?",
+  "choices": [
+   "Rün alfabesi",
+   "Hiyeroglif",
+   "Sümer çivisi",
+   "Ogham"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which writing alphabet did Vikings carve into stones?",
+  "choicesEn": [
+   "Runes",
+   "Hieroglyphs",
+   "Cuneiform",
+   "Ogham"
+  ]
+ },
+ {
+  "id": "viking-thor",
+  "category": "Vikingler",
+  "difficulty": "kolay",
+  "text": "Mjölnir çekiciyle bilinen Viking gök gürültüsü tanrısı kimdir?",
+  "choices": [
+   "Thor",
+   "Odin",
+   "Baldr",
+   "Heimdall"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Norse thunder god wields the hammer Mjölnir?",
+  "choicesEn": [
+   "Thor",
+   "Odin",
+   "Baldr",
+   "Heimdall"
+  ]
+ },
+ {
+  "id": "viking-berserker",
+  "category": "Vikingler",
+  "difficulty": "zor",
+  "text": "Savaşta transa girip zırhsız dövüşen efsanevi Viking savaşçılarına ne denir?",
+  "choices": [
+   "Berserker",
+   "Huskarl",
+   "Jarl",
+   "Valkyrie"
+  ],
+  "correctIndex": 0,
+  "textEn": "What were the trance-fighting Viking warriors called?",
+  "choicesEn": [
+   "Berserkers",
+   "Huscarls",
+   "Jarls",
+   "Valkyries"
+  ]
+ },
+ {
+  "id": "viking-ragnarok",
+  "category": "Vikingler",
+  "difficulty": "orta",
+  "text": "Viking mitolojisinde tanrıların son savaşı ve dünyanın sonu hangi olaydır?",
+  "choices": [
+   "Ragnarök",
+   "Fimbulvetr",
+   "Yggdrasil",
+   "Bifröst"
+  ],
+  "correctIndex": 0,
+  "textEn": "What is the Norse final battle of gods and end of the world?",
+  "choicesEn": [
+   "Ragnarök",
+   "Fimbulvetr",
+   "Yggdrasil",
+   "Bifröst"
+  ]
+ },
+ {
+  "id": "viking-danelaw",
+  "category": "Vikingler",
+  "difficulty": "zor",
+  "text": "9. yüzyılda İngiltere'de Viking egemenliğindeki bölgeye ne denirdi?",
+  "choices": [
+   "Danelaw",
+   "Normandiya",
+   "Vinland",
+   "Jomsborg"
+  ],
+  "correctIndex": 0,
+  "textEn": "What was the Viking-ruled region of 9th century England called?",
+  "choicesEn": [
+   "Danelaw",
+   "Normandy",
+   "Vinland",
+   "Jomsborg"
+  ]
+ },
+ {
+  "id": "viking-gemimezar",
+  "category": "Vikingler",
+  "difficulty": "zor",
+  "text": "Viking önderlerinin eşyalarıyla birlikte gömüldüğü tören aracı nedir?",
+  "choices": [
+   "Gemi mezar",
+   "Stone ship",
+   "Drakkar tabutu",
+   "Kurgan"
+  ],
+  "correctIndex": 0,
+  "textEn": "Into what were Viking leaders buried along with their belongings?",
+  "choicesEn": [
+   "Ship burial",
+   "Stone ship",
+   "Drakkar coffin",
+   "Kurgan"
+  ]
+ },
+ {
+  "id": "avia-wright",
+  "category": "Havacılık",
+  "difficulty": "kolay",
+  "text": "1903'te Kitty Hawk'ta ilk motorlu uçağı uçuran kardeşler kimdir?",
+  "choices": [
+   "Wright kardeşler",
+   "Montgolfier kardeşler",
+   "Lumière kardeşler",
+   "Grimm kardeşler"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which brothers flew the first powered airplane at Kitty Hawk in 1903?",
+  "choicesEn": [
+   "Wright brothers",
+   "Montgolfier brothers",
+   "Lumière brothers",
+   "Grimm brothers"
+  ]
+ },
+ {
+  "id": "avia-concorde",
+  "category": "Havacılık",
+  "difficulty": "orta",
+  "text": "Sesten hızlı yolcu taşıyan, 2003'te emekli edilen uçak hangisidir?",
+  "choices": [
+   "Concorde",
+   "Boeing 747",
+   "Airbus A380",
+   "DC-3"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which supersonic passenger jet was retired in 2003?",
+  "choicesEn": [
+   "Concorde",
+   "Boeing 747",
+   "Airbus A380",
+   "DC-3"
+  ]
+ },
+ {
+  "id": "avia-747",
+  "category": "Havacılık",
+  "difficulty": "kolay",
+  "text": "'Jumbo Jet' lakabıyla bilinen çift katlı büyük Boeing uçağı hangisidir?",
+  "choices": [
+   "747",
+   "737",
+   "777",
+   "787"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which double-deck Boeing is nicknamed the 'Jumbo Jet'?",
+  "choicesEn": [
+   "747",
+   "737",
+   "777",
+   "787"
+  ]
+ },
+ {
+  "id": "avia-amelia",
+  "category": "Havacılık",
+  "difficulty": "orta",
+  "text": "Atlantik'i tek başına geçen ilk kadın pilot kimdir?",
+  "choices": [
+   "Amelia Earhart",
+   "Bessie Coleman",
+   "Amy Johnson",
+   "Jacqueline Cochran"
+  ],
+  "correctIndex": 0,
+  "textEn": "Who was the first woman to fly solo across the Atlantic?",
+  "choicesEn": [
+   "Amelia Earhart",
+   "Bessie Coleman",
+   "Amy Johnson",
+   "Jacqueline Cochran"
+  ]
+ },
+ {
+  "id": "avia-sabiha",
+  "category": "Havacılık",
+  "difficulty": "orta",
+  "text": "Dünyanın ilk kadın savaş pilotu kabul edilen Türk pilot kimdir?",
+  "choices": [
+   "Sabiha Gökçen",
+   "Bedriye Tahir",
+   "Keriman Halis",
+   "Afet İnan"
+  ],
+  "correctIndex": 0,
+  "textEn": "Who is regarded as the world's first female combat pilot, from Turkey?",
+  "choicesEn": [
+   "Sabiha Gökçen",
+   "Bedriye Tahir",
+   "Keriman Halis",
+   "Afet İnan"
+  ]
+ },
+ {
+  "id": "avia-blackbox",
+  "category": "Havacılık",
+  "difficulty": "kolay",
+  "text": "Kazalarda kayıtları koruyan ve adına rağmen turuncu olan uçuş kayıt cihazı hangisidir?",
+  "choices": [
+   "Kara kutu",
+   "Uçuş defteri",
+   "Radar kaydı",
+   "Otopilot"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which flight recorder is actually orange despite its name?",
+  "choicesEn": [
+   "Black box",
+   "Flight log",
+   "Radar record",
+   "Autopilot"
+  ]
+ },
+ {
+  "id": "avia-hezarfen",
+  "category": "Havacılık",
+  "difficulty": "orta",
+  "text": "Galata Kulesi'nden Üsküdar'a kartal kanatlarıyla uçtuğu söylenen Osmanlı kimdir?",
+  "choices": [
+   "Hezârfen Ahmed Çelebi",
+   "Lagari Hasan",
+   "Takiyüddin",
+   "Evliya Çelebi"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Ottoman allegedly flew from Galata Tower to Üsküdar with eagle wings?",
+  "choicesEn": [
+   "Hezârfen Ahmed Çelebi",
+   "Lagari Hasan",
+   "Takiyüddin",
+   "Evliya Çelebi"
+  ]
+ },
+ {
+  "id": "avia-mach",
+  "category": "Havacılık",
+  "difficulty": "zor",
+  "text": "Ses hızının katlarını ifade eden havacılık ölçü birimi hangisidir?",
+  "choices": [
+   "Mach",
+   "Knot",
+   "Mil",
+   "Fathom"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which aviation unit expresses multiples of the speed of sound?",
+  "choicesEn": [
+   "Mach",
+   "Knot",
+   "Mile",
+   "Fathom"
+  ]
+ },
+ {
+  "id": "avia-lagari",
+  "category": "Havacılık",
+  "difficulty": "zor",
+  "text": "Barutlu roketle havalanma denemesi yaptığı anlatılan Osmanlı figürü kimdir?",
+  "choices": [
+   "Lagari Hasan Çelebi",
+   "Hezârfen",
+   "Piri Reis",
+   "Katip Çelebi"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which Ottoman figure allegedly attempted a gunpowder rocket flight?",
+  "choicesEn": [
+   "Lagari Hasan Çelebi",
+   "Hezârfen",
+   "Piri Reis",
+   "Katip Çelebi"
+  ]
+ },
+ {
+  "id": "avia-airbus",
+  "category": "Havacılık",
+  "difficulty": "kolay",
+  "text": "Boeing'in Avrupalı en büyük rakibi olan uçak üreticisi hangisidir?",
+  "choices": [
+   "Airbus",
+   "Embraer",
+   "Bombardier",
+   "Lockheed"
+  ],
+  "correctIndex": 0,
+  "textEn": "Which European manufacturer is Boeing's biggest rival?",
+  "choicesEn": [
+   "Airbus",
+   "Embraer",
+   "Bombardier",
+   "Lockheed"
+  ]
  }
 ]
