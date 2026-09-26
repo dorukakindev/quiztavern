@@ -64,7 +64,7 @@ const tr = {
   "mode.circle.tag": "ÇEMBER",
   "mode.bet.tag": "ÇİFTE BAHİS",
   "mode.team": "Takım",
-  "mode.team.meta": "2 takım · puanlar havuzda toplanır",
+  "mode.team.meta": "2 takım, çoğunluk oyu takımın cevabı olur",
   "mode.team.tag": "TAKIM",
   "mode.elim": "Son Masa",
   "mode.elim.meta": "3 can · yanlış ya da cevapsız bırakırsan can gider · son kalan kazanır",
@@ -120,7 +120,7 @@ const tr = {
   "mode.bet.howto":
     'Soru gelmeden kasandan puan yatır; doğru cevap iadenin katını öder. "Hepsi" kazanırsa ×2,5 verir; paran biterse kurtarma turu +50.',
   "mode.team.howto":
-    "İki takım yarışır — takımın çoğunluk oyu takım cevabı olur, kaptan beraberlikte belirler. Skorlar havuzda toplanır.",
+    "İki takım yarışır — takımın çoğunluk oyu takım cevabı olur, kaptan beraberlikte belirler. Takım cevabı doğruysa takım 100 puan alır.",
   "mode.elim.howto":
     "3 canla başlarsın; yanlış ya da cevapsız tur 1 can götürür. Ayakta kalan son oyuncu masayı kazanır.",
   "mode.blur.howto": "Görsel netleştikçe ipucu kolaylaşır ama puan düşer — erken basmak riskli ama kârlı.",
@@ -698,7 +698,7 @@ const en: Record<StringKey, string> = {
   "mode.circle.tag": "CIRCLE",
   "mode.bet.tag": "DOUBLE BET",
   "mode.team": "Teams",
-  "mode.team.meta": "2 teams · scores pool together",
+  "mode.team.meta": "2 teams, majority vote is the team answer",
   "mode.team.tag": "TEAMS",
   "mode.elim": "Last Table",
   "mode.elim.meta": "3 lives · wrong or missing answer costs one · last standing wins",
@@ -752,7 +752,7 @@ const en: Record<StringKey, string> = {
   "mode.bet.howto":
     'Stake points before each question; a correct answer pays your stake times the rate. "All in" pays ×2.5; broke players get a +50 rescue round.',
   "mode.team.howto":
-    "Two teams compete — your team's majority vote becomes its answer; the captain breaks ties. Scores pool together.",
+    "Two teams compete — your team's majority vote becomes its answer; the captain breaks ties. A correct team answer earns the team 100 points.",
   "mode.elim.howto": "You start with 3 lives; a wrong or missed round costs one. The last player standing wins.",
   "mode.blur.howto": "The image sharpens over time — early answers pay more, but guessing too soon is risky.",
   "mode.word.howto":

@@ -222,7 +222,11 @@ export function sampleQuestions(
     }
     return out;
   };
-  const selected = [...drawRoundRobin("pics", pictureTarget), ...drawRoundRobin("texts", n - pictureTarget)];
+  const pics = drawRoundRobin("pics", pictureTarget);
+  const texts = drawRoundRobin("texts", n - pics.length);
+  // Resimsiz alt-havuz yetmediyse (resim ağırlıklı dar kategori) boşluğu kalan
+  // resimli sorularla doldur — maç gereksiz yere kısalmasın.
+  const selected = [...pics, ...texts, ...drawRoundRobin("pics", n - pics.length - texts.length)];
   // Resimli sorular maçın sabit bir yerinde (ör. hep ilk sıralarda) kümelenmesin
   // diye seçilenler tekrar karıştırılır — sıra tamamen rastgele.
   const pool = shuffle(selected);

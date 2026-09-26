@@ -1,5 +1,5 @@
 import { CATEGORY_CATALOG } from "./categories";
-import { questionPoolIds, sampleQuestions } from "./questions";
+import { effectiveDifficulty, questionPoolIds, sampleQuestions } from "./questions";
 import type { Question } from "./questions";
 import type { Difficulty } from "../../shared/types";
 import { GAME } from "./config";
@@ -47,9 +47,14 @@ export function sampleBoardCells(categories: string[], seen: Set<string>, lastId
     const poolIds = questionPoolIds([cat]);
     const unseen = poolIds.filter((id) => !seen.has(id)).length;
     if (unseen < perCol) for (const id of poolIds) if (!lastIds.has(id)) seen.delete(id);
-    const qs = sampleQuestions(perCol, [cat], seen);
+    // sampleQuestions kategori filtresi boş kalırsa (ör. kategorinin tüm soruları
+    // bildirimle servis dışı) TÜM havuza düşer — sütun başlığı "Tarih" olup
+    // hücreler başka kategoriden gelirdi. Yalnız bu kategoriye ait olanları kabul et.
+    const qs = sampleQuestions(perCol, [cat], seen).filter((q) => q.category === cat);
     if (qs.length < perCol) continue;
-    qs.sort((a, b) => DIFF_RANK[a.difficulty] - DIFF_RANK[b.difficulty]);
+    // Değer sırası KALİBRE zorluğa göre: puanlama da effectiveDifficulty kullanıyor,
+    // pano ham etikete bakınca "500'lük" hücre istatistiken en kolay soru olabiliyordu.
+    qs.sort((a, b) => DIFF_RANK[effectiveDifficulty(a)] - DIFF_RANK[effectiveDifficulty(b)]);
     specCats.push(cat);
     qs.forEach((q, i) => {
       seen.add(q.id);

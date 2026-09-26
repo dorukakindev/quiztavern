@@ -13247,8 +13247,12 @@ const isWordLength = (p: CirclePrompt) => p.answer.length >= 4 && p.answer.lengt
  *  kapalı kelime kutu harflerinden önce ipucundan bedavaya okunmasın (TR ve EN
  *  ipucu her iki dile de yayınlandığı için iki yön de kontrol edilir). */
 const isWordSafe = (p: CirclePrompt) => {
-  const hay = `${p.clue} ${p.clueEn ?? ""} ${p.category}`.toLowerCase();
-  return !hay.includes(p.answer.toLowerCase()) && !(p.answerEn && hay.includes(p.answerEn.toLowerCase()));
+  // toLowerCase() "İ"yi "i̇" (i + birleşik nokta) yapar; "İzmir" ipucunda "izmir"
+  // bulunamazdı. Cevap eşleştirmesiyle aynı normalizasyonu kullan.
+  const hay = normalizeCircleAnswer(`${p.clue} ${p.clueEn ?? ""} ${p.category}`);
+  const answer = normalizeCircleAnswer(p.answer);
+  const answerEn = p.answerEn ? normalizeCircleAnswer(p.answerEn) : "";
+  return !hay.includes(answer) && !(answerEn && hay.includes(answerEn));
 };
 const isWordCandidate = (p: CirclePrompt) => isWordLength(p) && isWordSafe(p);
 
