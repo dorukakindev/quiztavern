@@ -64,7 +64,14 @@ export function isAllowedProductionOrigin(origin: string | undefined): boolean {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   try {
     const url = new URL(origin);
-    return url.protocol === "https:" && url.hostname.endsWith(".discordsays.com");
+    // Yalnız BU uygulamanın proxy alanı: her Activity `<client_id>.discordsays.com`
+    // altında çalışır. Eski `endsWith(".discordsays.com")` kontrolü başka
+    // uygulamaların Activity'sine de CORS/socket kapısı açıyordu.
+    return (
+      url.protocol === "https:" &&
+      !!DISCORD_CLIENT_ID &&
+      url.hostname === `${DISCORD_CLIENT_ID}.discordsays.com`
+    );
   } catch {
     return false;
   }

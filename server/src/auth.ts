@@ -97,7 +97,7 @@ export async function exchangeCode(code: string, redirectUri?: string) {
 
 const instanceCache = new Map<string, { users: Set<string>; fetchedAt: number }>();
 const negativeMembershipCache = new Map<string, number>();
-const instanceFetches = new Map<string, Promise<Set<string> | null>>();
+const instanceFetches = new Map<string, { promise: Promise<Set<string> | null>; startedAt: number }>();
 const INSTANCE_CACHE_MS = 45_000;
 const NEGATIVE_MEMBERSHIP_MS = 10_000;
 const MAX_CONCURRENT_INSTANCE_FETCHES = 12;
@@ -125,9 +125,19 @@ async function fetchInstanceUsers(instanceId: string): Promise<Set<string> | nul
   return users;
 }
 
-async function fetchInstanceUsersDeduplicated(instanceId: string): Promise<Set<string> | null> {
+async function fetchInstanceUsersDeduplicated(
+  instanceId: string,
+  notBefore = 0,
+): Promise<Set<string> | null> {
   const existing = instanceFetches.get(instanceId);
-  if (existing) return existing;
+  // Uçuştaki istek bu çağrıdan ÖNCE başladıysa yeni katılan kullanıcıyı
+  // içermeyebilir; onu paylaşmak yerine bitmesini bekleyip taze istek at.
+  if (existing && existing.startedAt >= notBefore) return existing.promise;
+  if (existing) {
+    await existing.promise.catch(() => null);
+    const again = instanceFetches.get(instanceId);
+    if (again && again.startedAt >= notBefore) return again.promise;
+  }
   if (activeInstanceFetches >= MAX_CONCURRENT_INSTANCE_FETCHES) {
     throw new Error("too many concurrent Activity Instance verifications");
   }
@@ -136,7 +146,7 @@ async function fetchInstanceUsersDeduplicated(instanceId: string): Promise<Set<s
     activeInstanceFetches -= 1;
     instanceFetches.delete(instanceId);
   });
-  instanceFetches.set(instanceId, request);
+  instanceFetches.set(instanceId, { promise: request, startedAt: Date.now() });
   return request;
 }
 
@@ -155,7 +165,7 @@ export async function verifyInstanceMembership(instanceId: string, userId: strin
     return true;
   }
   try {
-    const fresh = await fetchInstanceUsersDeduplicated(instanceId);
+    const fresh = await fetchInstanceUsersDeduplicated(instanceId, now);
     const allowed = fresh !== null && fresh.has(userId);
     if (allowed) negativeMembershipCache.delete(negativeKey);
     else negativeMembershipCache.set(negativeKey, Date.now() + NEGATIVE_MEMBERSHIP_MS);
