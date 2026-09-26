@@ -5133,6 +5133,11 @@ function PodiumRanking({
             <b title={winner.name}>
               {winner.name}
               <TitleTag title={winner.title} />
+              {winner.crowdFavorite && (
+                <i className="qt-crowd-fav" title={t("podium.crowdFavorite")}>
+                  <Icon name="heart" /> {t("podium.crowdFavorite")}
+                </i>
+              )}
             </b>
             <small>
               {isTeam ? t("team.mvp") : "#1"} · {t("podium.points", { score: formatNumber(language, winnerScore) })}
@@ -5159,6 +5164,11 @@ function PodiumRanking({
               <span title={player.name}>
                 {player.name}
                 <TitleTag title={player.title} />
+                {player.crowdFavorite && (
+                  <i className="qt-crowd-fav" title={t("podium.crowdFavorite")}>
+                    <Icon name="heart" />
+                  </i>
+                )}
                 {player.id === state.youId && <i>· {t("podium.you")}</i>}
               </span>
               <strong>{formatNumber(language, player.score)}</strong>

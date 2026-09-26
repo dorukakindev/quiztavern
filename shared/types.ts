@@ -722,6 +722,8 @@ export interface PodiumEntry {
   title?: BadgeKey;
   /** Podyum anındaki ligi — kozmetik çerçeve/animasyon için (depo yoksa yok). */
   league?: LeagueKey;
+  /** İzleyici tahminlerinde en çok oy alan oyuncu — podyumda 'Halk favorisi' rozeti. */
+  crowdFavorite?: boolean;
 }
 
 /** Maç özeti kartı (4d). İzleyen oyuncuya ÖZEL hesaplanır (isabet/seri/kategori
