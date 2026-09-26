@@ -189,6 +189,7 @@ import {
   X,
   YinYang,
 } from "@phosphor-icons/react";
+import { CATEGORY_ART } from "./categoryArt";
 
 type Glyph = ComponentType<PhosphorProps>;
 
@@ -490,6 +491,16 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
 };
 
 export function CategoryIcon({ name, weight = "duotone" }: { name: string; weight?: IconWeight }) {
+  const art = CATEGORY_ART[name];
+  if (art) {
+    return (
+      <span
+        className="qt-cat-art"
+        style={{ WebkitMaskImage: `url("${art}")`, maskImage: `url("${art}")` }}
+        aria-hidden="true"
+      />
+    );
+  }
   const Glyph = CATEGORY_ICONS[name] ?? Question;
   return <Glyph className="qt-icon qt-ph" weight={weight} aria-hidden="true" />;
 }

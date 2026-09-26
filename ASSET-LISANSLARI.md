@@ -4,10 +4,11 @@ Oyunda kullanılan her görsel/ses/fontun kaynağı ve lisansı. Yeni varlık ek
 
 ## Üçüncü parti kütüphane varlıkları
 
-| Varlık                                                   | Kaynak                                             | Lisans      | Not                                                             |
-| -------------------------------------------------------- | -------------------------------------------------- | ----------- | --------------------------------------------------------------- |
-| İkonlar (UI'da kullanılan tüm ikonlar)                   | [@phosphor-icons/react](https://phosphoricons.com) | MIT         | npm bağımlılığı olarak paketlenir; ayrıca atıf gerekmez.        |
-| Inter (arayüz fontu) `client/public/fonts/inter-*.woff2` | [Inter (rsms)](https://github.com/rsms/inter)      | SIL OFL 1.1 | Web'e gömme serbest; dosyalar kendi sunucumuzdan servis edilir. |
+| Varlık                                                   | Kaynak                                                                                                                                             | Lisans      | Not                                                                                         |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------- |
+| İkonlar (UI'da kullanılan tüm ikonlar)                   | [@phosphor-icons/react](https://phosphoricons.com)                                                                                                 | MIT         | npm bağımlılığı olarak paketlenir; ayrıca atıf gerekmez.                                    |
+| Kategori sanatı `client/public/category-icons/*.svg`     | [game-icons.net](https://game-icons.net) (Lorc, Delapouite, Skoll, Cathelineau, Caro Asercion, Sbed, Carl Olsen, Lord Berandas, Aussiesim, Badges) | CC BY 3.0   | Silüet olarak mask'lenip tema rengine boyanır; arka plan path'i çıkarıldı. Atıf bu dosyada. |
+| Inter (arayüz fontu) `client/public/fonts/inter-*.woff2` | [Inter (rsms)](https://github.com/rsms/inter)                                                                                                      | SIL OFL 1.1 | Web'e gömme serbest; dosyalar kendi sunucumuzdan servis edilir.                             |
 
 ## Oyun içi üretilen görseller
 
