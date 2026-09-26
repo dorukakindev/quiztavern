@@ -17,20 +17,35 @@ export function betOptionSpecs(bankroll: number): BetOptionSpec[] {
     { key: "half", amount: Math.round(safe * 0.5) },
     { key: "all", amount: safe },
   ];
-  return raw.filter((option, index) => {
-    if (option.key === "min" || option.key === "all") return true;
-    if (option.amount <= 0 || option.amount >= safe) return false;
-    // If rounded fractions collide, retain the later (larger named) fraction.
-    return !raw.some((candidate, candidateIndex) => candidateIndex > index && candidate.amount === option.amount);
-  });
+  // Aynı tutarı gösteren iki düğme olmasın — öncelik all > half > quarter > min.
+  // Eski filtre yalnız SONRAKİ adaylara bakıyordu: bakiye 3'te min≡quarter,
+  // bakiye 1'de min≡all aynı tutarla yan yana çıkıyordu.
+  const seen = new Set<number>();
+  const kept: BetOptionSpec[] = [];
+  for (const option of [...raw].reverse()) {
+    if (option.amount <= 0 || seen.has(option.amount)) continue;
+    seen.add(option.amount);
+    kept.push(option);
+  }
+  return kept.reverse();
 }
 
 export function shortcutIndex(key: string, optionCount: number): number | null {
   // A-D harfleri VE 1-4 rakamları aynı şıkka eşlenir (masaüstü hızı için).
+  // Tek karakter şartı: "ABCD".indexOf("") === 0 — boş/IME anahtarı A'yı seçiyordu.
+  if (key.length !== 1) return null;
   const index = "ABCD".indexOf(key.toUpperCase());
   const digit = "1234".indexOf(key);
   const resolved = index >= 0 ? index : digit;
   return resolved >= 0 && resolved < optionCount ? resolved : null;
+}
+
+/** Kısayol dinleyicileri için ortak filtre: Ctrl+C / Cmd+1 / basılı tutma
+ *  (auto-repeat) cevap kilitlememeli. */
+export function isPlainShortcut(
+  event: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "repeat" | "isComposing">,
+): boolean {
+  return !event.ctrlKey && !event.metaKey && !event.altKey && !event.repeat && !event.isComposing;
 }
 
 export function questionIsLocked(input: {
