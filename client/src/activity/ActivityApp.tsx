@@ -1317,12 +1317,17 @@ function RoomStrip({
                 ))}
               </span>
             )}
-            {state.gameMode === "bet" && beats.active && state.reveal?.bets?.[player.id] !== undefined && (
-              <span className="qt-player-bet" title={t("bet.stakedTitle")}>
-                <Icon name="coins" />
-                {formatNumber(language, state.reveal.bets[player.id])}
-              </span>
-            )}
+            {state.gameMode === "bet" &&
+              (state.betStakes?.[player.id] !== undefined ||
+                (beats.active && state.reveal?.bets?.[player.id] !== undefined)) && (
+                <span
+                  className={`qt-player-bet ${state.betStakes ? "qt-bet-stake-reveal" : ""}`}
+                  title={t("bet.stakedTitle")}
+                >
+                  <Icon name="coins" />
+                  {formatNumber(language, state.betStakes?.[player.id] ?? state.reveal!.bets![player.id])}
+                </span>
+              )}
             {player.cardPlayed && (
               <span className="qt-card-played" title={t("card.played")}>
                 <Icon name="deck" />
