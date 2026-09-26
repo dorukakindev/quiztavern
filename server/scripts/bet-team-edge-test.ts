@@ -201,6 +201,28 @@ test('"Hepsi" bahsi kazanırsa ×2.5 iade; kısmi bahis normal iade', () => {
   assert.equal(halfRoom.players.get("h2")!.score, 1500); // 500 bahis + 500 kazanç
 });
 
+test("asgari bahis: 0 yatırma ve hiç yatırmama tabana yuvarlanır", () => {
+  const r = mkRoom("edge-minbet", { minPlayers: 2, questionCount: 5 });
+  r.addPlayer(player("p1", "P1"));
+  r.addPlayer(player("p2", "P2"));
+  r.setGameMode("p1", "bet");
+  r.setReady("p1", true);
+  r.setReady("p2", true);
+  r.start("p1", "bet");
+  stop(r);
+  (r as unknown as { beginBet: () => void }).beginBet();
+  r.placeBet("p1", 0); // risksiz kaçış — sunucu tabana yuvarlar (1000 * %10 = 100)
+  assert.equal(r.players.get("p1")!.bet, 100);
+  (r as unknown as { beginQuestion: () => void }).beginQuestion();
+  // Hiç bahis koymayan da tabandan kilitlenir — süreyi eritmek kaçış değil.
+  assert.equal(r.players.get("p2")!.bet, 100);
+  // Yanlış cevap bahsi yakar: skor eksiye inmez ama bahis gider.
+  const wrong = (r.currentQuestion()!.correctIndex + 1) % 4;
+  r.answer("p2", wrong);
+  (r as unknown as { reveal: () => void }).reveal();
+  assert.equal(r.players.get("p2")!.score, GAME.BET_STARTING_BANKROLL - 100);
+});
+
 test("takım karıştırma: dengeli dağıtır, host ve takım modu şart", () => {
   const shuffleRoom = mkRoom("edge-shuffle", { minPlayers: 1 });
   for (const id of ["s1", "s2", "s3", "s4", "s5"]) shuffleRoom.addPlayer(player(id, id));
@@ -248,13 +270,13 @@ test("reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir",
   stop(showRoom);
   (showRoom as unknown as { beginBet: () => void }).beginBet();
   showRoom.placeBet("p1", 250);
-  showRoom.placeBet("p2", 0); // pas
+  showRoom.placeBet("p2", 0); // asgari bahis — 0 yerine tabana (100) yuvarlanır
   (showRoom as unknown as { beginQuestion: () => void }).beginQuestion();
   showRoom.answer("p1", showRoom.currentQuestion()!.correctIndex);
   showRoom.answer("p2", (showRoom.currentQuestion()!.correctIndex + 1) % 4);
   (showRoom as unknown as { reveal: () => void }).reveal();
   const reveal = showRoom.stateFor("p1", true).reveal!;
-  assert.deepEqual(reveal.bets, { p1: 250, p2: 0 });
+  assert.deepEqual(reveal.bets, { p1: 250, p2: 100 });
   // klasik maçta bets alanı olmaz
   const kl = mkRoom("edge-nobets", { minPlayers: 1, questionCount: 5 });
   kl.addPlayer(player("k", "K"));

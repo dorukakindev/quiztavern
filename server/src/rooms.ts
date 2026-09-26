@@ -2052,6 +2052,10 @@ export class Room {
     if (!round) return this.finish();
     this.clearTimer();
     this.clearBotTimers();
+    // Çifte Bahis: süre dolup bahis koymayan oyuncu da tabandan yatırır —
+    // hiç tıklamamak da risksiz kaçış olmasın.
+    if (this.gameMode === "bet")
+      for (const player of this.eligiblePlayers()) if (player.bet === null) player.bet = this.betFloor(player);
     this.phase = "question";
     this.lastReveal = null;
     this.lastCircleReveal = null;
@@ -2177,6 +2181,12 @@ export class Room {
     }, GAME.BET_MS);
   }
 
+  /** Asgari bahis (kurtarma turu hariç): bakiyenin %BET_MIN_STAKE_PCT'i. */
+  private betFloor(player: RoomPlayer): number {
+    if (this.rescueRound.has(player.id)) return 0;
+    return Math.min(player.score, Math.ceil(player.score * GAME.BET_MIN_STAKE_PCT));
+  }
+
   /** Çifte Bahis: oyuncu bu tur bahsini kilitler (0..bankroll). */
   placeBet(playerId: string, amount: number): void {
     if (this.gameMode !== "bet" || this.phase !== "bet") return;
@@ -2184,7 +2194,9 @@ export class Room {
     const player = this.players.get(playerId);
     if (!player || player.eligibleFrom > this.qIndex || player.bet !== null) return;
     if (!Number.isFinite(amount)) return;
-    player.bet = Math.max(0, Math.min(Math.round(amount), Math.max(0, player.score)));
+    // Kurtarma turunda bahis zaten 0'a kilitli; aksi halde asgari betFloor —
+    // "hep 0 yatır, hiç kaybetme" kaçışı modun bütün kumar gerilimini öldürür.
+    player.bet = Math.max(this.betFloor(player), Math.min(Math.round(amount), Math.max(0, player.score)));
     this.broadcast();
     this.advanceIfEveryoneBet();
   }

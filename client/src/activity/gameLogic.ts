@@ -1,20 +1,24 @@
 import type { GameMode, PublicPlayer } from "../../../shared/types";
 
-export type BetOptionKey = "pass" | "quarter" | "half" | "all";
+export type BetOptionKey = "min" | "quarter" | "half" | "all";
 export type BetOptionSpec = { key: BetOptionKey; amount: number };
 
-/** Distinct wager buttons, always preserving Pass and a meaningful All-in. */
+/** Sunucudaki GAME.BET_MIN_STAKE_PCT ile aynı: bakiyesi olan oyuncu en az bu
+ *  oranda yatırır — "pas" çipi yok, kumar modunda risksiz tur yok. */
+export const BET_MIN_STAKE_PCT = 0.1;
+
+/** Distinct wager buttons: minimum stake, fractions, and a meaningful All-in. */
 export function betOptionSpecs(bankroll: number): BetOptionSpec[] {
   const safe = Math.max(0, Math.round(bankroll));
-  if (safe === 0) return [{ key: "pass", amount: 0 }];
+  if (safe === 0) return [{ key: "min", amount: 0 }];
   const raw: BetOptionSpec[] = [
-    { key: "pass", amount: 0 },
+    { key: "min", amount: Math.ceil(safe * BET_MIN_STAKE_PCT) },
     { key: "quarter", amount: Math.round(safe * 0.25) },
     { key: "half", amount: Math.round(safe * 0.5) },
     { key: "all", amount: safe },
   ];
   return raw.filter((option, index) => {
-    if (option.key === "pass" || option.key === "all") return true;
+    if (option.key === "min" || option.key === "all") return true;
     if (option.amount <= 0 || option.amount >= safe) return false;
     // If rounded fractions collide, retain the later (larger named) fraction.
     return !raw.some((candidate, candidateIndex) => candidateIndex > index && candidate.amount === option.amount);
