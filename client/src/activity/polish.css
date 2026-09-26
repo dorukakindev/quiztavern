@@ -2622,3 +2622,25 @@
   letter-spacing: 0.08em;
   animation: qt-sudden-pulse 1s ease-in-out infinite;
 }
+
+/* Halk favorisi: izleyici tahminlerinde en çok oy alan oyuncunun rozeti. */
+.qt-crowd-fav {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(252, 74, 140, 0.18);
+  border: 1px solid rgba(252, 74, 140, 0.45);
+  color: #ff8fb5;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-style: normal;
+}
+.qt-crowd-fav svg {
+  width: 10px;
+  height: 10px;
+}

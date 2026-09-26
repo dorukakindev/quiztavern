@@ -3236,11 +3236,29 @@ export class Room {
   }
 
   private snapshotPodium(): PodiumEntry[] {
+    // İzleyici tahminlerinde en çok oy alan oyuncu 'halk favorisi' —
+    // beraberlikte kimse rozet almaz.
+    let favorite: string | null = null;
+    if (this.predictions.size >= 2) {
+      const votes = new Map<string, number>();
+      for (const target of this.predictions.values()) votes.set(target, (votes.get(target) ?? 0) + 1);
+      const top = [...votes.entries()].sort((x, y) => y[1] - x[1]);
+      if (top[0] && (!top[1] || top[0][1] > top[1][1])) favorite = top[0][0];
+    }
     return this.sortedPlayers()
       .filter((player) => this.gameMode !== "duel" || player.eligibleFrom < this.roundLimit)
       .map(({ id, name, avatarUrl, score, team, title }) => {
         const league = this.progress?.badge(id)?.league;
-        return { id, name, avatarUrl, score, team, ...(title ? { title } : {}), ...(league ? { league } : {}) };
+        return {
+          id,
+          name,
+          avatarUrl,
+          score,
+          team,
+          ...(title ? { title } : {}),
+          ...(league ? { league } : {}),
+          ...(id === favorite ? { crowdFavorite: true } : {}),
+        };
       });
   }
 
