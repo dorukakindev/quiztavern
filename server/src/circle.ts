@@ -13160,6 +13160,106 @@ export const ALL_CIRCLE_PROMPTS: CirclePrompt[] = [
   { letter: "G", clue: "Geminin üst açık katı, günlük hayattaki adıyla.", answer: "güverte", category: "Denizcilik", difficulty: "orta", letterEn: "D", clueEn: "The open upper surface of a ship.", answerEn: "deck" },
   { letter: "B", clue: "Preveze'nin kahramanı, Akdeniz'i 'Türk gölü' yapan amiral.", answer: "barbaros", aliases: ["barbaroshayreddin", "hayreddin"], category: "Denizcilik", difficulty: "zor", letterEn: "B", clueEn: "The admiral who made the Mediterranean a 'Turkish lake' at Preveza.", answerEn: "barbarossa" },
   { letter: "K", clue: "Geminin arkasına verilen denizci terimi.", answer: "kıç", category: "Denizcilik", difficulty: "zor", letterEn: "S", clueEn: "The nautical term for the back of a ship.", answerEn: "stern" },
+
+  // Tatlılar
+  { letter: "K", clue: "Hatay'ın peynirli, sıcak kadayıf tatlısı.", answer: "künefe", category: "Tatlılar", difficulty: "kolay", letterEn: "K", clueEn: "Hatay's hot cheese-filled kadayıf dessert.", answerEn: "kunefe" },
+  { letter: "T", clue: "Kahveli bisküvi ve mascarpone'lu İtalyan tatlısı.", answer: "tiramisu", category: "Tatlılar", difficulty: "kolay", letterEn: "T", clueEn: "The Italian dessert of coffee-soaked biscuits and mascarpone.", answerEn: "tiramisu" },
+  { letter: "S", clue: "Süt ve pirinçle pişen klasik Türk tatlısı.", answer: "sütlaç", category: "Tatlılar", difficulty: "kolay", letterEn: "R", clueEn: "The classic milk-and-rice pudding.", answerEn: "ricepudding" },
+  { letter: "K", clue: "Tabanı karamelize yakılan sütlü tatlı.", answer: "kazandibi", category: "Tatlılar", difficulty: "orta", letterEn: "K", clueEn: "The milk pudding with a scorched, caramelized bottom.", answerEn: "kazandibi" },
+  { letter: "A", clue: "Nuh'un Gemisi efsanesiyle anılan tahıl-kuruyemiş tatlısı.", answer: "aşure", category: "Tatlılar", difficulty: "orta", letterEn: "A", clueEn: "The grain-and-nut dessert tied to Noah's Ark legend.", answerEn: "ashure" },
+  { letter: "B", clue: "Fıstıklı katmer yufkasıyla dünyaca ünlü şerbetli tatlı.", answer: "baklava", category: "Tatlılar", difficulty: "kolay", letterEn: "B", clueEn: "The world-famous syrup dessert of layered phyllo and pistachio.", answerEn: "baklava" },
+  { letter: "T", clue: "Kızgın yağda kızartılıp şerbete atılan uzun hamur tatlısı.", answer: "tulumba", category: "Tatlılar", difficulty: "orta", letterEn: "T", clueEn: "The fried, syrup-soaked elongated dough dessert.", answerEn: "tulumba" },
+  { letter: "L", clue: "Kızarmış hamur toplarını şerbetle buluşturan halka tatlı.", answer: "lokma", category: "Tatlılar", difficulty: "orta", letterEn: "L", clueEn: "The ring-shaped fried dough bites in syrup.", answerEn: "lokma" },
+
+  // Korsanlar
+  { letter: "K", clue: "Gerçek adı Edward Teach olan, fitilli sakallı korsan.", answer: "karasakal", category: "Korsanlar", difficulty: "kolay", letterEn: "B", clueEn: "The fuse-bearded pirate whose real name was Edward Teach.", answerEn: "blackbeard" },
+  { letter: "J", clue: "'Karayip Korsanları'ndaki Depp karakteri kaptan.", answer: "jacksparrow", aliases: ["jack", "sparrow"], category: "Korsanlar", difficulty: "kolay", letterEn: "J", clueEn: "Depp's captain character in Pirates of the Caribbean.", answerEn: "jacksparrow" },
+  { letter: "K", clue: "Çapraz kemikli korsan bayrağının simgesi.", answer: "kurukafa", category: "Korsanlar", difficulty: "kolay", letterEn: "S", clueEn: "The crossbones symbol on pirate flags.", answerEn: "skull" },
+  { letter: "K", clue: "Devlet izniyle düşman gemisi yağmalayan yasal korsan.", answer: "kaper", category: "Korsanlar", difficulty: "zor", letterEn: "P", clueEn: "A state-licensed plunderer of enemy ships.", answerEn: "privateer" },
+  { letter: "T", clue: "Korsan gemisinde ganimet paylaşımını düzenleyen yazılı kurallar.", answer: "tüzük", category: "Korsanlar", difficulty: "zor", letterEn: "A", clueEn: "The written rules governing plunder shares on a pirate ship.", answerEn: "articles" },
+  { letter: "K", clue: "Uzun gövdeli, yelkenli korsan savaş gemisi.", answer: "kalyon", category: "Korsanlar", difficulty: "orta", letterEn: "G", clueEn: "The long sailing warship of the pirate era.", answerEn: "galleon" },
+  { letter: "P", clue: "Korsan omzunda taşınan, konuşmayı taklit eden evcil.", answer: "papağan", category: "Korsanlar", difficulty: "kolay", letterEn: "P", clueEn: "The talking pet perched on a pirate's shoulder.", answerEn: "parrot" },
+  { letter: "D", clue: "Korsan haritalarında 'X' ile işaretlenen şey.", answer: "define", aliases: ["hazine"], category: "Korsanlar", difficulty: "kolay", letterEn: "T", clueEn: "What 'X' marks on a pirate map.", answerEn: "treasure" },
+
+  // Masa Oyunları
+  { letter: "G", clue: "19x19 tahtada taş dizilen kadim Çin strateji oyunu.", answer: "go", category: "Masa Oyunları", difficulty: "orta", letterEn: "G", clueEn: "The ancient Chinese strategy game on a 19x19 grid.", answerEn: "go" },
+  { letter: "C", clue: "Koyun ve kereste toplayıp ada kurulan oyun.", answer: "catan", category: "Masa Oyunları", difficulty: "kolay", letterEn: "C", clueEn: "The game where you settle an island collecting sheep and wood.", answerEn: "catan" },
+  { letter: "S", clue: "Puanlı harf taşlarıyla kelime dizme oyunu.", answer: "scrabble", category: "Masa Oyunları", difficulty: "kolay", letterEn: "S", clueEn: "The word game with point-valued letter tiles.", answerEn: "scrabble" },
+  { letter: "M", clue: "Sokak alıp kira topladığınız tekel oyunu.", answer: "monopoly", category: "Masa Oyunları", difficulty: "kolay", letterEn: "M", clueEn: "The property-trading board game.", answerEn: "monopoly" },
+  { letter: "R", clue: "Kıta fethetmeye dayanan dünya hakimiyeti oyunu.", answer: "risk", category: "Masa Oyunları", difficulty: "orta", letterEn: "R", clueEn: "The world-domination game of conquering continents.", answerEn: "risk" },
+  { letter: "C", clue: "Malikânede silah ve oda tahminiyle katil aranan oyun.", answer: "cluedo", category: "Masa Oyunları", difficulty: "orta", letterEn: "C", clueEn: "The mansion whodunit game of weapon-and-room guesses.", answerEn: "cluedo" },
+  { letter: "J", clue: "Tahta blokları kuleden çekip dizdiğiniz denge oyunu.", answer: "jenga", category: "Masa Oyunları", difficulty: "kolay", letterEn: "J", clueEn: "The block-stacking tower game.", answerEn: "jenga" },
+  { letter: "M", clue: "Oyuklara taş dağıtılan kadim Türk zeka oyunu.", answer: "mangala", category: "Masa Oyunları", difficulty: "zor", letterEn: "M", clueEn: "The ancient pit-and-seed Turkish strategy game.", answerEn: "mangala" },
+
+  // Çizgi Roman
+  { letter: "T", clue: "Hergé'nin köpekli muhabir kahramanı.", answer: "tenten", category: "Çizgi Roman", difficulty: "kolay", letterEn: "T", clueEn: "Hergé's reporter hero with the dog Snowy.", answerEn: "tintin" },
+  { letter: "A", clue: "Sihirli iksirle güçlenen Galyalı savaşçı.", answer: "asteriks", category: "Çizgi Roman", difficulty: "kolay", letterEn: "A", clueEn: "The Gaulish warrior powered by magic potion.", answerEn: "asterix" },
+  { letter: "M", clue: "Japon çizgi romanlarına verilen ad.", answer: "manga", category: "Çizgi Roman", difficulty: "kolay", letterEn: "M", clueEn: "The term for Japanese comics.", answerEn: "manga" },
+  { letter: "B", clue: "Yarasa kostümlü Gotham kahramanı.", answer: "batman", category: "Çizgi Roman", difficulty: "kolay", letterEn: "B", clueEn: "The bat-costumed Gotham hero.", answerEn: "batman" },
+  { letter: "S", clue: "Kriptonlu, pelerinli ilk süper kahraman.", answer: "süpermen", category: "Çizgi Roman", difficulty: "kolay", letterEn: "S", clueEn: "The caped hero from Krypton.", answerEn: "superman" },
+  { letter: "W", clue: "Moore-Gibbons'ın alternatif 1985'te geçen süper kahraman klasiği.", answer: "watchmen", category: "Çizgi Roman", difficulty: "zor", letterEn: "W", clueEn: "The Moore-Gibbons classic set in an alternate 1985.", answerEn: "watchmen" },
+  { letter: "Ş", clue: "Peyo'nun küçük mavi yaratıkları.", answer: "şirinler", category: "Çizgi Roman", difficulty: "orta", letterEn: "S", clueEn: "Peyo's small blue creatures.", answerEn: "smurfs" },
+  { letter: "M", clue: "Spiegelman'ın Holokost'u farelerle anlattığı eser.", answer: "maus", category: "Çizgi Roman", difficulty: "zor", letterEn: "M", clueEn: "Spiegelman's Pulitzer Holocaust work with mice.", answerEn: "maus" },
+
+  // Kuşlar
+  { letter: "P", clue: "Antarktika'nın uçamayan smokinli kuşu.", answer: "penguen", category: "Kuşlar", difficulty: "kolay", letterEn: "P", clueEn: "Antarctica's tuxedoed flightless bird.", answerEn: "penguin" },
+  { letter: "B", clue: "Başını 270° çeviren gece avcısı kuş.", answer: "baykuş", category: "Kuşlar", difficulty: "kolay", letterEn: "O", clueEn: "The nocturnal hunter that rotates its head 270 degrees.", answerEn: "owl" },
+  { letter: "D", clue: "Dalışta 380 km/s yapan en hızlı kuş.", answer: "doğan", category: "Kuşlar", difficulty: "orta", letterEn: "F", clueEn: "The fastest diving bird at 380 km/h.", answerEn: "falcon" },
+  { letter: "J", clue: "Konuşmayı en iyi taklit eden gri papağan.", answer: "jako", category: "Kuşlar", difficulty: "orta", letterEn: "A", clueEn: "The grey parrot famous for mimicking speech.", answerEn: "africangrey" },
+  { letter: "F", clue: "Pembe tüyleriyle göllerde tek ayak duran kuş.", answer: "flamingo", category: "Kuşlar", difficulty: "kolay", letterEn: "F", clueEn: "The pink one-legged lake bird.", answerEn: "flamingo" },
+  { letter: "L", clue: "Baca ve direklere yuva kuran göçmen kuş.", answer: "leylek", category: "Kuşlar", difficulty: "kolay", letterEn: "S", clueEn: "The migratory bird that nests on chimneys.", answerEn: "stork" },
+  { letter: "K", clue: "Keskin gözleriyle bilinen yırtıcı 'kral kuş'.", answer: "kartal", category: "Kuşlar", difficulty: "kolay", letterEn: "E", clueEn: "The sharp-eyed raptor 'king of birds'.", answerEn: "eagle" },
+  { letter: "T", clue: "Erkeği kuyruğuyla yelpaze açan gösterişli kuş.", answer: "tavuskuşu", category: "Kuşlar", difficulty: "kolay", letterEn: "P", clueEn: "The bird whose male fans a spectacular tail.", answerEn: "peacock" },
+
+  // Böcekler
+  { letter: "A", clue: "Geceleri ışık saçan böcek.", answer: "ateşböceği", category: "Böcekler", difficulty: "kolay", letterEn: "F", clueEn: "The insect that glows at night.", answerEn: "firefly" },
+  { letter: "P", clue: "Boyunun 100 katı sıçrayan kan emici.", answer: "pire", category: "Böcekler", difficulty: "kolay", letterEn: "F", clueEn: "The blood-sucker that jumps 100x its size.", answerEn: "flea" },
+  { letter: "P", clue: "Erkeğini yiyen yeşil avcı böcek.", answer: "peygamberdevesi", category: "Böcekler", difficulty: "orta", letterEn: "M", clueEn: "The green predator that eats its mate.", answerEn: "mantis" },
+  { letter: "K", clue: "Kozadan çıkan renkli kanatlı böcek.", answer: "kelebek", category: "Böcekler", difficulty: "kolay", letterEn: "B", clueEn: "The colorful-winged insect that emerges from a cocoon.", answerEn: "butterfly" },
+  { letter: "K", clue: "Kolonide iş bölümüyle yaşayan küçük sosyal böcek.", answer: "karınca", category: "Böcekler", difficulty: "kolay", letterEn: "A", clueEn: "The small social insect living in colonies.", answerEn: "ant" },
+  { letter: "H", clue: "300 milyon yıldır değişmeden yaşayan dirençli böcek.", answer: "hamamböceği", category: "Böcekler", difficulty: "orta", letterEn: "C", clueEn: "The resilient insect unchanged for 300 million years.", answerEn: "cockroach" },
+  { letter: "Y", clue: "Saatte 50 km hız yapan suda yaşayan böcek.", answer: "yusufçuk", category: "Böcekler", difficulty: "orta", letterEn: "D", clueEn: "The fast 'jet' insect hovering over water.", answerEn: "dragonfly" },
+  { letter: "U", clue: "Kırmızı benekli, uğur getirdiğine inanılan böcek.", answer: "uğurböceği", category: "Böcekler", difficulty: "kolay", letterEn: "L", clueEn: "The red spotted beetle believed to bring luck.", answerEn: "ladybug" },
+
+  // Baharatlar
+  { letter: "S", clue: "Gramı altından pahalı, pilavı boyayan baharat.", answer: "safran", category: "Baharatlar", difficulty: "orta", letterEn: "S", clueEn: "The world's priciest spice that dyes rice.", answerEn: "saffron" },
+  { letter: "T", clue: "Rulo kabuklu tatlı baharatı.", answer: "tarçın", category: "Baharatlar", difficulty: "kolay", letterEn: "C", clueEn: "The rolled-bark dessert spice.", answerEn: "cinnamon" },
+  { letter: "Z", clue: "Köriye sarı rengini veren kök baharat.", answer: "zerdeçal", category: "Baharatlar", difficulty: "orta", letterEn: "T", clueEn: "The yellow root spice in curry.", answerEn: "turmeric" },
+  { letter: "P", clue: "Macar mutfağının öğütülmüş kırmızı biberi.", answer: "paprika", category: "Baharatlar", difficulty: "orta", letterEn: "P", clueEn: "Hungary's ground red pepper.", answerEn: "paprika" },
+  { letter: "K", clue: "Ağacın kurutulmuş çiçek tomurcuğu olan baharat.", answer: "karanfil", category: "Baharatlar", difficulty: "orta", letterEn: "C", clueEn: "The spice that is a dried flower bud.", answerEn: "clove" },
+  { letter: "K", clue: "Orta Çağ'da para yerine geçen 'siyah altın'.", answer: "karabiber", category: "Baharatlar", difficulty: "zor", letterEn: "P", clueEn: "The 'black gold' once used as currency.", answerEn: "pepper" },
+  { letter: "M", clue: "Béchamel sosun rendelenen cevizimsi baharatı.", answer: "muskat", category: "Baharatlar", difficulty: "zor", letterEn: "N", clueEn: "The grated nut-like spice for béchamel.", answerEn: "nutmeg" },
+  { letter: "S", clue: "Ekşili bordo baharat, soğana serpilir.", answer: "sumak", category: "Baharatlar", difficulty: "orta", letterEn: "S", clueEn: "The tangy burgundy spice sprinkled on onions.", answerEn: "sumac" },
+
+  // Festivaller
+  { letter: "O", clue: "Münih'in dev bira festivali.", answer: "oktoberfest", category: "Festivaller", difficulty: "kolay", letterEn: "O", clueEn: "Munich's giant beer festival.", answerEn: "oktoberfest" },
+  { letter: "T", clue: "Buñol'da domates savaşı yapılan İspanyol festivali.", answer: "tomatina", category: "Festivaller", difficulty: "orta", letterEn: "T", clueEn: "The tomato-fight festival in Buñol.", answerEn: "tomatina" },
+  { letter: "H", clue: "Hindistan'da renkli tozların atıldığı festival.", answer: "holi", category: "Festivaller", difficulty: "orta", letterEn: "H", clueEn: "India's festival of colored powders.", answerEn: "holi" },
+  { letter: "K", clue: "Edirne'deki 650 yıllık yağlı güreş festivali.", answer: "kırkpınar", category: "Festivaller", difficulty: "orta", letterEn: "K", clueEn: "Edirne's 650-year-old oil wrestling festival.", answerEn: "kirkpinar" },
+  { letter: "N", clue: "Baharın gelişini kutlayan kadim bayram.", answer: "nevruz", category: "Festivaller", difficulty: "kolay", letterEn: "N", clueEn: "The ancient spring festival.", answerEn: "nowruz" },
+  { letter: "K", clue: "Venedik'teki maskeli şenlik.", answer: "karnaval", category: "Festivaller", difficulty: "kolay", letterEn: "C", clueEn: "Venice's masked festivity.", answerEn: "carnival" },
+  { letter: "M", clue: "Meksika'da ölüleri anan şeker kafataslı bayram.", answer: "muertos", category: "Festivaller", difficulty: "zor", letterEn: "D", clueEn: "The Mexican holiday of sugar skulls honoring the dead.", answerEn: "diadelosmuertos" },
+  { letter: "S", clue: "Pamplona'daki boğa koşusu festivali.", answer: "sanfermin", category: "Festivaller", difficulty: "zor", letterEn: "S", clueEn: "Pamplona's running-of-the-bulls festival.", answerEn: "sanfermin" },
+
+  // Vikingler
+  { letter: "O", clue: "Vikinglerin tek gözlü bilgelik tanrısı.", answer: "odin", category: "Vikingler", difficulty: "kolay", letterEn: "O", clueEn: "The one-eyed Norse god of wisdom.", answerEn: "odin" },
+  { letter: "T", clue: "Mjölnir çekicinin sahibi gök tanrı.", answer: "thor", category: "Vikingler", difficulty: "kolay", letterEn: "T", clueEn: "The thunder god wielding Mjölnir.", answerEn: "thor" },
+  { letter: "V", clue: "Savaşta ölenlerin gittiği büyük salon.", answer: "valhalla", category: "Vikingler", difficulty: "kolay", letterEn: "V", clueEn: "The great hall for fallen warriors.", answerEn: "valhalla" },
+  { letter: "D", clue: "Ejder başlı uzun Viking gemisi.", answer: "drakkar", category: "Vikingler", difficulty: "orta", letterEn: "L", clueEn: "The dragon-headed Viking warship.", answerEn: "longship" },
+  { letter: "B", clue: "Transa girip zırhsız savaşan Viking savaşçısı.", answer: "berserker", category: "Vikingler", difficulty: "zor", letterEn: "B", clueEn: "The trance-fighting Viking warrior.", answerEn: "berserker" },
+  { letter: "L", clue: "Amerika'ya Kolomb'dan önce ulaşan Viking.", answer: "leiferikson", aliases: ["leif"], category: "Vikingler", difficulty: "orta", letterEn: "L", clueEn: "The Viking who reached America before Columbus.", answerEn: "leiferikson" },
+  { letter: "A", clue: "Viking tanrılarının yaşadığı diyar.", answer: "asgard", category: "Vikingler", difficulty: "orta", letterEn: "A", clueEn: "The realm of the Norse gods.", answerEn: "asgard" },
+  { letter: "R", clue: "Viking mitolojisindeki son savaş.", answer: "ragnarök", category: "Vikingler", difficulty: "orta", letterEn: "R", clueEn: "The Norse end-of-world final battle.", answerEn: "ragnarok" },
+
+  // Havacılık
+  { letter: "W", clue: "1903'te ilk motorlu uçağı uçuran kardeşler.", answer: "wright", category: "Havacılık", difficulty: "kolay", letterEn: "W", clueEn: "The brothers who flew at Kitty Hawk in 1903.", answerEn: "wright" },
+  { letter: "C", clue: "2003'te emekli edilen sesten hızlı yolcu uçağı.", answer: "concorde", category: "Havacılık", difficulty: "orta", letterEn: "C", clueEn: "The supersonic passenger jet retired in 2003.", answerEn: "concorde" },
+  { letter: "S", clue: "Dünyanın ilk kadın savaş pilotu sayılan Türk.", answer: "sabihagökçen", aliases: ["sabiha"], category: "Havacılık", difficulty: "orta", letterEn: "S", clueEn: "The world's first female combat pilot, from Turkey.", answerEn: "sabihagokcen" },
+  { letter: "H", clue: "Galata'dan Üsküdar'a kanatlarla uçan Osmanlı.", answer: "hezârfen", aliases: ["hezarfen"], category: "Havacılık", difficulty: "orta", letterEn: "H", clueEn: "The Ottoman who allegedly flew from Galata Tower.", answerEn: "hezarfen" },
+  { letter: "A", clue: "Atlantik'i tek geçen ilk kadın pilot.", answer: "ameliaearhart", aliases: ["amelia"], category: "Havacılık", difficulty: "orta", letterEn: "A", clueEn: "The first woman to fly solo across the Atlantic.", answerEn: "ameliaearhart" },
+  { letter: "K", clue: "Adına rağmen turuncu olan uçuş kayıt cihazı.", answer: "karakutu", category: "Havacılık", difficulty: "kolay", letterEn: "B", clueEn: "The orange flight recorder.", answerEn: "blackbox" },
+  { letter: "M", clue: "Ses hızının katlarını ölçen birim.", answer: "mach", category: "Havacılık", difficulty: "zor", letterEn: "M", clueEn: "The unit for multiples of the speed of sound.", answerEn: "mach" },
+  { letter: "A", clue: "Boeing'in Avrupalı rakip uçak üreticisi.", answer: "airbus", category: "Havacılık", difficulty: "kolay", letterEn: "A", clueEn: "Boeing's European rival manufacturer.", answerEn: "airbus" },
 ];
 
 export const normalizeCircleAnswer = (value: string) =>
