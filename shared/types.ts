@@ -858,6 +858,10 @@ export interface GameState {
   bet: BetPayload | null;
   /** Çifte Bahis: bu tur kilitlediğin bahis (null = henüz yatırmadın). */
   yourBet: number | null;
+  /** Çifte Bahis: soru fazının ilk ~2,5 sn'sinde herkesin kilitli bahsi
+   *  görünür ("bahisler açıklandı" anı); sonra yine gizlenir. Reveal'daki
+   *  kalıcı liste `reveal.bets`'te. */
+  betStakes?: Record<string, number> | null;
   /** Sadece kendi seçimin; başkalarınınki reveal'a kadar görünmez */
   yourChoice: number | null;
   /** Çemberde yalnızca oyuncunun kendi kilitlediği cevap görünür. */
