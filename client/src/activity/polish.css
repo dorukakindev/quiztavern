@@ -2339,6 +2339,13 @@
   display: none;
 }
 
+/* Mini sayaç sağ üst köşede absolute durur (54px rozet + 12px iç pay); uzun
+   soru metni altına giriyordu. Mini sayaç varken başlık sağda ~78px pay
+   bırakır — başlık blok olarak zaten ortalı, sağ payı metni altına girmez. */
+.qt-question-stage:has(.qt-timer--mini) .qt-question-head {
+  padding-right: 78px;
+}
+
 /* Emote barı sabit sağ-alt köşeden sağ sütunun içine alındı: dikey ray olarak
    ızgara hizasına oturur, artık sayfadan ayrı bir katman gibi durmuyor. */
 .qt-game-side .qt-emote-bar {
