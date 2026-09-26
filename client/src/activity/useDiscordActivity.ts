@@ -174,14 +174,11 @@ async function openActivitySession(clientId: string): Promise<ActivitySession> {
   }
 }
 
-async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Promise<ActivitySession> {
-  await at("ready", () => withTimeout(sdk.ready(), SDK_READY_TIMEOUT_MS, "Discord SDK ready"));
-
-  // identify: kullanıcı + locale. rpc.activities.write: Rich Presence
-  // (setActivity). rpc.voice.read: ses kanalında kim konuşuyor (SPEAKING_*).
-  // prompt göndermiyoruz: 'none' yalnız önceden yetki vermiş kullanıcıda
-  // sessiz geçer; ilk girişte sheet gerekir ve çağrı hata fırlatır. prompt'u
-  // boş bırakınca istemci gerektiğinde sheet gösterir, verilmişse sessiz geçer.
+/** authorize → sunucuda token değişimi → authenticate. Hem ilk açılışta hem de
+ *  oturum yenilemede kullanılır: yenileme MEVCUT SDK üzerinde yapılır —
+ *  eski yol retry() → closeSdk() çağırıyordu ve close() Activity'yi Discord'da
+ *  kapatır, yani 6 saatlik oturum dolmadan oyun herkesin elinden gidiyordu. */
+async function exchangeActivitySession(sdk: DiscordSDK, clientId: string) {
   const authorization = await at("authorize", () =>
     sdk.commands.authorize({
       client_id: clientId,
@@ -218,6 +215,18 @@ async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Pro
   });
 
   await at("authenticate", () => sdk.commands.authenticate({ access_token: session.access_token }));
+  return session;
+}
+
+async function initializeActivitySession(sdk: DiscordSDK, clientId: string): Promise<ActivitySession> {
+  await at("ready", () => withTimeout(sdk.ready(), SDK_READY_TIMEOUT_MS, "Discord SDK ready"));
+
+  // identify: kullanıcı + locale. rpc.activities.write: Rich Presence
+  // (setActivity). rpc.voice.read: ses kanalında kim konuşuyor (SPEAKING_*).
+  // prompt göndermiyoruz: 'none' yalnız önceden yetki vermiş kullanıcıda
+  // sessiz geçer; ilk girişte sheet gerekir ve çağrı hata fırlatır. prompt'u
+  // boş bırakınca istemci gerektiğinde sheet gösterir, verilmişse sessiz geçer.
+  const session = await exchangeActivitySession(sdk, clientId);
 
   // Masa yatay bir sahne: telefonda da yatayı tercih ederiz. Kilit her
   // platformda desteklenmez ve garanti değildir — responsive iskelet güvenli
@@ -327,7 +336,23 @@ export function useDiscordActivity() {
     // Kopmayı bekleme: yeni oturumu bir dakika önce al, aynı Discord kullanıcı
     // kimliğiyle kurulan yeni socket mevcut koltuğu devralır.
     const delay = Math.max(0, expiresAt - Date.now() - 60_000);
-    const timer = window.setTimeout(retry, delay);
+    const timer = window.setTimeout(() => {
+      const sdk = sdkRef.current;
+      const clientId = (import.meta as unknown as { env?: Record<string, string | undefined> }).env
+        ?.VITE_DISCORD_CLIENT_ID;
+      if (!sdk || !clientId) return retry();
+      // Aynı SDK ile sessiz yenileme: izin daha önce verildiği için authorize
+      // sheet açmaz; yeni session_token ile socket yeniden bağlanır, sunucu
+      // koltuğu aynı Discord id'sine geri verir.
+      exchangeActivitySession(sdk, clientId)
+        .then((session) =>
+          setIdentity((current) => ({ ...current, sessionToken: session.session_token, user: session.user })),
+        )
+        .catch((refreshError: unknown) => {
+          captureClientLog(sdk, `[activity] session refresh failed: ${describeError(refreshError)}`);
+          setError(describeError(refreshError));
+        });
+    }, delay);
     return () => window.clearTimeout(timer);
   }, [identity.isDiscord, identity.sessionToken, retry]);
 
