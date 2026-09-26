@@ -391,12 +391,9 @@ app.get("/auth/discord/callback", async (req, res) => {
   const state = typeof req.query.state === "string" ? req.query.state : "";
   const expectedState = cookieValue(req.headers.cookie, OAUTH_STATE_COOKIE);
   res.clearCookie(OAUTH_STATE_COOKIE, { path: "/auth/discord" });
-  if (
-    !state ||
-    !expectedState ||
-    state.length !== expectedState.length ||
-    !crypto.timingSafeEqual(Buffer.from(state), Buffer.from(expectedState))
-  ) {
+  // tokenEqual bayt uzunluğunu kıyaslar: karakter uzunluğuna bakan kontrol
+  // çok-baytlı karakterlerde timingSafeEqual'ı RangeError'a düşürüyordu.
+  if (!state || !expectedState || !tokenEqual(state, expectedState)) {
     return res.status(400).json({ error: "Discord OAuth state validation failed." });
   }
   try {
@@ -568,7 +565,16 @@ io.use(async (socket, next) => {
   // instance doğrulaması gerektirmez çünkü yalnız `web-` odalarına girer.
   if (!user && ALLOW_GUEST_AUTH && typeof auth.guestName === "string" && auth.guestName.trim()) {
     const guestId = typeof auth.guestId === "string" && GUEST_ID_PATTERN.test(auth.guestId) ? auth.guestId : socket.id;
-    user = { id: `guest:${guestId}`, name: sanitizeGuestName(auth.guestName), avatarUrl: null };
+    // guestId istemcinin gizli anahtarı gibi davranır; oyuncu id'si ise state ile
+    // herkese yayınlanır. Ham id'yi yayınlamak, masadaki herkesin o id ile
+    // bağlanıp misafirin koltuğunu (previousSocketId ile) çalmasına izin veriyordu.
+    // Yayınlanan id, gizli anahtarın tek yönlü özeti olur.
+    const publicGuestId = crypto
+      .createHash("sha256")
+      .update(`qt-guest:${guestId}`)
+      .digest("base64url")
+      .slice(0, 22);
+    user = { id: `guest:${publicGuestId}`, name: sanitizeGuestName(auth.guestName), avatarUrl: null };
   }
   if (!user && ALLOW_MOCK_AUTH) {
     const name = (auth.devName || "Sen").slice(0, 24);
