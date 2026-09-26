@@ -41,7 +41,18 @@ export function scheduleBotAnswers(room: Room): void {
       const roundAtSchedule = room.qIndex;
       room.scheduleBotTask(() => {
         if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
-        room.wordAnswer(p.id, Math.random() < botSkill(p.id) + 0.1 ? wp.answer : "bilmiyorum");
+        const knows = Math.random() < botSkill(p.id) + 0.1;
+        // Emin olmayan bot bazen önce harf alır — hem gerçekçi durur hem
+        // masadaki herkese ufak bir bedava ipucu sızar.
+        if (!knows && Math.random() < 0.45) {
+          room.wordLetter(p.id);
+          room.scheduleBotTask(() => {
+            if (room.qIndex !== roundAtSchedule || room.gameMode !== "word") return;
+            room.wordAnswer(p.id, "bilmiyorum");
+          }, 700 + Math.random() * 800);
+        } else {
+          room.wordAnswer(p.id, knows ? wp.answer : "bilmiyorum");
+        }
       }, delay);
     }
     return;
