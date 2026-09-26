@@ -2609,3 +2609,16 @@
     opacity: 0.55;
   }
 }
+
+
+/* D/Y Blitz: seri çarpanı tavana ulaşınca "MAKS SERİ" rozeti. */
+.qt-blitz-max {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #f7b733, #fc4a1a);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  animation: qt-sudden-pulse 1s ease-in-out infinite;
+}

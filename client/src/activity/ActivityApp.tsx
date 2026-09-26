@@ -3892,6 +3892,11 @@ function GameBoard({
                     <span title={t("blitz.streak")}>
                       <Icon name="flame" /> ×{state.blitz.streak}
                     </span>
+                    {state.blitz.streakAtCap ? (
+                      <span className="qt-blitz-max" title={t("blitz.maxStreak")}>
+                        {t("blitz.maxStreak")}
+                      </span>
+                    ) : null}
                     <span>{t("blitz.progress", { n: state.blitz.index + 1, c: state.blitz.correct })}</span>
                   </p>
                   <div className="qt-blitz-btns" role="group" aria-label={t("mode.blitz")}>

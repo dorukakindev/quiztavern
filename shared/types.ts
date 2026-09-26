@@ -509,6 +509,8 @@ export interface BlitzLivePayload {
   index: number;
   correct: number;
   streak: number;
+  /** Seri çarpanı tavanda mı — istemci "maksimum seri" rozeti gösterir. */
+  streakAtCap: boolean;
 }
 
 /** D/Y Blitz kapanış özeti — reveal fazında dolu; skor sıralı. */
