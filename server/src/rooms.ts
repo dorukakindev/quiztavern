@@ -19,9 +19,9 @@ import {
 } from "./circle";
 import {
   effectiveDifficulty,
+  refreshQuestionCalibration,
   resetExhaustedSubpools,
   sampleQuestions,
-  setQuestionCalibration,
   shuffleChoices,
   type Question,
 } from "./questions";
@@ -3303,7 +3303,7 @@ export class Room {
           }
           if (rows.size) {
             this.progress.recordQuestionStats([...rows.values()]);
-            setQuestionCalibration(this.progress.questionStats());
+            refreshQuestionCalibration(() => this.progress!.questionStats());
           }
         } catch (error) {
           console.error("[xp] soru istatistiği yazılamadı:", error);

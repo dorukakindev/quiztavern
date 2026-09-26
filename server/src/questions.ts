@@ -103,8 +103,23 @@ const CALIBRATION_MIN_ASKED = 20;
 const CALIBRATION_HARD_RATE = 0.25; // altı: etiketten daha zor
 const CALIBRATION_EASY_RATE = 0.85; // üstü: etiketten daha kolay
 
+/** Son gerçek kalibrasyonun zamanı — maç başına tarama yerine saatlik tazeleme. */
+let calibratedAt = 0;
+const CALIBRATION_REFRESH_MS = 60 * 60 * 1000;
+
+/** Maç sonu çağrısı: ham tablo taraması + harita kurulumu en fazla saatte bir
+ *  çalışır; aradaki maçlar son kalibrasyonla oynar (istatistik yazımı durmaz). */
+export function refreshQuestionCalibration(
+  loadStats: () => readonly { questionId: string; asked: number; correct: number }[],
+): void {
+  const now = Date.now();
+  if (calibratedAt && now - calibratedAt < CALIBRATION_REFRESH_MS) return;
+  setQuestionCalibration(loadStats());
+}
+
 /** Ham istatistik satırlarından kalibrasyon haritasını kurar (bir kademe kaydırır). */
 export function setQuestionCalibration(stats: readonly { questionId: string; asked: number; correct: number }[]): void {
+  calibratedAt = Date.now();
   calibrated.clear();
   const labelOf = new Map(ALL_QUESTIONS.map((q) => [q.id, q.difficulty] as const));
   for (const row of stats) {
