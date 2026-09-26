@@ -2274,7 +2274,12 @@ export class Room {
           // ayrıldı) — yalnız hâlâ bu botun turuysa hücre aç.
           if (this.phase !== "pick" || this.boardPickerId() !== picker) return;
           const open = this.boardCells.map((cell, i) => (!cell.used ? i : -1)).filter((i) => i >= 0);
-          if (open.length) this.openCell(open[Math.floor(Math.random() * open.length)]);
+          // Jeopardy hissi: bot düşük değerli hücreyi önce açar, büyükleri sona
+          // bırakır — rastgele açım panonun gerilim eğrisini düzleştiriyordu.
+          if (open.length) {
+            const cheapest = open.reduce((a, b) => (this.boardCells[a].value <= this.boardCells[b].value ? a : b));
+            this.openCell(cheapest);
+          }
         },
         1_000 + Math.random() * 2_000,
       );
