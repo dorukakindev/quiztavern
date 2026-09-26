@@ -46,10 +46,28 @@ test("En yakın tahmin kazanır; puan taban değerdir", () => {
   room.numericAnswer("c", answer + 100);
   assert.equal(room.phase, "reveal");
   assert.equal(inner.players.get("b")!.score, GAME.NUMERIC_BASE);
-  assert.equal(inner.players.get("a")!.score, 0);
+  assert.equal(inner.players.get("a")!.score, GAME.NUMERIC_RUNNER_UP, "ikinci en yakın teselli alır");
+  assert.equal(inner.players.get("c")!.score, 0);
   const nr = room.stateFor("a").reveal?.numeric;
   assert.equal(nr?.answer, answer);
   assert.deepEqual(nr?.winnerIds, ["b"]);
+  assert.deepEqual(nr?.runnerUpIds, ["a"]);
+});
+
+test("İkinci en yakın teselli: kazananla berabere değil, üçüncüye yok", () => {
+  const room = numericRoom("n-runner", ["a", "b", "c", "d"]);
+  const inner = startRound(room);
+  const answer = inner.numericQuestions[0].answer;
+  room.numericAnswer("a", answer + 1); // kazanan
+  room.numericAnswer("b", answer - 4); // ikinci en yakın (mesafe 4)
+  room.numericAnswer("c", answer + 4); // aynı mesafe → ikisi de runner-up
+  room.numericAnswer("d", answer + 50); // teselli yok
+  assert.equal(inner.players.get("a")!.score, GAME.NUMERIC_BASE);
+  assert.equal(inner.players.get("b")!.score, GAME.NUMERIC_RUNNER_UP);
+  assert.equal(inner.players.get("c")!.score, GAME.NUMERIC_RUNNER_UP);
+  assert.equal(inner.players.get("d")!.score, 0);
+  const nr = room.stateFor("a").reveal?.numeric;
+  assert.deepEqual(new Set(nr?.runnerUpIds), new Set(["b", "c"]));
 });
 
 test("Tam isabet taban + bonus alır", () => {
@@ -169,5 +187,5 @@ test("maç özeti incelemesi numeric'te tur geçmişi taşır (B51)", () => {
 });
 
 console.log(`numeric-test: ${passed} geçti`);
-assert.equal(passed, 11);
+assert.equal(passed, 12);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

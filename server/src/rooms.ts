@@ -2754,17 +2754,34 @@ export class Room {
             .filter(([, guess]) => Math.abs(guess - prompt.answer) === best)
             .map(([id]) => id)
         : [];
+    // İkinci en yakın farklı mesafe: teselli puanı — son ana kadar oyunda tutar.
+    let secondBest = Infinity;
+    for (const guess of this.numericGuesses.values()) {
+      const distance = Math.abs(guess - prompt.answer);
+      if (distance > best) secondBest = Math.min(secondBest, distance);
+    }
+    const runnerUpIds =
+      secondBest < Infinity
+        ? [...this.numericGuesses.entries()]
+            .filter(([, guess]) => Math.abs(guess - prompt.answer) === secondBest)
+            .map(([id]) => id)
+        : [];
     const gains: Record<string, number> = {};
     for (const player of this.eligiblePlayers()) {
       const guessed = this.numericGuesses.get(player.id);
       const isWinner = winnerIds.includes(player.id);
+      const isRunnerUp = !isWinner && runnerUpIds.includes(player.id);
       // İnceleme kartı (B51): numericGuesses tur sonunda silindiği için tur
       // geçmişi answers[]/numericWins[]'a kopyalanır.
       player.answers[this.qIndex] = guessed ?? null;
       player.numericWins[this.qIndex] = isWinner;
       // Tam isabet bonusu yalnız kazanana — eşit mesafede ama tam tutturamayan bonus almaz.
       const exact = isWinner && guessed === prompt.answer;
-      const gain = isWinner ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0) : 0;
+      const gain = isWinner
+        ? GAME.NUMERIC_BASE + (exact ? GAME.NUMERIC_EXACT : 0)
+        : isRunnerUp
+          ? GAME.NUMERIC_RUNNER_UP
+          : 0;
       player.score += gain;
       gains[player.id] = gain;
       const elapsed =
@@ -2783,7 +2800,7 @@ export class Room {
       gains,
       until: this.revealUntil,
       durationMs: GAME.REVEAL_MS,
-      numeric: { answer: prompt.answer, unit: prompt.unit, unitEn: prompt.unitEn, guesses, winnerIds },
+      numeric: { answer: prompt.answer, unit: prompt.unit, unitEn: prompt.unitEn, guesses, winnerIds, runnerUpIds },
       ...(prompt.fact ? { fact: prompt.fact, factEn: prompt.factEn ?? "" } : {}),
     };
     this.lastNumericReveal = this.lastReveal.numeric ?? null;
