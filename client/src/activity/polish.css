@@ -2658,6 +2658,21 @@
   font-style: normal;
 }
 
+/* "Bahisler açıklandı" anı — soru başında kilitli bahisler kısa süre görünür */
+.qt-bet-stake-reveal {
+  animation: qt-bet-stake-pop 0.5s cubic-bezier(0.3, 1.5, 0.5, 1) both;
+}
+@keyframes qt-bet-stake-pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Tavern Panosu: 'Daily Double' — açılan çift hücrenin soru başlığındaki ×2 rozeti
    ve pano üzerinde açılmış hücrenin anımsatıcı yıldızı. */
 .qt-dd-tag {

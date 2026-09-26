@@ -131,6 +131,9 @@ export const GAME = {
   BET_MIN_STAKE_PCT: 0.1,
   /** Çifte Bahis sigortası: üst üste bu kadar kayıp turdan sonra kayıp yarıya iner. */
   BET_INSURANCE_LOSSES: 2,
+  /** Soru fazının başında 'bahisler açıklandı' anı: herkesin kilitli bahsi
+   *  bu süre boyunca tüm masada görünür, sonra yine saklanır. */
+  BET_REVEAL_MS: 2_500,
 
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */

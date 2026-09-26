@@ -1918,6 +1918,14 @@ export class Room {
       countdown,
       bet,
       yourBet: null,
+      // "Bahisler açıklandı" anı: soru fazının ilk ~2,5 sn'sinde kilitli
+      // bahisler masada görünür — kumar gerilimi; sonra yine saklanır.
+      betStakes:
+        this.gameMode === "bet" &&
+        this.phase === "question" &&
+        Date.now() - this.questionStartedAt < GAME.BET_REVEAL_MS
+          ? Object.fromEntries(this.eligiblePlayers().map((p) => [p.id, p.bet ?? 0]))
+          : null,
       yourChoice: null,
       yourCircleAnswer: null,
       yourWordAnswer: null,
