@@ -32,14 +32,16 @@ test("sıfır bakiyede yalnız asgari (0) çipi görünür", () => {
 });
 
 test("yuvarlama aynı tutarı üretince bahis seçenekleri tekilleşir", () => {
-  assert.deepEqual(betOptionSpecs(1), [
-    { key: "min", amount: 1 },
-    { key: "all", amount: 1 },
-  ]);
+  // Çarpışmada daha anlamlı anahtar korunur: all > half > quarter > min.
+  assert.deepEqual(betOptionSpecs(1), [{ key: "all", amount: 1 }]);
   assert.deepEqual(betOptionSpecs(2), [
-    { key: "min", amount: 1 },
     { key: "half", amount: 1 },
     { key: "all", amount: 2 },
+  ]);
+  assert.deepEqual(betOptionSpecs(3), [
+    { key: "quarter", amount: 1 },
+    { key: "half", amount: 2 },
+    { key: "all", amount: 3 },
   ]);
 });
 
