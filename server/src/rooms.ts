@@ -2629,7 +2629,12 @@ export class Room {
         const base =
           (this.gameMode === "lightning" ? 520 : GAME.BASE_POINTS) + GAME.DIFF_BONUS[effectiveDifficulty(question)];
         const speed = !this.speedBonus ? 0 : this.gameMode === "lightning" ? 420 : GAME.SPEED_POINTS;
-        gain = correct ? Math.round(base + speed * speedRatio) : 0;
+        // Bulanık Resim: hız bileşeni doğrusal değil netlik-ağırlıklı —
+        // görsel bulanıkken (kalan süre çokken) bilen, netleşmeye yakın
+        // bilenden orantısız daha çok alır (0→2× hız bonusu).
+        const speedGain =
+          this.gameMode === "blur" ? speed * speedRatio * (1 + speedRatio) : speed * speedRatio;
+        gain = correct ? Math.round(base + speedGain) : 0;
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
         // düşer; ceza YALNIZ gerçekten basıp kaybedene (yanlış ya da süresi
         // dolan deneme → buzzFailed). Hiç basmayan oyuncu turu 0 ile bitirir —
