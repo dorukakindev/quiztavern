@@ -48544,5 +48544,965 @@
    "In a station waiting room",
    "In a train depot"
   ]
+ },
+ {
+  "id": "icecek-cezve",
+  "category": "İçecekler",
+  "text": "Türk kahvesi geleneksel olarak hangi küçük kapta pişirilir?",
+  "choices": [
+   "Cezve",
+   "Demlik",
+   "Güğüm",
+   "Fincan"
+  ],
+  "correctIndex": 0,
+  "difficulty": "kolay",
+  "textEn": "In which small pot is Turkish coffee traditionally brewed?",
+  "choicesEn": [
+   "Cezve (ibrik)",
+   "Teapot",
+   "Samovar",
+   "Cup"
+  ]
+ },
+ {
+  "id": "icecek-sampanya",
+  "category": "İçecekler",
+  "text": "Şampanya, adını hangi ülkenin aynı adlı bölgesinden alır?",
+  "choices": [
+   "İtalya",
+   "Fransa",
+   "İspanya",
+   "Portekiz"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "Champagne takes its name from the same-named region of which country?",
+  "choicesEn": [
+   "Italy",
+   "France",
+   "Spain",
+   "Portugal"
+  ]
+ },
+ {
+  "id": "icecek-matcha",
+  "category": "İçecekler",
+  "text": "Matcha, hangi ülkenin geleneksel toz yeşil çayıdır?",
+  "choices": [
+   "Çin",
+   "Hindistan",
+   "Japonya",
+   "Kore"
+  ],
+  "correctIndex": 2,
+  "difficulty": "kolay",
+  "textEn": "Matcha is the traditional powdered green tea of which country?",
+  "choicesEn": [
+   "China",
+   "India",
+   "Japan",
+   "Korea"
+  ]
+ },
+ {
+  "id": "icecek-elma-sarabi",
+  "category": "İçecekler",
+  "text": "Elma suyunun fermente edilmesiyle elde edilen içeceğe ne ad verilir?",
+  "choices": [
+   "Şerbet",
+   "Elma şarabı (cider)",
+   "Verjus",
+   "Pekmez"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "What is the fermented drink made from apple juice called?",
+  "choicesEn": [
+   "Sherbet",
+   "Cider",
+   "Verjuice",
+   "Pekmez"
+  ]
+ },
+ {
+  "id": "icecek-raki",
+  "category": "İçecekler",
+  "text": "Rakı suyla karıştırıldığında hangi görünümü alır?",
+  "choices": [
+   "Berraklaşır",
+   "Sütlü beyazlaşır",
+   "Koyulaşır",
+   "Köpüklü hâle gelir"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "What does rakı look like when mixed with water?",
+  "choicesEn": [
+   "It turns clear",
+   "It turns milky white",
+   "It darkens",
+   "It foams"
+  ]
+ },
+ {
+  "id": "icecek-guinness",
+  "category": "İçecekler",
+  "text": "Guinness, hangi ülkeyle özdeşleşen ünlü koyu (stout) biradır?",
+  "choices": [
+   "Almanya",
+   "Belçika",
+   "Çekya",
+   "İrlanda"
+  ],
+  "correctIndex": 3,
+  "difficulty": "orta",
+  "textEn": "Guinness is a famous stout beer associated with which country?",
+  "choicesEn": [
+   "Germany",
+   "Belgium",
+   "Czechia",
+   "Ireland"
+  ]
+ },
+ {
+  "id": "icecek-sake",
+  "category": "İçecekler",
+  "text": "Japon sake'si hangi tahılın fermente edilmesiyle üretilir?",
+  "choices": [
+   "Arpa",
+   "Pirinç",
+   "Buğday",
+   "Mısır"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Japanese sake is produced by fermenting which grain?",
+  "choicesEn": [
+   "Barley",
+   "Rice",
+   "Wheat",
+   "Corn"
+  ]
+ },
+ {
+  "id": "icecek-serbetciotu",
+  "category": "İçecekler",
+  "text": "Biranın acı aromasını ve koruyuculuğunu sağlayan çiçekli bitki hangisidir?",
+  "choices": [
+   "Melisa",
+   "Şerbetçiotu",
+   "Anason",
+   "Kişniş"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Which flowering plant gives beer its bitter aroma and preservative quality?",
+  "choicesEn": [
+   "Lemon balm",
+   "Hops",
+   "Anise",
+   "Coriander"
+  ]
+ },
+ {
+  "id": "icecek-tekila",
+  "category": "İçecekler",
+  "text": "Tekila hangi bitkiden damıtılır?",
+  "choices": [
+   "Mavi agave",
+   "Arpa",
+   "Kamış",
+   "Patates"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "Tequila is distilled from which plant?",
+  "choicesEn": [
+   "Blue agave",
+   "Barley",
+   "Sugarcane",
+   "Potato"
+  ]
+ },
+ {
+  "id": "icecek-boza",
+  "category": "İçecekler",
+  "text": "Geleneksel boza en çok hangi tahılın mayalanmasıyla yapılır?",
+  "choices": [
+   "Buğday",
+   "Yulaf",
+   "Darı",
+   "Çavdar"
+  ],
+  "correctIndex": 2,
+  "difficulty": "zor",
+  "textEn": "Traditional boza is most commonly made by fermenting which grain?",
+  "choicesEn": [
+   "Wheat",
+   "Oats",
+   "Millet",
+   "Rye"
+  ]
+ },
+ {
+  "id": "icecek-cognac",
+  "category": "İçecekler",
+  "text": "Cognac brendisi, adını taşıdığı Cognac bölgesi hangi ülkededir?",
+  "choices": [
+   "İtalya",
+   "Fransa",
+   "İspanya",
+   "Portekiz"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "The Cognac region, after which cognac brandy is named, is in which country?",
+  "choicesEn": [
+   "Italy",
+   "France",
+   "Spain",
+   "Portugal"
+  ]
+ },
+ {
+  "id": "icecek-kefir",
+  "category": "İçecekler",
+  "text": "Kefirin ana yurdu olarak kabul edilen bölge hangisidir?",
+  "choices": [
+   "Kafkasya",
+   "Balkanlar",
+   "Orta Asya step",
+   "Anadolu"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "Which region is considered the homeland of kefir?",
+  "choicesEn": [
+   "The Caucasus",
+   "The Balkans",
+   "The Central Asian steppe",
+   "Anatolia"
+  ]
+ },
+ {
+  "id": "tiyatro-hamlet",
+  "category": "Tiyatro",
+  "text": "Shakespeare'in \"Olmak ya da olmamak\" tiradı hangi oyunda geçer?",
+  "choices": [
+   "Macbeth",
+   "Hamlet",
+   "Othello",
+   "Kral Lear"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "In which play does Shakespeare's \"To be or not to be\" soliloquy appear?",
+  "choicesEn": [
+   "Macbeth",
+   "Hamlet",
+   "Othello",
+   "King Lear"
+  ]
+ },
+ {
+  "id": "tiyatro-karagoz",
+  "category": "Tiyatro",
+  "text": "Geleneksel Türk gölge oyununun iki ünlü kahramanı kimlerdir?",
+  "choices": [
+   "Karagöz ve Hacivat",
+   "İbiş ve Pişekâr",
+   "Temel ve Dursun",
+   "Nasreddin Hoca ve Keloğlan"
+  ],
+  "correctIndex": 0,
+  "difficulty": "kolay",
+  "textEn": "Who are the two famous heroes of traditional Turkish shadow theater?",
+  "choicesEn": [
+   "Karagöz and Hacivat",
+   "İbiş and Pişekâr",
+   "Temel and Dursun",
+   "Nasreddin Hodja and Keloğlan"
+  ]
+ },
+ {
+  "id": "tiyatro-maske",
+  "category": "Tiyatro",
+  "text": "Antik Yunan tiyatrosunda oyuncular yüzlerinde ne taşırdı?",
+  "choices": [
+   "Tac",
+   "Maske",
+   "Miğfer",
+   "Pelerin"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "What did actors in ancient Greek theater wear on their faces?",
+  "choicesEn": [
+   "Crowns",
+   "Masks",
+   "Helmets",
+   "Hoods"
+  ]
+ },
+ {
+  "id": "tiyatro-perde",
+  "category": "Tiyatro",
+  "text": "Tiyatro oyun metninin bölümlerine ne ad verilir?",
+  "choices": [
+   "Perde",
+   "Fasıl",
+   "Tablo",
+   "Bölme"
+  ],
+  "correctIndex": 0,
+  "difficulty": "kolay",
+  "textEn": "What are the divisions of a play's script called?",
+  "choicesEn": [
+   "Acts",
+   "Chapters",
+   "Scenes",
+   "Stanzas"
+  ]
+ },
+ {
+  "id": "tiyatro-kesanli",
+  "category": "Tiyatro",
+  "text": "Haldun Taner'in ünlü epik halk oyunu hangisidir?",
+  "choices": [
+   "Sersem Kocanın Kurnaz Karısı",
+   "Keşanlı Ali Destanı",
+   "Yusuf ile Menofis",
+   "Gözlerimi Kaparım Vazifemi Yaparım"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Which is Haldun Taner's famous epic folk play?",
+  "choicesEn": [
+   "The Cunning Wife of the Foolish Husband",
+   "Keşanlı Ali Destanı",
+   "Yusuf and Menofis",
+   "I Close My Eyes and Do My Duty"
+  ]
+ },
+ {
+  "id": "tiyatro-suflor",
+  "category": "Tiyatro",
+  "text": "Sahne kenarından oyuncuya unuttuğu repliği fısıldayan görevliye ne denir?",
+  "choices": [
+   "Rejisör",
+   "Dramaturg",
+   "Suflör",
+   "Figüran"
+  ],
+  "correctIndex": 2,
+  "difficulty": "orta",
+  "textEn": "What is the person who whispers forgotten lines to the actor from the side of the stage called?",
+  "choicesEn": [
+   "Director",
+   "Dramaturg",
+   "Prompter",
+   "Extra"
+  ]
+ },
+ {
+  "id": "tiyatro-godot",
+  "category": "Tiyatro",
+  "text": "\"Godot'yu Beklerken\" (Waiting for Godot) absürt oyununun yazarı kimdir?",
+  "choices": [
+   "Bertolt Brecht",
+   "Samuel Beckett",
+   "Eugene Ionesco",
+   "Arthur Miller"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Who wrote the absurdist play \"Waiting for Godot\"?",
+  "choicesEn": [
+   "Bertolt Brecht",
+   "Samuel Beckett",
+   "Eugene Ionesco",
+   "Arthur Miller"
+  ]
+ },
+ {
+  "id": "tiyatro-kabuki",
+  "category": "Tiyatro",
+  "text": "Kabuki, hangi ülkenin stilize klasik tiyatro geleneğidir?",
+  "choices": [
+   "Çin",
+   "Kore",
+   "Japonya",
+   "Vietnam"
+  ],
+  "correctIndex": 2,
+  "difficulty": "orta",
+  "textEn": "Kabuki is the stylized classical theater tradition of which country?",
+  "choicesEn": [
+   "China",
+   "Korea",
+   "Japan",
+   "Vietnam"
+  ]
+ },
+ {
+  "id": "tiyatro-commedia",
+  "category": "Tiyatro",
+  "text": "Doğaçlamaya dayalı Commedia dell'arte hangi ülkenin tiyatro geleneğidir?",
+  "choices": [
+   "Fransa",
+   "İspanya",
+   "İngiltere",
+   "İtalya"
+  ],
+  "correctIndex": 3,
+  "difficulty": "zor",
+  "textEn": "The improvisation-based Commedia dell'arte is the theater tradition of which country?",
+  "choicesEn": [
+   "France",
+   "Spain",
+   "England",
+   "Italy"
+  ]
+ },
+ {
+  "id": "tiyatro-cehov",
+  "category": "Tiyatro",
+  "text": "\"Martı\" ve \"Vişne Bahçesi\" oyunlarının Rus yazarı kimdir?",
+  "choices": [
+   "Anton Çehov",
+   "Maksim Gorki",
+   "İvan Turgenyev",
+   "Nikolai Gogol"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "Which Russian author wrote the plays \"The Seagull\" and \"The Cherry Orchard\"?",
+  "choicesEn": [
+   "Anton Chekhov",
+   "Maxim Gorky",
+   "Ivan Turgenev",
+   "Nikolai Gogol"
+  ]
+ },
+ {
+  "id": "tiyatro-meddah",
+  "category": "Tiyatro",
+  "text": "Geleneksel Türk tek kişilik hikâye anlatıcısı meddahın iki simge eşyası mendil ve nedir?",
+  "choices": [
+   "Asa",
+   "Tespih",
+   "Kavuk",
+   "Fes"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "The traditional Turkish one-man storyteller (meddah) carries two signature props: a handkerchief and what?",
+  "choicesEn": [
+   "A cane (asa)",
+   "Prayer beads",
+   "A cloak",
+   "A fez"
+  ]
+ },
+ {
+  "id": "tiyatro-moliere",
+  "category": "Tiyatro",
+  "text": "\"Tartuffe\" ve \"Cimri\" oyunlarının Fransız komedi ustası yazarı kimdir?",
+  "choices": [
+   "Voltaire",
+   "Molière",
+   "Corneille",
+   "Racine"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "Which French comedy master wrote \"Tartuffe\" and \"The Miser\"?",
+  "choicesEn": [
+   "Voltaire",
+   "Molière",
+   "Corneille",
+   "Racine"
+  ]
+ },
+ {
+  "id": "kasif-kolomb",
+  "category": "Kaşifler",
+  "text": "1492'de Amerika kıtasına ulaşan kaşif kimdir?",
+  "choices": [
+   "Vasco da Gama",
+   "Kristof Kolomb",
+   "Ferdinand Magellan",
+   "Marco Polo"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "Who is the explorer that reached the Americas in 1492?",
+  "choicesEn": [
+   "Vasco da Gama",
+   "Christopher Columbus",
+   "Ferdinand Magellan",
+   "Marco Polo"
+  ]
+ },
+ {
+  "id": "kasif-evliya",
+  "category": "Kaşifler",
+  "text": "Osmanlı gezgini Evliya Çelebi'nin 10 ciltlik ünlü eseri hangisidir?",
+  "choices": [
+   "Seyahatname",
+   "Kitab-ı Bahriye",
+   "Mecmua-i Sefine",
+   "Müntehab-ı Bahriye"
+  ],
+  "correctIndex": 0,
+  "difficulty": "kolay",
+  "textEn": "What is the famous 10-volume work of the Ottoman traveler Evliya Çelebi?",
+  "choicesEn": [
+   "Seyahatname (Book of Travels)",
+   "Kitab-ı Bahriye",
+   "Mecmua-i Sefine",
+   "Müntehab-ı Bahriye"
+  ]
+ },
+ {
+  "id": "kasif-pirireis",
+  "category": "Kaşifler",
+  "text": "Piri Reis'in dünya haritası hangi yüzyıldan kalmadır?",
+  "choices": [
+   "14. yüzyıl",
+   "15. yüzyıl",
+   "16. yüzyıl",
+   "17. yüzyıl"
+  ],
+  "correctIndex": 2,
+  "difficulty": "kolay",
+  "textEn": "From which century does Piri Reis's world map date?",
+  "choicesEn": [
+   "14th century",
+   "15th century",
+   "16th century",
+   "17th century"
+  ]
+ },
+ {
+  "id": "kasif-hezarfen",
+  "category": "Kaşifler",
+  "text": "Efsaneye göre Galata Kulesi'nden Üsküdar'a uçan Osmanlı bilgini kimdir?",
+  "choices": [
+   "Lagari Hasan Çelebi",
+   "Hezârfen Ahmed Çelebi",
+   "Ali Kuşçu",
+   "Takiyüddin"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "According to legend, which Ottoman scholar flew from Galata Tower to Üsküdar?",
+  "choicesEn": [
+   "Lagari Hasan Çelebi",
+   "Hezârfen Ahmed Çelebi",
+   "Ali Kuşçu",
+   "Taqi al-Din"
+  ]
+ },
+ {
+  "id": "kasif-vasco",
+  "category": "Kaşifler",
+  "text": "Ümit Burnu'nu dolaşıp Hindistan'a deniz yolunu açan Portekizli kaşif kimdir?",
+  "choices": [
+   "Bartolomeu Dias",
+   "Pedro Álvares Cabral",
+   "Vasco da Gama",
+   "Ferdinand Magellan"
+  ],
+  "correctIndex": 2,
+  "difficulty": "orta",
+  "textEn": "Which Portuguese explorer opened the sea route to India around the Cape of Good Hope?",
+  "choicesEn": [
+   "Bartolomeu Dias",
+   "Pedro Álvares Cabral",
+   "Vasco da Gama",
+   "Ferdinand Magellan"
+  ]
+ },
+ {
+  "id": "kasif-cook",
+  "category": "Kaşifler",
+  "text": "Avustralya'nın doğu kıyısını haritalayan ünlü İngiliz kaptan kimdir?",
+  "choices": [
+   "James Cook",
+   "Francis Drake",
+   "Horatio Nelson",
+   "William Bligh"
+  ],
+  "correctIndex": 0,
+  "difficulty": "orta",
+  "textEn": "Which famous English captain charted the east coast of Australia?",
+  "choicesEn": [
+   "James Cook",
+   "Francis Drake",
+   "Horatio Nelson",
+   "William Bligh"
+  ]
+ },
+ {
+  "id": "kasif-marcopolo",
+  "category": "Kaşifler",
+  "text": "Marco Polo'nun Asya seyahatlerini anlattığı eserin adı nedir?",
+  "choices": [
+   "İl Milione (Harikalar Kitabı)",
+   "Divisamento",
+   "Decameron",
+   "Rihla"
+  ],
+  "correctIndex": 0,
+  "difficulty": "orta",
+  "textEn": "What is the name of the book in which Marco Polo recounted his travels in Asia?",
+  "choicesEn": [
+   "Il Milione (The Travels)",
+   "Divisamento",
+   "Decameron",
+   "Rihla"
+  ]
+ },
+ {
+  "id": "kasif-amundsen",
+  "category": "Kaşifler",
+  "text": "1911'de Güney Kutbu'na ilk ulaşan Norveçli kaşif kimdir?",
+  "choices": [
+   "Robert Scott",
+   "Roald Amundsen",
+   "Ernest Shackleton",
+   "Fridtjof Nansen"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Which Norwegian explorer first reached the South Pole in 1911?",
+  "choicesEn": [
+   "Robert Scott",
+   "Roald Amundsen",
+   "Ernest Shackleton",
+   "Fridtjof Nansen"
+  ]
+ },
+ {
+  "id": "kasif-balboa",
+  "category": "Kaşifler",
+  "text": "Pasifik Okyanusu'nu ilk kez gören Avrupalı kaşif kimdir?",
+  "choices": [
+   "Hernán Cortés",
+   "Francisco Pizarro",
+   "Vasco Núñez de Balboa",
+   "Juan Ponce de León"
+  ],
+  "correctIndex": 2,
+  "difficulty": "zor",
+  "textEn": "Which explorer was the first European to see the Pacific Ocean?",
+  "choicesEn": [
+   "Hernán Cortés",
+   "Francisco Pizarro",
+   "Vasco Núñez de Balboa",
+   "Juan Ponce de León"
+  ]
+ },
+ {
+  "id": "kasif-peary",
+  "category": "Kaşifler",
+  "text": "1909'da Kuzey Kutbu'na ilk ulaştığı kabul edilen kaşif kimdir?",
+  "choices": [
+   "Roald Amundsen",
+   "Robert Peary",
+   "Richard Byrd",
+   "Robert Scott"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "Who is credited with first reaching the North Pole in 1909?",
+  "choicesEn": [
+   "Roald Amundsen",
+   "Robert Peary",
+   "Richard Byrd",
+   "Robert Scott"
+  ]
+ },
+ {
+  "id": "kasif-bellingshausen",
+  "category": "Kaşifler",
+  "text": "1820'de Antarktika kıtasını ilk gören Rus seferinin komutanı kimdir?",
+  "choices": [
+   "Fabian von Bellingshausen",
+   "Vitus Bering",
+   "Mikhail Lazarev",
+   "Adolf Erik Nordenskiöld"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "Who commanded the Russian expedition that first sighted Antarctica in 1820?",
+  "choicesEn": [
+   "Fabian von Bellingshausen",
+   "Vitus Bering",
+   "Mikhail Lazarev",
+   "Adolf Erik Nordenskiöld"
+  ]
+ },
+ {
+  "id": "kasif-orellana",
+  "category": "Kaşifler",
+  "text": "Amazon Nehri'ni And Dağları'ndan Atlas Okyanusu'na ilk kez baştan sona geçen İspanyol kaşif kimdir?",
+  "choices": [
+   "Hernando de Soto",
+   "Francisco de Orellana",
+   "Pedro de Valdivia",
+   "Álvar Núñez Cabeza de Vaca"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "Which Spanish explorer first traveled the Amazon River end-to-end from the Andes to the Atlantic?",
+  "choicesEn": [
+   "Hernando de Soto",
+   "Francisco de Orellana",
+   "Pedro de Valdivia",
+   "Álvar Núñez Cabeza de Vaca"
+  ]
+ },
+ {
+  "id": "deniz-capa",
+  "category": "Denizcilik",
+  "text": "Gemiyi yerinde sabitlemek için denize atılan ağır metal alete ne denir?",
+  "choices": [
+   "Çapa",
+   "Vinç",
+   "Pergel",
+   "Salma"
+  ],
+  "correctIndex": 0,
+  "difficulty": "kolay",
+  "textEn": "What is the heavy metal device dropped into the sea to hold a ship in place called?",
+  "choicesEn": [
+   "Anchor",
+   "Winch",
+   "Boom",
+   "Keel"
+  ]
+ },
+ {
+  "id": "deniz-fener",
+  "category": "Denizcilik",
+  "text": "Kayalık kıyılarda gece gemilere yol gösteren ışıklı kulenin adı nedir?",
+  "choices": [
+   "Gözlem kulesi",
+   "Deniz feneri",
+   "Hisar",
+   "Kule evi"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "What is the illuminated tower that guides ships along rocky coasts at night called?",
+  "choicesEn": [
+   "Watchtower",
+   "Lighthouse",
+   "Fortress",
+   "Tower house"
+  ]
+ },
+ {
+  "id": "deniz-yelken",
+  "category": "Denizcilik",
+  "text": "Yelkenli teknelerde rüzgârı yakalayarak itiş sağlayan bez parçasına ne denir?",
+  "choices": [
+   "Halat",
+   "Dümen",
+   "Yelken",
+   "Pruva"
+  ],
+  "correctIndex": 2,
+  "difficulty": "kolay",
+  "textEn": "What is the cloth on a sailboat that catches the wind for propulsion called?",
+  "choicesEn": [
+   "Rope",
+   "Rudder",
+   "Sail",
+   "Bow"
+  ]
+ },
+ {
+  "id": "deniz-pusula",
+  "category": "Denizcilik",
+  "text": "Denizde yön bulmaya yarayan manyetik alet hangisidir?",
+  "choices": [
+   "Sekstant",
+   "Pusula",
+   "İskandil",
+   "Barometre"
+  ],
+  "correctIndex": 1,
+  "difficulty": "kolay",
+  "textEn": "Which magnetic instrument is used to find direction at sea?",
+  "choicesEn": [
+   "Sextant",
+   "Compass",
+   "Sounding line",
+   "Barometer"
+  ]
+ },
+ {
+  "id": "deniz-iskele",
+  "category": "Denizcilik",
+  "text": "Denizcilikte geminin sol tarafına ne ad verilir?",
+  "choices": [
+   "Sancak",
+   "Pruva",
+   "İskele",
+   "Kıç"
+  ],
+  "correctIndex": 2,
+  "difficulty": "orta",
+  "textEn": "What is the left side of a ship called in nautical terms?",
+  "choicesEn": [
+   "Starboard",
+   "Bow",
+   "Port",
+   "Stern"
+  ]
+ },
+ {
+  "id": "deniz-bahriye",
+  "category": "Denizcilik",
+  "text": "Piri Reis'in Akdeniz'i anlatan ünlü denizcilik kılavuzu eseri hangisidir?",
+  "choices": [
+   "Seyahatname",
+   "Kitab-ı Bahriye",
+   "Tuhfetü'l-Kibar",
+   "Cihannüma"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Which is Piri Reis's famous nautical guide describing the Mediterranean?",
+  "choicesEn": [
+   "Seyahatname",
+   "Kitab-ı Bahriye",
+   "Tuhfetü'l-Kibar",
+   "Cihannüma"
+  ]
+ },
+ {
+  "id": "deniz-drakkar",
+  "category": "Denizcilik",
+  "text": "Vikinglerin okyanus aşan seferlerde kullandığı uzun teknelere ne denir?",
+  "choices": [
+   "Kadırga",
+   "Drakkar (uzun tekne)",
+   "Kalyon",
+   "Fusta"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "What are the long ships Vikings used on ocean crossings called?",
+  "choicesEn": [
+   "Galley",
+   "Drakkar (longship)",
+   "Galleon",
+   "Felucca"
+  ]
+ },
+ {
+  "id": "deniz-nusret",
+  "category": "Denizcilik",
+  "text": "Çanakkale Deniz Savaşı'nda gece döşediği mayınlarla savaşın kaderini değiştiren gemi hangisidir?",
+  "choices": [
+   "Yavuz",
+   "Nusret",
+   "Hamidiye",
+   "Midilli"
+  ],
+  "correctIndex": 1,
+  "difficulty": "orta",
+  "textEn": "Which minelayer changed the fate of the Gallipoli naval battle by laying mines overnight?",
+  "choicesEn": [
+   "Yavuz",
+   "Nusret",
+   "Hamidiye",
+   "Midilli"
+  ]
+ },
+ {
+  "id": "deniz-kaptaniderya",
+  "category": "Denizcilik",
+  "text": "Barbaros Hayreddin Paşa'ya verilen ve Osmanlı donanmasının başkomutanı anlamına gelen unvan nedir?",
+  "choices": [
+   "Reisü'l-Bahr",
+   "Kaptan-ı Derya",
+   "Derya Beyi",
+   "Pâye-i Bahr"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "What title was given to Barbarossa Hayreddin Pasha meaning commander-in-chief of the Ottoman navy?",
+  "choicesEn": [
+   "Reisü'l-Bahr",
+   "Kapudan Pasha (Kaptan-ı Derya)",
+   "Derya Bey",
+   "Pâye-i Bahr"
+  ]
+ },
+ {
+  "id": "deniz-knot",
+  "category": "Denizcilik",
+  "text": "Denizcilikte gemi hızını ölçmek için kullanılan birim hangisidir?",
+  "choices": [
+   "Knot (deniz mili/saat)",
+   "Fersah",
+   "Mil başına galon",
+   "Kablo"
+  ],
+  "correctIndex": 0,
+  "difficulty": "zor",
+  "textEn": "Which unit is used to measure a ship's speed at sea?",
+  "choicesEn": [
+   "Knot (nautical mile/hour)",
+   "League",
+   "Fathom",
+   "Cable"
+  ]
+ },
+ {
+  "id": "deniz-waldseemuller",
+  "category": "Denizcilik",
+  "text": "1507'de yeni kıtaya ilk kez 'America' adını basan Alman haritacı kimdir?",
+  "choices": [
+   "Gerardus Mercator",
+   "Martin Waldseemüller",
+   "Abraham Ortelius",
+   "Matthias Ringmann"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "Which German cartographer first printed the name 'America' for the new continent in 1507?",
+  "choicesEn": [
+   "Gerardus Mercator",
+   "Martin Waldseemüller",
+   "Abraham Ortelius",
+   "Matthias Ringmann"
+  ]
+ },
+ {
+  "id": "deniz-preveze",
+  "category": "Denizcilik",
+  "text": "1538'de Barbaros'un Haçlı donanmasını yenerek Akdeniz'i 'Türk gölü' yapan deniz savaşı hangisidir?",
+  "choices": [
+   "İnebahtı",
+   "Preveze",
+   "Çeşme",
+   "Sinop"
+  ],
+  "correctIndex": 1,
+  "difficulty": "zor",
+  "textEn": "Which 1538 naval battle made the Mediterranean a 'Turkish lake' after Barbarossa defeated the Holy League?",
+  "choicesEn": [
+   "Lepanto",
+   "Preveza",
+   "Çeşme",
+   "Sinop"
+  ]
  }
 ]

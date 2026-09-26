@@ -14,12 +14,14 @@
 import type { ComponentType } from "react";
 import type { IconProps as PhosphorProps, IconWeight } from "@phosphor-icons/react";
 import {
+  Anchor,
   ArrowClockwise,
   ArrowRight,
   ArrowUUpLeft,
   Atom,
   Bank,
   Barbell,
+  BeerStein,
   Bomb,
   BookOpenText,
   Bone,
@@ -29,6 +31,8 @@ import {
   Car,
   CaretDown,
   Cards,
+  Compass,
+  MaskHappy,
   CastleTurret,
   Clock,
   CardsThree,
@@ -248,6 +252,10 @@ const CATEGORY_ICONS: Record<string, Glyph> = {
   Olimpiyatlar: Medal,
   "Orta Çağ": CastleTurret,
   "İklim & Hava": CloudSun,
+  İçecekler: BeerStein,
+  Tiyatro: MaskHappy,
+  Kaşifler: Compass,
+  Denizcilik: Anchor,
 };
 
 export function CategoryIcon({ name, weight = "duotone" }: { name: string; weight?: IconWeight }) {

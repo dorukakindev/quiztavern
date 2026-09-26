@@ -1331,6 +1331,10 @@ const CATEGORY_LABELS_EN: Record<string, string> = {
   "Orta Çağ": "Middle Ages",
   "İklim & Hava": "Weather & Climate",
   Topluluk: "Community",
+  İçecekler: "Beverages",
+  Tiyatro: "Theater",
+  Kaşifler: "Explorers",
+  Denizcilik: "Seafaring",
 };
 
 /** Sunucudan gelen (her zaman Türkçe) kategori adını gösterim diline çevirir.
