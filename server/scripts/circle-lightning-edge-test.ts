@@ -103,6 +103,24 @@ test("Fitil: doğru cevap çıkan tur fitili 0,5 sn kısaltır (4 sn tabanı)", 
   internals(burnRoom).lightningBurn = 1;
 });
 
+test("Fitil: kimse bilemeyen tur fitil bir kademe rahatlar (0'ın altına inmez)", () => {
+  // burnRoom önceki testte reveal fazında kaldı — yeni turun başını elle kur.
+  burnRoom.phase = "question";
+  burnRoom.questionStartedAt = Date.now();
+  burnRoom.questionDeadline = Date.now() + 8_000;
+  burnRoom.players.get("ace")!.choice = null;
+  internals(burnRoom).lightningBurn = 2;
+  burnRoom.answer("ace", 0); // yanlış → reveal → burn 1'e düşer
+  assert.equal(internals(burnRoom).lightningBurn, 1);
+  burnRoom.phase = "question";
+  burnRoom.questionStartedAt = Date.now();
+  burnRoom.questionDeadline = Date.now() + 8_000;
+  burnRoom.players.get("ace")!.choice = null;
+  internals(burnRoom).lightningBurn = 0;
+  burnRoom.answer("ace", 0);
+  assert.equal(internals(burnRoom).lightningBurn, 0, "burn negatife inmez");
+});
+
 test("Çember tur sayısı: host 10/15/20 seçebilir, klasik set reddedilir", () => {
   const room = new Room("edge-ccount", () => {}, { minPlayers: 1 });
   room.addPlayer(player("h", "Host"));

@@ -3444,7 +3444,7 @@ function GameBoard({
   // .qt-timer::after ekrana kaçıyormuş — görsellerin suçu yokmuş.
   return (
     <main
-      className={`qt-activity qt-game qt-game--${state.gameMode} ${beats.active ? "is-revealing" : ""}`}
+      className={`qt-activity qt-game qt-game--${state.gameMode} ${beats.active ? "is-revealing" : ""} ${shown?.fuseCritical ? "qt-game--fuse-critical" : ""}`}
       style={
         {
           "--game-art": `url('/assets/discord-activity/${isCircle ? "activity-circle-table.webp" : "activity-classic-stage.webp"}')`,

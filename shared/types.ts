@@ -417,6 +417,8 @@ export interface QuestionPayload {
   imageCredit?: string;
   /** Soru yazarı turu: soruyu yazan oyuncunun adı (written-* id'li soruda). */
   writtenByName?: string | null;
+  /** Fitil modunda fitil minimuma ulaştıysa true — istemci kritik eşik efekti yapar. */
+  fuseCritical?: boolean;
   /** Soru yazarı turu: bu soruyu SEN yazdın — istemci cevap yerine izleme ekranı gösterir. */
   writtenByYou?: boolean;
 }
