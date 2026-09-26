@@ -126,6 +126,9 @@ export const GAME = {
   BET_BROKE_REWARD: 50,
   /** "Hepsi" bahsi kazanırsa toplam iade çarpanı (bahis dahil): 1000 → +1500. */
   BET_ALL_IN_MULTIPLIER: 2.5,
+  /** Asgari bahis oranı (kurtarma turu hariç): "hep 0 yatır" kaçışını kapatır —
+   *  modun kumar kimliği ancak herkes her tur bir şey riske atarsa yaşar. */
+  BET_MIN_STAKE_PCT: 0.1,
 
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */

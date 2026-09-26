@@ -59,6 +59,7 @@ import { MusicToggle, TableBackdrop, TableLogo } from "./TableScenery";
 import { PodiumCharacter } from "./PodiumCharacter";
 import { CategoryIcon, Icon, type IconName } from "./icons";
 import {
+  BET_MIN_STAKE_PCT,
   betOptionSpecs,
   bothTeamsPresent,
   circleAnswerIsLocked,
@@ -4376,7 +4377,7 @@ function BetBoard({
   const isFinal = !!state.bet?.final;
   const [wager, setWager] = useState(0);
   useEffect(() => {
-    setWager(Math.round(bankroll / 2));
+    setWager(Math.max(Math.ceil(bankroll * BET_MIN_STAKE_PCT), Math.round(bankroll / 2)));
   }, [isFinal, bankroll]);
   const optionSpecs = useMemo(() => betOptionSpecs(bankroll), [bankroll]);
   const options = optionSpecs.map((option) => ({ ...option, label: t(`bet.${option.key}` as StringKey) }));
@@ -4483,7 +4484,7 @@ function BetBoard({
                   <input
                     type="range"
                     className="qt-bet-slider"
-                    min={0}
+                    min={Math.ceil(bankroll * BET_MIN_STAKE_PCT)}
                     max={bankroll}
                     step={Math.max(10, Math.round(bankroll / 40 / 10) * 10)}
                     value={wager}
