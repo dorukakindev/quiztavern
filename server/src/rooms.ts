@@ -2923,7 +2923,12 @@ export class Room {
             return acc + ((rank.get(evIdx) ?? -1) < (rank.get(next) ?? -1) ? GAME.TIMELINE_PAIR_BONUS : 0);
           }, 0)
         : 0;
-      const gain = hit * GAME.TIMELINE_PER_POS + pairBonus;
+      // Kusursuz dizim: 4/4'ün toplamı zaten pozisyon+çift puanı verir;
+      // tam isabet ayrıca görünür bir ikramiye alsın.
+      const gain =
+        hit * GAME.TIMELINE_PER_POS +
+        pairBonus +
+        (hit === prompt.events.length ? GAME.TIMELINE_PERFECT : 0);
       player.score += gain;
       gains[player.id] = gain;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
