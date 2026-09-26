@@ -1,0 +1,669 @@
+/* ============================================================================
+   TRIVIARA — Lonca teması (guild-rank design system)
+   ============================================================================
+   Yükleme sırası: activity.css → layout-fixes.css → polish.css → BU DOSYA.
+   Hiçbir mevcut dosyayı değiştirmez; yalnız üstüne yazar. Geri almak için tek
+   import satırını silmek yeter.
+
+   KAVRAM
+   ------
+   Ürün zaten bunu istiyor, biz sadece dinlemedik: mod "Tavern Panosu", jokerler
+   "Tavern kartları", 5 masa teması tavern→forest→ember→royal→void, ve bunlar
+   5 lig rütbesiyle BİREBİR eşleşiyor: Acemi→Çırak→Kalfa→Usta→Efsane — Osmanlı
+   lonca (esnaf teşkilatı) rütbeleri. Anlatı: acemi olarak meyhane masasında
+   başlarsın; lig yükseldikçe masanın MADDESİ değişir — ahşap meyhane → orman
+   kampı → demirci ocağı → saray → efsane/öteki-dünya. Bu dosya bu 5 katmanı
+   TEK bir semantik token sözleşmesi üzerinden kurar: yapı (DOM/grid) hiç
+   değişmez, yalnız her rütbenin malzemesi değişir.
+
+   MİMARİ DEĞİŞİKLİĞİ GEREKTİREN TEK NOKTA
+   ----------------------------------------
+   `data-theme` şu an yalnız `.qt-orbit` (lobi masası diski) üzerinde —
+   yani lig teması bugün SADECE lobideki yörünge grafiğini boyuyor, soru
+   sahnesini/butonları/podyumu etkilemiyor. Kökten uygulanması için tek
+   satırlık değişiklik (ActivityApp.tsx, ~satır 6283, tüm ekranları saran
+   kabuk):
+
+     <div className={`qt-activity-root is-${activity.layoutMode} ...`}>
+   → <div
+       className={`qt-activity-root is-${activity.layoutMode} ...`}
+       data-theme={game.state?.tableTheme ?? "tavern"}
+     >
+
+   Bu satır eklenmeden de dosya BOZULMADAN çalışır — yalnız lig temaları
+   devreye girmez, herkes Acemi/Tavern görür (zaten varsayılan ve tutarlı
+   bir sonuç). `.qt-orbit`'teki yerel data-theme'i silmene gerek yok, zararsız.
+
+   AYRICA BULUNAN BİR BUG (tasarımdan bağımsız, gerçek hata)
+   -----------------------------------------------------------
+   polish.css'teki `.qt-board-col__head` ve `.qt-board-cell` (Tavern Panosu
+   hücreleri) `var(--gold)`, `var(--card)`, `var(--line)`, `var(--ink-2)`
+   kullanıyor — bu dört custom property üç dosyanın HİÇBİRİNDE tanımlı değil.
+   Tanımsız bir var() düşen bir arka/kenarlık için "geçersiz değer" sayılır ve
+   background-color/border-color şeffafa düşer: panonun hücreleri muhtemelen
+   şu an tarayıcıda görünmez/sınırsız render ediyor. Aşağıda bu dört değişkeni
+   TANIMLIYORUM (bkz. "PANO" bölümü) — hem bug'ı kapatıyor hem panoyu temaya
+   bağlıyor.
+
+   Fontlar (OFL, kendi origin'inden — Discord CSP dış font yasaklıyor):
+     - Alfa Slab One → TABELA: kazınmış/boyanmış başlıklar (mod adları, marka)
+     - Kalam        → TEBEŞİR/EL YAZISI: canlı skor, sayaç, doğru/yanlış notu
+     - Figtree      → OKUNAN METİN: soru, buton, ayar metni (latin-ext = ğşİ)
+   Dosyalar eksikse @font-face sessizce mevcut Inter'e düşer, hiçbir şey kırılmaz.
+   ============================================================================ */
+
+@font-face {
+  font-family: "Alfa Slab One";
+  src: url("/fonts/alfa-slab-one-latin-ext.woff2") format("woff2");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Kalam";
+  src: url("/fonts/kalam-700-latin-ext.woff2") format("woff2");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/figtree-var-latin-ext.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+/* ============================================================================
+   1. SEMANTİK TOKEN SÖZLEŞMESİ — 5 rütbenin hepsi bu isimleri doldurur.
+   Bileşen kuralları (bölüm 3+) SADECE bu isimleri okur; yeni bir rütbe eklemek
+   demek aşağıya bir [data-theme="x"] bloğu eklemek demektir, component
+   kurallarına dokunmadan.
+   ============================================================================ */
+:root {
+  /* -- Yüzeyler -- */
+  --th-ground-a: #3a281b;
+  --th-ground-b: #2b1d14;
+  --th-surface: #3a281b;
+  --th-surface-strong: #2f2015;
+  --th-border: #5a3e27;
+  --th-stage: #1d2a23; /* SAHNE malzemesi: kara tahta */
+  --th-stage-frame: #5a3b22;
+
+  /* -- Metin -- */
+  --th-chalk: #e9e4d6;
+  --th-ink: #22180f;
+  --th-muted: #a99a7e;
+
+  /* -- Tek aksan -- */
+  --th-accent: #c89b3c;
+  --th-accent-strong: #d8b060;
+  --th-accent-soft: rgba(200, 155, 60, 0.16);
+
+  /* -- Yalnız bu ikisi başka anlam taşır -- */
+  --th-good: #3d8b57;
+  --th-bad: #c2412d;
+
+  /* -- Kart (şık) malzemesi: kağıt varsayılan -- */
+  --th-card-bg: #f1ead8;
+  --th-card-ink: #22180f;
+  --th-card-border: #d8ccb0;
+  --th-card-radius: 6px;
+  --th-card-tilt: 1; /* 1 = gelişigüzel eğik, 0 = düzgün hizalı */
+  --th-card-hover-bg: #fff8e6;
+
+  /* -- Yörünge/disk (lobi) -- */
+  --th-ring: rgba(233, 228, 214, 0.12);
+  --th-disc: radial-gradient(circle at 50% 45%, #6a4527, #4a2f1b 62%, #3a2415 63%, #2c1b10 70%);
+
+  /* -- Sayaç (candle/timer yüzü) -- */
+  --th-timer-track: rgba(233, 228, 214, 0.15);
+  --th-timer-fill: var(--th-chalk);
+  --th-timer-bg: var(--th-stage);
+
+  --th-font-sign: "Alfa Slab One", Inter, ui-serif, Georgia, serif;
+  --th-font-chalk: "Kalam", "Comic Sans MS", Inter, cursive;
+  --th-font-body: "Figtree", Inter, ui-sans-serif, system-ui, sans-serif;
+
+  --font-display: var(--th-font-sign);
+  --c-gold: var(--th-accent);
+  --c-teal: var(--th-chalk);
+  --c-mint: var(--th-good);
+  --c-coral: var(--th-bad);
+  --c-bg: var(--th-ground-b);
+  --timer-accent: var(--th-timer-fill);
+  --r-sm: 4px;
+  --r-md: 6px;
+  --r-lg: 2px;
+
+  /* PANO BUG DÜZELTMESİ: polish.css bu 4 değişkeni tanımsız kullanıyordu. */
+  --gold: var(--th-accent);
+  --card: var(--th-surface);
+  --line: var(--th-border);
+  --ink-2: var(--th-muted);
+}
+
+body {
+  background: var(--th-ground-b);
+  font-family: var(--th-font-body);
+}
+
+/* ============================================================================
+   2. ZEMİN — kozmik uzay + yıldız katmanları kapanır, malzeme zeminine döner.
+   ============================================================================ */
+.qt-activity {
+  background: repeating-linear-gradient(90deg, transparent 0 118px, rgba(0, 0, 0, 0.16) 118px 120px),
+    linear-gradient(180deg, var(--th-ground-a), var(--th-ground-b) 70%);
+  color: var(--th-chalk);
+}
+.qt-activity .qt-game-background {
+  background: none;
+}
+.qt-activity.qt-game::before,
+.qt-activity.qt-game::after,
+.qt-activity.qt-start-countdown::before,
+.qt-activity.qt-start-countdown::after,
+.qt-activity .qt-backdrop__glow,
+.qt-activity .qt-backdrop__vignette,
+.qt-activity .qt-motes,
+.qt-activity .qt-galaxy {
+  display: none;
+}
+.qt-lobby-dot-field {
+  opacity: 0.25;
+  background-image: radial-gradient(circle, rgba(233, 228, 214, 0.5) 0 1px, transparent 1.4px);
+  background-size: 46px 46px;
+  animation: none;
+}
+
+/* Ölü CSS notu: aşağıdaki dört sınıf hiçbir JSX'te render edilmiyor
+   (activity.css'te tanımlı, kullanılmayan bir "hero" lobi iskeletinin
+   kalıntısı). Burada dokunmuyoruz (bu dosyanın işi reskin, kod temizliği
+   değil) ama güvenle silinebilirler: .qt-lobby-shell / .qt-lobby-copy /
+   .qt-mode-row / .qt-kicker. */
+
+/* ============================================================================
+   3. SAHNE — soru her zaman kara tahtada. Ekranın TEK cesur öğesi bu.
+   ============================================================================ */
+.qt-activity .qt-question-stage,
+.qt-activity .qt-table-strip,
+.qt-activity .qt-podium-glass {
+  background: var(--th-surface);
+  border: 1px solid var(--th-border);
+  border-radius: var(--r-md);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.qt-activity .qt-question-stage {
+  background: radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.05), transparent 60%), var(--th-stage);
+  border: 10px solid var(--th-stage-frame);
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.35), 0 14px 0 -6px rgba(0, 0, 0, 0.35);
+  color: var(--th-chalk);
+}
+.qt-activity .qt-question-stage h1,
+.qt-activity .qt-question-stage h2,
+.qt-activity .qt-question-stage p,
+.qt-activity .qt-bet-stage .qt-category {
+  font-family: var(--th-font-body);
+  font-weight: 650;
+  letter-spacing: 0;
+  text-wrap: balance;
+  max-width: 60ch;
+  margin-inline: auto;
+}
+.qt-activity .qt-category {
+  color: var(--th-accent-strong);
+  border: 1px solid var(--th-accent-soft);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* ============================================================================
+   4. ŞIKLAR — malzemesi rütbeye göre değişir. Varsayılan: kağıt, gelişigüzel
+   eğik (masaya bırakılmış gibi).
+   ============================================================================ */
+.qt-activity .qt-answer {
+  background: var(--th-card-bg);
+  color: var(--th-card-ink);
+  border: 1px solid var(--th-card-border);
+  border-radius: var(--th-card-radius);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  font-family: var(--th-font-body);
+  font-weight: 650;
+  transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
+}
+.qt-activity .qt-answer:nth-child(4n + 1) { transform: rotate(calc(var(--th-card-tilt) * -0.6deg)); }
+.qt-activity .qt-answer:nth-child(4n + 2) { transform: rotate(calc(var(--th-card-tilt) * 0.5deg)); }
+.qt-activity .qt-answer:nth-child(4n + 3) { transform: rotate(calc(var(--th-card-tilt) * 0.3deg)); }
+.qt-activity .qt-answer:nth-child(4n + 4) { transform: rotate(calc(var(--th-card-tilt) * -0.4deg)); }
+.qt-activity .qt-answer:hover:not(:disabled) {
+  background: var(--th-card-hover-bg);
+  border-color: var(--th-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.3);
+}
+.qt-activity .qt-answer b:not(.qt-answer__pct) {
+  background: transparent;
+  border: 2px solid var(--th-card-ink);
+  color: var(--th-card-ink);
+  font-family: var(--th-font-sign);
+  font-weight: 400;
+}
+.qt-activity .qt-answer.is-selected {
+  background: color-mix(in srgb, var(--th-accent) 34%, var(--th-card-bg));
+  border-color: var(--th-accent);
+  box-shadow: 0 0 0 3px var(--th-accent);
+  transform: rotate(0deg) translateY(-1px);
+}
+.qt-activity .qt-answer.is-correct {
+  background: color-mix(in srgb, var(--th-good) 22%, var(--th-card-bg));
+  border-color: var(--th-good);
+  box-shadow: 0 0 0 3px var(--th-good);
+}
+.qt-activity .qt-answer.is-wrong {
+  border-color: var(--th-bad);
+  background-image: linear-gradient(172deg, transparent 46%, var(--th-bad) 46% 50%, transparent 50%);
+}
+.qt-activity .qt-answer.is-dimmed { opacity: 0.45; filter: saturate(0.4); }
+.qt-activity .qt-answer.is-selected .qt-lock-pop { background: var(--th-accent); box-shadow: none; }
+.qt-activity .qt-answer__pct { color: var(--th-card-ink); opacity: 0.7; }
+
+/* ============================================================================
+   5. SAYAÇ — mumun kendisi. "Fitil" modu zaten "fuse/wick" demek; bu artık
+   metafor değil, gerçek nesne: halka azaldıkça mum kısalır hissi verir.
+   ============================================================================ */
+.qt-activity .qt-timer {
+  background: radial-gradient(circle, var(--th-timer-bg) 62%, transparent 64%),
+    conic-gradient(var(--th-timer-fill) var(--progress-turn), var(--th-timer-track) 0);
+  box-shadow: none;
+  font-family: var(--th-font-chalk);
+  font-weight: 700;
+  color: var(--th-timer-fill);
+}
+.qt-activity .qt-timer::after {
+  border-color: rgba(0, 0, 0, 0.4);
+}
+.qt-activity.qt-game--fuse-critical .qt-timer,
+.qt-activity .qt-game--fuse-critical .qt-timer {
+  background: radial-gradient(circle, var(--th-timer-bg) 62%, transparent 64%),
+    conic-gradient(var(--th-bad) var(--progress-turn), color-mix(in srgb, var(--th-bad) 20%, transparent) 0);
+}
+
+/* ============================================================================
+   6. BUTONLAR, SKORLAR, AVATARLAR, KOLTUKLAR — ahşap ve pirinç.
+   ============================================================================ */
+.qt-activity .qt-button {
+  background: var(--th-surface-strong);
+  border: 1px solid var(--th-border);
+  color: var(--th-chalk);
+  border-radius: var(--r-md);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+}
+.qt-activity .qt-button:hover:not(:disabled) { translate: 0 -1px; box-shadow: 0 4px 0 rgba(0, 0, 0, 0.45); }
+.qt-activity .qt-button:active:not(:disabled) { translate: 0 2px; box-shadow: 0 1px 0 rgba(0, 0, 0, 0.45); }
+.qt-activity .qt-button--primary,
+.qt-activity .qt-button--gold {
+  background: linear-gradient(180deg, var(--th-accent-strong), var(--th-accent));
+  border-color: color-mix(in srgb, var(--th-accent) 60%, black);
+  color: var(--th-ink);
+  font-family: var(--th-font-sign);
+  font-weight: 400;
+}
+.qt-activity .qt-button.is-ready {
+  color: var(--th-good);
+  border-color: var(--th-good);
+  background: color-mix(in srgb, var(--th-good) 16%, var(--th-surface));
+}
+
+.qt-activity .qt-player-card,
+.qt-activity .qt-seat__token,
+.qt-activity .qt-bet-option,
+.qt-activity .qt-category-chip,
+.qt-activity .qt-count-chip {
+  background: var(--th-surface);
+  color: var(--th-chalk);
+  border: 1px solid var(--th-border);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.3);
+  backdrop-filter: none;
+}
+.qt-activity .qt-player-card.is-you,
+.qt-activity .qt-bet-option.is-selected,
+.qt-activity .qt-category-chip.is-selected,
+.qt-activity .qt-count-chip.is-selected {
+  border-color: var(--th-accent);
+  box-shadow: 0 0 0 2px var(--th-accent-soft);
+  color: var(--th-accent-strong);
+}
+.qt-activity .qt-player-score,
+.qt-activity .qt-your-gain,
+.qt-activity .qt-bet-bank b,
+.qt-activity .qt-podium-list b,
+.qt-activity .qt-summary-tile b {
+  font-family: var(--th-font-chalk);
+  font-weight: 700;
+}
+.qt-activity .qt-avatar { background: var(--th-surface-strong); border-color: var(--seat, var(--th-accent)); }
+
+/* ============================================================================
+   7. LOBİ MASASI — yörünge/galaksi yerine ahşap yuvarlak masa.
+   ============================================================================ */
+.qt-activity .qt-orbit__disc {
+  background: var(--th-disc);
+  box-shadow: inset 0 0 0 10px color-mix(in srgb, var(--th-ground-b) 70%, black), 0 18px 30px rgba(0, 0, 0, 0.5);
+  animation: none;
+  backdrop-filter: none;
+}
+.qt-activity .qt-orbit__ring,
+.qt-activity .qt-orbit__ring-inner {
+  border-color: var(--th-ring);
+  animation: none;
+  box-shadow: none;
+}
+.qt-activity .qt-scene-deck b,
+.qt-activity .qt-scene-clock b,
+.qt-activity .qt-scene-clock__hand,
+.qt-activity .qt-scene-letters b {
+  color: var(--th-accent);
+  text-shadow: none;
+}
+.qt-activity .qt-scene-deck i { border-color: var(--th-border); background: var(--th-surface-strong); box-shadow: none; }
+.qt-activity .qt-scene-clock { border-color: var(--th-border); background: var(--th-surface-strong); box-shadow: none; }
+.qt-activity .qt-scene-clock__marks { background: repeating-conic-gradient(from -1deg, var(--th-muted) 0 1deg, transparent 1deg 30deg); }
+.qt-activity .qt-scene-letters i { border-color: var(--th-border); background: var(--th-surface-strong); color: var(--th-chalk); }
+.qt-activity .qt-scene-letters { border-color: var(--th-ring); animation-duration: 34s; }
+
+/* ============================================================================
+   8. PANO (Tavern Panosu / Jeopardy) — bölüm 1'de tanımlanan --gold/--card/
+   --line/--ink-2 sayesinde polish.css'in mevcut kuralları artık düzgün
+   render ediyor. Ek olarak hücreye tahta-tebeşir hissi veriyoruz.
+   ============================================================================ */
+.qt-activity .qt-board-col__head {
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--th-font-sign);
+  font-weight: 400;
+}
+.qt-activity .qt-board-cell {
+  font-family: var(--th-font-chalk);
+  font-weight: 700;
+}
+
+/* ============================================================================
+   9. PODYUM / ÖZET / RAPOR — cam paneller mat panele döner; lig rozeti (5
+   nokta rengi) aşağıdaki tema paletleriyle hizalanır.
+   ============================================================================ */
+.qt-activity .qt-summary-card,
+.qt-activity .qt-summary-tile,
+.qt-activity .qt-mode-card,
+.qt-activity .qt-category-card,
+.qt-activity .qt-host-menu,
+.qt-activity .qt-toast {
+  background: var(--th-surface);
+  border: 1px solid var(--th-border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+}
+.qt-activity .qt-mode-card h3,
+.qt-activity .qt-mode-card strong,
+.qt-activity .qt-podium-glass h1,
+.qt-activity .qt-podium-spot > b,
+.qt-activity .qt-lobby h1,
+.qt-activity .qt-lobby h2,
+.qt-activity .qt-final-intro__title,
+.qt-activity .qt-summary-brand,
+.qt-activity .qt-boot-curtain__title {
+  font-family: var(--th-font-sign);
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+.qt-league.is-acemi, .qt-league-dot.is-acemi { --league-c: #c89b3c; }
+.qt-league.is-cirak, .qt-league-dot.is-cirak { --league-c: #7fae5f; }
+.qt-league.is-kalfa, .qt-league-dot.is-kalfa { --league-c: #e2632b; }
+.qt-league.is-usta, .qt-league-dot.is-usta { --league-c: #d4af6a; }
+.qt-league.is-efsane, .qt-league-dot.is-efsane { --league-c: #9d8cff; }
+
+/* ============================================================================
+   10. ŞABLON TELLERİ TEMİZLİĞİ — BÜYÜK HARF + geniş harf aralığı etiketler.
+   ============================================================================ */
+.qt-activity [class*="__tag"],
+.qt-activity [class*="-tag"],
+.qt-activity .qt-kicker,
+.qt-activity .qt-seat__label small,
+.qt-activity .qt-summary-tile > small {
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+/* ============================================================================
+   11. HAREKET VE ERİŞİLEBİLİRLİK — tek sahne anı (reveal) kalır; sürekli
+   parlayan/dönen süsler kapanır. Odak halkası her zaman görünür.
+   ============================================================================ */
+.qt-activity .qt-shimmer { animation: none; background: rgba(233, 228, 214, 0.08); }
+.qt-activity :focus-visible { outline: 3px solid var(--th-accent); outline-offset: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .qt-activity .qt-answer,
+  .qt-activity .qt-answer:hover:not(:disabled) { transform: none; transition: none; }
+}
+
+/* ============================================================================
+   RÜTBE 2 — ÇIRAK (Journeyman) → ORMAN
+   ----------------------------------------------------------------------------
+   Malzeme hikayesi: acemi meyhaneden çıkıp yol öğreniyor. Kamp ateşi, huş
+   ağacı kabuğu (kağıt yerine), yosun, fener ışığı — sıcak fener ışığı SOĞUK
+   orman zemini üstünde (meyhaneyle aynı sıcak/soğuk formül, malzeme dışarıda).
+   Kartlar hâlâ gelişigüzel (tilt kalır) — orman da meyhane gibi gayriresmi.
+   ============================================================================ */
+[data-theme="forest"] {
+  --th-ground-a: #24382a;
+  --th-ground-b: #152019;
+  --th-surface: #24382a;
+  --th-surface-strong: #1a2a1f;
+  --th-border: #3c5238;
+  --th-stage: #12211a;
+  --th-stage-frame: #4a3a22;
+
+  --th-chalk: #e7e2ce;
+  --th-ink: #1d2a1f;
+  --th-muted: #8fae8a;
+
+  --th-accent: #e0a94e;
+  --th-accent-strong: #ecc073;
+  --th-accent-soft: rgba(224, 169, 78, 0.18);
+
+  --th-good: #5fae6b;
+  --th-bad: #c1503a;
+
+  --th-card-bg: #e9e2c9;
+  --th-card-ink: #24301f;
+  --th-card-border: #c9bd97;
+  --th-card-radius: 3px;
+  --th-card-tilt: 1;
+  --th-card-hover-bg: #f2ecd4;
+
+  --th-ring: rgba(143, 174, 138, 0.18);
+  --th-disc: radial-gradient(circle at 50% 40%, #3a5233, #223224 62%, #182319 72%);
+  --th-timer-track: rgba(224, 169, 78, 0.12);
+}
+[data-theme="forest"] .qt-activity .qt-answer,
+.qt-activity[data-theme="forest"] .qt-answer {
+  clip-path: polygon(1% 4%, 99% 0%, 100% 96%, 2% 100%);
+}
+[data-theme="forest"] .qt-activity .qt-question-stage,
+.qt-activity[data-theme="forest"] .qt-question-stage {
+  background: radial-gradient(ellipse at 50% 110%, rgba(224, 169, 78, 0.1), transparent 55%), var(--th-stage);
+}
+
+/* ============================================================================
+   RÜTBE 3 — KALFA (Craftsman) → OCAK (Forge)
+   ----------------------------------------------------------------------------
+   Malzeme hikayesi: kalfa artık demirci ocağında. Kağıt/kabuk yerine DÖVÜLMÜŞ
+   METAL LEVHA (perçinli). Kompozisyon hâlâ enformel ama "dökülmüş kağıt"
+   değil "dövülmüş, hafif eğri kesilmiş metal" — tilt küçülür (0.4).
+   ============================================================================ */
+[data-theme="ember"] {
+  --th-ground-a: #2c2420;
+  --th-ground-b: #17110d;
+  --th-surface: #2c2420;
+  --th-surface-strong: #201a16;
+  --th-border: #4a3a30;
+  --th-stage: #1a1310;
+  --th-stage-frame: #5c3f28;
+
+  --th-chalk: #f0d9c4;
+  --th-ink: #1c1410;
+  --th-muted: #a68f7c;
+
+  --th-accent: #e2632b;
+  --th-accent-strong: #f0a23e;
+  --th-accent-soft: rgba(226, 99, 43, 0.18);
+
+  --th-good: #4f8fa8;
+  --th-bad: #8a2f22;
+
+  --th-card-bg: #3a322b;
+  --th-card-ink: #f0d9c4;
+  --th-card-border: #5c4a3a;
+  --th-card-radius: 3px;
+  --th-card-tilt: 0.4;
+  --th-card-hover-bg: #443a30;
+
+  --th-ring: rgba(226, 99, 43, 0.15);
+  --th-disc: radial-gradient(circle at 50% 35%, #6b3a22, #3a221a 62%, #241713 72%);
+  --th-timer-track: rgba(226, 99, 43, 0.14);
+}
+[data-theme="ember"] .qt-activity .qt-answer,
+.qt-activity[data-theme="ember"] .qt-answer {
+  position: relative;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+[data-theme="ember"] .qt-activity .qt-answer b:not(.qt-answer__pct),
+.qt-activity[data-theme="ember"] .qt-answer b:not(.qt-answer__pct) {
+  border-color: var(--th-accent);
+  color: var(--th-accent);
+}
+[data-theme="ember"] .qt-activity .qt-answer::before,
+.qt-activity[data-theme="ember"] .qt-answer::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* ============================================================================
+   RÜTBE 4 — USTA (Master) → SARAY (Royal)
+   ----------------------------------------------------------------------------
+   Malzeme hikayesi: usta artık sarayda. Mermer, kadife, varak altın, mühür.
+   Kompozisyon DÜZELİR — saray gelişigüzel durmaz (tilt: 0). Kart artık kağıt
+   değil, kadife şerit + köşede mühür rozeti.
+   ============================================================================ */
+[data-theme="royal"] {
+  --th-ground-a: #3a1f42;
+  --th-ground-b: #241329;
+  --th-surface: #3a1f42;
+  --th-surface-strong: #2c1730;
+  --th-border: #5c3866;
+  --th-stage: #1c0f21;
+  --th-stage-frame: #6a4a3a;
+
+  --th-chalk: #efe6e0;
+  --th-ink: #2b1730;
+  --th-muted: #b79dc4;
+
+  --th-accent: #d4af6a;
+  --th-accent-strong: #e6c988;
+  --th-accent-soft: rgba(212, 175, 106, 0.18);
+
+  --th-good: #3f6fae;
+  --th-bad: #8e2438;
+
+  --th-card-bg: #4a2a52;
+  --th-card-ink: #f3ecf6;
+  --th-card-border: #d4af6a;
+  --th-card-radius: 10px;
+  --th-card-tilt: 0;
+  --th-card-hover-bg: #55305e;
+
+  --th-ring: rgba(212, 175, 106, 0.22);
+  --th-disc: radial-gradient(circle at 50% 35%, #5a3564, #341c3a 62%, #221228 72%);
+  --th-timer-track: rgba(212, 175, 106, 0.16);
+}
+[data-theme="royal"] .qt-activity .qt-answer,
+.qt-activity[data-theme="royal"] .qt-answer { position: relative; }
+[data-theme="royal"] .qt-activity .qt-answer::after,
+.qt-activity[data-theme="royal"] .qt-answer::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--th-accent);
+  box-shadow: 0 0 6px var(--th-accent-soft);
+}
+
+/* ============================================================================
+   RÜTBE 5 — EFSANE (Legend) → ÖTEKİ-DÜNYA (Void)
+   ----------------------------------------------------------------------------
+   Malzeme hikayesi: bir efsanenin kazınacak bir tabelaya ihtiyacı yok.
+   Obsidyen, yıldız mürekkebi, hayalet run. KASITLI İSTİSNA: bu rütbe tabela
+   fontunu (Alfa Slab One) TERK EDER — "kazınmış levha" maddesel bir dünyaya
+   ait; efsane maddesiz. Başlıklar gövde fontunun en ince ağırlığında, geniş
+   harf aralığıyla, hafif parlayarak yazılır. Kompozisyon saray gibi düzgün
+   (tilt 0) ama kart artık dokunulur değil — yarı saydam, run gibi parlayan
+   bir cam parçası.
+   ============================================================================ */
+[data-theme="void"] {
+  --th-ground-a: #1c1030;
+  --th-ground-b: #0a0710;
+  --th-surface: rgba(28, 16, 48, 0.7);
+  --th-surface-strong: rgba(18, 10, 30, 0.85);
+  --th-border: rgba(157, 140, 255, 0.28);
+  --th-stage: #0d0816;
+  --th-stage-frame: rgba(157, 140, 255, 0.35);
+
+  --th-chalk: #eef1ff;
+  --th-ink: #eef1ff;
+  --th-muted: #8f86b8;
+
+  --th-accent: #9d8cff;
+  --th-accent-strong: #b9adff;
+  --th-accent-soft: rgba(157, 140, 255, 0.2);
+
+  --th-good: #6de6a0;
+  --th-bad: #b23e6b;
+
+  --th-card-bg: rgba(38, 24, 60, 0.55);
+  --th-card-ink: #eef1ff;
+  --th-card-border: rgba(157, 140, 255, 0.4);
+  --th-card-radius: 2px;
+  --th-card-tilt: 0;
+  --th-card-hover-bg: rgba(50, 32, 78, 0.65);
+
+  --th-ring: rgba(157, 140, 255, 0.22);
+  --th-disc: radial-gradient(circle at 50% 35%, #2a1a48, #150c26 62%, #0a0714 72%);
+  --th-timer-track: rgba(157, 140, 255, 0.14);
+
+  --th-font-sign: var(--th-font-body);
+}
+[data-theme="void"] .qt-activity h1,
+.qt-activity[data-theme="void"] h1,
+[data-theme="void"] .qt-activity .qt-mode-card h3,
+.qt-activity[data-theme="void"] .qt-mode-card h3 {
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 14px var(--th-accent-soft);
+}
+[data-theme="void"] .qt-activity .qt-answer,
+.qt-activity[data-theme="void"] .qt-answer {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 0 0 1px var(--th-border), 0 0 18px rgba(157, 140, 255, 0.08);
+}
+[data-theme="void"] .qt-activity .qt-question-stage,
+.qt-activity[data-theme="void"] .qt-question-stage {
+  border-width: 1px;
+  border-color: var(--th-border);
+  box-shadow: 0 0 40px rgba(157, 140, 255, 0.06), inset 0 0 60px rgba(157, 140, 255, 0.04);
+}

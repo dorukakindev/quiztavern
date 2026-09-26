@@ -6307,7 +6307,11 @@ export function ActivityApp() {
     <I18nContext.Provider value={i18n}>
       {/* Yörünge animasyonu lobiye ait: orada masayı anlatıyor, oyun sahnelerinde
         ise şıkların ve sayacın üzerinden geçen dev bir elipse dönüşüyordu. */}
-      <div className={`qt-activity-root is-${activity.layoutMode} ${showSpectatorBar ? "has-spectator-bar" : ""}`}>
+      <div
+        className={`qt-activity-root is-${activity.layoutMode} ${showSpectatorBar ? "has-spectator-bar" : ""}`}
+        // Lig rütbesi masanın malzemesini belirler (tavern→void, lonca teması).
+        data-theme={game.state?.tableTheme ?? "tavern"}
+      >
         {!isPip && !onGameScene && !activity.lowPower && <AmbientShader />}
         {body}
       </div>

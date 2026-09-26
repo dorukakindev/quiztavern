@@ -7,6 +7,8 @@ import "./activity/activity.css";
 import "./activity/layout-fixes.css";
 import "@fontsource-variable/bricolage-grotesque/wght.css";
 import "./activity/polish.css";
+// Lonca teması en sonda: yalnız token/seçici override eder, markup değişmez.
+import "./activity/tavern-theme.css";
 
 installClientErrorReporting();
 
