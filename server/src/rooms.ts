@@ -2351,6 +2351,9 @@ export class Room {
       if (
         !target ||
         target.id === playerId ||
+        // Takım modunda takım arkadaşı dondurulamaz — çoğunluk oyunu zayıflatmak
+        // sabotaj olurdu.
+        (this.gameMode === "team" && target.team === player.team) ||
         target.eligibleFrom > this.qIndex ||
         !target.connected ||
         target.choice !== null
