@@ -88,6 +88,9 @@ export interface RoomPlayer {
   betLossStreak: number;
   /** Zil: art arda basıp doğru bilinen tur sayısı (yanlış basışta sıfırlanır; basamamak kırmaz). */
   zilWinStreak: number;
+  /** Kart kazanım sayacı: her doğru +1, "zor" soruda doğru +2; 3'te 1 joker.
+   *  Seri kırılınca (yanlış/cevapsız) sıfırlanır — seriyle aynı ritim. */
+  cardProgress: number;
   /** Takım modu: oyuncunun takımı (0/1). Katılınca küçük takıma atanır; host değiştirebilir. */
   team: number;
   /** Maç sırasında bağlantısı kopan oyuncunun grace süresinin başlangıcı */
@@ -425,6 +428,7 @@ export class Room {
       | "bet"
       | "betLossStreak"
       | "zilWinStreak"
+      | "cardProgress"
       | "team"
       | "disconnectedAt"
       | "lastEmoteAt"
@@ -486,6 +490,7 @@ export class Room {
       bet: null,
       betLossStreak: 0,
       zilWinStreak: 0,
+      cardProgress: 0,
       team: this.smallerTeam(),
       disconnectedAt: null,
       lastEmoteAt: 0,
@@ -1513,6 +1518,7 @@ export class Room {
       player.frozen = false;
       player.eligibleFrom = 0;
       player.stats = emptyStats();
+      player.cardProgress = 0;
       player.answers = [];
       player.numericWins = [];
       player.typed = [];
@@ -2417,6 +2423,8 @@ export class Room {
     category: string,
     correctElapsedMs: number | null,
     preserveStreak = false,
+    /** "zor" soru doğrusu kart sayacını 2 adım ilerletir. */
+    hardStep = false,
   ): void {
     const s = player.stats;
     s.total += 1;
@@ -2429,16 +2437,22 @@ export class Room {
       if (s.currentStreak > s.bestStreak) s.bestStreak = s.currentStreak;
       if (correctElapsedMs !== null)
         s.fastestMs = s.fastestMs === null ? correctElapsedMs : Math.min(s.fastestMs, correctElapsedMs);
-      // Tavern kartları: her 3'lü seride 1 joker (yalnız Klasik/Takım).
+      // Tavern kartları: sayaç 3'e ulaşınca 1 joker (yalnız Klasik/Takım).
+      // Zor sorular 2 adım ilerletir — zoru bilmek daha hızlı ödüllenir.
       // Takım'da kart kişiye değil ortak havuza girer — takımın herhangi bir
       // üyesi harcayabilir; toast yine kazanan üyeye gider.
-      if ((this.gameMode === "classic" || this.gameMode === "team") && s.currentStreak % 3 === 0) {
-        if (this.gameMode === "team") this.teamCardPool[player.team] += 1;
-        else player.cards += 1;
-        this.onToast?.(player.id, "info.cardEarned");
+      if (this.gameMode === "classic" || this.gameMode === "team") {
+        player.cardProgress += hardStep ? 2 : 1;
+        if (player.cardProgress >= 3) {
+          player.cardProgress -= 3;
+          if (this.gameMode === "team") this.teamCardPool[player.team] += 1;
+          else player.cards += 1;
+          this.onToast?.(player.id, "info.cardEarned");
+        }
       }
     } else if (!preserveStreak) {
       s.currentStreak = 0;
+      player.cardProgress = 0;
     }
     s.perCategory.set(category, cat);
   }
@@ -2749,6 +2763,7 @@ export class Room {
           question.category,
           correct && player.answeredAt !== null ? elapsed : null,
           player.cardUsed === "shield",
+          correct && question.difficulty === "zor",
         );
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
     }

@@ -265,6 +265,37 @@ test("Takım modunda kartlar ortak havuzdan: kazanç takıma, harcama havuzu dü
   );
 });
 
+test("Zor soru doğrusu kart sayacını 2 adım ilerletir", () => {
+  const r = new Room("cards-hard", () => {}, { minPlayers: 1, questionCount: 5 });
+  r.addPlayer(player("a", "Ada"));
+  r.addPlayer(player("b", "Bora"));
+  r.setReady("a", true);
+  r.setReady("b", true);
+  r.start("a");
+  stop(r);
+  const rec = (
+    r as unknown as {
+      recordStat: (
+        p: { id: string },
+        correct: boolean,
+        category: string,
+        ms: number | null,
+        preserve?: boolean,
+        hard?: boolean,
+      ) => void;
+    }
+  ).recordStat.bind(r);
+  const ada = (r as unknown as { players: Map<string, { cards: number; cardProgress: number }> }).players.get("a")!;
+  // Başlangıç: 1 kart, sayaç 0. İki "zor" doğru → 2+2=4 → 1 kart + 1 taşma.
+  rec(ada, true, "Tarih", 500, false, true);
+  rec(ada, true, "Tarih", 500, false, true);
+  assert.equal(ada.cards, 2);
+  assert.equal(ada.cardProgress, 1);
+  // Seri kırılınca sayaç da sıfırlanır (seriyle aynı ritim).
+  rec(ada, false, "Tarih", null);
+  assert.equal(ada.cardProgress, 0);
+});
+
 console.log(`\n${passed} test geçti — Tavern kartları`);
 
 // Odaların asılı zamanlayıcıları process'i açık tutmasın — senkron
