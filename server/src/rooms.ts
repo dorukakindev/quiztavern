@@ -313,6 +313,8 @@ export class Room {
   private lastBlitzSummary: BlitzSummaryPayload | null = null;
   private buzzFailed = new Set<string>();
   private buzzAttempts = 0;
+  /** Oyuncunun basışı kaçıncı denemeydi — ceza o denemenin eğrisinden yazılır. */
+  private buzzAttemptNo = new Map<string, number>();
   private zilTimer: NodeJS.Timeout | null = null;
   /** Team points live independently from player records, so departures cannot erase earned points. */
   private teamScores: [number, number] = [0, 0];
@@ -804,6 +806,7 @@ export class Room {
     if (!player || player.eligibleFrom > this.qIndex || !player.connected || this.buzzFailed.has(playerId)) return;
     this.buzzWinnerId = playerId;
     this.buzzAttempts += 1;
+    this.buzzAttemptNo.set(playerId, this.buzzAttempts);
     const window = Math.min(GAME.ZIL_ANSWER_MS, Math.max(0, this.questionDeadline - Date.now()));
     if (this.zilTimer) clearTimeout(this.zilTimer);
     this.zilTimer = setTimeout(() => this.zilFailWinner(), window);
@@ -2090,6 +2093,7 @@ export class Room {
     this.buzzWinnerId = null; // yeni tur: zil yeniden açık
     this.buzzFailed.clear();
     this.buzzAttempts = 0;
+    this.buzzAttemptNo.clear();
     // D/Y Blitz (§6.1): tek 60 sn'lik pencere; herkes kendi ifade akışında
     // bağımsız ilerler — ortak tur sırası yok, seri çarpanıyla puanlanır.
     if (this.gameMode === "blitz") {
@@ -2587,8 +2591,14 @@ export class Room {
         // düşer; ceza YALNIZ gerçekten basıp kaybedene (yanlış ya da süresi
         // dolan deneme → buzzFailed). Hiç basmayan oyuncu turu 0 ile bitirir —
         // katılmamak denemeyi cezalandırmakla aynı sayılamaz (B48).
-        if (this.gameMode === "zil")
-          gain = correct ? this.zilValue() : this.buzzFailed.has(player.id) ? -GAME.ZIL_PENALTY : 0;
+        if (this.gameMode === "zil") {
+          const attemptNo = this.buzzAttemptNo.get(player.id) ?? 1;
+          gain = correct
+            ? this.zilValue()
+            : this.buzzFailed.has(player.id)
+              ? -(GAME.ZIL_PENALTY + GAME.ZIL_PENALTY_STEP * (attemptNo - 1))
+              : 0;
+        }
         // Tavern Panosu: hücrenin sabit değeri — hız bonusu yok, Jeopardy usulü.
         if (this.gameMode === "board") gain = correct ? (this.boardCells[this.currentCell]?.value ?? 0) : 0;
         // Tavern kartı Çifte: bu sorunun kazancı ×2 (yalnız doğruysa).
