@@ -146,7 +146,12 @@ export function scheduleBotAnswers(room: Room): void {
               room.useCard(p.id, "shield");
             } else {
               const targets = [...room.players.values()].filter(
-                (t) => t.id !== p.id && t.connected && t.eligibleFrom <= room.qIndex && t.choice === null,
+                (t) =>
+                  t.id !== p.id &&
+                  t.connected &&
+                  t.eligibleFrom <= room.qIndex &&
+                  t.choice === null &&
+                  (room.gameMode !== "team" || t.team !== p.team),
               );
               if (targets.length === 0) return;
               room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);

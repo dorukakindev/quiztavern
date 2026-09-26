@@ -126,6 +126,30 @@ test("Dondur: hedefin süresi kısalır ve kişisel deadline gider", () => {
   );
 });
 
+test("Takım modunda dondur takım arkadaşına kullanılamaz", () => {
+  const r = new Room("cards-freeze-team", () => {}, { minPlayers: 2, questionCount: 5 });
+  r.addPlayer(player("a", "Ada"));
+  r.addPlayer(player("b", "Bora"));
+  r.addPlayer(player("c", "Cem"));
+  r.setGameMode("a", "team");
+  r.setTeam("a", "b", 1);
+  r.setTeam("a", "c", 1); // a=0, b=c=1
+  r.setReady("a", true);
+  r.setReady("b", true);
+  r.setReady("c", true);
+  r.start("a", "team");
+  stop(r);
+  begin(r);
+  // b ve c aynı takımda — takım arkadaşını dondurmak reddedilir.
+  assert.throws(
+    () => r.useCard("b", "freeze", "c"),
+    (e) => e instanceof GameError && e.key === "err.invalidTarget",
+  );
+  // Rakip takım oyuncusu hâlâ geçerli hedef.
+  r.useCard("b", "freeze", "a");
+  assert.equal(r.stateFor("a", true).youFrozen, true);
+});
+
 test("3'lü seride +1 kart kazanılır", () => {
   const r = new Room("cards-streak", () => {}, { minPlayers: 1, questionCount: 10 });
   r.addPlayer(player("a", "Ada"));

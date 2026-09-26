@@ -4090,7 +4090,16 @@ function GameBoard({
                   {freezePick && !cardLocked ? (
                     <div className="qt-card-targets" role="group" aria-label={t("card.freeze.pick")}>
                       {state.players
-                        .filter((item) => item.id !== state.youId && item.connected && !item.waiting && !item.answered)
+                        .filter(
+                          (item) =>
+                            item.id !== state.youId &&
+                            item.connected &&
+                            !item.waiting &&
+                            !item.answered &&
+                            (state.gameMode !== "team" ||
+                              item.team === undefined ||
+                              item.team !== state.players.find((p) => p.id === state.youId)?.team),
+                        )
                         .map((item) => (
                           <button
                             key={item.id}
