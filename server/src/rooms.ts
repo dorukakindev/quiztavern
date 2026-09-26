@@ -306,6 +306,14 @@ export class Room {
   private wordPrompts: CirclePrompt[] = [];
   private wordLettersRevealed = 0;
   private wordOrder: number[] = [];
+  /** EN cevabın kendi harf-açılış sırası (uzunluğu TR cevaptan farklı olabilir). */
+  private wordOrderEn: number[] = [];
+  /** Turun başında bir kez sabitlenen süre. questionDuration() canlı hesaplar
+   *  (Son Masa'da hayatta kalan sayısı, Kelime'de havuz); reveal döngüsünde
+   *  ve payload'da ondan okumak turun ortasında süreyi değiştiriyordu. */
+  private roundDurationMs = 0;
+  /** Son Masa: maça kaç oyuncuyla girildi — solo maçta "1 kişi kaldı" bitişi uygulanmaz. */
+  private elimStartCount = 0;
   private wordPoolMs = 0;
   private wordRoundStartedAt = 0;
   /** Fitil: bu maçta doğru cevap çıkan tur sayısı — her biri fitili bir kademe kısaltır. */
@@ -1075,7 +1083,7 @@ export class Room {
     this.categorySelection = this.categorySelection
       .filter((name) => {
         const category = CATEGORY_CATALOG.find((item) => item.name === name);
-        return mode === "circle" ? !!category?.circleCount : !!category?.classicCount;
+        return mode === "circle" || mode === "word" ? !!category?.circleCount : !!category?.classicCount;
       })
       .slice(-maxCategories);
     for (const player of this.players.values()) if (!player.isBot) player.ready = false;
@@ -1265,7 +1273,7 @@ export class Room {
       .filter((name) => {
         if (!CATEGORY_NAMES.has(name)) return false;
         const category = CATEGORY_CATALOG.find((item) => item.name === name);
-        return this.gameMode === "circle" ? !!category?.circleCount : !!category?.classicCount;
+        return this.gameMode === "circle" || this.gameMode === "word" ? !!category?.circleCount : !!category?.classicCount;
       })
       .slice(-maxCategories);
     if (next.join("|") === this.categorySelection.join("|")) return;
@@ -1290,6 +1298,7 @@ export class Room {
     // Günlük: bugün tamamlayan oyuncu koltuktan inip izler; hiç katılımcı
     // kalmadıysa başlatmayı tamamen reddet (masa zaten bugünkünü oynadı).
     const daily = options?.daily === true;
+    let dailyDone: RoomPlayer[] = [];
     if (daily) {
       const done = connectedPlayers.filter((player) => !player.isBot && options.completed?.(player.id));
       // Katılımcı = oynayabilecek İNSAN. Masada yalnız bot + tamamlamış insan
@@ -1297,7 +1306,10 @@ export class Room {
       const participants = connectedPlayers.filter((player) => !done.includes(player) && !player.isBot);
       if (!participants.length) throw new GameError("err.dailyDone");
       if (participants.length < this.minPlayers) throw new GameError("err.needPlayers", { count: this.minPlayers });
-      for (const player of done) this.becomeSpectator(player.id);
+      // Koltuktan indirme TÜM doğrulamalardan sonra yapılır: burada yapıldığında
+      // "herkes hazır değil" hatası fırlasa bile oyuncular çoktan izleyiciye
+      // düşmüş oluyordu (başarısız başlatmanın yan etkisi).
+      dailyDone = done;
     }
     // Günlükten sonra "Aynı masayla devam" masanın KENDİ moduna dönmeli.
     if (!daily && this.modeBeforeDaily) gameMode = this.modeBeforeDaily;
@@ -1332,11 +1344,18 @@ export class Room {
     if (
       this.phase === "lobby" &&
       [...this.players.values()]
-        .filter((player) => player.connected && player.id !== requestedBy && !this.inResults.has(player.id))
+        .filter(
+          (player) =>
+            player.connected &&
+            player.id !== requestedBy &&
+            !this.inResults.has(player.id) &&
+            !dailyDone.includes(player),
+        )
         .some((player) => !player.ready)
     ) {
       throw new GameError("err.everyoneReady");
     }
+    for (const player of dailyDone) this.becomeSpectator(player.id);
     this.clearLastMatch();
     this.rescueRound = new Set();
     this.lightningBurn = 0;
@@ -1358,7 +1377,7 @@ export class Room {
     this.roundLimit = this.questionCount;
     const compatibleCategories = this.categorySelection.filter((name) => {
       const category = CATEGORY_CATALOG.find((item) => item.name === name);
-      return this.gameMode === "circle" ? !!category?.circleCount : !!category?.classicCount;
+      return this.gameMode === "circle" || this.gameMode === "word" ? !!category?.circleCount : !!category?.classicCount;
     });
     if (this.categorySelection.length && !compatibleCategories.length) {
       throw new GameError("err.categoryEmpty");
@@ -1473,7 +1492,10 @@ export class Room {
       const unseenC = circlePoolKeys(compatibleCategories, this.difficulty).filter(
         (k) => !this.seenCirclePromptKeys.has(k),
       ).length;
-      if (unseenC < this.roundLimit) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
+      // Yalnız tam tükenince sıfırla: "unseen < roundLimit" eşiği kalan son birkaç
+      // prompt'u hiç sırası gelmeyen bir döngüye kilitliyordu (klasik havuzdaki
+      // aynı derstir, bkz. resetExhaustedSubpools). Eksiği used-fallback tamamlar.
+      if (unseenC === 0) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
       this.circlePrompts = sampleCirclePrompts(
         this.roundLimit,
         compatibleCategories,
@@ -1490,7 +1512,7 @@ export class Room {
       const unseenW = wordPoolKeys(compatibleCategories, this.difficulty).filter(
         (k) => !this.seenCirclePromptKeys.has(k),
       ).length;
-      if (unseenW < GAME.WORD_ROUNDS) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
+      if (unseenW === 0) this.seenCirclePromptKeys = new Set(this.lastCirclePromptKeys);
       this.wordPrompts = sampleWordPrompts(compatibleCategories, this.seenCirclePromptKeys, this.difficulty);
       this.lastCirclePromptKeys = new Set(this.wordPrompts.map((p) => `${p.category}|${p.answer}`));
       this.wordPrompts.forEach((p) => this.seenCirclePromptKeys.add(`${p.category}|${p.answer}`));
@@ -1532,6 +1554,7 @@ export class Room {
       const bySeat = [...this.players.values()].sort((a, b) => a.seat - b.seat);
       for (const watcher of bySeat.slice(2)) watcher.eligibleFrom = this.roundLimit;
     }
+    this.elimStartCount = this.gameMode === "elim" ? this.eligiblePlayers().length : 0;
     if (this.gameMode === "board") {
       // Sıra, eligibleFrom sıfırlama döngüsünden SONRA örneklenir — maç ortasında
       // katılanın/elenenin bayat değeri onu tüm maç boyunca seçim dışı bırakırdı.
@@ -1788,12 +1811,12 @@ export class Room {
           choicesEn: question.choicesEn,
           // Dondur jokeri yiyen oyuncuya kişisel deadline — personalStateFor yazar.
           deadline: this.questionDeadline,
-          durationMs: this.questionDuration(),
+          durationMs: this.roundDurationMs,
           ...(question.image ? { image: question.image } : {}),
           ...(question.imageCredit ? { imageCredit: question.imageCredit } : {}),
           // writtenByYou kişisel — personalStateFor yazar.
           ...(writerId ? { writtenByName: this.players.get(writerId)?.name ?? null } : {}),
-          ...(this.gameMode === "lightning" && this.questionDuration() <= GAME.LIGHTNING_MIN_MS
+          ...(this.gameMode === "lightning" && this.roundDurationMs <= GAME.LIGHTNING_MIN_MS
             ? { fuseCritical: true }
             : {}),
           ...(this.gameMode === "board" &&
@@ -1818,19 +1841,28 @@ export class Room {
     // Kelime Oyunu: harf maske sunucuda üretilir — istemci ham cevabı hiç görmez.
     // Maske her iki dil için aynı POZİSYONU açar (cevap uzunlukları farklıysa
     // EN maskesi kendi sınırında kırpılır). Değer ve havuz anlık hesaplanır.
-    const openSet = new Set(this.wordOrder.slice(0, this.wordLettersRevealed));
-    const maskOf = (a?: string) => (a ? [...a].map((ch, i) => (openSet.has(i) && i < a.length ? ch : null)) : []);
+    // Her dil kendi uzunluğunda kendi sırasıyla açılır; TR pozisyonlarını EN
+    // kelimeye uygulamak uzun EN cevapta sondaki harfleri hiç açmıyordu.
+    const openFor = (order: number[], length: number) =>
+      new Set(order.slice(0, Math.min(this.wordLettersRevealed, Math.max(0, length - 1))));
+    const maskOf = (a: string | undefined, order: number[]) => {
+      if (!a) return [];
+      const open = openFor(order, a.length);
+      return [...a].map((ch, i) => (open.has(i) ? ch : null));
+    };
     const word: WordPayload | null = inWord
       ? {
-          letters: maskOf(wordPrompt.answer),
-          ...(wordPrompt.answerEn ? { lettersEn: maskOf(wordPrompt.answerEn) } : {}),
+          letters: maskOf(wordPrompt.answer, this.wordOrder),
+          ...(wordPrompt.answerEn ? { lettersEn: maskOf(wordPrompt.answerEn, this.wordOrderEn) } : {}),
           clue: wordPrompt.clue,
           ...(wordPrompt.clueEn ? { clueEn: wordPrompt.clueEn } : {}),
           category: wordPrompt.category,
           value: Math.max(0, wordPrompt.answer.length - this.wordLettersRevealed) * GAME.WORD_LETTER_POINTS,
           poolMs: Math.max(0, this.wordPoolMs - (Date.now() - this.wordRoundStartedAt)),
           deadline: this.questionDeadline,
-          durationMs: GAME.WORD_ROUND_MS,
+          // Havuz 45 sn'nin altına indiğinde gerçek süre kısalır; sabit
+          // WORD_ROUND_MS göndermek istemcinin çubuğunu yarıdan başlatıyordu.
+          durationMs: this.roundDurationMs,
         }
       : null;
     // Yakın Tahmin: doğru sayı sunucuda kalır — payload yalnız birim + süre taşır.
@@ -1842,7 +1874,7 @@ export class Room {
           unit: numericPrompt.unit,
           unitEn: numericPrompt.unitEn,
           deadline: this.questionDeadline,
-          durationMs: this.questionDuration(),
+          durationMs: this.roundDurationMs,
         }
       : null;
     // D/Y Blitz: KİŞİSEL canlı durum — herkesin ifadesi farklıdır; truth
@@ -2170,6 +2202,7 @@ export class Room {
         const j = Math.floor(Math.random() * (i + 1));
         [this.wordOrder[i], this.wordOrder[j]] = [this.wordOrder[j], this.wordOrder[i]];
       }
+      this.wordOrderEn = shuffleIdx(wordRound.answerEn?.length ?? 0);
       this.wordRoundStartedAt = this.questionStartedAt = Date.now();
     }
     // Zaman Çizelgesi (§6.1): 4 olay karışık dizilir; yıllar istemciye sızmadan
@@ -2198,7 +2231,7 @@ export class Room {
         if (player.eligibleFrom <= this.qIndex && player.connected) this.blitzAssign(player);
       }
     }
-    const duration = this.questionDuration();
+    const duration = (this.roundDurationMs = this.questionDuration());
     this.questionDeadline = this.questionStartedAt + duration;
     for (const player of this.players.values()) {
       player.choice = null;
@@ -2672,7 +2705,9 @@ export class Room {
       if (player.choice !== null) picks[player.choice].push(player.id);
       const correct = player.choice === question.correctIndex;
       const elapsed = Math.max(0, (player.answeredAt ?? this.questionDeadline) - this.questionStartedAt);
-      const duration = this.questionDuration();
+      // Tur başındaki süre: Son Masa'da bu döngü can düşürdükçe questionDuration()
+      // 15 sn → 8 sn'ye sıçrıyor, sonraki oyuncuların hız puanı eksik hesaplanıyordu.
+      const duration = this.roundDurationMs || this.questionDuration();
       const speedRatio = Math.max(0, 1 - elapsed / duration);
       let gain: number;
       if (this.gameMode === "bet") {
@@ -3118,7 +3153,13 @@ export class Room {
     // Son Masa: ayakta 1'den az/1 kişi kaldıysa maç burada biter — elenenler
     // izleyici kalır, son kalan kazanır. Soru havuzu biterse de beginQuestion
     // currentQuestion null ile finish'e düşer.
-    if (this.gameMode === "elim" && this.eligiblePlayers().length <= 1) return this.finish();
+    // Solo Son Masa: MIN_PLAYERS=1 ile tek kişi de başlatabiliyor; eski "≤1 kaldı"
+    // kuralı solo maçı İLK sorudan sonra bitiriyordu. Solo'da canlar/sorular
+    // bitene kadar oynanır.
+    if (this.gameMode === "elim") {
+      const alive = this.eligiblePlayers().length;
+      if (alive === 0 || (alive === 1 && this.elimStartCount >= 2)) return this.finish();
+    }
     // Kelime Oyunu: ortak havuz bittiyse kalan turlar oynanmadan maç biter.
     if (this.gameMode === "word" && this.wordPoolMs <= 0) return this.finish();
     // D/Y Blitz tek 60 sn'lik penceredir — özeti gösterdikten sonra maç biter.
@@ -3207,6 +3248,10 @@ export class Room {
             ? other.lives > player.lives || (other.lives === player.lives && other.score > player.score)
             : other.score > player.score,
         ).length;
+      // Galibiyet ancak rakip varken anlamlı: MIN_PLAYERS=1 ile tek başına
+      // maç açıp her seferinde XP_WIN + haftalık tablo puanı toplanabiliyordu.
+      // Rakip = maçta en az bir tur oynamış başka bir oyuncu (bot dahil).
+      const contested = order.filter((player) => player.stats.total > 0 || player.isBot).length >= 2;
       const matchEntries = order
         .map((player) => ({ player, placement: placementOf(player) }))
         .filter(({ player }) => !player.isBot && !isGuestId(player.id) && player.stats.total > 0)
@@ -3218,7 +3263,7 @@ export class Room {
           total: player.stats.total,
           bestStreak: player.stats.bestStreak,
           placement,
-          won: this.gameMode === "team" ? player.team === winningTeam : placement === 1,
+          won: contested && (this.gameMode === "team" ? player.team === winningTeam : placement === 1),
           gameMode: this.gameMode,
           perCategory: [...player.stats.perCategory.entries()].map(([category, value]) => ({
             category,
