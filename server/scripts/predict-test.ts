@@ -1,7 +1,7 @@
 import assert from "node:assert";
 import { GAME } from "../src/config.js";
 import { Room } from "../src/rooms.js";
-import type { XpGain } from "@quiztavern/shared";
+import type { MatchFinishedEntry, XpGain } from "@quiztavern/shared";
 
 const stop = (room: Room) => (room as unknown as { clearTimer: () => void }).clearTimer();
 const internals = (room: Room) =>
@@ -29,15 +29,19 @@ const podiumRoom = (room: Room) => {
   assert.equal(room.phase, "podium");
 };
 
-// Kayıtlar: bonusXp çağrılarını izleyen sahte depo.
+// Kayıtlar: bonusXp/recordMatch çağrılarını izleyen sahte depo.
 const calls: { userId: string; amount: number }[] = [];
+const matchCalls: MatchFinishedEntry[][] = [];
 const fakeStore = {
   badge: () => null,
   snapshot: () => null,
   seasonBoard: () => ({ season: "x", rows: [] }),
   weeklyBoard: () => ({ season: "x", rows: [] }),
   allTimeBoard: () => ({ season: "all", entries: [] }),
-  recordMatch: () => new Map<string, XpGain>(),
+  recordMatch(entries: MatchFinishedEntry[]) {
+    matchCalls.push(entries);
+    return new Map<string, XpGain>();
+  },
   recordQuestionStats: () => {},
   questionStats: () => [],
   bonusXp(entry: { userId: string; amount: number }) {
@@ -198,4 +202,63 @@ const fakeStore = {
   stop(room);
 }
 
-console.log("predict-test: 9/9 OK");
+// 10. Beraberlik: skor eşitliği placement'ı paylaşır — dizi indeksi ikinciyi
+//     haksız "kaybetti" yazmaz (Düello'da sık görülür).
+{
+  matchCalls.length = 0;
+  const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
+  room.setProgressStore(fakeStore as never);
+  addPlayer(room, "a");
+  addPlayer(room, "b");
+  room.start("a", "classic");
+  (room.players.get("a") as { score: number }).score = 500;
+  (room.players.get("b") as { score: number }).score = 500;
+  // recordMatch'e girmek için en az bir cevap sayısı şart (stats.total>0).
+  for (const id of ["a", "b"]) {
+    (room.players.get(id) as { stats: { total: number } }).stats.total = 1;
+  }
+  podiumRoom(room);
+  const entries = matchCalls.at(-1)!;
+  assert.equal(entries.find((e) => e.userId === "a")?.placement, 1);
+  assert.equal(entries.find((e) => e.userId === "b")?.placement, 1);
+  assert.equal(entries.find((e) => e.userId === "b")?.won, true, "beraberlikte ikisi de kazanır");
+  stop(room);
+}
+
+// 11. Takım modunda izleyici tahmini kazanan TAKIMA göre ödüllenir —
+//     MVP'yi değil takımı bilmek yeterli.
+{
+  calls.length = 0;
+  const room = new Room("r", () => {}, { minPlayers: 1, questionCount: 5 });
+  room.setProgressStore(fakeStore as never);
+  addPlayer(room, "a");
+  addPlayer(room, "b");
+  addPlayer(room, "c");
+  addPlayer(room, "d");
+  room.setGameMode("a", "team");
+  for (const id of ["a", "b", "c", "d"]) room.setReady(id, true); // setGameMode ready'leri sıfırlar
+  room.start("a", "team");
+  room.becomeSpectator("d");
+  // Takımlar: a,c -> 0; b -> 1 (auto-assign sırayla). d izleyici.
+  const inner = room as unknown as {
+    players: Map<string, { team?: number; score: number; stats: { total: number } }>;
+    teamScores: number[];
+  };
+  inner.players.get("a")!.team = 0;
+  inner.players.get("c")!.team = 0;
+  inner.players.get("b")!.team = 1;
+  inner.players.get("a")!.score = 100; // MVP takım 0'da
+  inner.players.get("c")!.score = 50; // aynı takım, düşük skor
+  inner.players.get("b")!.score = 400; // kişisel en yüksek ama takımı kaybeder
+  inner.teamScores[0] = 150; // takım 0 kazanır
+  inner.teamScores[1] = 400;
+  // ...takım 1'in toplamı daha yüksek: takım 0'ı kazanan yapmak için düzelt.
+  inner.teamScores[0] = 500;
+  inner.teamScores[1] = 400;
+  room.predict("d", "c"); // kazanan takımın MVP-olmayan oyuncusuna tahmin
+  podiumRoom(room);
+  assert.deepEqual(calls, [{ userId: "d", amount: GAME.PREDICT_XP }], "kazanan takımın üyesi yeterli");
+  stop(room);
+}
+
+console.log("predict-test: 11/11 OK");

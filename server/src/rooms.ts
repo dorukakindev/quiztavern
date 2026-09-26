@@ -2983,8 +2983,19 @@ export class Room {
             ? 0
             : 1
           : -1;
+      // Beraberlik: dizi indeksi eşitliği görmezdi — istemci podyumu (rankOf)
+      // eşit skoru iki "#1" gösterirken sunucu yalnız ilkini kazanan sayıyordu
+      // (Düello'da 2 oyuncu × 7 soru → beraberlik nadir değil). Placement =
+      // 1 + (kesin üstte olanlar): Son Masa'da can, diğer modlarda skor.
+      const placementOf = (player: (typeof order)[number]) =>
+        1 +
+        order.filter((other) =>
+          this.gameMode === "elim"
+            ? other.lives > player.lives || (other.lives === player.lives && other.score > player.score)
+            : other.score > player.score,
+        ).length;
       const matchEntries = order
-        .map((player, index) => ({ player, placement: index + 1 }))
+        .map((player) => ({ player, placement: placementOf(player) }))
         .filter(({ player }) => !player.isBot && !isGuestId(player.id) && player.stats.total > 0)
         .map(({ player, placement }): MatchFinishedEntry => ({
           userId: player.id,
@@ -3056,8 +3067,18 @@ export class Room {
     // İzleyici tahmini: podyum birincisini bilenlere XP (sayaçlara yazmaz).
     if (this.progress && this.predictions.size) {
       const winnerId = this.podiumSnapshot?.[0]?.id;
+      // Takım modunda ödül bireysel MVP'ye göre değil kazanan TAKIMA göre:
+      // izleyici bir oyuncuya tahmin koyar; o oyuncunun takımı kazandıysa isabet.
+      const teamWinner =
+        this.gameMode === "team" && this.teamScores[0] !== this.teamScores[1]
+          ? this.teamScores[0] > this.teamScores[1]
+            ? 0
+            : 1
+          : -1;
       for (const [spectatorId, target] of this.predictions) {
-        if (isGuestId(spectatorId) || target !== winnerId) continue;
+        if (isGuestId(spectatorId)) continue;
+        const hit = teamWinner >= 0 ? this.players.get(target)?.team === teamWinner : target === winnerId;
+        if (!hit) continue;
         const spectator = this.spectators.get(spectatorId) ?? this.players.get(spectatorId);
         if (!spectator) continue;
         try {
