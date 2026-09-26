@@ -3336,6 +3336,11 @@ function GameBoard({
       ? Math.max(0, Math.min(1, (deadline - sfxNow) / durationMs))
       : 0;
   const blurPx = Math.round(blurRemain * 18 * 10) / 10;
+  // Bulanık Resim'de soru fazındayken istemciye yalnız önceden bulanıklaştırılmış
+  // varyant iner — orijinal dosya reveal'a kadar ağa hiç çıkmaz (CSS blur'u
+  // devtools'tan silmek artık cevabı sızdırmaz).
+  const questionImageSrc = (name: string | undefined) =>
+    state.gameMode === "blur" && state.phase === "question" ? `/questions-blur/${name}` : `/questions/${name}`;
   const sfxRef = useRef({ revealed: false, gained: false, tick: -1 });
   useEffect(() => {
     const s = sfxRef.current;
@@ -4029,13 +4034,13 @@ function GameBoard({
                         className="qt-question-imagebtn"
                         onClick={() => {
                           sfx.play("lock");
-                          setLightbox({ src: `/questions/${shown.image}`, credit: shown.imageCredit });
+                          setLightbox({ src: questionImageSrc(shown.image), credit: shown.imageCredit });
                         }}
                         aria-label={t("game.imageZoom")}
                       >
                         <img
                           className="qt-question-image"
-                          src={`/questions/${shown.image}`}
+                          src={questionImageSrc(shown.image)}
                           alt={t("game.imageAlt")}
                           fetchPriority="high"
                           style={blurPx > 0.2 ? { filter: `blur(${blurPx}px)`, transform: "scale(1.08)" } : undefined}

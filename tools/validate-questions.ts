@@ -32,6 +32,7 @@ const DEFINED_CATEGORIES = new Set<string>([...EXTRA_CATEGORIES, ...EN_LABEL_NAM
 const seenIds = new Set<string>();
 const seenTexts = new Map<string, string>();
 const publicQuestionsDir = fileURLToPath(new URL("../client/public/questions/", import.meta.url));
+const blurQuestionsDir = fileURLToPath(new URL("../client/public/questions-blur/", import.meta.url));
 
 for (const q of ALL_QUESTIONS) {
   const where = q.id || "(id yok)";
@@ -85,6 +86,8 @@ for (const q of ALL_QUESTIONS) {
   if (q.image) {
     if (!fs.existsSync(`${publicQuestionsDir}${q.image}`)) {
       warn(`${where}: image "${q.image}" client/public/questions altında yok`);
+    } else if (!fs.existsSync(`${blurQuestionsDir}${q.image}`)) {
+      warn(`${where}: "${q.image}" için questions-blur varyantı yok (Bulanık Resim sızar)`);
     }
   }
 }
