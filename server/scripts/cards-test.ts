@@ -227,6 +227,9 @@ test("3'lü seri kart kazanımı oyuncuya toast olarak gider", () => {
   r.setReady("b", true);
   r.start("a");
   stop(r);
+  // Zor sorular sayacı 2 adım ilerletir — toast'ın tam 1 kez gelmesi için
+  // kuyruktaki soruları kolaya sabitle (havuz örneklemesi rastgele).
+  (r as unknown as { questions: { difficulty: string }[] }).questions.forEach((q) => (q.difficulty = "kolay"));
   for (let i = 0; i < 3; i++) {
     begin(r);
     r.answer("a", r.currentQuestion()!.correctIndex);
