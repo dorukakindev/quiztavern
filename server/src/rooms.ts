@@ -126,6 +126,9 @@ export interface RoomPlayer {
   blitzCorrect: number;
   blitzAnswered: number;
   blitzScore: number;
+  /** Son blitz cevabının zamanı — BLITZ_MIN_INTERVAL_MS altındaki cevaplar
+   *  yutulur (anti-otomasyon). */
+  blitzLastAnswerAt: number;
   /** Oyuncunun o anki ifadesi (truth yalnız sunucuda; istemciye sızmadan). */
   blitzClaim: {
     truth: boolean;
@@ -427,6 +430,7 @@ export class Room {
       | "blitzCorrect"
       | "blitzAnswered"
       | "blitzScore"
+      | "blitzLastAnswerAt"
       | "blitzClaim"
       | "blitzTrail"
       | "orderAnswers"
@@ -505,6 +509,7 @@ export class Room {
       blitzCorrect: 0,
       blitzAnswered: 0,
       blitzScore: 0,
+      blitzLastAnswerAt: 0,
       blitzClaim: null,
       blitzTrail: [],
       orderAnswers: [],
@@ -1657,6 +1662,10 @@ export class Room {
   private blitzAnswer(playerId: string, choice: number, player: RoomPlayer) {
     const claim = player.blitzClaim;
     if (!claim) return;
+    // Anti-otomasyon: okuma hızının altındaki ardışık cevaplar yutulur.
+    const now = Date.now();
+    if (player.blitzLastAnswerAt && now - player.blitzLastAnswerAt < GAME.BLITZ_MIN_INTERVAL_MS) return;
+    player.blitzLastAnswerAt = now;
     const right = (choice === 0) === claim.truth;
     player.blitzAnswered++;
     if (this.firstAnswerId === null) this.firstAnswerId = playerId;

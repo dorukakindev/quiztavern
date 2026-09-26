@@ -159,6 +159,9 @@ export const GAME = {
   BLITZ_STREAK_STEP: 25,
   BLITZ_STREAK_CAP: 4,
   BLITZ_POOL: 30,
+  /** Ardışık iki cevap arası en düşük süre (ms) — okumadan hızlı otomasyon
+   *  spam'ini kırar; insan tempo sınırının altında. */
+  BLITZ_MIN_INTERVAL_MS: 250,
   /** Zaman Çizelgesi (§6.1): 4 olayı sıralama süresi; her doğru pozisyon ayrı puan. */
   TIMELINE_MS: 20_000,
   TIMELINE_PER_POS: 100,

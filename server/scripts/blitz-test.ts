@@ -20,6 +20,8 @@ type P = {
   blitzStreak: number;
   blitzCorrect: number;
   blitzScore: number;
+  /** Anti-otomasyon damgası — testlerde ardışık cevaplar için sıfırlanır. */
+  blitzLastAnswerAt: number;
   blitzClaim: Claim;
   blitzTrail: { choice: number }[];
 };
@@ -74,6 +76,7 @@ test("doğru +BASE; yanlış seriyi sıfırlar; akış ilerler", () => {
   assert.equal(p.blitzScore, GAME.BLITZ_BASE);
   assert.equal(p.blitzStreak, 1);
   assert.equal(p.blitzIdx, 1, "bir sonraki ifadeye geçti");
+  p.blitzLastAnswerAt = 0;
   room.answer("a", p.blitzClaim!.truth ? 1 : 0); // yanlış
   assert.equal(p.blitzScore, GAME.BLITZ_BASE, "yanlış puansız");
   assert.equal(p.blitzStreak, 0, "seri sıfırlandı");
@@ -84,7 +87,10 @@ test("seri çarpanı: üst üste doğrular STEP artar, CAP'te durur", () => {
   const room = blitzRoom("b3", ["a"]);
   const inner = startRound(room);
   const p = inner.players.get("a")!;
-  for (let i = 0; i < 6; i++) room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  for (let i = 0; i < 6; i++) {
+    p.blitzLastAnswerAt = 0; // insan temposu taklidi
+    room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  }
   // kazançlar: 100 +125 +150 +175 +200(cap) +200(cap)
   const expected = [100, 125, 150, 175, 200, 200].reduce((x, y) => x + y, 0);
   assert.equal(p.blitzScore, expected);
@@ -105,7 +111,10 @@ test("oyuncular bağımsız ilerler — A 5 ifadede, B 1'de olabilir", () => {
   const room = blitzRoom("b5", ["a", "b"]);
   const inner = startRound(room);
   const a = inner.players.get("a")!;
-  for (let i = 0; i < 5; i++) room.answer("a", a.blitzClaim!.truth ? 0 : 1);
+  for (let i = 0; i < 5; i++) {
+    a.blitzLastAnswerAt = 0;
+    room.answer("a", a.blitzClaim!.truth ? 0 : 1);
+  }
   assert.equal(a.blitzIdx, 5);
   assert.equal(inner.players.get("b")!.blitzIdx, 0, "B henüz başlamadı");
 });
@@ -132,6 +141,7 @@ test("istatistik ve iz sürümü doğru sayılır", () => {
   const inner = startRound(room);
   const p = inner.players.get("a")!;
   room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  p.blitzLastAnswerAt = 0;
   room.answer("a", p.blitzClaim!.truth ? 1 : 0);
   assert.equal(p.stats.total, 2);
   assert.equal(p.stats.correct, 1);
@@ -154,6 +164,20 @@ test("kopuş pencereyi erken kapatmaz — reveal yalnız 60 sn timer'ıyla", () 
   assert.equal(inner.phase, "reveal");
 });
 
+test("BLITZ_MIN_INTERVAL altındaki ardışık cevaplar yutulur (anti-otomasyon)", () => {
+  const room = blitzRoom("b9", ["a"]);
+  const inner = startRound(room);
+  const p = inner.players.get("a")!;
+  room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  assert.equal(p.blitzAnswered, 1);
+  room.answer("a", p.blitzClaim!.truth ? 0 : 1); // <250ms — yutulur
+  assert.equal(p.blitzAnswered, 1, "ikinci cevap yutuldu");
+  assert.equal(p.blitzIdx, 1, "ifade ilerlemedi");
+  p.blitzLastAnswerAt = 0; // eşik geçmiş gibi
+  room.answer("a", p.blitzClaim!.truth ? 0 : 1);
+  assert.equal(p.blitzAnswered, 2);
+});
+
 console.log(`blitz-test: ${passed} geçti`);
-assert.equal(passed, 8);
+assert.equal(passed, 9);
 process.exit(0);
