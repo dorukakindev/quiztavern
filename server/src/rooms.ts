@@ -2570,13 +2570,17 @@ export class Room {
       // (deadline'a düşen cevapsız tur "hız" değil).
       // Tavern kartı Kalkan: yanlış cevap seriyi bozmaz (istatistikte yanlış
       // sayılır ama currentStreak korunur).
-      this.recordStat(
-        player,
-        correct,
-        question.category,
-        correct && player.answeredAt !== null ? elapsed : null,
-        player.cardUsed === "shield",
-      );
+      // Zil'de hiç basamayan oyuncu bu turu "denemeden" geçirdi — puan tarafında
+      // zaten cezasız (B48: 0), istatistik/seri tarafında da yanlış sayılmaz.
+      const zilSatOut = this.gameMode === "zil" && player.choice === null && !this.buzzFailed.has(player.id);
+      if (!zilSatOut)
+        this.recordStat(
+          player,
+          correct,
+          question.category,
+          correct && player.answeredAt !== null ? elapsed : null,
+          player.cardUsed === "shield",
+        );
       player.answers[this.qIndex] = player.choice; // 6a zaman çizgisi
     }
     // Soru yazarı turu: yazar, o soruda puan alanların ortalamasını kazanır.
