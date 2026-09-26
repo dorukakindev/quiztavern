@@ -213,6 +213,67 @@ test("3 canlıda süre normal, 2'ye düşünce ani ölüm süresi", () => {
 });
 stop(roomSd);
 
+// Havuz bittiğinde öndeki ikilinin canı eşitse ani ölüm sorusu oynanır.
+const room6 = new Room("elim-6", () => {}, { minPlayers: 2, questionCount: 10 });
+room6.addPlayer(player("x", "Xi"));
+room6.addPlayer(player("y", "Yi"));
+room6.setGameMode("x", "elim");
+room6.setReady("x", true);
+room6.setReady("y", true);
+room6.start("x", "elim");
+stop(room6);
+const i6 = room6 as unknown as {
+  qIndex: number;
+  roundLimit: number;
+  questions: { correctIndex: number }[];
+  players: Map<string, { lives: number }>;
+};
+i6.qIndex = i6.roundLimit; // havuz bitti — ikisi de 3 canlı (eşit)
+inner(room6).beginQuestion();
+
+test("havuz bitip canlar eşitse ani ölüm ek soru örneklenir", () => {
+  assert.equal(room6.phase, "question");
+  assert.equal(i6.roundLimit, 11);
+  assert.equal(i6.questions.length, 11);
+});
+
+// Ani ölüm turu: y yanlış → 1 can kaybeder (3→2); beraberlik bozulduğu için
+// bir sonraki beginQuestion havuz bittiğinde podyuma çıkar.
+const sdQ = room6.currentQuestion()!;
+room6.answer("x", sdQ.correctIndex);
+room6.answer("y", (sdQ.correctIndex + 1) % 4);
+(room6 as unknown as { reveal: () => void }).reveal();
+next(room6);
+
+test("ani ölüm turu beraberliği bozar ve maç podyuma çıkar", () => {
+  assert.equal(i6.players.get("y")!.lives, 2);
+  assert.equal(room6.phase, "podium");
+});
+stop(room6);
+
+// Canlar eşit değilse havuz bitince sessiz tiebreak yok — önde olan kazanır.
+const room7 = new Room("elim-7", () => {}, { minPlayers: 2, questionCount: 10 });
+room7.addPlayer(player("x", "Xi"));
+room7.addPlayer(player("y", "Yi"));
+room7.setGameMode("x", "elim");
+room7.setReady("x", true);
+room7.setReady("y", true);
+room7.start("x", "elim");
+stop(room7);
+const i7 = room7 as unknown as {
+  qIndex: number;
+  roundLimit: number;
+  players: Map<string, { lives: number }>;
+};
+i7.players.get("y")!.lives = 1; // x=3, y=1 → eşit değil
+i7.qIndex = i7.roundLimit;
+inner(room7).beginQuestion();
+
+test("havuz bitip canlar farklıysa maç doğrudan podyuma çıkar", () => {
+  assert.equal(room7.phase, "podium");
+});
+stop(room7);
+
 stop(room);
 stop(room2);
 console.log(`\n[elim] sonuç: ${passed} geçti, 0 kaldı`);

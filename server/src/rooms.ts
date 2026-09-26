@@ -307,6 +307,9 @@ export class Room {
   private wordRoundStartedAt = 0;
   /** Fitil: bu maçta doğru cevap çıkan tur sayısı — her biri fitili bir kademe kısaltır. */
   private lightningBurn = 0;
+  /** Son Masa: havuz bitip öndeki ikilinin canı eşitse oynatılan ani ölüm
+   *  ek sorularının sayısı (tavanı için). */
+  private elimExtraRounds = 0;
   /** Podyumda rövanş isteyen oyuncular. Eşik: bağlı insan oyuncuların
    *  yarısından fazlası; aşılınca host'u beklemeden yeni maç başlar. */
   private rematchVotes = new Set<string>();
@@ -1329,6 +1332,7 @@ export class Room {
     this.clearLastMatch();
     this.rescueRound = new Set();
     this.lightningBurn = 0;
+    this.elimExtraRounds = 0;
     this.rematchVotes.clear();
     this.predictions.clear();
     this.modeBeforeDaily = daily ? (this.modeBeforeDaily ?? this.gameMode) : null;
@@ -2068,7 +2072,7 @@ export class Room {
   }
 
   private beginQuestion() {
-    const round =
+    let round =
       this.gameMode === "circle"
         ? this.currentCirclePrompt()
         : this.gameMode === "word"
@@ -2078,6 +2082,30 @@ export class Room {
             : this.gameMode === "timeline"
               ? this.currentOrder()
               : this.currentQuestion();
+    if (!round && this.gameMode === "elim") {
+      // Havuz bitti ama ayakta birden çok kişi var ve öndeki ikilinin canı
+      // eşit → sessiz skor tiebreak'i yerine görünür ani ölüm sorusu
+      // (en çok 3 ek tur; kalan havuzdan örnekle).
+      const alive = this.eligiblePlayers();
+      const topLives = alive.length ? Math.max(...alive.map((p) => p.lives)) : 0;
+      const tied = alive.filter((p) => p.lives === topLives);
+      if (alive.length > 1 && tied.length > 1 && this.elimExtraRounds < 3) {
+        const pack = this.packId && MODE_CONTRACT.elim.packCompatible ? getPack(this.packId) : null;
+        const compat = this.categorySelection.filter(
+          (name) => !!CATEGORY_CATALOG.find((item) => item.name === name)?.classicCount,
+        );
+        const extra = pack
+          ? samplePackQuestions(1, pack.questions, this.seenQuestionIds, this.imageOnly)
+          : sampleQuestions(1, compat, this.seenQuestionIds, this.difficulty, this.imageOnly);
+        if (extra.length) {
+          this.questions.push(extra[0]);
+          this.seenQuestionIds.add(extra[0].id);
+          this.roundLimit += 1;
+          this.elimExtraRounds += 1;
+          round = this.currentQuestion();
+        }
+      }
+    }
     if (!round) return this.finish();
     this.clearTimer();
     this.clearBotTimers();
