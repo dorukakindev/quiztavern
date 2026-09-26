@@ -186,6 +186,21 @@ test("Hiç basamayanın serisi/istatistiği kırılmaz (tur 'denenmedi' sayılı
   assert.equal(aStats.currentStreak, 1, "basamayanın serisi korunur");
   assert.equal(aStats.total, 1, "basamayanın turu istatistiğe yazılmaz");
 });
+test("Yanlış basma cezası denemeyle büyür (kör basma caydırılır)", () => {
+  const room = zilRoom("z-esc", ["a", "b", "c"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.answer("a", (inner.questions[0].correctIndex + 1) % 4); // 1. denemede yanlış: -200
+  room.buzz("b");
+  room.answer("b", (inner.questions[0].correctIndex + 1) % 4); // 2. denemede yanlış: -250
+  room.buzz("c");
+  room.answer("c", inner.questions[0].correctIndex);
+  const gains = room.stateFor("c").reveal!.gains;
+  assert.equal(gains["a"], -GAME.ZIL_PENALTY);
+  assert.equal(gains["b"], -(GAME.ZIL_PENALTY + GAME.ZIL_PENALTY_STEP), "2. deneme cezası artar");
+  assert.ok(gains["c"] > 0);
+});
+
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 12);
+assert.equal(passed, 13);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın

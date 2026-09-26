@@ -145,6 +145,8 @@ export const GAME = {
   ZIL_MIN: 100,
   /** Yanlış cevaplayan basanın kaybı (§6.1: "yanlışsa −puan"). */
   ZIL_PENALTY: 200,
+  /** Her ek denemede ceza bu kadar büyür — "kör basma" stratejisi caydırılır. */
+  ZIL_PENALTY_STEP: 50,
   /** Yakın Tahmin (§6.1): en yakın tahmine taban puan; tam isabete bonus eklenir. */
   NUMERIC_BASE: 400,
   NUMERIC_EXACT: 200,
