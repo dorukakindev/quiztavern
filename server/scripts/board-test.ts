@@ -18,7 +18,7 @@ const internals = (room: Room) =>
     players: Map<string, P>;
     phase: string;
     qIndex: number;
-    boardCells: { value: number; used: boolean; question: Question }[];
+    boardCells: { value: number; used: boolean; dailyDouble?: boolean; question: Question }[];
     boardCategories: string[];
     boardPickerOrder: string[];
     boardPickerPos: number;
@@ -101,7 +101,7 @@ test("doğru cevap hücre değerini düz kazandırır (hız bonusu yok)", () => 
   const room = boardRoom("b5", ["a"]);
   const inner = startPick(room);
   // Değeri 500 olan bir hücre bul (son satır).
-  const idx = inner.boardCells.findIndex((c) => c.value === 500);
+  const idx = inner.boardCells.findIndex((c) => c.value === 500 && !c.dailyDouble);
   assert.ok(idx >= 0);
   room.pickCell("a", idx);
   const q = inner.boardCells[idx].question;
