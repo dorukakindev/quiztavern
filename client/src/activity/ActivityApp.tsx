@@ -3736,6 +3736,7 @@ function GameBoard({
                         {rows.map((row) => {
                           const player = state.players.find((p) => p.id === row.id);
                           const won = nr.winnerIds.includes(row.id);
+                          const runnerUp = !won && (nr.runnerUpIds ?? []).includes(row.id);
                           const pct = Math.min(100, (Math.abs(row.guess) / range) * 100);
                           return (
                             <div key={row.id} role="listitem" className={`qt-numeric-row ${won ? "is-winner" : ""}`}>
@@ -3749,7 +3750,9 @@ function GameBoard({
                               <span className="qt-numeric-dist">
                                 {won
                                   ? t("numeric.closest")
-                                  : `±${formatNumber(language, Math.round(row.dist * 100) / 100)}`}
+                                  : runnerUp
+                                    ? t("numeric.runnerUp")
+                                    : `±${formatNumber(language, Math.round(row.dist * 100) / 100)}`}
                               </span>
                             </div>
                           );

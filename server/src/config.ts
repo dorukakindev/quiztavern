@@ -145,6 +145,9 @@ export const GAME = {
   /** Yakın Tahmin (§6.1): en yakın tahmine taban puan; tam isabete bonus eklenir. */
   NUMERIC_BASE: 400,
   NUMERIC_EXACT: 200,
+  /** En yakın olmayan ama ikinci en yakın tahmin(ler)e teselli — son ana kadar
+   *  herkes oyunda kalır. Kazananla aynı mesafedekiler zaten kazanan sayılır. */
+  NUMERIC_RUNNER_UP: 100,
   /** D/Y Blitz (§6.1): tek 60 sn'lik pencere; herkes kendi hızında ilerler.
    *  Puan = BASE + STEP·min(seri-1, CAP); yanlış seriyi sıfırlar. Havuz,
    *  oyuncu başına düşen akışı besleyecek kadar büyük örneklenir. */

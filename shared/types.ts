@@ -475,6 +475,8 @@ export interface NumericRevealPayload {
   /** Oyuncu id → girilen tahmin (yalnız tahmin edenler). */
   guesses: Record<string, number>;
   winnerIds: string[];
+  /** En yakın olmayan ikinci en yakın mesafedekiler (teselli puanı). */
+  runnerUpIds: string[];
 }
 
 /** D/Y Blitz canlı durumu (§6.1): herkes KENDİ ifade akışında bağımsız
