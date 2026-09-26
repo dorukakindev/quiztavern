@@ -2657,3 +2657,32 @@
   letter-spacing: 0.08em;
   font-style: normal;
 }
+
+/* Seri "burst": alev her seri artışında bir kez patlar (key ile remount),
+   5+ seride inferno varyantına geçer — daha sıcak renk + geniş parlama. */
+.qt-streak-flame {
+  animation:
+    qt-streak-burst 0.55s cubic-bezier(0.2, 1.6, 0.4, 1) both,
+    qtFlameFlicker 1.2s ease-in-out 0.55s infinite;
+}
+@keyframes qt-streak-burst {
+  0% {
+    transform: scale(0.2);
+    filter: drop-shadow(0 0 2px rgba(255, 200, 90, 0.4));
+  }
+  55% {
+    transform: scale(1.65);
+    filter: drop-shadow(0 0 12px rgba(255, 180, 60, 1));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 5px rgba(255, 140, 50, 0.85));
+  }
+}
+.qt-streak-flame--inferno {
+  font-size: 16px;
+  filter: drop-shadow(0 0 9px rgba(255, 80, 30, 0.95));
+}
+.qt-streak-flame--inferno svg {
+  fill: #ff5c2a;
+}

@@ -1285,7 +1285,14 @@ function RoomStrip({
               )}
               <Avatar player={player} compact mode={state.gameMode} />
               {player.streak >= 3 && (
-                <span className="qt-streak-flame" aria-hidden="true" title={t("game.streak", { count: player.streak })}>
+                // key=streak: her artışta yeniden mount → burst animasyonu her tur oynar;
+                // 5+ seri "inferno" varyantına geçer (daha sıcak, hafif sallanan alev).
+                <span
+                  key={player.streak}
+                  className={`qt-streak-flame ${player.streak >= 5 ? "qt-streak-flame--inferno" : ""}`}
+                  aria-hidden="true"
+                  title={t("game.streak", { count: player.streak })}
+                >
                   <FlameIcon />
                 </span>
               )}
