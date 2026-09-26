@@ -2628,6 +2628,10 @@ button.qt-button--danger:hover:not(:disabled) {
 .qt-question-stage {
   max-height: 100%;
   overflow-y: auto;
+  /* Köşedeki mini sayacın dönen parıltısı (sweep, inset:-3px) dolgu kenarını
+     birkaç px aşıyor; overflow-y:auto o eksende de görünür olduğundan kartın
+     altında ok tuşlu yatay kaydırma çubuğu doğuyordu. clip kaydırmaz. */
+  overflow-x: clip;
   overscroll-behavior: contain;
 }
 @media (max-height: 780px) {
