@@ -3111,6 +3111,18 @@ function GameBoard({
   // taşıyınca tetiklenmiyordu.)
   useEffect(() => setCircleAnswer(""), [circle?.deadline, word?.deadline]);
 
+  // Kelime Oyunu: birisi harf aldığında (açık harf sayısı arttıkça) hafif bir tik —
+  // sosyal ipucu: "biri harf aldı" sessiz geçmesin. Kendi tıklama 'lock' çalar;
+  // yeni turda maske sıfırlanır, tik yok.
+  const wordOpenCount = useRef(0);
+  const wordLettersKey = word?.letters.join(""); // maske dizisi yerine içerik anahtarı
+  useEffect(() => {
+    const open = word?.letters.filter(Boolean).length ?? 0;
+    if (open > wordOpenCount.current && state.phase === "question") sfx.play("tick");
+    wordOpenCount.current = open;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- kasıtlı: harf İÇERİĞİ tetikler, dizi referansı değil
+  }, [wordLettersKey, state.phase]);
+
   // Reveal'da soru/şık metinleri payload'dan düşer; son turu ekranda tutmak için saklarız.
   const lastRound = useRef<QuestionPayload | null>(null);
   if (question) lastRound.current = question;
