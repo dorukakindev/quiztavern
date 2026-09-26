@@ -3,6 +3,16 @@ import type { Room } from "./rooms";
 
 export const BOT_NAMES = ["RoboKedi", "Baykuş", "Profesör", "Turbo", "Fındık", "Atom", "Kaptan", "Sincap"];
 
+/** Masada henüz oturmayan bir bot adı seçer: boş koltuğa art arda bot
+ *  eklenince iki "Turbo" oturup şeritte/podyumda ayırt edilemiyordu.
+ *  8 ad = 8 koltuk, yani masada her zaman boşta bir ad kalır. */
+export function pickBotName(taken: Iterable<string>, random: () => number = Math.random): string {
+  const used = new Set(taken);
+  const free = BOT_NAMES.filter((name) => !used.has(name));
+  const pool = free.length ? free : BOT_NAMES;
+  return pool[Math.floor(random() * pool.length)];
+}
+
 /**
  * Oyuncu-başı deterministik beceri: her botun isabet oranı id'sinden türetilir,
  * böylece aynı masadaki botlar farklı güçte oynar ve bir bot maç boyunca

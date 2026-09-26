@@ -73,6 +73,17 @@ export function circleInputShouldFocus(input: { hasPrompt: boolean; locked: bool
   return input.hasPrompt && !input.locked;
 }
 
+/** Son Masa "ani ölüm": masada canlı iki kişi kaldı VE bu gerçekten bir daralma.
+ *  Başta ikiden fazla oyuncu varsa masa ikiye inmiştir; baştan iki kişilikse
+ *  ancak ikisinin de tek canı kaldığında ani ölümdür (yoksa 1. sorudan yanardı).
+ *  Maç ortası gelen izleyici/bekleyen (lives tanımsız) başlangıç sayısına girmez. */
+export function isSuddenDeath(players: Pick<PublicPlayer, "lives" | "waiting">[]): boolean {
+  const starters = players.filter((player) => player.lives !== undefined && !player.waiting);
+  const alive = starters.filter((player) => (player.lives ?? 0) > 0);
+  if (alive.length !== 2) return false;
+  return starters.length > 2 || alive.every((player) => player.lives === 1);
+}
+
 export function bothTeamsPresent(mode: GameMode, players: Pick<PublicPlayer, "connected" | "team">[]): boolean {
   if (mode !== "team") return true;
   const connected = players.filter((player) => player.connected);

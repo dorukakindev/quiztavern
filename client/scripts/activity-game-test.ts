@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import {
   betOptionSpecs,
   bothTeamsPresent,
+  isSuddenDeath,
   circleAnswerIsLocked,
   circleInputShouldFocus,
   nextMenuIndex,
@@ -119,6 +120,21 @@ test("Takım başlangıcı iki bağlı takım gerektirir", () => {
     true,
   );
   assert.equal(bothTeamsPresent("classic", [{ connected: true, team: 0 }]), true);
+});
+
+test("Son Masa ani ölüm yalnız gerçek daralmada yanar", () => {
+  const p = (lives: number | undefined, waiting = false) => ({ lives, waiting });
+  // 2 kişilik masa, ikisi de tam canlı: 1. sorudan yanmamalı
+  assert.equal(isSuddenDeath([p(3), p(3)]), false);
+  assert.equal(isSuddenDeath([p(1), p(2)]), false);
+  // 2 kişilik masada ikisinin de tek canı kaldı
+  assert.equal(isSuddenDeath([p(1), p(1)]), true);
+  // 3+ kişilik masa ikiye indi
+  assert.equal(isSuddenDeath([p(3), p(2), p(0)]), true);
+  assert.equal(isSuddenDeath([p(3), p(2), p(1)]), false);
+  // Maç ortası gelen bekleyen oyuncu başlangıç sayısına girmez
+  assert.equal(isSuddenDeath([p(3), p(3), p(undefined, true)]), false);
+  assert.equal(isSuddenDeath([p(1), p(0)]), false);
 });
 
 test("menü ok/Home/End gezinmesi sarar", () => {

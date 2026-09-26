@@ -5,7 +5,7 @@ import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import express from "express";
 import { Server } from "socket.io";
-import { BOT_NAMES, scheduleBotAnswers } from "./bots";
+import { pickBotName, scheduleBotAnswers } from "./bots";
 import {
   ALLOW_GUEST_AUTH,
   ALLOW_MOCK_AUTH,
@@ -768,8 +768,7 @@ io.on("connection", (socket) => {
   socket.on(EV.START, (payload: unknown) => {
     try {
       if (ALLOW_MOCK_AUTH && room.players.size === 1) {
-        const botName = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
-        room.addBot(botName);
+        room.addBot(pickBotName([...room.players.values()].map((p) => p.name)));
       }
       // Mod, SET_MODE ile paylaşılan ve hazır onaylarını sıfırlayan masa ayarıdır.
       // START paketindeki istemci beyanı bu yetkili ayarı atlayamaz.
@@ -841,7 +840,7 @@ io.on("connection", (socket) => {
   socket.on(EV.ADD_BOT, () => {
     if (!ALLOW_MOCK_AUTH || room.hostId !== user.id) return;
     try {
-      room.addBot(BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)]);
+      room.addBot(pickBotName([...room.players.values()].map((p) => p.name)));
       // Elle zamanlama yok: bot normalde lobide eklenir, maç başlayınca
       // onQuestionStarted onu her soruda zaten zamanlar. (Maç ortasında eklenirse
       // o anki soruyu atlar, sıradakinden oynar — kabul edilebilir.)
