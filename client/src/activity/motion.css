@@ -317,3 +317,36 @@
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   HATA DÜZELTMELERİ · Mod şeritleri
+   --------------------------------------------------------------------------- */
+/* Çifte Bahis / Son Masa: bahis çipi ve kalpler oyuncu adını "A", "S…"
+   diye yutuyordu. İsim sütunu en az kendi payını alır, ekler küçülür. */
+.qt-activity .qt-player-card > div {
+  min-width: 36px;
+  flex: 1 1 auto;
+}
+.qt-activity .qt-player-bet {
+  flex: none;
+  gap: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+.qt-activity .qt-player-bet .qt-icon {
+  width: 10px;
+  height: 10px;
+}
+.qt-activity .qt-player-lives {
+  flex: none;
+  gap: 0;
+}
+.qt-activity .qt-player-lives .qt-icon {
+  width: 10px;
+  height: 10px;
+}
+/* Son Masa: "ANİ ÖLÜM" rozeti kartın üst kenarında kesiliyordu */
+.qt-activity .qt-sudden-death {
+  top: 14px;
+  z-index: 3;
+}

@@ -3540,9 +3540,14 @@ function GameBoard({
             <Timer deadline={deadline} durationMs={durationMs} serverNow={state.serverNow} compact />
           ) : null}
           {/* Son Masa ani ölüm: 2 kişi kaldıysa sayacın yanında işaret. */}
+          {/* Yalnız gerçekten ani ölümdeyken: masa 2'ye inmişse ya da iki canlının
+            da tek canı kalmışsa. 2 kişilik masada 1. sorudan yanmıyor. */}
           {state.gameMode === "elim" &&
           !beats.active &&
-          state.players.filter((p) => (p.lives ?? 0) > 0).length === 2 ? (
+          (() => {
+            const alive = state.players.filter((p) => (p.lives ?? 0) > 0);
+            return alive.length === 2 && (state.players.length > 2 || alive.every((p) => p.lives === 1));
+          })() ? (
             <span className="qt-sudden-death" role="note">
               {t("elim.suddenDeath")}
             </span>
