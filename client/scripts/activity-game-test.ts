@@ -27,26 +27,26 @@ const bridgeSource = readFileSync(new URL("../src/activity/sdkBridge.ts", import
 const polishCss = readFileSync(new URL("../src/activity/polish.css", import.meta.url), "utf8");
 const roomsSource = readFileSync(new URL("../../server/src/rooms.ts", import.meta.url), "utf8");
 
-test("sıfır bakiyede yalnız Pas görünür", () => {
-  assert.deepEqual(betOptionSpecs(0), [{ key: "pass", amount: 0 }]);
+test("sıfır bakiyede yalnız asgari (0) çipi görünür", () => {
+  assert.deepEqual(betOptionSpecs(0), [{ key: "min", amount: 0 }]);
 });
 
 test("yuvarlama aynı tutarı üretince bahis seçenekleri tekilleşir", () => {
   assert.deepEqual(betOptionSpecs(1), [
-    { key: "pass", amount: 0 },
+    { key: "min", amount: 1 },
     { key: "all", amount: 1 },
   ]);
   assert.deepEqual(betOptionSpecs(2), [
-    { key: "pass", amount: 0 },
+    { key: "min", amount: 1 },
     { key: "half", amount: 1 },
     { key: "all", amount: 2 },
   ]);
 });
 
-test("normal bakiyede Pas/Çeyrek/Yarı/Hepsi korunur", () => {
+test("normal bakiyede Asgari/Çeyrek/Yarı/Hepsi korunur", () => {
   assert.deepEqual(
     betOptionSpecs(1000).map((option) => option.amount),
-    [0, 250, 500, 1000],
+    [100, 250, 500, 1000],
   );
 });
 
@@ -231,7 +231,10 @@ test('"bu soru hatalı" bayrağı yalnız reveal\'da ve klasik modda görünür'
 
 test("cevap bekleyen oyuncu kartı soru/bahis fazında pulse alır", () => {
   assert.match(activitySource, /["']is-awaiting["'] : ["']["']/);
-  assert.match(activitySource, /state\.phase === ["']question["'] \|\| state\.phase === ["']bet["']\) && !player\.answered/);
+  assert.match(
+    activitySource,
+    /state\.phase === ["']question["'] \|\| state\.phase === ["']bet["']\) && !player\.answered/,
+  );
   assert.match(activityCss, /\.qt-player-card\.is-awaiting \{\s*animation: qtAwaitPulse/);
   assert.match(activityCss, /@keyframes qtAwaitPulse/);
   // Kilitleyen kart pulse'ı bırakıp is-locked sabit görünüme geçer.

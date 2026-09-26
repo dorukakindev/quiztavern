@@ -130,7 +130,8 @@ test("bahis, oyuncunun gerçek kasasını aşamaz (istemci beyanına güvenilmez
   bet.placeBet("a", 10_000_000);
   assert.equal(bet.players.get("a")!.bet, GAME.BET_STARTING_BANKROLL);
   bet.placeBet("b", -500);
-  assert.equal(bet.players.get("b")!.bet, 0);
+  // Negatif tutar reddedilmez ama asgari bahse yuvarlanır (BET_MIN_STAKE_PCT).
+  assert.equal(bet.players.get("b")!.bet, Math.ceil(GAME.BET_STARTING_BANKROLL * GAME.BET_MIN_STAKE_PCT));
 });
 stop(bet);
 
