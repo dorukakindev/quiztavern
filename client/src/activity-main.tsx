@@ -11,6 +11,8 @@ import "./activity/polish.css";
 import "./activity/fixes.css";
 // Arena oyun arayüzü: renk/yüzey/tipografi kararlarının tek kaynağı.
 import "./activity/arena.css";
+// İnce dokunuşlar ve hareket (arena temasını değiştirmez).
+import "./activity/motion.css";
 
 installClientErrorReporting();
 
