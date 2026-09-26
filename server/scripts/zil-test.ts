@@ -12,7 +12,7 @@ const test = (name: string, run: () => void) => {
 const user = (id: string) => ({ id, name: `P${id}`, avatarUrl: null, socketId: `s-${id}` });
 const internals = (room: Room) =>
   room as unknown as {
-    players: Map<string, { score: number; stats: { total: number; correct: number } }>;
+    players: Map<string, { score: number; stats: { total: number; correct: number; currentStreak: number } }>;
     questions: { id: string; correctIndex: number }[];
     qIndex: number;
     roundLimit: number;
@@ -168,6 +168,24 @@ test("Hiç basmayan oyuncu ceza yemez; yalnız yanlış basan −ZIL_PENALTY (B4
   assert.equal(gains["c"], 0, "hiç basmayan ceza yemez");
 });
 
+test("Hiç basamayanın serisi/istatistiği kırılmaz (tur 'denenmedi' sayılır)", () => {
+  const room = zilRoom("z-satout", ["a", "b"]);
+  const inner = startRound(room);
+  room.buzz("a");
+  room.answer("a", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  assert.equal(inner.players.get("a")!.stats.currentStreak, 1);
+  assert.equal(inner.players.get("b")!.stats.total, 0, "basamayan istatistiğe yazılmaz");
+  inner.advanceFromReveal();
+  inner.beginQuestion();
+  // Bu turda b kazanır, a hiç basamaz → a'nın serisi korunmalı, tur sayılmaz.
+  room.buzz("b");
+  room.answer("b", room.currentQuestion()!.correctIndex);
+  inner.reveal();
+  const aStats = inner.players.get("a")!.stats;
+  assert.equal(aStats.currentStreak, 1, "basamayanın serisi korunur");
+  assert.equal(aStats.total, 1, "basamayanın turu istatistiğe yazılmaz");
+});
 console.log(`zil-test: ${passed} geçti`);
-assert.equal(passed, 11);
+assert.equal(passed, 12);
 process.exit(0); // açık oda zamanlayıcıları process'i canlı tutmasın
