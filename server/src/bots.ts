@@ -153,8 +153,15 @@ export function scheduleBotAnswers(room: Room): void {
                   t.choice === null &&
                   (room.gameMode !== "team" || t.team !== p.team),
               );
-              if (targets.length === 0) return;
-              room.useCard(p.id, "freeze", targets[Math.floor(Math.random() * targets.length)].id);
+              if (targets.length === 0) {
+                // Herkes cevaplamış/kopuksa dondur fırsatı boşa gitmesin:
+                // kalkana düş — tur başına tek kart hakkı korunur.
+                room.useCard(p.id, "shield");
+              } else {
+                // Rastgele değil: skor liderini dondur — rekabeti gerçekçi tutar.
+                const leader = targets.reduce((a, b) => (b.score > a.score ? b : a));
+                room.useCard(p.id, "freeze", leader.id);
+              }
             }
           } catch {
             // Bot yarış durumunu yoksayar.
