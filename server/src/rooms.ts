@@ -2877,7 +2877,18 @@ export class Room {
       }
       player.orderAnswers[this.qIndex] = order ?? null;
       hits[player.id] = hit;
-      const gain = hit * GAME.TIMELINE_PER_POS;
+      // Komşu-çift bonusu: yan yana dizilen iki olay gerçekte de doğru
+      // göreli sıradaysa ek puan — kısmen doğru dizimler yalnız pozisyon
+      // isabetiyle ölçülmesin.
+      const rank = new Map<number, number>();
+      correctOrder.forEach((evIdx, pos) => rank.set(evIdx, pos));
+      const pairBonus = order
+        ? order.slice(0, -1).reduce((acc, evIdx, i) => {
+            const next = order[i + 1];
+            return acc + ((rank.get(evIdx) ?? -1) < (rank.get(next) ?? -1) ? GAME.TIMELINE_PAIR_BONUS : 0);
+          }, 0)
+        : 0;
+      const gain = hit * GAME.TIMELINE_PER_POS + pairBonus;
       player.score += gain;
       gains[player.id] = gain;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
