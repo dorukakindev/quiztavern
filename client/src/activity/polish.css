@@ -2644,3 +2644,16 @@
   width: 10px;
   height: 10px;
 }
+
+/* Çifte Bahis sigortası: kayıp serisi sonrası aktif kalkan rozeti. */
+.qt-bet-insured {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: rgba(92, 231, 239, 0.16);
+  border: 1px solid rgba(92, 231, 239, 0.5);
+  color: var(--timer-accent, #5ce7ef);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  font-style: normal;
+}

@@ -84,6 +84,8 @@ export interface RoomPlayer {
   circleCorrectAt: number | null;
   /** Çifte Bahis: bu tur kilitlenen bahis (null = henüz yatırmadı). Her tur sıfırlanır. */
   bet: number | null;
+  /** Çifte Bahis sigortası: üst üste kayıp tur sayısı (doğru cevapta sıfırlanır). */
+  betLossStreak: number;
   /** Takım modu: oyuncunun takımı (0/1). Katılınca küçük takıma atanır; host değiştirebilir. */
   team: number;
   /** Maç sırasında bağlantısı kopan oyuncunun grace süresinin başlangıcı */
@@ -413,6 +415,7 @@ export class Room {
       | "circleAnswer"
       | "circleCorrectAt"
       | "bet"
+      | "betLossStreak"
       | "team"
       | "disconnectedAt"
       | "lastEmoteAt"
@@ -472,6 +475,7 @@ export class Room {
       circleAnswer: null,
       circleCorrectAt: null,
       bet: null,
+      betLossStreak: 0,
       team: this.smallerTeam(),
       disconnectedAt: null,
       lastEmoteAt: 0,
@@ -1977,7 +1981,12 @@ export class Room {
     // Çifte Bahis: bankroll + broke kişisel.
     let bet = shared.bet;
     if (bet) {
-      bet = { ...bet, bankroll: Math.max(0, self?.score ?? 0), broke: this.rescueRound.has(youId) };
+      bet = {
+        ...bet,
+        bankroll: Math.max(0, self?.score ?? 0),
+        broke: this.rescueRound.has(youId),
+        insured: (self?.betLossStreak ?? 0) >= GAME.BET_INSURANCE_LOSSES,
+      };
     }
     // D/Y Blitz: KİŞİSEL canlı durum — herkesin ifadesi farklıdır; truth
     // istemciye hiç çıkmaz. Reveal'da akış donar, özet blitzSummary'de gider.
@@ -2583,6 +2592,10 @@ export class Room {
         // "Hepsi": bakiyenin tamamı yatırıldıysa kazanç ×2.5 iade (bahis+1.5×).
         // score hâlâ tur öncesi bakiye — bahis kilidinde düşülmediği için eşitlik güvenli.
         const allIn = stake > 0 && stake === player.score;
+        // Sigorta: üst üste BET_INSURANCE_LOSSES tur kaybeden oyuncunun bir
+        // sonraki kaybı yarıya iner — maç dışı kalmayı yumuşatır.
+        const insured =
+          !correct && !this.rescueRound.has(player.id) && player.betLossStreak >= GAME.BET_INSURANCE_LOSSES;
         gain = this.rescueRound.has(player.id)
           ? correct
             ? GAME.BET_BROKE_REWARD
@@ -2591,7 +2604,12 @@ export class Room {
             ? allIn
               ? Math.round(stake * (GAME.BET_ALL_IN_MULTIPLIER - 1))
               : stake
-            : -stake;
+            : -(insured ? Math.ceil(stake / 2) : stake);
+        if (this.rescueRound.has(player.id)) {
+          // kurtarma turu sigortayı etkilemez
+        } else if (correct || insured)
+          player.betLossStreak = 0; // sigorta bir kez tükenir
+        else player.betLossStreak++;
         player.score = Math.max(0, player.score + gain);
       } else {
         // Zorluk bonusu tabana eklenir (hız bileşeni saf süre kalır); kalibre

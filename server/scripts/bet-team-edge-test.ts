@@ -288,6 +288,47 @@ test("reveal bahisleri taşır: bets haritası kilitlenen tutarları gösterir",
   assert.equal(kl.stateFor("k", true).reveal!.bets, undefined);
 });
 
+test("sigorta: üst üste 2 kayıptan sonra kayıp yarıya iner, galibiyet sıfırlar", () => {
+  const ins = mkRoom("edge-insurance", { minPlayers: 1, questionCount: 5 });
+  ins.addPlayer(player("i", "Insured"));
+  ins.setGameMode("i", "bet");
+  ins.setReady("i", true);
+  ins.start("i", "bet");
+  stop(ins);
+  const inner = ins as unknown as {
+    beginBet: () => void;
+    beginQuestion: () => void;
+    reveal: () => void;
+    advanceFromReveal: () => void;
+  };
+  const p = ins.players.get("i")!;
+  const wrongRound = () => {
+    inner.beginBet();
+    ins.placeBet("i", 200);
+    inner.beginQuestion();
+    ins.answer("i", (ins.currentQuestion()!.correctIndex + 1) % 4);
+    inner.reveal();
+    ins.revealUntil = 0;
+    inner.advanceFromReveal();
+  };
+  wrongRound();
+  assert.equal(p.score, 800, "1. kayıp tam -200");
+  wrongRound();
+  assert.equal(p.score, 600, "2. kayıp tam -200 — sigorta eşiği doluyor");
+  wrongRound();
+  assert.equal(p.score, 500, "3. kayıp sigortalı: -100");
+  wrongRound();
+  assert.equal(p.score, 300, "sigorta tükendi — 4. kayıp yine tam -200 (seri 1'den yeniden sayılır)");
+  // doğru tur seriyi sıfırlar
+  inner.beginBet();
+  ins.placeBet("i", 100);
+  inner.beginQuestion();
+  ins.answer("i", ins.currentQuestion()!.correctIndex);
+  inner.reveal();
+  assert.equal(p.score, 400, "doğru +100");
+  assert.equal(p.betLossStreak, 0, "seri sıfırlandı");
+});
+
 for (const room of liveRooms) (room as unknown as { dispose: () => void }).dispose();
 
 console.log(`\n[bet-team-edge] sonuç: ${passed} geçti, 0 kaldı`);

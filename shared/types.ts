@@ -590,6 +590,8 @@ export interface BetPayload {
   brokeReward: number;
   /** Son soru (Jeopardy usulü final): çipler yerine serbest tutar girilir. */
   final?: boolean;
+  /** Üst üste kayıp serisi sigortayı açtı: bu tur kayıp yarıya iner. */
+  insured?: boolean;
 }
 
 export interface CircleRevealPayload {

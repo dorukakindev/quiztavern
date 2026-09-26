@@ -129,6 +129,8 @@ export const GAME = {
   /** Asgari bahis oranı (kurtarma turu hariç): "hep 0 yatır" kaçışını kapatır —
    *  modun kumar kimliği ancak herkes her tur bir şey riske atarsa yaşar. */
   BET_MIN_STAKE_PCT: 0.1,
+  /** Çifte Bahis sigortası: üst üste bu kadar kayıp turdan sonra kayıp yarıya iner. */
+  BET_INSURANCE_LOSSES: 2,
 
   /** Son Masa: oyuncu başına can. Yanlış ya da cevapsız tur 1 can götürür;
    *  0'a düşen elenir, son kalan kazanır. */

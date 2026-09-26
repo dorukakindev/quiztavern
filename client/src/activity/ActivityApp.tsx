@@ -4504,6 +4504,7 @@ function BetBoard({
             <Icon name="coins" weight="duotone" />
             <b>{formatNumber(language, bankroll)}</b>
             <span>{t("bet.bankroll")}</span>
+            {state.bet?.insured ? <em className="qt-bet-insured">{t("bet.insured")}</em> : null}
           </div>
           {youAreSpectator ? (
             <p className="qt-locked-note">
