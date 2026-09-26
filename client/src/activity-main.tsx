@@ -7,8 +7,10 @@ import "./activity/activity.css";
 import "./activity/layout-fixes.css";
 import "@fontsource-variable/bricolage-grotesque/wght.css";
 import "./activity/polish.css";
-// Lonca teması en sonda: yalnız token/seçici override eder, markup değişmez.
-import "./activity/tavern-theme.css";
+// Küçük hata düzeltmeleri en sonda (görsel dil değişmez).
+import "./activity/fixes.css";
+// Arena oyun arayüzü: renk/yüzey/tipografi kararlarının tek kaynağı.
+import "./activity/arena.css";
 
 installClientErrorReporting();
 

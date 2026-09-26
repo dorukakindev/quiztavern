@@ -125,10 +125,7 @@ async function fetchInstanceUsers(instanceId: string): Promise<Set<string> | nul
   return users;
 }
 
-async function fetchInstanceUsersDeduplicated(
-  instanceId: string,
-  notBefore = 0,
-): Promise<Set<string> | null> {
+async function fetchInstanceUsersDeduplicated(instanceId: string, notBefore = 0): Promise<Set<string> | null> {
   const existing = instanceFetches.get(instanceId);
   // Uçuştaki istek bu çağrıdan ÖNCE başladıysa yeni katılan kullanıcıyı
   // içermeyebilir; onu paylaşmak yerine bitmesini bekleyip taze istek at.

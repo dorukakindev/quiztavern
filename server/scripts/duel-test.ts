@@ -181,10 +181,7 @@ test("Son turda beraberlik → ani ölüm sorusu; izleyici katılamaz", () => {
   inner.advanceFromReveal();
   assert.equal(room.phase, "question", "ani ölüm turu başladı");
   assert.equal(inner.roundLimit, GAME.DUEL_QUESTIONS + 1);
-  assert.ok(
-    inner.players.get("c")!.eligibleFrom >= inner.roundLimit,
-    "izleyici ani ölüme katılamaz",
-  );
+  assert.ok(inner.players.get("c")!.eligibleFrom >= inner.roundLimit, "izleyici ani ölüme katılamaz");
   const sdCorrect = inner.questions[inner.qIndex].correctIndex;
   room.answer("a", sdCorrect);
   room.answer("b", (sdCorrect + 1) % 4);

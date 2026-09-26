@@ -2610,7 +2610,6 @@
   }
 }
 
-
 /* D/Y Blitz: seri çarpanı tavana ulaşınca "MAKS SERİ" rozeti. */
 .qt-blitz-max {
   padding: 1px 8px;
@@ -2686,8 +2685,6 @@
 .qt-streak-flame--inferno svg {
   fill: #ff5c2a;
 }
-
-
 
 /* "Bahisler açıklandı" anı — soru başında kilitli bahisler kısa süre görünür */
 .qt-bet-stake-reveal {

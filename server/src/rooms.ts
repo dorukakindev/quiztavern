@@ -1273,7 +1273,9 @@ export class Room {
       .filter((name) => {
         if (!CATEGORY_NAMES.has(name)) return false;
         const category = CATEGORY_CATALOG.find((item) => item.name === name);
-        return this.gameMode === "circle" || this.gameMode === "word" ? !!category?.circleCount : !!category?.classicCount;
+        return this.gameMode === "circle" || this.gameMode === "word"
+          ? !!category?.circleCount
+          : !!category?.classicCount;
       })
       .slice(-maxCategories);
     if (next.join("|") === this.categorySelection.join("|")) return;
@@ -1377,7 +1379,9 @@ export class Room {
     this.roundLimit = this.questionCount;
     const compatibleCategories = this.categorySelection.filter((name) => {
       const category = CATEGORY_CATALOG.find((item) => item.name === name);
-      return this.gameMode === "circle" || this.gameMode === "word" ? !!category?.circleCount : !!category?.classicCount;
+      return this.gameMode === "circle" || this.gameMode === "word"
+        ? !!category?.circleCount
+        : !!category?.classicCount;
     });
     if (this.categorySelection.length && !compatibleCategories.length) {
       throw new GameError("err.categoryEmpty");
@@ -1819,9 +1823,7 @@ export class Room {
           ...(this.gameMode === "lightning" && this.roundDurationMs <= GAME.LIGHTNING_MIN_MS
             ? { fuseCritical: true }
             : {}),
-          ...(this.gameMode === "board" &&
-          this.currentCell >= 0 &&
-          this.boardCells[this.currentCell]?.dailyDouble
+          ...(this.gameMode === "board" && this.currentCell >= 0 && this.boardCells[this.currentCell]?.dailyDouble
             ? { dailyDouble: true }
             : {}),
         }
@@ -1964,9 +1966,7 @@ export class Room {
       // "Bahisler açıklandı" anı: soru fazının ilk ~2,5 sn'sinde kilitli
       // bahisler masada görünür — kumar gerilimi; sonra yine saklanır.
       betStakes:
-        this.gameMode === "bet" &&
-        this.phase === "question" &&
-        Date.now() - this.questionStartedAt < GAME.BET_REVEAL_MS
+        this.gameMode === "bet" && this.phase === "question" && Date.now() - this.questionStartedAt < GAME.BET_REVEAL_MS
           ? Object.fromEntries(this.eligiblePlayers().map((p) => [p.id, p.bet ?? 0]))
           : null,
       yourChoice: null,
@@ -2112,8 +2112,7 @@ export class Room {
       yourChoice: self?.choice ?? null,
       yourCircleAnswer: self?.circleAnswer ?? null,
       yourWordAnswer: this.gameMode === "word" ? (self?.circleAnswer ?? null) : null,
-      yourCards:
-        this.gameMode === "team" && self ? (this.teamCardPool[self.team] ?? 0) : (self?.cards ?? 0),
+      yourCards: this.gameMode === "team" && self ? (this.teamCardPool[self.team] ?? 0) : (self?.cards ?? 0),
       yourCardUsed: self?.cardUsed ?? null,
       removedChoices: self?.fiftyRemoved ?? [],
       youFrozen: self?.frozen ?? false,
@@ -2746,8 +2745,7 @@ export class Room {
         // Bulanık Resim: hız bileşeni doğrusal değil netlik-ağırlıklı —
         // görsel bulanıkken (kalan süre çokken) bilen, netleşmeye yakın
         // bilenden orantısız daha çok alır (0→2× hız bonusu).
-        const speedGain =
-          this.gameMode === "blur" ? speed * speedRatio * (1 + speedRatio) : speed * speedRatio;
+        const speedGain = this.gameMode === "blur" ? speed * speedRatio * (1 + speedRatio) : speed * speedRatio;
         gain = correct ? Math.round(base + speedGain) : 0;
         // Zil: hız bonusu yok — değer kaçıncı denemede doğru bilindiğine göre
         // düşer; ceza YALNIZ gerçekten basıp kaybedene (yanlış ya da süresi
@@ -3073,10 +3071,7 @@ export class Room {
         : 0;
       // Kusursuz dizim: 4/4'ün toplamı zaten pozisyon+çift puanı verir;
       // tam isabet ayrıca görünür bir ikramiye alsın.
-      const gain =
-        hit * GAME.TIMELINE_PER_POS +
-        pairBonus +
-        (hit === prompt.events.length ? GAME.TIMELINE_PERFECT : 0);
+      const gain = hit * GAME.TIMELINE_PER_POS + pairBonus + (hit === prompt.events.length ? GAME.TIMELINE_PERFECT : 0);
       player.score += gain;
       gains[player.id] = gain;
       if (gain > player.stats.maxGain) player.stats.maxGain = gain;
@@ -3167,11 +3162,7 @@ export class Room {
     // Düello: son turun sonunda iki düellocu eşitse ani ölüm — en çok 2 ek
     // soru. 2 oyuncu + az tam sayı puan beraberliği sık yapar; sessiz
     // tiebreak yerine görünür bir final turu gerilimi korur.
-    if (
-      this.gameMode === "duel" &&
-      this.qIndex + 1 >= this.roundLimit &&
-      this.roundLimit < GAME.DUEL_QUESTIONS + 2
-    ) {
+    if (this.gameMode === "duel" && this.qIndex + 1 >= this.roundLimit && this.roundLimit < GAME.DUEL_QUESTIONS + 2) {
       const [first, second] = this.sortedPlayers();
       if (first && second && first.score === second.score && second.eligibleFrom <= this.qIndex) {
         const pack = this.packId && MODE_CONTRACT.duel.packCompatible ? getPack(this.packId) : null;

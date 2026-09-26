@@ -1,0 +1,80 @@
+/* ============================================================================
+   Hata düzeltmeleri — görsel dil (renk, yazı tipi, yüzey) DEĞİŞMEZ.
+   Yükleme sırası: activity.css → layout-fixes.css → polish.css → BU DOSYA.
+   ============================================================================ */
+
+/* 1. Tavern Panosu hücreleri: polish.css `--gold`, `--card`, `--line`, `--ink-2`
+   değişkenlerini kullanıyor ama hiçbiri tanımlı değildi → hücre arka planı ve
+   kenarlığı şeffafa düşüyordu. Mevcut paletten tanımlanır. */
+:root {
+  --gold: #f3c362;
+  --card: rgba(8, 25, 42, 0.78);
+  --line: rgba(92, 165, 195, 0.28);
+  --ink-2: #8fa9bc;
+}
+
+/* 2. Soru kartının altındaki yatay kaydırma çubuğu (Discord/Electron):
+   köşedeki sayaç ve reveal rozetleri kartın kenarını birkaç px aşıyor. Bir
+   eksende overflow:auto olunca diğer eksen de "auto"ya döner ve klasik
+   kaydırma çubuğu çıkıyordu. Önceki düzeltme yalnız bir kırılımdaydı; clip
+   kaydırma üretmez, her boyutta uygulanır. */
+.qt-question-stage {
+  overflow-x: clip;
+}
+
+/* 3. Oyun şeridi: ad/durum sütunu esnemediği için "Sen" → "S…", "Kilitledi"
+   → "K…" diye kesiliyordu. Metin sütunu kalan alanı alır. */
+.qt-player-card > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 4. Maç sonu ekranında "Masadan ayrıl" sekmelerin (Sıralama/Özet/İnceleme)
+   üstüne biniyordu: polish.css'teki `.qt-game-exit { position: relative }`
+   (::before için eklenmiş) aynı özgüllükte sonra geldiği için yüzen düğmenin
+   `position: absolute`'unu eziyordu. Düğme sağ üst köşesine döner. */
+.qt-game-exit.qt-game-exit--floating {
+  position: absolute;
+}
+
+/* 5. Maç sonu sıralama satırı: yeni rozet çipleri ("İlk Maç", "Podyum") ad ve
+   skorla aynı satıra sıkışıp "İlk Ma…" diye kırpılıyor, adı da "Sen…"e
+   düşürüyordu. Rozetler satırın altına kendi satırında sarılır. */
+.qt-podium-list > div {
+  flex-wrap: wrap;
+}
+.qt-podium-list > div > span[title] {
+  flex: 1 1 auto;
+}
+.qt-podium-list .qt-badge-new-row {
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-left: 2px;
+}
+
+/* 6. Dar ekranda (telefon, küçük Discord penceresi) emoji rafı ekranın sol
+   üstünü kaplayan dev bir yarım daireye dönüşüyordu: polish.css rafı yan
+   sütuna "static + dikey" olarak taşımış, ama dar düzenin "alta ortala"
+   kuralları (left:50% + translate:-50%) hâlâ geçerliydi. Dar düzende raf
+   tasarlandığı gibi alt ortada yatay bir çubuk olur. */
+@media (max-width: 900px) {
+  .qt-game-side .qt-emote-bar {
+    position: fixed;
+    flex-direction: row;
+    left: 50%;
+    right: auto;
+    bottom: max(8px, var(--qt-saib));
+    translate: -50% 0;
+    z-index: 6;
+  }
+}
+
+/* 7. Dar düzendeki yatay oyuncu şeridinde skor "TOPLAM" etiketinin üstüne
+   biniyordu; bu boyutta etiket gizlenir (rakam zaten toplam skordur). */
+@media (max-width: 900px) {
+  .qt-table-strip .qt-player-total {
+    display: none;
+  }
+}
